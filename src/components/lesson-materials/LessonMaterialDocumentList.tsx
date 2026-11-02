@@ -115,9 +115,14 @@ export function LessonMaterialDocumentList({
    * 파일의 지문으로 뽑기 창을 연다 — 뽑은 것은 「뽑은 테스트지」 파일로 저장된다.
    */
   const [drawIds, setDrawIds] = useState<string[] | null>(null);
+  /** 뽑은 테스트지는 뽑기를 연 자료 이름으로 저장한다(선생님 2026-11-02) */
+  const [drawName, setDrawName] = useState<string | null>(null);
   function openDraw(ids: string[]) {
-    const projectIds = [...new Set(rows.filter((r) => ids.includes(r.id)).flatMap((r) => r.project_ids))];
+    const picked = rows.filter((r) => ids.includes(r.id));
+    const projectIds = [...new Set(picked.flatMap((r) => r.project_ids))];
     if (!projectIds.length) return;
+    const first = picked[0]?.name?.trim() ?? "";
+    setDrawName(first ? (picked.length > 1 ? `${first} 외 ${picked.length - 1}` : first) : null);
     setDrawIds(projectIds);
   }
   const canDraw = kind === "test_book" || kind === "workbook" || kind === "integrated";
@@ -395,7 +400,7 @@ export function LessonMaterialDocumentList({
         </ul>
         </>
       )}
-      <TestDrawDialog role={role} projectIds={drawIds ?? []} open={!!drawIds} onClose={() => setDrawIds(null)} />
+      <TestDrawDialog role={role} projectIds={drawIds ?? []} docName={drawName} open={!!drawIds} onClose={() => setDrawIds(null)} />
       {addTarget ? (
         <WorkbookCreateModal
           key={addTarget.mode}

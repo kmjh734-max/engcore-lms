@@ -73,6 +73,11 @@ function mapItems(
         message: `F 문항(${i + 1})에 바르게 고친 문장이 없습니다.`,
       };
     }
+    // 고친 문장이 진술문과 사실상 같으면 처음부터 맞는 문장이었다 — F로 싣지 않는다(2026-11-02)
+    const same = (x: string) => x.toLowerCase().replace(/[^a-z0-9가-힣]+/g, "");
+    if (answer === "F" && same(corrected) === same(statement)) {
+      return { ok: false, message: `F 문항(${i + 1})의 고친 문장이 원래 문장과 같습니다.` };
+    }
     items.push({
       index: items.length + 1,
       statement,

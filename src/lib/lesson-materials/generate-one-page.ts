@@ -175,7 +175,7 @@ const CORE_PROMPT = `${COMMON_HEADER}
 - ko: 같은 내용의 한국어(20~45자). 영어를 그대로 옮기되 자연스럽게.
 - 마지막 단계는 결론·교훈이다.
 - from, to: 이 단계의 근거가 되는 문장 번호 범위(from ≤ to). 단계는 지문 순서대로 놓고, 앞 단계의 to보다 뒤 단계의 from이 커야 한다(범위가 겹치지 않게).
-[tf] 내용 일치 T/F 영어 문장 정확히 5개(각 12~25 words). 지문 문장을 그대로 베끼지 말고 내용 이해를 묻는다. {{TF_TRUE_COUNT}} F는 지문에 비추어 분명히 틀린 내용이어야 한다(애매하면 안 됨).
+[tf] 내용 일치 T/F 영어 문장 정확히 5개(각 12~25 words). 지문 문장을 그대로 베끼지 말고 내용 이해를 묻는다. {{TF_TRUE_COUNT}} 문항마다 먼저 evidence(근거 문장 번호)를 적고, F로 할 문장은 wrong에 지문과 어긋나는 점을 한국어로 적은 뒤 answer를 정한다. answer는 개수와 상관없이 지문에 비추어 판정한다 — 지문과 맞는 문장을 F로 두지 않는다. F를 만들려면 문장을 지문과 분명히 다르게 바꿔 쓴다(애매·추측·지문에 없는 내용 금지). T 문장도 지문에 그대로 근거가 있어야 한다(지문이 '~일 수 있다'고만 하면 단정하지 않는다).
 [keySentences] 서술형·영작에 나올 핵심 문장 번호 4개(주제문·핵심 주장·중요 구문이 있는 문장, 가능하면 8~35 words). 문장이 4개보다 적으면 모두.
 `;
 
@@ -267,7 +267,8 @@ const CORE_SCHEMA = obj({
   titleEn: str,
   summary: obj({ en: str, keywords: strList, ko: str, verbs: { type: "array", items: obj({ form: str, base: str }) } }),
   flow: { type: "array", items: obj({ en: str, ko: str, from: int, to: int }) },
-  tf: { type: "array", items: obj({ statement: str, answer: { type: "string", enum: ["T", "F"] } }) },
+  // 근거·틀린 점을 정답보다 먼저 적게 한다(2026-11-02: 참 개수를 맞추려고 맞는 문장을 F로 둔 것이 495문항 중 15)
+  tf: { type: "array", items: obj({ statement: str, evidence: { type: "array", items: int }, wrong: str, answer: { type: "string", enum: ["T", "F"] } }) },
   keySentences: { type: "array", items: int },
 });
 
@@ -967,6 +968,8 @@ function checkCore(
     const a = str1(r.answer).toUpperCase();
     const answer = a === "T" || a === "TRUE" ? "T" : a === "F" || a === "FALSE" ? "F" : null;
     if (!statement || !answer) continue;
+    // F인데 지문과 어긋나는 점을 못 댄 문장은 맞는 문장일 수 있다 — 싣지 않는다
+    if (answer === "F" && "wrong" in r && str1(r.wrong).length < 4) continue;
     tf.push({ statement, answer });
     if (tf.length >= 5) break;
   }
@@ -1672,9 +1675,10 @@ export async function generateOnePageContent(input: {
      * 기울었다. 다섯 중 둘 또는 셋으로 못박으면 평균이 절반이 된다.
      */
     const trueCount = 2 + Math.floor(Math.random() * 2);
+    // 개수는 목표로만 준다 — 「정확히」라고 못박으니 맞는 문장을 F로 표시해 개수를 맞췄다(2026-11-02 선생님 지적, 495문항 중 15).
     const corePrompt = CORE_PROMPT.replace(
       "{{TF_TRUE_COUNT}}",
-      `T를 정확히 ${trueCount}개, F를 정확히 ${5 - trueCount}개 둔다.`
+      `T는 ${trueCount}개, F는 ${5 - trueCount}개가 되도록 문장을 만든다(F로 할 문장은 처음부터 지문과 다르게 쓴다).`
     );
 
     const corePromise = ask(

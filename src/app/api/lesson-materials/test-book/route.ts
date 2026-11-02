@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       chargeKey?: string;
       lessonTab?: boolean;
       tbTypes?: unknown[];
+      name?: unknown;
     };
     const role = body.role === "admin" ? "admin" : "teacher";
     if (body.op === "registerVocab") {
@@ -81,6 +82,7 @@ export async function POST(request: Request) {
           projectIds: Array.isArray(body.projectIds) ? body.projectIds.map(String) : [],
           typeCount: Number(body.typeCount ?? 0),
           snapshot: body.snapshot,
+          name: typeof body.name === "string" ? body.name : null,
         })
       );
     }

@@ -139,11 +139,14 @@ function newSeed(): string {
 export function TestDrawDialog({
   role,
   projectIds,
+  docName = null,
   open,
   onClose,
 }: {
   role: "admin" | "teacher";
   projectIds: string[];
+  /** 뽑기를 연 자료 파일 이름 — 뽑은 테스트지를 이 이름으로 저장한다 */
+  docName?: string | null;
   open: boolean;
   onClose: () => void;
 }) {
@@ -291,7 +294,7 @@ export function TestDrawDialog({
     try {
       const res = await postJson<{ ok: true; docId: string | null; name: string | null } | { ok: false; message: string }>(
         "/api/lesson-materials/test-book",
-        { op: "chargeDraw", role, seed, projectIds: chosen.map((p) => p.id), typeCount, snapshot }
+        { op: "chargeDraw", role, seed, projectIds: chosen.map((p) => p.id), typeCount, snapshot, name: docName }
       );
       if (!res.ok) {
         tab?.close();

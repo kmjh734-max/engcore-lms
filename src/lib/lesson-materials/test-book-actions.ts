@@ -597,7 +597,7 @@ const TEST_DRAW_FEATURE = "lesson_test_draw";
  */
 export async function chargeTestDrawAction(
   role: Role,
-  input: { seed: string; projectIds: string[]; typeCount: number; snapshot?: unknown }
+  input: { seed: string; projectIds: string[]; typeCount: number; snapshot?: unknown; name?: string | null }
 ): Promise<{ ok: true; docId: string | null; name: string | null } | Fail> {
   // 워크북·최종통합자료에서도 뽑는다(2026-10-21 테스트 교재 메뉴를 합침) — 학원 기능 스위치 없이
   const { profile, error } = await requireLessonRole(role);
@@ -630,7 +630,8 @@ export async function chargeTestDrawAction(
   const snap = input.snapshot as { sheets?: unknown[]; vocabExam?: unknown } | null | undefined;
   if (!snap || !Array.isArray(snap.sheets)) return { ok: true, docId: null, name: null };
   const supabase = await createClient();
-  const base = defaultDocumentName("test_draw");
+  // 뽑기를 연 자료 이름 그대로(선생님 2026-11-02), 없으면 「테스트지_날짜」. 같은 이름이 있으면 -2, -3…
+  const base = String(input.name ?? "").trim().slice(0, 76) || defaultDocumentName("test_draw");
   const { data: same } = await supabase
     .from("lesson_material_documents")
     .select("name")

@@ -16,9 +16,9 @@ JSON만 출력한다.
   "items": [
     {
       "statement": "진술문",
-      "answer": "T" 또는 "F",
       "explanation": "근거 해설(～한다체). 지문의 어느 내용에 근거하는지 밝힌다.",
-      "correctedStatement": "answer가 F일 때만: 바르게 고친 참인 문장. T이면 빈 문자열"
+      "correctedStatement": "F일 때만: 바르게 고친 참인 문장. T이면 빈 문자열",
+      "answer": "T" 또는 "F"
     }
   ]
 }
@@ -26,6 +26,7 @@ JSON만 출력한다.
 # 규칙
 - items 길이는 요청한 count와 정확히 같다.
 - count가 2 이상이면 T와 F를 모두 포함한다(전부 T 또는 전부 F 금지).
+- 문항마다 explanation(근거)을 먼저 쓰고 그 근거로 answer를 정한다. 지문과 맞는 문장을 F로 두지 않는다 — F 문장은 처음부터 지문과 분명히 다르게 쓴다.
 - statement는 요청 language에 맞춘다(en=영어, ko=한국어).
 - F 문항은 지문과 어긋나는 핵심만 바꾸되, 너무 황당하지 않게 만든다.
 - F 문항은 correctedStatement에 지문에 맞는 바른 진술을 넣는다.
