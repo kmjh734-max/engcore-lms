@@ -44,6 +44,8 @@ const PUBLIC_PREFIXES = [
   "/api/nelt/share",
   "/exam-vocab",
   "/api/exam-vocab",
+  // 중학교 수업자료 강의 QR: 그 과·그 영역 영상만 로그인 없이
+  "/ms-lecture",
   // 마케팅 어휘 진단: 외부 응시자가 개인 링크로 로그인 없이 응시·결과 확인(토큰을 서버에서 확인)
   "/diag",
   "/api/diag",

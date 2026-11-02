@@ -37,10 +37,10 @@ import {
 import { MsExamBySource } from "./MsExamViews";
 
 /*
- * 최종통합자료(중학교) — 선생님 2026-10-30:
- *   표지 → 목차 → 단어(단어장 → 단어 워크북 → 단어 문제) → 대화문(대화문 → 대화문 워크북 → 대화문 문제)
- *   → 문법(문법 설명 → 문법 문제) → 본문(문장별 해석 · 문장 분석 → 본문 워크북 → 본문 문제) → 정답지.
- * 묶음마다 「설명 → 그 영역 워크북 → 그 영역 족보닷컴 문제(출처별)」. 문제는 영역(단어·의사소통·어법·본문)으로 나눈다.
+ * 최종통합자료(중학교) — 선생님 2026-10-31·11-01:
+ *   표지 → 목차 → 단어(단어장) → 대화문(대화문 → 본문학습 STEP2 문제) → 문법(문법 설명 → 본문학습 STEP3 문제)
+ *   → 본문(수업용 자료 → 분석지 → 본문 워크북) → 변형문제(대표유형 풀어보기 → 예상문제 PRE-STEP·1회·2회) → 정답지.
+ * 문제는 출처별로 따로 찍는다. 단어·대화문 워크북은 기본으로 끔(켤 수 있음).
  * 고등 최종통합자료·테스트 교재와 같은 부품(표지·목차·간지·쪽 번호). 크레딧 없음(정수학원만).
  */
 
@@ -52,11 +52,19 @@ const LENGTHS: { id: MsDrawLength; label: string }[] = [
   { id: "long", label: "길게" },
 ];
 
-type PartId = "words" | "dialogue" | "grammar" | "reading" | "answers";
+type PartId = "words" | "dialogue" | "grammar" | "reading" | "exam" | "answers";
 /** 묶음 ↔ 문제 영역 · 워크북 묶음 */
-const PART_AREA: Record<Exclude<PartId, "answers">, string> = { words: "단어", dialogue: "의사소통", grammar: "어법", reading: "본문" };
+/** 문항이 들어갈 묶음: 본문학습 STEP2는 대화문, STEP3은 문법, 대표유형·예상문제는 영역과 상관없이 변형문제. 그 밖의 출처는 켰을 때 영역대로 */
+function partOfQuestion(q: MsQuestion): Exclude<PartId, "answers"> {
+  if (/^본문학습 STEP2/.test(q.source)) return "dialogue";
+  if (/^본문학습 STEP3/.test(q.source)) return "grammar";
+  if (/^(대표유형|예상문제)/.test(q.source)) return "exam";
+  return q.area === "의사소통" ? "dialogue" : q.area === "어법" ? "grammar" : "exam";
+}
+const DEFAULT_SOURCE = /^(본문학습|대표유형|예상문제)/;
 const PART_WB: Partial<Record<PartId, MsWbGroup>> = { words: "단어", dialogue: "대화문", reading: "본문" };
-const PART_KO: Record<Exclude<PartId, "answers">, string> = { words: "단어", dialogue: "대화문", grammar: "문법", reading: "본문" };
+const PART_KO: Record<Exclude<PartId, "answers">, string> = { words: "단어", dialogue: "대화문", grammar: "문법", reading: "본문", exam: "변형문제" };
+const qLabel = (k: Exclude<PartId, "answers">) => (k === "exam" ? "변형문제" : `${PART_KO[k]} 문제`);
 
 function Section({ title, on, onToggle, children }: { title: string; on?: boolean; onToggle?: (v: boolean) => void; children?: React.ReactNode }) {
   return (
@@ -142,10 +150,11 @@ export function MsFinalTab({
   const [toc, setToc] = useState(true);
   const [dividers, setDividers] = useState(true);
   const [parts, setParts] = useState<Record<Exclude<PartId, "answers">, PartOpts>>({
-    words: { on: unit.words.length > 0, workbook: true, questions: true },
-    dialogue: { on: unit.dialogues.length > 0, workbook: true, questions: true },
+    words: { on: unit.words.length > 0, workbook: false, questions: false },
+    dialogue: { on: unit.dialogues.length > 0, workbook: false, questions: true },
     grammar: { on: unit.grammar.length > 0, workbook: false, questions: true },
-    reading: { on: unit.passages.length > 0, workbook: true, questions: true },
+    reading: { on: unit.passages.length > 0, workbook: true, questions: false },
+    exam: { on: true, workbook: false, questions: true },
   });
   const setPart = (k: Exclude<PartId, "answers">, patch: Partial<PartOpts>) => setParts((cur) => ({ ...cur, [k]: { ...cur[k], ...patch } }));
   const [answersOn, setAnswersOn] = useState(true);
@@ -159,7 +168,8 @@ export function MsFinalTab({
   const [wbMode, setWbMode] = useState<"all" | MsDrawLength>("all");
   const [wbSeed, setWbSeed] = useState(`${Date.now()}`);
   // 변형문제(모든 묶음 공통): 출처 · 객관식/서술형 · 출처당 문항 수
-  const [src, setSrc] = useState<string[]>(sources);
+  // 기본은 본문학습·대표유형·예상문제 — 선생님 2026-11-01. 최다빈출·최상위·최다오답·Grammar Build Up은 켜면 들어감
+  const [src, setSrc] = useState<string[]>(() => sources.filter((s) => DEFAULT_SOURCE.test(s)));
   const [kinds, setKinds] = useState<("mc" | "sa")[]>(["mc", "sa"]);
   const [qCount, setQCount] = useState<number>(0);
   const [qSeed, setQSeed] = useState(`${Date.now()}`);
@@ -179,17 +189,17 @@ export function MsFinalTab({
     const pool = questions.filter((q) => src.includes(q.source) && kinds.includes(q.kind) && !q.review);
     const rand = seeded(qSeed);
     const out: Record<string, MsQuestion[]> = {};
-    for (const area of Object.values(PART_AREA)) {
-      const mine = pool.filter((q) => q.area === area);
+    for (const part of ["words", "dialogue", "grammar", "reading", "exam"] as const) {
+      const mine = pool.filter((q) => partOfQuestion(q) === part);
       if (!qCount) {
-        out[area] = sortMsQuestions(mine);
+        out[part] = sortMsQuestions(mine);
         continue;
       }
       const keep = new Set<number>();
       for (const s of sortMsSources(mine.map((q) => q.source))) {
         shuffle(mine.filter((q) => q.source === s).map((q) => q.id), rand).slice(0, qCount).forEach((id) => keep.add(id));
       }
-      out[area] = sortMsQuestions(mine.filter((q) => keep.has(q.id)));
+      out[part] = sortMsQuestions(mine.filter((q) => keep.has(q.id)));
     }
     return out;
   }, [questions, src, kinds, qCount, qSeed]);
@@ -201,11 +211,11 @@ export function MsFinalTab({
     const p = parts[k];
     const wbGroup = PART_WB[k];
     const sheets = p.on && p.workbook && wbGroup ? (sheetsOf[wbGroup] ?? []) : [];
-    const qs = p.on && p.questions ? (questionsOf[PART_AREA[k]] ?? []) : [];
-    const body = k === "words" ? unit.words.length > 0 : k === "dialogue" ? unit.dialogues.length > 0 : k === "grammar" ? unit.grammar.length > 0 : unit.passages.length > 0;
+    const qs = p.on && p.questions ? (questionsOf[k] ?? []) : [];
+    const body = k === "words" ? unit.words.length > 0 : k === "dialogue" ? unit.dialogues.length > 0 : k === "grammar" ? unit.grammar.length > 0 : k === "reading" ? unit.passages.length > 0 : false;
     return { on: p.on && (body || sheets.length > 0 || qs.length > 0), body, sheets, qs };
   };
-  const P = { words: plan("words"), dialogue: plan("dialogue"), grammar: plan("grammar"), reading: plan("reading") };
+  const P = { words: plan("words"), dialogue: plan("dialogue"), grammar: plan("grammar"), reading: plan("reading"), exam: plan("exam") };
   const analysisOn = P.reading.on && withAnalysis && analyzedCount > 0;
   const allSheets = [...P.words.sheets, ...P.dialogue.sheets, ...P.reading.sheets];
   const anyQuestions = Object.values(P).some((x) => x.qs.length > 0);
@@ -214,7 +224,7 @@ export function MsFinalTab({
   const subOf = (k: Exclude<PartId, "answers">, body: string) => {
     const x = P[k];
     const n = qCount ? "" : ` ${x.qs.length}문항`;
-    return [body, x.sheets.length ? (wbMode === "all" ? "워크북" : "테스트지") : "", x.qs.length ? `${PART_KO[k]} 문제${n}` : ""].filter(Boolean).join(" · ");
+    return [body, x.sheets.length ? (wbMode === "all" ? "워크북" : "테스트지") : "", x.qs.length ? `${qLabel(k)}${n}` : ""].filter(Boolean).join(" · ");
   };
   /** 교재 묶음(목차·간지·쪽 색) — 켠 것만 차례로 번호 */
   const bookParts: BookPart[] = (
@@ -223,8 +233,9 @@ export function MsFinalTab({
       P.dialogue.on ? { id: "dialogue", en: "Dialogue", ko: "대화문", sub: subOf("dialogue", dialogueTr === "show" ? "말차례별 해석" : "해석 쓰기"), color: "#0f8a7e" } : null,
       P.grammar.on ? { id: "grammar", en: "Grammar", ko: "문법", sub: subOf("grammar", unit.grammar.map((g) => g.title).join(" · ")), color: "#b4610a" } : null,
       P.reading.on
-        ? { id: "reading", en: "Reading", ko: "본문", sub: subOf("reading", `${readingTr === "show" ? "문장별 해석" : "해석 쓰기"}${analysisOn ? " · 문장 분석" : ""}`), color: "#6a4bd8" }
+        ? { id: "reading", en: "Reading", ko: "본문", sub: subOf("reading", `${readingTr === "show" ? "문장별 해석" : "해석 쓰기"}${analysisOn ? " · 분석지" : ""}`), color: "#6a4bd8" }
         : null,
+      P.exam.on ? { id: "exam", en: "Questions", ko: "변형문제", sub: subOf("exam", `출처 ${sortMsSources(P.exam.qs.map((q) => q.source)).length}종`), color: "#be123c" } : null,
       answersShown
         ? { id: "answers", en: "Answer Key", ko: "정답지", sub: [allSheets.length ? "워크북 정답" : "", anyQuestions ? "문제 해설" : ""].filter(Boolean).join(" · "), color: "#475066" }
         : null,
@@ -273,7 +284,7 @@ export function MsFinalTab({
     return [
       ...body,
       ...(x.sheets.length ? [{ id: "wb", title: `${PART_KO[k]} ${wbMode === "all" ? "워크북" : "테스트지"}` }] : []),
-      ...sortMsSources(x.qs.map((q) => q.source)).map((s) => ({ id: `q-${s}`, title: `${PART_KO[k]} 문제 · ${s}`, source: `${x.qs.filter((q) => q.source === s).length}문항` })),
+      ...sortMsSources(x.qs.map((q) => q.source)).map((s) => ({ id: `q-${s}`, title: `${qLabel(k)} · ${s}`, source: `${x.qs.filter((q) => q.source === s).length}문항` })),
     ];
   };
   const mk = `${unit.id}-${design}-${wordExamples}-${dialogueTr}-${readingTr}-${types.join(",")}-${wbMode}-${wbSeed}`;
@@ -283,9 +294,9 @@ export function MsFinalTab({
   ] as const;
   const wbTitle = wbMode === "all" ? "워크북" : "테스트";
   const exam = (k: Exclude<PartId, "answers">, mode: "exam" | "answers") =>
-    P[k].qs.length ? <MsExamBySource unit={unit} questions={P[k].qs} mode={mode} design={design} academyName={academyName} base={base} label={`${PART_KO[k]} 문제`} /> : null;
+    P[k].qs.length ? <MsExamBySource unit={unit} questions={P[k].qs} mode={mode} design={design} academyName={academyName} base={base} label={qLabel(k)} /> : null;
   const wbCountOf = (g: MsWbGroup) => MS_WB_TYPES.filter((t) => t.group === g && types.includes(t.key) && counts[t.key]).length;
-  const qCountOf = (k: Exclude<PartId, "answers">) => (questionsOf[PART_AREA[k]] ?? []).length;
+  const qCountOf = (k: Exclude<PartId, "answers">) => (questionsOf[k] ?? []).length;
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
@@ -318,7 +329,6 @@ export function MsFinalTab({
         <Section title="단어" on={parts.words.on} onToggle={(v) => setPart("words", { on: v })}>
           <Toggle label="단어장에 예문" on={wordExamples} onChange={setWordExamples} />
           <Toggle label="단어 워크북" on={parts.words.workbook} onChange={(v) => setPart("words", { workbook: v })} hint={`유형 ${wbCountOf("단어")}`} />
-          <Toggle label="단어 문제 (족보닷컴)" on={parts.words.questions} onChange={(v) => setPart("words", { questions: v })} hint={`${qCountOf("words")}문항`} />
         </Section>
 
         <Section title={`대화문${unit.dialogues.length ? "" : " (없음)"}`} on={parts.dialogue.on} onToggle={(v) => setPart("dialogue", { on: v })}>
@@ -334,7 +344,7 @@ export function MsFinalTab({
 
         <Section title="본문" on={parts.reading.on} onToggle={(v) => setPart("reading", { on: v })}>
           <Radio name="ms-fin-rtr" value={readingTr} options={TR} onChange={setReadingTr} />
-          <Toggle label={`문장 분석 함께${analyzedCount ? "" : " (준비 중)"}`} on={withAnalysis && analyzedCount > 0} onChange={setWithAnalysis} dim={!analyzedCount} />
+          <Toggle label={`분석지${analyzedCount ? "" : " (준비 중)"}`} on={withAnalysis && analyzedCount > 0} onChange={setWithAnalysis} dim={!analyzedCount} />
           {withAnalysis && analyzedCount ? (
             <>
               <div className="flex items-center gap-2">
@@ -367,7 +377,10 @@ export function MsFinalTab({
             </>
           ) : null}
           <Toggle label="본문 워크북" on={parts.reading.workbook} onChange={(v) => setPart("reading", { workbook: v })} hint={`유형 ${wbCountOf("본문")}`} />
-          <Toggle label="본문 문제 (족보닷컴)" on={parts.reading.questions} onChange={(v) => setPart("reading", { questions: v })} hint={`${qCountOf("reading")}문항`} />
+        </Section>
+
+        <Section title="변형문제 (족보닷컴)" on={parts.exam.on} onToggle={(v) => setPart("exam", { on: v })}>
+          <p className="text-[11px] text-slate-500">대표유형 풀어보기 · 예상문제 {qCountOf("exam")}문항을 출처별로 묶습니다.</p>
         </Section>
 
         <Section title="워크북 설정">
@@ -415,7 +428,7 @@ export function MsFinalTab({
         </Section>
 
         <Section title={`문제 설정 (족보닷컴)${sources.length ? "" : " · 문항 없음"}`}>
-          <p className="text-[11px] text-slate-500">단어 · 의사소통(대화문) · 어법(문법) · 본문 영역으로 나눠 그 묶음 뒤에 붙입니다. 출처마다 따로 묶어 1번부터.</p>
+          <p className="text-[11px] text-slate-500">본문학습 커뮤니케이션은 대화문 뒤, 교과서 속 문법은 문법 뒤, 대표유형 · 예상문제는 변형문제 묶음에 들어갑니다. 출처마다 따로 묶어 1번부터.</p>
           {sources.map((s) => (
             <label key={s} className="flex items-center gap-2 py-0.5">
               <input type="checkbox" checked={src.includes(s)} onChange={(e) => setSrc(toggle(src, s, e.target.checked))} />
@@ -500,7 +513,13 @@ export function MsFinalTab({
               {P.reading.body ? <MsReadingSheets unit={unit} translation={readingTr} measureKey={mk} /> : null}
               {analysisOn ? <MsAnalysisSheets unit={unit} options={analysis} measureKey={mk} /> : null}
               <MsWorkbookSheets sheets={P.reading.sheets} answers={false} title={`본문 ${wbTitle}`} measureKey={mk} />
-              {exam("reading", "exam")}
+            </div>
+          ) : null}
+
+          {P.exam.on ? (
+            <div data-toc="exam" className="contents" style={partStyle(partOf("exam"))}>
+              {divider("exam", itemsOf("exam", []))}
+              {exam("exam", "exam")}
             </div>
           ) : null}
 
@@ -508,13 +527,12 @@ export function MsFinalTab({
             <div data-toc="answers" className="contents" style={partStyle(partOf("answers"))}>
               {divider("answers", [
                 ...(allSheets.length ? [{ id: "wb", title: `${wbTitle} 정답` }] : []),
-                ...(["words", "dialogue", "grammar", "reading"] as const).filter((k) => P[k].qs.length).map((k) => ({ id: `q-${k}`, title: `${PART_KO[k]} 문제 해설` })),
+                ...(["dialogue", "grammar", "exam"] as const).filter((k) => P[k].qs.length).map((k) => ({ id: `q-${k}`, title: `${qLabel(k)} 해설` })),
               ])}
               {allSheets.length ? <MsWorkbookAnswerSheets sheets={allSheets} title={`${wbTitle} 정답`} measureKey={mk} /> : null}
-              {exam("words", "answers")}
               {exam("dialogue", "answers")}
               {exam("grammar", "answers")}
-              {exam("reading", "answers")}
+              {exam("exam", "answers")}
             </div>
           ) : null}
         </MsPrintFrame>

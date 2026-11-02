@@ -1160,13 +1160,16 @@ export const LessonSheets = memo(function LessonSheets({
   project,
   translation,
   measureKey,
+  lead,
 }: {
   index: number;
   project: TestBookProjectInput;
   translation: TestBookOptions["translation"];
   measureKey: string;
+  /** 첫 쪽 머리글 오른쪽에 놓는 것(중학교 강의 QR) — 그 자리의 글은 제목 옆으로 옮긴다 */
+  lead?: ReactNode;
 }) {
-  const blocks: Block[] = project.sentences.map((s, i) => ({
+  const sentenceBlocks: Block[] = project.sentences.map((s, i) => ({
     key: `s${i}`,
     node: (
       <div className="tb-ss">
@@ -1185,6 +1188,7 @@ export const LessonSheets = memo(function LessonSheets({
       </div>
     ),
   }));
+  const blocks: Block[] = sentenceBlocks;
   /*
    * 지문 삽화(4컷)는 본문 뒤에 싣는다. 10-21에 수업용 자료를 이 모양으로 바꾸면서 빠졌다(선생님 2026-10-26).
    * 정사각 그림이라 높이를 정해 두어 쪽 나누기가 그림이 늦게 떠도 어긋나지 않게 한다.
@@ -1212,9 +1216,16 @@ export const LessonSheets = memo(function LessonSheets({
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => (
-        <DocHead title="수업용 자료 · 문장별 해석" sub={page > 0 ? "(이어서)" : sub} label={passageLabel(index, project)} right={project.source?.trim() || "수업용 자료"} />
-      )}
+      head={(page) =>
+        page === 0 && lead ? (
+          <>
+            <DocHead title="수업용 자료 · 문장별 해석" sub={`${passageLabel(index, project)} · ${sub}`} label="" />
+            {lead}
+          </>
+        ) : (
+          <DocHead title="수업용 자료 · 문장별 해석" sub={page > 0 ? "(이어서)" : sub} label={passageLabel(index, project)} right={project.source?.trim() || "수업용 자료"} />
+        )
+      }
     />
   );
 });

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import QRCode from "qrcode";
+import { msLectureUrl, msVocabUrl, type MsLectureSlug } from "@/lib/middle-school/qr-url";
 import type { TestBookProjectInput } from "@/lib/lesson-materials/test-book";
 import type { MaterialDesign } from "@/lib/lesson-materials/material-design";
 import type { MsGrammar, MsText, MsUnit, MsWord } from "@/lib/middle-school/queries";
@@ -89,6 +91,38 @@ export function msAnalyzed(unit: MsUnit): MsText[] {
 const WORD_GRID = "8mm 34mm 10mm 52mm 1fr";
 const POS = /^((?:n|v|a|adj|adv|prep|conj|pron|int)\.)\s*/;
 
+/** 쪽 머리글 오른쪽의 QR(WORDS·GRAMMAR 글자 자리). 머리글 위 여백까지 올려 놓아 본문 자리를 차지하지 않는다 */
+function MsQrBar({ url, title, sub }: { url: string; title: string; sub: string }) {
+  const [src, setSrc] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    QRCode.toDataURL(url, { width: 240, margin: 1, errorCorrectionLevel: "M" })
+      .then((d) => alive && setSrc(d))
+      .catch(() => alive && setSrc(null));
+    return () => {
+      alive = false;
+    };
+  }, [url]);
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "2mm", height: "15mm", margin: "-17mm 0 2mm", position: "relative" }}>
+      <div style={{ textAlign: "right", lineHeight: 1.3 }}>
+        <div style={{ fontWeight: 700, fontSize: "9.5pt", color: "#1f2937" }}>{title}</div>
+        <div style={{ fontSize: "7pt", color: "#6a707c" }}>{sub}</div>
+      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {src ? <img src={src} alt={`${title} QR`} style={{ width: "15mm", height: "15mm", display: "block", background: "#fff" }} /> : <div style={{ width: "15mm", height: "15mm" }} />}
+    </div>
+  );
+}
+
+const unitLabel = (unit: Pick<MsUnit, "grade" | "publisher" | "lessonNo">) => `${unit.grade} ${unit.publisher} ${unit.lessonNo}과`;
+
+function MsLectureQr({ unit, slug }: { unit: MsUnit; slug: MsLectureSlug }) {
+  if (!unit.lectureSections.includes(slug)) return null;
+  const ko = slug === "dialogue" ? "대화문" : slug === "grammar" ? "문법" : "본문";
+  return <MsQrBar url={msLectureUrl(unit.id, slug)} title={`${ko} 강의`} sub={unitLabel(unit)} />;
+}
+
 export function MsWordSheets({ unit, examples, measureKey }: { unit: MsUnit; examples: boolean; measureKey: string }) {
   const head = (
     <div className="tb-row tb-th tb-vrow" style={{ gridTemplateColumns: WORD_GRID }}>
@@ -104,13 +138,15 @@ export function MsWordSheets({ unit, examples, measureKey }: { unit: MsUnit; exa
   for (const sec of ["대화문", "본문"] as const) {
     const ws = unit.words.filter((w) => w.section === sec);
     if (!ws.length) continue;
-    blocks.push({ key: `h-${sec}`, node: <div className="tb-q" style={{ margin: "2mm 0 1mm" }}>{sec} 단어</div> });
-    ws.forEach((w: MsWord) => {
+    ws.forEach((w: MsWord, wi) => {
       n++;
       const pos = w.meaning.match(POS)?.[1] ?? "";
       blocks.push({
         key: `w${n}`,
         node: (
+          <>
+            {/* 소제목이 쪽 끝에 혼자 남지 않게 첫 낱말과 한 덩어리로 */}
+            {wi === 0 ? <div className="tb-q" style={{ margin: "2mm 0 1mm" }}>{sec} 단어</div> : null}
           <div className="tb-row tb-vrow" style={{ gridTemplateColumns: WORD_GRID }}>
             <div className="tb-n">{n}</div>
             <div className="tb-w tb-en">{w.word}</div>
@@ -120,6 +156,7 @@ export function MsWordSheets({ unit, examples, measureKey }: { unit: MsUnit; exa
               {examples ? (w.examples?.[0]?.en ?? "") : ""}
             </div>
           </div>
+          </>
         ),
       });
     });
@@ -130,7 +167,8 @@ export function MsWordSheets({ unit, examples, measureKey }: { unit: MsUnit; exa
       measureKey={measureKey}
       head={(page) => (
         <>
-          <DocHead title="단어" sub={page > 0 ? "(이어서)" : `${unit.words.length}단어`} label="WORDS" right={`${unit.grade} ${unit.publisher} ${unit.lessonNo}과`} />
+          <DocHead title="단어" sub={page > 0 ? "(이어서)" : `${unit.words.length}단어`} label={page === 0 ? "" : "WORDS"} right={page === 0 ? undefined : unitLabel(unit)} />
+          {page === 0 ? <MsQrBar url={msVocabUrl(unit.id)} title="단어학습" sub={unitLabel(unit)} /> : null}
           {head}
         </>
       )}
@@ -182,7 +220,12 @@ export function MsGrammarSheets({ unit, measureKey }: { unit: MsUnit; measureKey
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title="문법" sub={page > 0 ? "(이어서)" : unit.grammar.map((g) => g.title).join(" · ")} label="GRAMMAR" right={`${unit.grade} ${unit.publisher} ${unit.lessonNo}과`} />}
+      head={(page) => (
+        <>
+          <DocHead title="문법" sub={page > 0 ? "(이어서)" : unit.grammar.map((g) => g.title).join(" · ")} label={page === 0 && unit.lectureSections.includes("grammar") ? "" : "GRAMMAR"} right={page === 0 && unit.lectureSections.includes("grammar") ? undefined : unitLabel(unit)} />
+          {page === 0 ? <MsLectureQr unit={unit} slug="grammar" /> : null}
+        </>
+      )}
     />
   );
 }
@@ -217,12 +260,15 @@ export function MsDialogueSheets({ unit, translation, measureKey }: { unit: MsUn
       blocks={blocks}
       measureKey={measureKey}
       head={(page) => (
-        <DocHead
-          title="대화문"
-          sub={page > 0 ? "(이어서)" : translation === "show" ? "해석 있음" : "해석 쓰기"}
-          label="DIALOGUE"
-          right={`${unit.grade} ${unit.publisher} ${unit.lessonNo}과`}
-        />
+        <>
+          <DocHead
+            title="대화문"
+            sub={page > 0 ? "(이어서)" : translation === "show" ? "해석 있음" : "해석 쓰기"}
+            label={page === 0 && unit.lectureSections.includes("dialogue") ? "" : "DIALOGUE"}
+            right={page === 0 && unit.lectureSections.includes("dialogue") ? undefined : unitLabel(unit)}
+          />
+          {page === 0 ? <MsLectureQr unit={unit} slug="dialogue" /> : null}
+        </>
       )}
     />
   );
@@ -252,6 +298,7 @@ export function MsReadingSheets({ unit, translation, measureKey }: { unit: MsUni
           )}
           translation={translation}
           measureKey={measureKey}
+          lead={i === 0 ? <MsLectureQr unit={unit} slug="reading" /> : undefined}
         />
       ))}
     </>

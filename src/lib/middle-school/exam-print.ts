@@ -13,6 +13,8 @@ const CIRC = "①②③④⑤";
 
 /** 출처 차례(선생님 2026-10-30 「정리가 덜 됐다」): 예상문제 PRE-STEP → 1회 → 2회 → Grammar Build Up → 최다빈출 → 최상위 → 최다오답 */
 const SOURCE_RANK: Array<[RegExp, number]> = [
+  [/^본문학습/, -1], // STEP 번호 순(이름 차례)
+  [/^대표유형/, -0.5],
   [/PRE-STEP/i, 0],
   [/예상문제\s*1회/, 1],
   [/예상문제\s*2회/, 2],
@@ -40,10 +42,6 @@ function blanks(s: string): string {
   return s.replace(/<blank\/>/g, BLANK);
 }
 
-function plain(s: string): string {
-  return blanks(s).replace(/<\/?u>/g, "");
-}
-
 /** 묶음 지문 열쇠(같은 글이면 같은 값) */
 function groupKey(lines: string[]): string {
   let h = 0;
@@ -60,7 +58,7 @@ export function msQuestionToPrintRow(q: MsQuestion): QuestionPrintRow {
     id: String(q.id),
     instruction: q.stem.replace(/<\/?u>/g, ""),
     // 묶음 문항의 제 글(Q: … / A: …)은 지문 아래 글로, 아니면 제 글이 곧 지문
-    question_text: group ? q.body.map(plain).join("\n") : "",
+    question_text: group ? q.body.map(blanks).join("\n") : "",
     passage_original: (group ?? q.body).map(blanks).join("\n\n"),
     passage_modified: null,
     choices: q.choices.map((c) => ({ number: c.no, text: blanks(c.text).replace(/\n/g, " / ") })),

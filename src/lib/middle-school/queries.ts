@@ -2,6 +2,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isAcademyFeatureOn } from "@/lib/academies/features";
 import type { MsWorkbook } from "./workbook";
 import type { AnalysisReportData } from "@/lib/lesson-materials/generate-analysis-report";
+import { loadMsLectures } from "./lectures";
+import type { MsLectureSlug } from "./qr-url";
 
 /**
  * 중학교 수업자료(선생님 2026-10-29): 족보닷컴 중학 교과서 자료를 과 단위로 읽는다.
@@ -52,6 +54,8 @@ export type MsUnit = MsUnitSummary & {
   passages: MsText[];
   /** 미리 정해 둔 워크북 문항(족보닷컴 본문 10단계 워크북) */
   workbook: MsWorkbook;
+  /** 강의가 올라가 있는 영역 — 이 영역만 쪽에 강의 QR을 찍는다 */
+  lectureSections: MsLectureSlug[];
 };
 
 /** 문제 은행 문항(족보닷컴 예상문제 그대로) — 글 안에 밑줄 <u>…</u>, 빈칸 <blank/> */
@@ -150,6 +154,7 @@ export async function loadMsUnit(academyId: string, unitId: string): Promise<MsU
   }
   const all = (texts ?? []) as MsText[];
   const r = row as UnitRow & { workbook: MsWorkbook | null };
+  const lectures = await loadMsLectures({ academyId, grade: r.grade, publisher: r.publisher, lessonNo: r.lesson_no });
   return {
     ...summary(r),
     words: r.words ?? [],
@@ -157,5 +162,6 @@ export async function loadMsUnit(academyId: string, unitId: string): Promise<MsU
     dialogues: all.filter((t) => t.kind === "대화문"),
     passages: all.filter((t) => t.kind === "본문"),
     workbook: r.workbook ?? {},
+    lectureSections: (Object.keys(lectures) as MsLectureSlug[]).filter((k) => lectures[k].length > 0),
   };
 }
