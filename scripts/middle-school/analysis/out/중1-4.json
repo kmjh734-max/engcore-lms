@@ -1,0 +1,1212 @@
+{
+ "passages": {
+  "092b82cc-6f9c-4526-b3b7-d9d7d14ab89f": {
+   "titleEn": "Minji's Trip to Ronda",
+   "topicEn": "Minji's family is enjoying the white buildings, fantastic views, and food of Ronda, and they will visit the Ernest Hemingway Walk.",
+   "topicKo": "민지네 가족은 론다의 흰 건물과 환상적인 경치, 음식을 즐기고 있으며, Ernest Hemingway 산책로를 방문할 예정이다.",
+   "sentences": [
+    {
+     "translation": "어제 우리 가족과 나는 스페인의 론다에 왔어.",
+     "contextNote": "민지가 언제, 어디에 왔는지 밝히며 여행 글을 시작한다.",
+     "roles": [
+      {
+       "q": "Yesterday",
+       "role": "M"
+      },
+      {
+       "q": "my family and I",
+       "role": "S"
+      },
+      {
+       "q": "came",
+       "role": "V"
+      },
+      {
+       "q": "to Ronda in Spain",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "my family and I",
+       "label": "병렬구조",
+       "gloss": "and로 이은 두 주어"
+      }
+     ],
+     "points": [
+      {
+       "q": "came",
+       "label": "동사",
+       "explanation": "Yesterday(어제)는 과거를 나타내는 말이므로 과거형을 쓴다. come의 과거형은 불규칙하게 변해 came이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Yesterday,",
+       "ko": "어제"
+      },
+      {
+       "en": "my family and I",
+       "ko": "우리 가족과 나는"
+      },
+      {
+       "en": "came to Ronda",
+       "ko": "론다에 왔어"
+      },
+      {
+       "en": "in Spain.",
+       "ko": "스페인의."
+      }
+     ]
+    },
+    {
+     "translation": "이곳에 있는 대부분의 건물들은 흰색이고, 파란 하늘과 대비되어 너무 아름다워.",
+     "contextNote": "론다의 첫 번째 특징으로 흰 건물을 소개한다.",
+     "roles": [
+      {
+       "q": "Most buildings here",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V",
+       "occ": 1
+      },
+      {
+       "q": "white",
+       "role": "C"
+      },
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V",
+       "occ": 2
+      },
+      {
+       "q": "so beautiful",
+       "role": "C"
+      },
+      {
+       "q": "against the blue sky",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and they are so beautiful against the blue sky",
+       "label": "등위절",
+       "gloss": "and로 이은 두 번째 절"
+      },
+      {
+       "q": "they",
+       "label": "대명사 선행사",
+       "gloss": "= most buildings here"
+      },
+      {
+       "q": "against the blue sky",
+       "label": "전명구",
+       "gloss": "against: '~을 배경으로, ~과 대비되어'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Most buildings here",
+       "ko": "이곳에 있는 대부분의 건물들은"
+      },
+      {
+       "en": "are white,",
+       "ko": "흰색이고,"
+      },
+      {
+       "en": "and they are so beautiful",
+       "ko": "너무 아름다워"
+      },
+      {
+       "en": "against the blue sky.",
+       "ko": "파란 하늘과 대비되어."
+      }
+     ]
+    },
+    {
+     "translation": "그리고 경치도!",
+     "contextNote": "동사 없이 짧게 감탄하며 다음 문장의 경치 이야기로 넘어간다."
+    },
+    {
+     "translation": "론다는 절벽 위에 있어서 경치가 환상적이야.",
+     "contextNote": "경치가 환상적인 까닭을 절벽 위라는 위치로 설명한다.",
+     "roles": [
+      {
+       "q": "Ronda",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "on cliffs",
+       "role": "A"
+      },
+      {
+       "q": "the views",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "fantastic",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "so the views are fantastic",
+       "label": "등위절",
+       "gloss": "so: '그래서' (앞 절의 결과)"
+      }
+     ],
+     "points": [
+      {
+       "q": "is on cliffs",
+       "label": "1형식",
+       "explanation": "여기서 be동사는 '~이다'가 아니라 '(~에) 있다'는 뜻이다. on cliffs(절벽 위에)는 어디에 있는지 나타내는 전치사구이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Ronda is on cliffs,",
+       "ko": "론다는 절벽 위에 있어서"
+      },
+      {
+       "en": "so the views are fantastic.",
+       "ko": "경치가 환상적이야."
+      }
+     ]
+    },
+    {
+     "translation": "지금 우리는 식당 테라스에서 점심을 먹고 있어.",
+     "contextNote": "글을 쓰는 지금 하고 있는 일을 말한다.",
+     "roles": [
+      {
+       "q": "Now",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "'re eating",
+       "role": "V"
+      },
+      {
+       "q": "lunch",
+       "role": "O"
+      },
+      {
+       "q": "on the terrace of a restaurant",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "'re eating",
+       "label": "현재진행",
+       "explanation": "현재진행형 「be동사+동사-ing」는 지금 하고 있는 일을 나타낸다. 주어 we가 복수이므로 are(줄여서 're)를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Now,",
+       "ko": "지금"
+      },
+      {
+       "en": "we're eating lunch",
+       "ko": "우리는 점심을 먹고 있어"
+      },
+      {
+       "en": "on the terrace of a restaurant.",
+       "ko": "식당 테라스에서."
+      }
+     ]
+    },
+    {
+     "translation": "여기 음식이 모두 훌륭하지만, 나는 특히 추로스가 좋아.",
+     "contextNote": "론다의 음식 이야기로, 그중 추로스를 꼽는다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "is"
+      }
+     ],
+     "roles": [
+      {
+       "q": "All the food here",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "great",
+       "role": "C"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "especially",
+       "role": "M"
+      },
+      {
+       "q": "like",
+       "role": "V"
+      },
+      {
+       "q": "the churros",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but I especially like the churros",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "points": [
+      {
+       "q": "is",
+       "label": "동사",
+       "star": true,
+       "explanation": "All이 붙어도 food는 셀 수 없는 명사이므로 단수로 보아 is를 쓴다. 'all + 복수 명사'라면 are를 쓰므로, all 뒤의 명사를 보고 동사를 고른다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "All the food here",
+       "ko": "여기 음식이 모두"
+      },
+      {
+       "en": "is great,",
+       "ko": "훌륭하지만,"
+      },
+      {
+       "en": "but I especially like",
+       "ko": "나는 특히 좋아"
+      },
+      {
+       "en": "the churros.",
+       "ko": "추로스가."
+      }
+     ]
+    },
+    {
+     "translation": "점심 식사 후에, 우리는 Ernest Hemingway 산책로를 방문할 거야.",
+     "contextNote": "지금 일에 이어 앞으로의 계획을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "'re going to visit"
+      }
+     ],
+     "roles": [
+      {
+       "q": "After lunch",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "'re going to visit",
+       "role": "V"
+      },
+      {
+       "q": "the Ernest Hemingway Walk",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "'re going to visit",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "「be going to+동사원형」은 '~할 것이다, ~할 예정이다'라는 뜻으로 미래의 계획을 나타낸다. be동사는 주어에 맞추고(we → are), to 뒤에는 동사원형 visit을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "After lunch,",
+       "ko": "점심 식사 후에,"
+      },
+      {
+       "en": "we're going to visit",
+       "ko": "우리는 방문할 거야"
+      },
+      {
+       "en": "the Ernest Hemingway Walk.",
+       "ko": "Ernest Hemingway 산책로를."
+      }
+     ]
+    },
+    {
+     "translation": "Hemingway는 론다를 매우 좋아했고 이곳에서 많은 여름을 보냈어.",
+     "contextNote": "산책로 이름의 주인공 Hemingway와 론다의 인연을 덧붙인다.",
+     "roles": [
+      {
+       "q": "Hemingway",
+       "role": "S"
+      },
+      {
+       "q": "loved",
+       "role": "V"
+      },
+      {
+       "q": "Ronda",
+       "role": "O"
+      },
+      {
+       "q": "spent",
+       "role": "V"
+      },
+      {
+       "q": "many summers",
+       "role": "O"
+      },
+      {
+       "q": "here",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "loved Ronda and spent",
+       "label": "동사 병렬",
+       "star": true,
+       "explanation": "주어 Hemingway 하나에 동사 loved와 spent가 and로 이어져 있다. 두 동사의 시제를 과거로 맞추며, spend의 과거형은 불규칙하게 변해 spent이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Hemingway loved Ronda",
+       "ko": "Hemingway는 론다를 매우 좋아했고"
+      },
+      {
+       "en": "and spent many summers",
+       "ko": "많은 여름을 보냈어"
+      },
+      {
+       "en": "here.",
+       "ko": "이곳에서."
+      }
+     ]
+    },
+    {
+     "translation": "너의 친구, 민지가",
+     "contextNote": "민지가 수미에게 보내는 편지의 맺음말이다."
+    }
+   ]
+  },
+  "b577fdc0-5054-4fd1-bf69-32ab56e3298e": {
+   "titleEn": "Uncle Jay's Trip to Chefchaouen",
+   "topicEn": "Uncle Jay enjoys the blue streets, shops, and mint tea of Chefchaouen and plans to see a beautiful sunrise tomorrow.",
+   "topicKo": "Jay 삼촌은 쉐프샤우엔의 파란 길과 가게, 민트 차를 즐기고, 내일은 아름다운 일출을 볼 계획이다.",
+   "sentences": [
+    {
+     "translation": "나는 모로코의 파란 진주, 쉐프샤우엔에 있어.",
+     "contextNote": "지금 있는 곳과 그곳의 별명을 소개한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "in Chefchaouen, the Blue Pearl of Morocco",
+       "role": "A"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the Blue Pearl of Morocco",
+       "label": "동격구",
+       "gloss": "= Chefchaouen"
+      }
+     ],
+     "points": [
+      {
+       "q": "I'm in",
+       "label": "1형식",
+       "explanation": "be동사 뒤에 장소를 나타내는 전치사구가 오면 '(~에) 있다'는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm in Chefchaouen,",
+       "ko": "나는 쉐프샤우엔에 있어,"
+      },
+      {
+       "en": "the Blue Pearl of Morocco.",
+       "ko": "모로코의 파란 진주인."
+      }
+     ]
+    },
+    {
+     "translation": "하루 종일, 나는 파란색 길과 파란색 건물들의 사진을 찍는 것을 즐겼어.",
+     "contextNote": "쉐프샤우엔에서 한 첫 번째 일(사진 찍기)을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "taking"
+      }
+     ],
+     "roles": [
+      {
+       "q": "All day long",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "enjoyed",
+       "role": "V"
+      },
+      {
+       "q": "taking pictures of the blue streets and blue buildings",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "enjoyed taking",
+       "label": "동사+동명사",
+       "star": true,
+       "explanation": "enjoy는 동명사(-ing)만 목적어로 쓰는 동사이다. to take는 쓸 수 없고 taking을 쓴다. taking pictures는 '사진을 찍는 것'이라는 뜻의 동명사구이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "All day long,",
+       "ko": "하루 종일,"
+      },
+      {
+       "en": "I enjoyed taking pictures",
+       "ko": "나는 사진을 찍는 것을 즐겼어"
+      },
+      {
+       "en": "of the blue streets and blue buildings.",
+       "ko": "파란색 길과 파란색 건물들의."
+      }
+     ]
+    },
+    {
+     "translation": "나는 또한 좁은 길 사이를 걷는 것도 즐겼어.",
+     "contextNote": "두 번째로 즐긴 일(좁은 길 걷기)을 also로 덧붙인다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "also",
+       "role": "M"
+      },
+      {
+       "q": "enjoyed",
+       "role": "V"
+      },
+      {
+       "q": "walking through the narrow streets",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "enjoyed walking",
+       "label": "동사+동명사",
+       "explanation": "enjoy의 목적어이므로 동명사 walking을 쓴다. 앞 문장의 taking과 같은 형태이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I also enjoyed walking",
+       "ko": "나는 또한 걷는 것도 즐겼어"
+      },
+      {
+       "en": "through the narrow streets.",
+       "ko": "좁은 길 사이를."
+      }
+     ]
+    },
+    {
+     "translation": "그곳은 흥미로운 가게들로 가득 차 있었고, 나는 기념품도 몇 개 샀어.",
+     "contextNote": "좁은 길의 모습과 거기서 한 일을 이어 말한다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "were",
+       "role": "V"
+      },
+      {
+       "q": "full of interesting shops",
+       "role": "C"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "bought",
+       "role": "V"
+      },
+      {
+       "q": "some souvenirs",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "They",
+       "label": "대명사 선행사",
+       "gloss": "= the narrow streets"
+      },
+      {
+       "q": "and I bought some souvenirs",
+       "label": "등위절",
+       "gloss": "and로 이은 두 번째 절"
+      }
+     ],
+     "points": [
+      {
+       "q": "full of",
+       "label": "필수 전치사",
+       "star": true,
+       "explanation": "be full of는 '~로 가득 차 있다'는 뜻으로, full은 전치사 of와 짝을 이룬다. of 뒤에 가득 찬 내용이 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They were full",
+       "ko": "그곳은 가득 차 있었고"
+      },
+      {
+       "en": "of interesting shops,",
+       "ko": "흥미로운 가게들로,"
+      },
+      {
+       "en": "and I bought some souvenirs.",
+       "ko": "나는 기념품도 몇 개 샀어."
+      }
+     ]
+    },
+    {
+     "translation": "지금, 나는 현지인들처럼 찻집에서 민트 차를 마시고 있어.",
+     "contextNote": "과거에 한 일에서 글을 쓰는 지금의 일로 넘어간다.",
+     "roles": [
+      {
+       "q": "Now",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m drinking",
+       "role": "V"
+      },
+      {
+       "q": "mint tea",
+       "role": "O"
+      },
+      {
+       "q": "at a tea house",
+       "role": "M"
+      },
+      {
+       "q": "just like the locals",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "just like the locals",
+       "label": "전명구",
+       "gloss": "like: '~처럼'(전치사)"
+      }
+     ],
+     "points": [
+      {
+       "q": "'m drinking",
+       "label": "현재진행",
+       "explanation": "지금 하고 있는 일이므로 현재진행형 「be동사+동사-ing」를 쓴다. 주어 I에 맞춰 am(줄여서 'm)을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Now,",
+       "ko": "지금,"
+      },
+      {
+       "en": "I'm drinking mint tea",
+       "ko": "나는 민트 차를 마시고 있어"
+      },
+      {
+       "en": "at a tea house,",
+       "ko": "찻집에서,"
+      },
+      {
+       "en": "just like the locals.",
+       "ko": "현지인들처럼."
+      }
+     ]
+    },
+    {
+     "translation": "쉐프샤우엔은 일출로 유명해.",
+     "contextNote": "다음 문장의 내일 계획(일출 보기)으로 이어지는 배경을 말한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "Chefchaouen",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "famous for its sunrises",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "famous for",
+       "label": "필수 전치사",
+       "star": true,
+       "explanation": "be famous for는 '~로 유명하다'는 뜻으로, famous는 전치사 for와 짝을 이룬다. for 뒤에 유명한 까닭이 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Chefchaouen is famous",
+       "ko": "쉐프샤우엔은 유명해"
+      },
+      {
+       "en": "for its sunrises.",
+       "ko": "일출로."
+      }
+     ]
+    },
+    {
+     "translation": "내일, 나는 일찍 일어나서 아름다운 일출을 즐기려고 해.",
+     "contextNote": "내일의 계획을 말하며 글을 맺는다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "'m going to get up"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Tomorrow",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m going to get up",
+       "role": "V"
+      },
+      {
+       "q": "early",
+       "role": "M"
+      },
+      {
+       "q": "enjoy",
+       "role": "V"
+      },
+      {
+       "q": "a beautiful sunrise",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "'m going to get up",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "「be going to+동사원형」으로 내일의 계획을 나타낸다. and 뒤의 enjoy도 be going to에 함께 걸리므로 동사원형으로 쓴다(enjoys, enjoying ×)."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Tomorrow,",
+       "ko": "내일,"
+      },
+      {
+       "en": "I'm going to get up early",
+       "ko": "나는 일찍 일어나서"
+      },
+      {
+       "en": "and enjoy a beautiful sunrise.",
+       "ko": "아름다운 일출을 즐기려고 해."
+      }
+     ]
+    },
+    {
+     "translation": "안부를 전하며, Jay 삼촌이",
+     "contextNote": "Jay 삼촌이 인호에게 보내는 편지의 맺음말이다."
+    }
+   ]
+  },
+  "bf5d11b5-ffc4-4a01-8ff5-5fec48de3591": {
+   "titleEn": "Amy's Trip to Purple Island",
+   "topicEn": "Amy enjoys Purple Island, where almost everything is purple, and plans to explore it by bicycle.",
+   "topicKo": "Amy는 거의 모든 것이 보라색인 보라섬을 즐기며, 자전거로 섬을 답사할 계획이다.",
+   "sentences": [
+    {
+     "translation": "저는 한국의 보라섬에 있어요.",
+     "contextNote": "세 번째 여행자 Amy가 지금 있는 곳을 밝힌다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "on Purple Island in Korea",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm on Purple Island",
+       "ko": "저는 보라섬에 있어요"
+      },
+      {
+       "en": "in Korea.",
+       "ko": "한국의."
+      }
+     ]
+    },
+    {
+     "translation": "이곳에 있는 거의 모든 것이 보라색이에요. 집, 버스, 그리고 심지어 다리까지요.",
+     "contextNote": "섬의 특징(온통 보라색)을 예를 들어 보여 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "is"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Almost everything here",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "purple",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the houses, the buses, and even the bridges",
+       "label": "명사구 병렬",
+       "gloss": "everything의 구체적인 예"
+      }
+     ],
+     "points": [
+      {
+       "q": "is",
+       "label": "동사",
+       "star": true,
+       "explanation": "everything은 '모든 것'이라는 뜻이지만 단수로 보므로 be동사 is를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Almost everything here",
+       "ko": "이곳에 있는 거의 모든 것이"
+      },
+      {
+       "en": "is purple —",
+       "ko": "보라색이에요."
+      },
+      {
+       "en": "the houses, the buses, and even the bridges.",
+       "ko": "집, 버스, 그리고 심지어 다리까지요."
+      }
+     ]
+    },
+    {
+     "translation": "보라색은 제가 가장 좋아하는 색이라서, 이 섬은 저에게 딱 완벽한 곳이에요.",
+     "contextNote": "Amy에게 이 섬이 특별한 까닭을 말한다.",
+     "roles": [
+      {
+       "q": "Purple",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V",
+       "occ": 1
+      },
+      {
+       "q": "my favorite color",
+       "role": "C"
+      },
+      {
+       "q": "the island",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V",
+       "occ": 2
+      },
+      {
+       "q": "just perfect",
+       "role": "C"
+      },
+      {
+       "q": "for me",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "so the island is just perfect for me",
+       "label": "등위절",
+       "gloss": "so: '그래서' (앞 절의 결과)"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Purple is my favorite color,",
+       "ko": "보라색은 제가 가장 좋아하는 색이라서,"
+      },
+      {
+       "en": "so the island is just perfect",
+       "ko": "이 섬은 딱 완벽한 곳이에요"
+      },
+      {
+       "en": "for me.",
+       "ko": "저에게."
+      }
+     ]
+    },
+    {
+     "translation": "저는 심지어 섬의 입장료도 내지 않았어요.",
+     "contextNote": "뒤따르는 Why?로 궁금증을 만드는 뜻밖의 사실이다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "didn't even pay",
+       "role": "V"
+      },
+      {
+       "q": "the entrance fee to the island",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "even",
+       "label": "동사 수식 부사",
+       "gloss": "'심지어'"
+      }
+     ],
+     "points": [
+      {
+       "q": "didn't even pay",
+       "label": "동사",
+       "star": true,
+       "explanation": "일반동사 과거의 부정문은 did not(= didn't) 뒤에 동사원형을 쓴다. 그래서 과거형 paid가 아니라 원형 pay를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I didn't even pay",
+       "ko": "저는 심지어 내지 않았어요"
+      },
+      {
+       "en": "the entrance fee to the island.",
+       "ko": "섬의 입장료도."
+      }
+     ]
+    },
+    {
+     "translation": "왜냐고요?",
+     "contextNote": "짧게 묻고 다음 문장에서 답한다."
+    },
+    {
+     "translation": "제가 보라색 티셔츠를 입고 있었거든요.",
+     "contextNote": "입장료를 내지 않은 까닭: 보라색 옷을 입고 있었기 때문이다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "was wearing",
+       "role": "V"
+      },
+      {
+       "q": "a purple T-shirt",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "was wearing",
+       "label": "과거진행",
+       "star": true,
+       "explanation": "과거진행형 「was/were+동사-ing」는 과거 그때 하고 있던 일을 나타낸다. 주어 I에 맞춰 was를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I was wearing",
+       "ko": "제가 입고 있었거든요"
+      },
+      {
+       "en": "a purple T-shirt.",
+       "ko": "보라색 티셔츠를."
+      }
+     ]
+    },
+    {
+     "translation": "지금 저는 자전거 대여소로 가는 중이에요.",
+     "contextNote": "과거 이야기에서 지금 하고 있는 일로 돌아온다.",
+     "roles": [
+      {
+       "q": "Now",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "on my way to a bike rental shop",
+       "role": "A"
+      }
+     ],
+     "notes": [
+      {
+       "q": "on my way to",
+       "label": "전명구",
+       "gloss": "on one's way to ~: '~로 가는 중인'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Now,",
+       "ko": "지금"
+      },
+      {
+       "en": "I'm on my way",
+       "ko": "저는 가는 중이에요"
+      },
+      {
+       "en": "to a bike rental shop.",
+       "ko": "자전거 대여소로."
+      }
+     ]
+    },
+    {
+     "translation": "이 섬은 크지 않아서, 저는 자전거로 섬을 답사할 거예요.",
+     "contextNote": "앞으로의 계획과 그렇게 정한 까닭을 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "'m going to explore"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The island",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "big",
+       "role": "C"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m going to explore",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      },
+      {
+       "q": "by bicycle",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "so I'm going to explore it by bicycle",
+       "label": "등위절",
+       "gloss": "so: '그래서' (앞 절의 결과)"
+      },
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= the island"
+      },
+      {
+       "q": "by bicycle",
+       "label": "전명구",
+       "gloss": "by + 교통수단: 관사 없이 '~로'"
+      }
+     ],
+     "points": [
+      {
+       "q": "'m going to explore",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "「be going to+동사원형」으로 앞으로의 계획을 나타낸다. 주어 I에 맞춰 be동사는 am(줄여서 'm)을 쓰고, to 뒤에는 동사원형 explore를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The island is not big,",
+       "ko": "이 섬은 크지 않아서,"
+      },
+      {
+       "en": "so I'm going to explore it",
+       "ko": "저는 섬을 답사할 거예요"
+      },
+      {
+       "en": "by bicycle.",
+       "ko": "자전거로."
+      }
+     ]
+    },
+    {
+     "translation": "저는 특히 라벤더 정원에 방문하는 것을 기대하고 있어요.",
+     "contextNote": "가장 기대되는 곳을 말하며 글을 맺는다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "visiting"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m especially looking forward to",
+       "role": "V"
+      },
+      {
+       "q": "visiting the Lavender Garden",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "to visiting",
+       "label": "전치사+동명사",
+       "star": true,
+       "explanation": "look forward to는 '~을 기대하다'라는 뜻이고, 여기의 to는 to부정사가 아니라 전치사이다. 전치사 뒤에는 동명사를 쓰므로 visit이 아니라 visiting을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm especially looking forward",
+       "ko": "저는 특히 기대하고 있어요"
+      },
+      {
+       "en": "to visiting the Lavender Garden.",
+       "ko": "라벤더 정원에 방문하는 것을."
+      }
+     ]
+    },
+    {
+     "translation": "사랑을 담아, Amy 드림",
+     "contextNote": "Amy가 엄마에게 보내는 편지의 맺음말이다."
+    }
+   ]
+  }
+ }
+}

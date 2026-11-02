@@ -1,0 +1,3394 @@
+{
+ "passages": {
+  "1945978b-0cac-4a76-93d8-19c495596f7f": {
+   "titleEn": "A Trip to Meet a Dinosaur",
+   "topicEn": "Eckels visits Time Travel to see a dinosaur and is told to follow his guide's instructions to stay safe.",
+   "topicKo": "Eckels는 공룡을 보려고 Time Travel을 찾아가고, 안전하려면 안내원의 지시를 따라야 한다는 말을 듣는다.",
+   "sentences": [
+    {
+     "translation": "Eckels는 Time Travel의 사무실로 걸어 들어갔다.",
+     "contextNote": "주인공 Eckels가 시간 여행 회사에 들어서며 이야기가 시작된다.",
+     "roles": [
+      {
+       "q": "Eckels",
+       "role": "S"
+      },
+      {
+       "q": "walked",
+       "role": "V"
+      },
+      {
+       "q": "into the office of Time Travel",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Eckels walked",
+       "ko": "Eckels는 걸어 들어갔다"
+      },
+      {
+       "en": "into the office of Time Travel.",
+       "ko": "Time Travel의 사무실로."
+      }
+     ]
+    },
+    {
+     "translation": "벽에 걸린 큰 간판에는 \"과거의 어느 연도든 말하라.",
+     "contextNote": "회사의 광고 문구로, 결말에서 철자가 바뀌어 다시 나오므로 기억해 둘 문장이다.",
+     "roles": [
+      {
+       "q": "The big sign on the wall",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "NAME",
+       "role": "V"
+      },
+      {
+       "q": "ANY YEAR IN THE PAST",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "on the wall",
+       "label": "전명구",
+       "gloss": "sign을 꾸밈, '벽에 걸린'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The big sign on the wall said,",
+       "ko": "벽에 걸린 큰 간판에는 쓰여 있었다,"
+      },
+      {
+       "en": "\"NAME ANY YEAR",
+       "ko": "\"어느 연도든 말하라"
+      },
+      {
+       "en": "IN THE PAST.",
+       "ko": "과거의."
+      }
+     ]
+    },
+    {
+     "translation": "우리가 당신을 그곳으로 모시겠습니다.\"라고 쓰여 있었다.",
+     "contextNote": "간판 문구의 뒷부분이다.",
+     "roles": [
+      {
+       "q": "WE",
+       "role": "S"
+      },
+      {
+       "q": "TAKE",
+       "role": "V"
+      },
+      {
+       "q": "YOU",
+       "role": "O"
+      },
+      {
+       "q": "THERE",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "WE TAKE YOU",
+       "ko": "우리가 당신을 모시겠습니다"
+      },
+      {
+       "en": "THERE.\"",
+       "ko": "그곳으로.\""
+      }
+     ]
+    },
+    {
+     "translation": "벽에는 TV가 있었고, 새 대통령인 Keith 씨가 뉴스에 나오고 있었다.",
+     "contextNote": "대통령이 Keith 씨라는 점은 결말에서 달라지는 복선이다.",
+     "roles": [
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a TV",
+       "role": "S"
+      },
+      {
+       "q": "on the wall",
+       "role": "M"
+      },
+      {
+       "q": "Mr. Keith",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "occ": 2,
+       "role": "V"
+      },
+      {
+       "q": "on the news",
+       "role": "A"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "the new president",
+       "kind": "inserted"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and Mr. Keith, the new president, was on the news",
+       "label": "등위절",
+       "gloss": "and로 이은 두 번째 절"
+      },
+      {
+       "q": "the new president",
+       "label": "동격구",
+       "gloss": "= Mr. Keith"
+      }
+     ],
+     "points": [
+      {
+       "q": "There was",
+       "label": "there be 수일치",
+       "explanation": "「There+be동사」 뒤의 말이 진짜 주어이다. a TV가 단수이고 과거의 일이므로 was를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There was a TV",
+       "ko": "TV가 있었고"
+      },
+      {
+       "en": "on the wall,",
+       "ko": "벽에는,"
+      },
+      {
+       "en": "and Mr. Keith, the new president,",
+       "ko": "새 대통령인 Keith 씨가"
+      },
+      {
+       "en": "was on the news.",
+       "ko": "뉴스에 나오고 있었다."
+      }
+     ]
+    },
+    {
+     "translation": "\"무엇을 도와드릴까요?\" Time Travel의 설립자인 Parker 씨가 말했다.",
+     "contextNote": "회사의 설립자 Parker 씨가 손님을 맞는다.",
+     "roles": [
+      {
+       "q": "How",
+       "role": "M"
+      },
+      {
+       "q": "can",
+       "role": "V"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "help",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "O"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Mr. Parker",
+       "role": "S"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the founder of Time Travel",
+       "label": "동격구",
+       "gloss": "= Mr. Parker"
+      }
+     ],
+     "points": [
+      {
+       "q": "said Mr. Parker",
+       "label": "도치",
+       "explanation": "따옴표로 옮긴 말 뒤에서는 「주어+said」를 「said+주어」로 바꿔 쓰기도 한다. 그래서 said 뒤의 Mr. Parker가 주어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"How can we help you?\"",
+       "ko": "\"무엇을 도와드릴까요?\""
+      },
+      {
+       "en": "said Mr. Parker,",
+       "ko": "Parker 씨가 말했다,"
+      },
+      {
+       "en": "the founder of Time Travel.",
+       "ko": "Time Travel의 설립자인."
+      }
+     ]
+    },
+    {
+     "translation": "\"저는 항상 공룡을 보고 싶었어요.",
+     "contextNote": "Eckels가 찾아온 이유를 밝힌다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "'ve always wanted"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'ve always wanted",
+       "role": "V"
+      },
+      {
+       "q": "to see a dinosaur",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "'ve always wanted",
+       "label": "현재완료",
+       "star": true,
+       "explanation": "현재완료는 「have+과거분사」로, 여기서는 과거부터 지금까지 쭉 원해 왔다는 계속의 뜻이다. I have는 I've로 줄여 쓰고, always는 have와 과거분사 사이에 온다."
+      },
+      {
+       "q": "to see a dinosaur",
+       "label": "to부정사",
+       "explanation": "want는 목적어로 to부정사를 쓰는 동사이다. to see a dinosaur는 '공룡을 보는 것'이라는 뜻의 목적어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"I've always wanted",
+       "ko": "\"저는 항상 원했어요"
+      },
+      {
+       "en": "to see a dinosaur.",
+       "ko": "공룡을 보기를."
+      }
+     ]
+    },
+    {
+     "translation": "가능한가요?\" Eckels가 물었다.",
+     "contextNote": "앞 문장의 소원이 이루어질 수 있는지 묻는다.",
+     "roles": [
+      {
+       "q": "Is",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "possible",
+       "role": "C"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "it 지시",
+       "gloss": "= 공룡을 보는 것"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Is it possible?\"",
+       "ko": "가능한가요?\""
+      },
+      {
+       "en": "asked Eckels.",
+       "ko": "Eckels가 물었다."
+      }
+     ]
+    },
+    {
+     "translation": "\"물론이죠,\" Parker 씨가 대답했다.",
+     "contextNote": "Parker 씨가 가능하다고 답한다.",
+     "roles": [
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Mr. Parker",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Sure,\"",
+       "ko": "\"물론이죠,\""
+      },
+      {
+       "en": "said Mr. Parker.",
+       "ko": "Parker 씨가 대답했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"당신을 6천만 년 전의 정글로 데려다줄 수 있습니다.\"",
+     "contextNote": "여행의 목적지를 구체적으로 알려 준다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "can take",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "O"
+      },
+      {
+       "q": "back to the jungle of 60 million years ago",
+       "role": "A"
+      }
+     ],
+     "points": [
+      {
+       "q": "60 million years",
+       "label": "수량사",
+       "explanation": "million 앞에 구체적인 숫자가 오면 million에 -s를 붙이지 않는다. 그래서 60 millions가 아니라 60 million으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"We can take you back",
+       "ko": "\"당신을 데려다줄 수 있습니다"
+      },
+      {
+       "en": "to the jungle of 60 million years ago.\"",
+       "ko": "6천만 년 전의 정글로.\""
+      }
+     ]
+    },
+    {
+     "translation": "\"멋지군요,\" Eckels가 말했다.",
+     "contextNote": "Eckels가 기뻐하며 반응한다.",
+     "roles": [
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Great,\"",
+       "ko": "\"멋지군요,\""
+      },
+      {
+       "en": "said Eckels.",
+       "ko": "Eckels가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"지금 저를 그곳에 데려가 줄 수 있나요?\"",
+     "contextNote": "바로 떠나고 싶어 하는 Eckels의 조급한 마음이 드러난다.",
+     "roles": [
+      {
+       "q": "Can",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "take",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "O"
+      },
+      {
+       "q": "there",
+       "role": "A"
+      },
+      {
+       "q": "now",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Can you take me there",
+       "ko": "\"저를 그곳에 데려가 줄 수 있나요"
+      },
+      {
+       "en": "now?\"",
+       "ko": "지금?\""
+      }
+     ]
+    },
+    {
+     "translation": "\"운이 좋으시네요.",
+     "contextNote": "곧 떠날 수 있다는 다음 문장으로 이어진다.",
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "'re",
+       "role": "V"
+      },
+      {
+       "q": "lucky",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"You're",
+       "ko": "\"당신은 ~이네요"
+      },
+      {
+       "en": "lucky.",
+       "ko": "운이 좋으시네요."
+      }
+     ]
+    },
+    {
+     "translation": "10분 후에 출발하는 타임머신이 있습니다,\" Parker 씨가 말했다.",
+     "contextNote": "왜 운이 좋은지 알려 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "that leaves"
+      }
+     ],
+     "roles": [
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "a time machine that leaves in 10 minutes",
+       "role": "S"
+      },
+      {
+       "q": "leaves",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "in 10 minutes",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Mr. Parker",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "that leaves",
+       "label": "주격 관계대명사",
+       "star": true,
+       "explanation": "that은 앞의 a time machine을 꾸미는 절을 이끄는 주격 관계대명사로, 뒤에 동사가 바로 온다. 선행사가 단수이므로 동사는 leaves로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There's a time machine",
+       "ko": "타임머신이 있습니다"
+      },
+      {
+       "en": "that leaves in 10 minutes,\"",
+       "ko": "10분 후에 출발하는,\""
+      },
+      {
+       "en": "said Mr. Parker.",
+       "ko": "Parker 씨가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"이분은 당신의 여행 안내원인 Travis입니다,\" 그는 계속 말했다.",
+     "contextNote": "앞으로 이야기를 함께 이끌 안내원 Travis를 소개한다.",
+     "roles": [
+      {
+       "q": "This",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "C"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "continued",
+       "role": "V"
+      }
+     ],
+     "notes": [
+      {
+       "q": "your travel guide",
+       "label": "동격구",
+       "gloss": "= Travis"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"This is Travis,",
+       "ko": "\"이분은 Travis입니다,"
+      },
+      {
+       "en": "your travel guide,\"",
+       "ko": "당신의 여행 안내원인,\""
+      },
+      {
+       "en": "he continued.",
+       "ko": "그는 계속 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"안전하려면 그의 지시를 반드시 따라야 합니다.\"",
+     "contextNote": "지시를 따르라는 경고로, 뒤에 일어날 사건의 복선이다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "To stay safe",
+       "role": "M"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "must follow",
+       "role": "V"
+      },
+      {
+       "q": "his instructions",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "To stay safe",
+       "label": "부사적 용법",
+       "star": true,
+       "explanation": "to부정사가 '~하기 위해, ~하려면'이라는 목적의 뜻으로 뒤의 절을 꾸민다. stay는 뒤에 형용사 safe를 쓴다."
+      },
+      {
+       "q": "must follow",
+       "label": "조동사 의미",
+       "explanation": "must는 '반드시 ~해야 한다'는 의무를 나타내며 뒤에 동사원형을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"To stay safe,",
+       "ko": "\"안전하려면,"
+      },
+      {
+       "en": "you must follow his instructions.\"",
+       "ko": "그의 지시를 반드시 따라야 합니다.\""
+      }
+     ]
+    }
+   ]
+  },
+  "819ff254-eec4-4edf-96f0-0c09fe7d858f": {
+   "titleEn": "The Rules of Time Travel",
+   "topicEn": "Travis warns the travelers not to leave the path or touch anything because a little change can cause something unthinkable in the future.",
+   "topicKo": "Travis는 작은 변화가 미래에 상상할 수 없는 일을 초래할 수 있으므로 길을 벗어나거나 아무것도 만지지 말라고 경고한다.",
+   "sentences": [
+    {
+     "translation": "타임머신 안에는 다른 여행자 두 명이 있었다.",
+     "contextNote": "함께 떠나는 일행을 소개한다.",
+     "roles": [
+      {
+       "q": "Inside the time machine",
+       "role": "M"
+      },
+      {
+       "q": "were",
+       "role": "V"
+      },
+      {
+       "q": "two other travelers",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "there were",
+       "label": "there be 수일치",
+       "star": true,
+       "explanation": "there는 주어가 아니고 be동사 뒤의 two other travelers가 진짜 주어이다. 주어가 복수이고 과거의 일이므로 were를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Inside the time machine,",
+       "ko": "타임머신 안에는,"
+      },
+      {
+       "en": "there were two other travelers.",
+       "ko": "다른 여행자 두 명이 있었다."
+      }
+     ]
+    },
+    {
+     "translation": "Eckels는 자리에 앉아 눈을 감았다.",
+     "contextNote": "출발 순간 Eckels의 모습이다.",
+     "roles": [
+      {
+       "q": "Eckels",
+       "role": "S"
+      },
+      {
+       "q": "sat down",
+       "role": "V"
+      },
+      {
+       "q": "closed",
+       "role": "V"
+      },
+      {
+       "q": "his eyes",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "sat down and closed",
+       "label": "동사 병렬",
+       "explanation": "주어 Eckels 하나에 동사 둘이 and로 이어져 있다. 둘 다 과거의 일이므로 과거형 sat과 closed로 맞춘다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Eckels sat down",
+       "ko": "Eckels는 자리에 앉아"
+      },
+      {
+       "en": "and closed his eyes.",
+       "ko": "눈을 감았다."
+      }
+     ]
+    },
+    {
+     "translation": "그는 발밑에서 타임머신이 움직이는 것을 느꼈다.",
+     "contextNote": "눈을 감은 채 시간 여행이 시작되는 것을 몸으로 느낀다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "moving"
+      }
+     ],
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "felt",
+       "role": "V"
+      },
+      {
+       "q": "the machine",
+       "role": "O"
+      },
+      {
+       "q": "moving under his feet",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "felt the machine moving",
+       "label": "지각동사 보어",
+       "star": true,
+       "explanation": "feel, see, hear 같은 지각동사는 「지각동사+목적어+동사원형/-ing」로 쓴다. 타임머신이 움직이는 것이므로 능동의 moving을 쓰며, 동작이 진행 중임을 나타낸다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He felt the machine",
+       "ko": "그는 타임머신이"
+      },
+      {
+       "en": "moving",
+       "ko": "움직이는 것을 느꼈다"
+      },
+      {
+       "en": "under his feet.",
+       "ko": "발밑에서."
+      }
+     ]
+    },
+    {
+     "translation": "불과 몇 분 지나지 않아 타임머신이 멈췄다.",
+     "contextNote": "6천만 년 전까지 가는 데 몇 분밖에 걸리지 않았음을 보여 준다.",
+     "roles": [
+      {
+       "q": "After only a few minutes",
+       "role": "M"
+      },
+      {
+       "q": "the machine",
+       "role": "S"
+      },
+      {
+       "q": "stopped",
+       "role": "V"
+      }
+     ],
+     "points": [
+      {
+       "q": "a few minutes",
+       "label": "수량사",
+       "explanation": "a few는 '조금의, 몇몇의'라는 뜻으로 셀 수 있는 명사의 복수형 앞에 쓴다. 셀 수 없는 명사 앞에는 a little을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "After only a few minutes,",
+       "ko": "불과 몇 분 지나지 않아,"
+      },
+      {
+       "en": "the machine stopped.",
+       "ko": "타임머신이 멈췄다."
+      }
+     ]
+    },
+    {
+     "translation": "\"우리는 이제 막 6천만 년 전 정글에 도착했습니다,\" Travis가 설명했다.",
+     "contextNote": "목적지에 도착했음을 알린다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "'ve just arrived"
+      }
+     ],
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "'ve just arrived",
+       "role": "V"
+      },
+      {
+       "q": "in the jungle of 60 million years ago",
+       "role": "M"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      },
+      {
+       "q": "explained",
+       "role": "V"
+      }
+     ],
+     "points": [
+      {
+       "q": "'ve just arrived",
+       "label": "현재완료",
+       "star": true,
+       "explanation": "「have+just+과거분사」는 '이제 막 ~했다'는 완료의 뜻이다. 현재완료는 '6천만 년 전' 같은 때를 나타내는 말을 직접 받지 못하지만, 여기의 of 60 million years ago는 동사가 아니라 the jungle을 꾸민다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"We've just arrived",
+       "ko": "\"우리는 이제 막 도착했습니다"
+      },
+      {
+       "en": "in the jungle of 60 million years ago,\"",
+       "ko": "6천만 년 전 정글에,\""
+      },
+      {
+       "en": "Travis explained.",
+       "ko": "Travis가 설명했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"저쪽에 길이 보이십니까?",
+     "contextNote": "뒤따르는 규칙의 기준이 되는 길을 가리킨다.",
+     "roles": [
+      {
+       "q": "Do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "see",
+       "role": "V"
+      },
+      {
+       "q": "the path over there",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Do you see the path",
+       "ko": "\"길이 보이십니까"
+      },
+      {
+       "en": "over there?",
+       "ko": "저쪽에?"
+      }
+     ]
+    },
+    {
+     "translation": "어떤 경우에도 저 길을 절대 벗어나면 안 됩니다.",
+     "contextNote": "첫 번째 규칙으로, 뒤에 Eckels가 이 규칙을 어긴다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "must not leave",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      },
+      {
+       "q": "at any time",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= the path"
+      }
+     ],
+     "points": [
+      {
+       "q": "must not leave",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "must not은 '~하면 안 된다'는 강한 금지이다. '~할 필요가 없다'는 뜻의 don't have to와 구별해야 한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You must not leave it",
+       "ko": "저 길을 절대 벗어나면 안 됩니다"
+      },
+      {
+       "en": "at any time.",
+       "ko": "어떤 경우에도."
+      }
+     ]
+    },
+    {
+     "translation": "아무것도 만지지 마라.",
+     "contextNote": "두 번째 규칙이다.",
+     "roles": [
+      {
+       "q": "Do not touch",
+       "role": "V"
+      },
+      {
+       "q": "anything",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Do not touch",
+       "ko": "만지지 마라"
+      },
+      {
+       "en": "anything.",
+       "ko": "아무것도."
+      }
+     ]
+    },
+    {
+     "translation": "여러분이 실수로 무언가를 죽일 수도 있습니다.",
+     "contextNote": "규칙을 지켜야 하는 이유를 말하기 시작한다.",
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "might kill",
+       "role": "V"
+      },
+      {
+       "q": "something",
+       "role": "O"
+      },
+      {
+       "q": "by accident",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "by accident",
+       "label": "전명구",
+       "gloss": "'실수로, 우연히'"
+      }
+     ],
+     "points": [
+      {
+       "q": "might kill",
+       "label": "조동사 의미",
+       "explanation": "might는 '~할 수도 있다'는 약한 추측을 나타내며 뒤에 동사원형을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You might kill something",
+       "ko": "여러분이 무언가를 죽일 수도 있습니다"
+      },
+      {
+       "en": "by accident.",
+       "ko": "실수로."
+      }
+     ]
+    },
+    {
+     "translation": "이곳에서의 작은 변화가 미래에 상상할 수 없는 일을 초래할 수 있습니다.\"",
+     "contextNote": "이 글의 핵심으로, 나비 한 마리가 역사를 바꾸는 결말을 미리 보여 준다.",
+     "tags": [
+      "주제문",
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "something unthinkable"
+      }
+     ],
+     "roles": [
+      {
+       "q": "A little change here",
+       "role": "S"
+      },
+      {
+       "q": "can cause",
+       "role": "V"
+      },
+      {
+       "q": "something unthinkable",
+       "role": "O"
+      },
+      {
+       "q": "in the future",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "something unthinkable",
+       "label": "명사 수식 형용사",
+       "star": true,
+       "explanation": "-thing으로 끝나는 대명사는 형용사가 뒤에서 꾸민다. 그래서 unthinkable something이 아니라 something unthinkable로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "A little change here",
+       "ko": "이곳에서의 작은 변화가"
+      },
+      {
+       "en": "can cause something unthinkable",
+       "ko": "상상할 수 없는 일을 초래할 수 있습니다"
+      },
+      {
+       "en": "in the future.\"",
+       "ko": "미래에.\""
+      }
+     ]
+    }
+   ]
+  },
+  "a3e5d2b4-3559-47eb-8f06-2eeaebb6811d": {
+   "titleEn": "Into the Foggy Jungle",
+   "topicEn": "Everyone gets out into the quiet, foggy jungle, and Travis tells the excited Eckels to stay calm.",
+   "topicKo": "모두 고요하고 안개 낀 정글로 내리고, Travis는 들뜬 Eckels에게 침착하라고 말한다.",
+   "sentences": [
+    {
+     "translation": "모두 타임머신에서 천천히 내렸다.",
+     "contextNote": "일행이 과거의 정글에 내려선다.",
+     "roles": [
+      {
+       "q": "Slowly",
+       "role": "M"
+      },
+      {
+       "q": "everyone",
+       "role": "S"
+      },
+      {
+       "q": "got",
+       "role": "V"
+      },
+      {
+       "q": "out of the time machine",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Slowly,",
+       "ko": "천천히,"
+      },
+      {
+       "en": "everyone got out",
+       "ko": "모두 내렸다"
+      },
+      {
+       "en": "of the time machine.",
+       "ko": "타임머신에서."
+      }
+     ]
+    },
+    {
+     "translation": "정글은 안개로 뒤덮여 있었다.",
+     "contextNote": "정글의 으스스한 분위기를 그린다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "was covered in"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The jungle",
+       "role": "S"
+      },
+      {
+       "q": "was covered",
+       "role": "V"
+      },
+      {
+       "q": "in fog",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "was covered in",
+       "label": "수동태",
+       "star": true,
+       "explanation": "수동태는 「be동사+과거분사」로, 정글이 안개에 덮인 것이므로 was covered를 쓴다. be covered in은 '~으로 뒤덮여 있다'는 뜻으로, by가 아닌 전치사 in을 쓴 표현이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The jungle was covered",
+       "ko": "정글은 뒤덮여 있었다"
+      },
+      {
+       "en": "in fog.",
+       "ko": "안개로."
+      }
+     ]
+    },
+    {
+     "translation": "그곳은 무척 고요했다.",
+     "contextNote": "고요함으로 긴장감을 더한다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "very quiet",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was",
+       "ko": "그곳은 ~했다"
+      },
+      {
+       "en": "very quiet.",
+       "ko": "무척 고요했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"정말 신나요,\" Eckels가 말했다.",
+     "contextNote": "Eckels는 정글의 분위기에도 들떠 있다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "excited"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "so excited",
+       "role": "C"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "excited",
+       "label": "감정분사",
+       "star": true,
+       "explanation": "감정을 느끼는 쪽이 사람이면 과거분사 excited를 쓴다. 감정을 일으키는 쪽이면 exciting을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"I'm so excited,\"",
+       "ko": "\"정말 신나요,\""
+      },
+      {
+       "en": "said Eckels.",
+       "ko": "Eckels가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"조심하라.",
+     "contextNote": "Travis가 들뜬 Eckels에게 주의를 준다.",
+     "roles": [
+      {
+       "q": "Be",
+       "role": "V"
+      },
+      {
+       "q": "careful",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "Be careful",
+       "label": "2형식",
+       "explanation": "be동사의 명령문은 동사원형 Be로 시작하고 뒤에 형용사 보어를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Be",
+       "ko": "\"~하라"
+      },
+      {
+       "en": "careful.",
+       "ko": "조심하라."
+      }
+     ]
+    },
+    {
+     "translation": "몇몇 공룡들이 배가 고플 수도 있습니다,\" Travis가 말했다.",
+     "contextNote": "조심해야 하는 이유를 말한다.",
+     "roles": [
+      {
+       "q": "Some of the dinosaurs",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "hungry",
+       "role": "C"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "Some of the dinosaurs",
+       "label": "부분 표현",
+       "star": true,
+       "explanation": "「some of+명사」는 of 뒤의 명사에 동사의 수를 맞춘다. the dinosaurs가 복수이므로 동사는 are를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Some of the dinosaurs",
+       "ko": "몇몇 공룡들이"
+      },
+      {
+       "en": "are hungry,\"",
+       "ko": "배가 고플 수도 있습니다,\""
+      },
+      {
+       "en": "said Travis.",
+       "ko": "Travis가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"그저 침착하라.",
+     "contextNote": "경고를 이어 간다.",
+     "roles": [
+      {
+       "q": "Just",
+       "role": "M"
+      },
+      {
+       "q": "stay",
+       "role": "V"
+      },
+      {
+       "q": "calm",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "stay calm",
+       "label": "연결동사 보어",
+       "explanation": "stay는 '~한 상태로 있다'는 뜻의 연결동사로, 뒤에 부사가 아니라 형용사 보어 calm을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Just stay",
+       "ko": "\"그저 ~하라"
+      },
+      {
+       "en": "calm.",
+       "ko": "침착하라."
+      }
+     ]
+    },
+    {
+     "translation": "당신이 어리석은 어떤 행동도 하지 않기를 바랍니다.\"",
+     "contextNote": "Eckels가 일을 저지를 것을 미리 내비치는 말이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "anything foolish"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "don't want",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "O"
+      },
+      {
+       "q": "to do anything foolish",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "anything foolish",
+       "label": "명사 수식 형용사",
+       "star": true,
+       "explanation": "-thing으로 끝나는 대명사는 형용사가 뒤에서 꾸민다. 그래서 foolish anything이 아니라 anything foolish로 쓴다."
+      },
+      {
+       "q": "want you to do",
+       "label": "목적격보어 to부정사",
+       "explanation": "want는 「want+목적어+to부정사」로 써서 '(목적어)가 ~하기를 원하다'라는 뜻을 나타낸다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I don't want you",
+       "ko": "나는 당신이 ~하기를 바라지 않습니다"
+      },
+      {
+       "en": "to do anything foolish.\"",
+       "ko": "어리석은 어떤 행동을 하기를.\""
+      }
+     ]
+    },
+    {
+     "translation": "\"걱정하지 마라.",
+     "contextNote": "Eckels가 Travis의 경고를 가볍게 받아넘긴다.",
+     "roles": [
+      {
+       "q": "Don't worry",
+       "role": "V"
+      }
+     ]
+    },
+    {
+     "translation": "저는 바보가 아니에요,\" Eckels가 말했다.",
+     "contextNote": "자신만만한 말로, 뒤의 행동과 대비된다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m not",
+       "role": "V"
+      },
+      {
+       "q": "a fool",
+       "role": "C"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm not a fool,\"",
+       "ko": "저는 바보가 아니에요,\""
+      },
+      {
+       "en": "said Eckels.",
+       "ko": "Eckels가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 모두 길을 걷기 시작했다.",
+     "contextNote": "일행이 길을 따라 탐험을 시작한다.",
+     "roles": [
+      {
+       "q": "They all",
+       "role": "S"
+      },
+      {
+       "q": "began",
+       "role": "V"
+      },
+      {
+       "q": "to walk on the path",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "to walk on the path",
+       "label": "to부정사",
+       "explanation": "begin은 목적어로 to부정사와 동명사를 모두 쓸 수 있는 동사로, '~하기 시작하다'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They all began",
+       "ko": "그들은 모두 시작했다"
+      },
+      {
+       "en": "to walk on the path.",
+       "ko": "길을 걷기."
+      }
+     ]
+    }
+   ]
+  },
+  "86500969-1045-4afd-966b-a1c1f8d1bc9b": {
+   "titleEn": "The Moment Eckels Left the Path",
+   "topicEn": "Terrified by a huge T. rex, Eckels runs away and leaves the path by accident.",
+   "topicKo": "거대한 티라노사우루스에 겁에 질린 Eckels는 달아나다가 실수로 길을 벗어난다.",
+   "sentences": [
+    {
+     "translation": "얼마 후, Travis가 속삭였다. \"저기를 보라.",
+     "contextNote": "공룡이 나타나는 긴장된 장면이 시작된다.",
+     "roles": [
+      {
+       "q": "After some time",
+       "role": "M"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      },
+      {
+       "q": "whispered",
+       "role": "V"
+      },
+      {
+       "q": "Look",
+       "role": "V"
+      },
+      {
+       "q": "over there",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "After some time,",
+       "ko": "얼마 후,"
+      },
+      {
+       "en": "Travis whispered,",
+       "ko": "Travis가 속삭였다."
+      },
+      {
+       "en": "\"Look over there.",
+       "ko": "\"저기를 보라."
+      }
+     ]
+    },
+    {
+     "translation": "티라노사우루스가 있어요.\"",
+     "contextNote": "Travis가 공룡을 가리킨다.",
+     "roles": [
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "a T. rex",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There is",
+       "ko": "있어요"
+      },
+      {
+       "en": "a T. rex.\"",
+       "ko": "티라노사우루스가.\""
+      }
+     ]
+    },
+    {
+     "translation": "100미터 떨어진 곳에서 티라노사우루스가 서서히 나타났다.",
+     "contextNote": "공룡이 눈앞에 모습을 드러낸다.",
+     "roles": [
+      {
+       "q": "One hundred meters away",
+       "role": "M"
+      },
+      {
+       "q": "a T. rex",
+       "role": "S"
+      },
+      {
+       "q": "slowly",
+       "role": "M"
+      },
+      {
+       "q": "appeared",
+       "role": "V"
+      }
+     ],
+     "points": [
+      {
+       "q": "appeared",
+       "label": "자동사·타동사",
+       "explanation": "appear는 목적어가 필요 없는 자동사이다. 수동태로 쓸 수 없으므로 was appeared라고 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "One hundred meters away,",
+       "ko": "100미터 떨어진 곳에서,"
+      },
+      {
+       "en": "a T. rex slowly appeared.",
+       "ko": "티라노사우루스가 서서히 나타났다."
+      }
+     ]
+    },
+    {
+     "translation": "\"저것은,\" Eckels가 속삭였다.",
+     "contextNote": "놀라서 말을 잇지 못한다.",
+     "roles": [
+      {
+       "q": "whispered",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"It,\"",
+       "ko": "\"저것은,\""
+      },
+      {
+       "en": "whispered Eckels.",
+       "ko": "Eckels가 속삭였다."
+      }
+     ]
+    },
+    {
+     "translation": "\"저것은 …\"",
+     "contextNote": "말을 끝맺지 못한다."
+    },
+    {
+     "translation": "\"쉿!\"",
+     "contextNote": "Travis가 조용히 하라고 말린다."
+    },
+    {
+     "translation": "\"저건 … 거대해요.",
+     "contextNote": "겨우 말을 잇는다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "huge",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"It ...",
+       "ko": "\"저건 …"
+      },
+      {
+       "en": "is huge.",
+       "ko": "거대해요."
+      }
+     ]
+    },
+    {
+     "translation": "저렇게 거대한 것을 본 적이 없어요.",
+     "contextNote": "이 과의 문법 현재완료(경험)가 쓰인 문장이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "'ve never seen"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'ve never seen",
+       "role": "V"
+      },
+      {
+       "q": "such a huge thing",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "'ve never seen",
+       "label": "현재완료",
+       "star": true,
+       "explanation": "「have never+과거분사」는 '한 번도 ~한 적이 없다'는 경험의 뜻이다. see의 과거분사는 seen이고, never는 have와 과거분사 사이에 온다."
+      },
+      {
+       "q": "such a huge thing",
+       "label": "so/such",
+       "explanation": "such는 「such+a(n)+형용사+명사」의 어순으로 쓴다. a such huge thing으로 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I've never seen",
+       "ko": "본 적이 없어요"
+      },
+      {
+       "en": "such a huge thing.",
+       "ko": "저렇게 거대한 것을."
+      }
+     ]
+    },
+    {
+     "translation": "너무 무서워요,\" Eckels가 말했다.",
+     "contextNote": "신나 하던 Eckels가 공포에 빠진다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "so scared",
+       "role": "C"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "scared",
+       "label": "감정분사",
+       "explanation": "사람이 무서움을 느끼는 것이므로 과거분사 scared를 쓴다. 무서움을 일으키는 쪽이면 scary를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm so scared,\"",
+       "ko": "너무 무서워요,\""
+      },
+      {
+       "en": "said Eckels.",
+       "ko": "Eckels가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"쉿 … 조용히!\"",
+     "contextNote": "Travis가 다시 조용히 하라고 말한다."
+    },
+    {
+     "translation": "Travis가 화를 내며 말했다.",
+     "contextNote": "Travis의 다급한 태도를 나타낸다.",
+     "roles": [
+      {
+       "q": "Travis",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "angrily",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "angrily",
+       "label": "동사 수식 부사",
+       "explanation": "동사 said를 꾸미므로 형용사 angry가 아니라 부사 angrily를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Travis said",
+       "ko": "Travis가 말했다"
+      },
+      {
+       "en": "angrily.",
+       "ko": "화를 내며."
+      }
+     ]
+    },
+    {
+     "translation": "\"공룡이 당신을 보길 원하는 건 아니겠죠.\"",
+     "contextNote": "조용히 해야 하는 이유를 말한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "don't want",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      },
+      {
+       "q": "to see you",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= the T. rex"
+      }
+     ],
+     "points": [
+      {
+       "q": "want it to see",
+       "label": "목적격보어 to부정사",
+       "star": true,
+       "explanation": "「want+목적어+to부정사」는 '(목적어)가 ~하기를 원하다'라는 뜻이다. 여기서는 보는 쪽이 공룡(it)이므로 it to see의 관계를 읽어야 한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"You don't want it",
+       "ko": "\"공룡이 ~하길 원하는 건 아니겠죠"
+      },
+      {
+       "en": "to see you.\"",
+       "ko": "당신을 보길.\""
+      }
+     ]
+    },
+    {
+     "translation": "\"숨을 쉴 수가 없어요,\" Eckels가 말했다.",
+     "contextNote": "공포가 더 심해진다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "can't breathe",
+       "role": "V"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"I can't breathe,\"",
+       "ko": "\"숨을 쉴 수가 없어요,\""
+      },
+      {
+       "en": "said Eckels.",
+       "ko": "Eckels가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"나를 여기서 나가게 해 달라!\"",
+     "contextNote": "Eckels가 공포에 질려 달아나고 싶어 한다.",
+     "roles": [
+      {
+       "q": "Get",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "O"
+      },
+      {
+       "q": "out of here",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Get me",
+       "ko": "\"나를 ~하게 해 달라"
+      },
+      {
+       "en": "out of here!\"",
+       "ko": "여기서 나가게!\""
+      }
+     ]
+    },
+    {
+     "translation": "\"겁먹지 마라, Eckels,\" Travis가 말했다.",
+     "contextNote": "Travis가 Eckels를 진정시킨다.",
+     "roles": [
+      {
+       "q": "Don't panic",
+       "role": "V"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Don't panic, Eckels,\"",
+       "ko": "\"겁먹지 마라, Eckels,\""
+      },
+      {
+       "en": "said Travis.",
+       "ko": "Travis가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"뒤로 돌아서 조용히 타임머신으로 돌아가라.\"",
+     "contextNote": "Travis가 구체적으로 지시한다.",
+     "roles": [
+      {
+       "q": "Turn around",
+       "role": "V"
+      },
+      {
+       "q": "walk",
+       "role": "V"
+      },
+      {
+       "q": "quietly",
+       "role": "M"
+      },
+      {
+       "q": "back to the machine",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "Turn around, and walk",
+       "label": "동사 병렬",
+       "explanation": "명령문의 두 동사가 and로 이어져 있다. 명령문이므로 둘 다 동사원형으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Turn around,",
+       "ko": "\"뒤로 돌아서,"
+      },
+      {
+       "en": "and walk quietly",
+       "ko": "조용히 돌아가라"
+      },
+      {
+       "en": "back to the machine.\"",
+       "ko": "타임머신으로.\""
+      }
+     ]
+    },
+    {
+     "translation": "Eckels는 돌아서서 뛰기 시작했다.",
+     "contextNote": "걸으라는 지시와 달리 뛰기 시작한다.",
+     "roles": [
+      {
+       "q": "Eckels",
+       "role": "S"
+      },
+      {
+       "q": "turned around",
+       "role": "V"
+      },
+      {
+       "q": "started",
+       "role": "V"
+      },
+      {
+       "q": "to run",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "turned around and started",
+       "label": "동사 병렬",
+       "gloss": "주어 Eckels 하나에 동사 둘"
+      },
+      {
+       "q": "to run",
+       "label": "to부정사",
+       "gloss": "start의 목적어, '뛰기'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Eckels turned around",
+       "ko": "Eckels는 돌아서서"
+      },
+      {
+       "en": "and started to run.",
+       "ko": "뛰기 시작했다."
+      }
+     ]
+    },
+    {
+     "translation": "그는 너무 겁에 질려 실수로 길을 벗어나고 말았다.",
+     "contextNote": "규칙을 어기는 결정적인 사건이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "so terrified that"
+      }
+     ],
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "so terrified",
+       "role": "C"
+      },
+      {
+       "q": "he",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "left",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the path",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "by accident",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that he left the path by accident",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "so terrified that",
+       "label": "so ... that 구문",
+       "star": true,
+       "explanation": "「so+형용사/부사+that+주어+동사」는 '너무 ~해서 …하다'라는 뜻이다. 앞이 원인(너무 겁에 질림), that절이 결과(길을 벗어남)이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He was so terrified",
+       "ko": "그는 너무 겁에 질려"
+      },
+      {
+       "en": "that he left the path",
+       "ko": "길을 벗어나고 말았다"
+      },
+      {
+       "en": "by accident.",
+       "ko": "실수로."
+      }
+     ]
+    },
+    {
+     "translation": "\"Eckels!\" Travis가 외쳤다.",
+     "contextNote": "Travis가 큰 소리로 부른다.",
+     "roles": [
+      {
+       "q": "shouted",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Eckels!\"",
+       "ko": "\"Eckels!\""
+      },
+      {
+       "en": "shouted Travis.",
+       "ko": "Travis가 외쳤다."
+      }
+     ]
+    },
+    {
+     "translation": "\"길을 벗어나지 마라!\"",
+     "contextNote": "앞서 말한 규칙을 다시 외친다.",
+     "roles": [
+      {
+       "q": "Don't leave",
+       "role": "V"
+      },
+      {
+       "q": "the path",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Don't leave",
+       "ko": "\"벗어나지 마라"
+      },
+      {
+       "en": "the path!\"",
+       "ko": "길을!\""
+      }
+     ]
+    },
+    {
+     "translation": "티라노사우루스가 Travis의 소리를 듣고 그와 다른 여행자들을 향해 고개를 돌렸다.",
+     "contextNote": "Travis의 외침이 공룡의 주의를 끌었다.",
+     "roles": [
+      {
+       "q": "The T. rex",
+       "role": "S"
+      },
+      {
+       "q": "heard",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "O"
+      },
+      {
+       "q": "turned",
+       "role": "V"
+      },
+      {
+       "q": "its head",
+       "role": "O"
+      },
+      {
+       "q": "toward him and the other travelers",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "heard Travis and turned",
+       "label": "동사 병렬",
+       "explanation": "주어 The T. rex 하나에 동사 heard와 turned가 and로 이어져 있다."
+      },
+      {
+       "q": "its",
+       "label": "its/it's",
+       "star": true,
+       "explanation": "its는 '그것의'라는 소유격이고, it's는 it is나 it has를 줄인 말이다. 뒤에 명사 head가 오므로 its를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The T. rex heard Travis",
+       "ko": "티라노사우루스가 Travis의 소리를 듣고"
+      },
+      {
+       "en": "and turned its head",
+       "ko": "고개를 돌렸다"
+      },
+      {
+       "en": "toward him and the other travelers.",
+       "ko": "그와 다른 여행자들을 향해."
+      }
+     ]
+    },
+    {
+     "translation": "잠시 정적이 흘렀다.",
+     "contextNote": "공격 직전의 긴장감을 만든다.",
+     "roles": [
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a moment of silence",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There was",
+       "ko": "흘렀다"
+      },
+      {
+       "en": "a moment of silence.",
+       "ko": "잠시 정적이."
+      }
+     ]
+    },
+    {
+     "translation": "그리고 갑자기 티라노사우루스가 큰 포효와 함께 그들을 향해 달려오기 시작했다.",
+     "contextNote": "공룡이 공격을 시작한다.",
+     "roles": [
+      {
+       "q": "Then",
+       "role": "M"
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "suddenly",
+       "role": "M"
+      },
+      {
+       "q": "started",
+       "role": "V"
+      },
+      {
+       "q": "to run toward them with a loud roar",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= the T. rex"
+      },
+      {
+       "q": "with a loud roar",
+       "label": "전명구",
+       "gloss": "'큰 포효와 함께'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Then,",
+       "ko": "그리고"
+      },
+      {
+       "en": "it suddenly started to run",
+       "ko": "갑자기 티라노사우루스가 달려오기 시작했다"
+      },
+      {
+       "en": "toward them",
+       "ko": "그들을 향해"
+      },
+      {
+       "en": "with a loud roar.",
+       "ko": "큰 포효와 함께."
+      }
+     ]
+    },
+    {
+     "translation": "\"모두 뛰어라!",
+     "contextNote": "Travis가 다급하게 외친다.",
+     "roles": [
+      {
+       "q": "Run",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Run,",
+       "ko": "\"뛰어라,"
+      },
+      {
+       "en": "everybody!",
+       "ko": "모두!"
+      }
+     ]
+    },
+    {
+     "translation": "뛰어라!\" Travis가 외쳤다.",
+     "contextNote": "다급함을 되풀이해 나타낸다.",
+     "roles": [
+      {
+       "q": "Run",
+       "role": "V"
+      },
+      {
+       "q": "shouted",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Run!\"",
+       "ko": "뛰어라!\""
+      },
+      {
+       "en": "shouted Travis.",
+       "ko": "Travis가 외쳤다."
+      }
+     ]
+    }
+   ]
+  },
+  "ce35f454-7630-4579-8f32-10749f191ee3": {
+   "titleEn": "An Uneasy Trip Back",
+   "topicEn": "Everyone returns safely, and Travis blames Eckels, who says he only has a little mud on his shoes.",
+   "topicKo": "모두 무사히 돌아오고 Travis는 Eckels를 나무라지만, Eckels는 신발에 진흙이 조금 묻었을 뿐이라고 말한다.",
+   "sentences": [
+    {
+     "translation": "Travis와 다른 여행자들은 안전하게 타임머신으로 돌아와서 안에 있는 Eckels를 발견했다.",
+     "contextNote": "일행이 위험에서 벗어나 다시 모인다.",
+     "roles": [
+      {
+       "q": "Travis and the other travelers",
+       "role": "S"
+      },
+      {
+       "q": "returned",
+       "role": "V"
+      },
+      {
+       "q": "safely",
+       "role": "M"
+      },
+      {
+       "q": "to the machine",
+       "role": "M"
+      },
+      {
+       "q": "found",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "O"
+      },
+      {
+       "q": "inside",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "returned safely to the machine and found",
+       "label": "동사 병렬",
+       "explanation": "주어 하나에 동사 returned와 found가 and로 이어져 있다. 둘 다 과거의 일이므로 과거형으로 맞춘다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Travis and the other travelers",
+       "ko": "Travis와 다른 여행자들은"
+      },
+      {
+       "en": "returned safely to the machine",
+       "ko": "안전하게 타임머신으로 돌아와서"
+      },
+      {
+       "en": "and found Eckels inside.",
+       "ko": "안에 있는 Eckels를 발견했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"당신이 우리 모두를 위험에 빠뜨렸어요,\" Travis가 화난 목소리로 Eckels에게 말했다.",
+     "contextNote": "Travis가 Eckels의 잘못을 나무란다.",
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "put",
+       "role": "V"
+      },
+      {
+       "q": "all of us",
+       "role": "O"
+      },
+      {
+       "q": "in danger",
+       "role": "A"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      },
+      {
+       "q": "to Eckels",
+       "role": "M"
+      },
+      {
+       "q": "in an angry voice",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "in an angry voice",
+       "label": "전명구",
+       "gloss": "'화난 목소리로'"
+      }
+     ],
+     "points": [
+      {
+       "q": "put",
+       "label": "동사",
+       "explanation": "put은 현재형·과거형·과거분사가 모두 같은 동사이다. 여기서는 이미 일어난 일을 말하므로 과거형이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"You put all of us",
+       "ko": "\"당신이 우리 모두를 빠뜨렸어요"
+      },
+      {
+       "en": "in danger,\"",
+       "ko": "위험에,\""
+      },
+      {
+       "en": "said Travis to Eckels",
+       "ko": "Travis가 Eckels에게 말했다"
+      },
+      {
+       "en": "in an angry voice.",
+       "ko": "화난 목소리로."
+      }
+     ]
+    },
+    {
+     "translation": "\"당신이 길을 벗어났잖아요.\"",
+     "contextNote": "나무라는 이유를 말한다.",
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "left",
+       "role": "V"
+      },
+      {
+       "q": "the path",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"You left",
+       "ko": "\"당신이 벗어났잖아요"
+      },
+      {
+       "en": "the path.\"",
+       "ko": "길을.\""
+      }
+     ]
+    },
+    {
+     "translation": "\"미안해요, 그렇지만 난 어떤 것도 죽이지 않았어요,\" Eckels가 말했다.",
+     "contextNote": "Eckels는 큰일이 아니라고 생각한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "sorry",
+       "role": "C"
+      },
+      {
+       "q": "I",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "didn't kill",
+       "role": "V"
+      },
+      {
+       "q": "anything",
+       "role": "O"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but I didn't kill anything",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"I'm sorry,",
+       "ko": "\"미안해요,"
+      },
+      {
+       "en": "but I didn't kill anything,\"",
+       "ko": "그렇지만 난 어떤 것도 죽이지 않았어요,\""
+      },
+      {
+       "en": "said Eckels.",
+       "ko": "Eckels가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"신발에 진흙이 조금 묻었을 뿐이에요.\"",
+     "contextNote": "별것 아니라고 말한 진흙이 결말의 열쇠가 된다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "a little mud"
+      }
+     ],
+     "roles": [
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "only a little mud",
+       "role": "S"
+      },
+      {
+       "q": "on my shoes",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "a little mud",
+       "label": "수량사",
+       "star": true,
+       "explanation": "mud는 셀 수 없는 명사이므로 a few가 아니라 a little로 양을 나타낸다. 셀 수 없는 명사가 주어이므로 is(축약 's)를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"There's only a little mud",
+       "ko": "\"진흙이 조금 묻었을 뿐이에요"
+      },
+      {
+       "en": "on my shoes.\"",
+       "ko": "신발에.\""
+      }
+     ]
+    },
+    {
+     "translation": "Travis는 아무 말 없이 Eckels를 오랫동안 응시했다.",
+     "contextNote": "말없는 시선이 불길한 예감을 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "without saying"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Travis",
+       "role": "S"
+      },
+      {
+       "q": "stared",
+       "role": "V"
+      },
+      {
+       "q": "at Eckels",
+       "role": "A"
+      },
+      {
+       "q": "for a long time",
+       "role": "M"
+      },
+      {
+       "q": "without saying anything",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "without saying",
+       "label": "전치사+동명사",
+       "star": true,
+       "explanation": "전치사 뒤에 동사를 쓸 때는 동명사로 쓴다. 「without+동명사」는 '~하지 않고, ~ 없이'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Travis stared at Eckels",
+       "ko": "Travis는 Eckels를 응시했다"
+      },
+      {
+       "en": "for a long time",
+       "ko": "오랫동안"
+      },
+      {
+       "en": "without saying anything.",
+       "ko": "아무 말 없이."
+      }
+     ]
+    },
+    {
+     "translation": "\"집으로 가자,\" 마침내 Travis가 말했다.",
+     "contextNote": "현재로 돌아가기로 한다.",
+     "roles": [
+      {
+       "q": "go",
+       "role": "V"
+      },
+      {
+       "q": "home",
+       "role": "A"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      },
+      {
+       "q": "finally",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "go home",
+       "label": "혼동 부사",
+       "explanation": "home은 여기서 '집으로'라는 뜻의 부사이므로 앞에 전치사 to를 쓰지 않는다. Let's 뒤에는 동사원형 go를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Let's go home,\"",
+       "ko": "\"집으로 가자,\""
+      },
+      {
+       "en": "said Travis finally.",
+       "ko": "마침내 Travis가 말했다."
+      }
+     ]
+    }
+   ]
+  },
+  "22850cc5-466f-4b3c-b867-1d57778a47bc": {
+   "titleEn": "The Butterfly That Changed History",
+   "topicEn": "Back in the present, Eckels finds the sign and the president changed and realizes a small dead butterfly on his shoe is the cause.",
+   "topicKo": "현재로 돌아온 Eckels는 간판과 대통령이 바뀐 것을 보고, 신발에 묻은 작은 죽은 나비가 원인임을 깨닫는다.",
+   "sentences": [
+    {
+     "translation": "타임머신이 멈췄다.",
+     "contextNote": "여행이 끝난다.",
+     "roles": [
+      {
+       "q": "The machine",
+       "role": "S"
+      },
+      {
+       "q": "stopped",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The machine",
+       "ko": "타임머신이"
+      },
+      {
+       "en": "stopped.",
+       "ko": "멈췄다."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 모두 안전하게 현재로 돌아왔다.",
+     "contextNote": "모두 무사히 돌아온 듯 보인다.",
+     "roles": [
+      {
+       "q": "They all",
+       "role": "S"
+      },
+      {
+       "q": "returned",
+       "role": "V"
+      },
+      {
+       "q": "to the present",
+       "role": "M"
+      },
+      {
+       "q": "safely",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They all returned",
+       "ko": "그들은 모두 돌아왔다"
+      },
+      {
+       "en": "to the present",
+       "ko": "현재로"
+      },
+      {
+       "en": "safely.",
+       "ko": "안전하게."
+      }
+     ]
+    },
+    {
+     "translation": "\"이곳은 모든 것이 괜찮나요?\" Travis가 물었다.",
+     "contextNote": "Travis가 달라진 것이 없는지 확인한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "Is everything"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Is",
+       "role": "V"
+      },
+      {
+       "q": "everything",
+       "role": "S"
+      },
+      {
+       "q": "okay",
+       "role": "C"
+      },
+      {
+       "q": "here",
+       "role": "M"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      },
+      {
+       "q": "Travis",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "Is everything",
+       "label": "동사",
+       "explanation": "everything은 '모든 것'이라는 뜻이지만 단수로 취급하므로 be동사는 Is를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Is everything okay",
+       "ko": "\"모든 것이 괜찮나요"
+      },
+      {
+       "en": "here?\"",
+       "ko": "이곳은?\""
+      },
+      {
+       "en": "asked Travis.",
+       "ko": "Travis가 물었다."
+      }
+     ]
+    },
+    {
+     "translation": "\"괜찮아요.",
+     "contextNote": "Parker 씨가 답한다."
+    },
+    {
+     "translation": "돌아오신 것을 환영합니다!\" Parker 씨가 말했다.",
+     "contextNote": "Parker 씨의 인사로, 겉보기에는 아무 일도 없어 보인다.",
+     "roles": [
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Mr. Parker",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Welcome home!\"",
+       "ko": "돌아오신 것을 환영합니다!\""
+      },
+      {
+       "en": "said Mr. Parker.",
+       "ko": "Parker 씨가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "Eckels는 방을 주의 깊게 둘러보았다.",
+     "contextNote": "Eckels가 불안한 마음에 주변을 살핀다.",
+     "roles": [
+      {
+       "q": "Eckels",
+       "role": "S"
+      },
+      {
+       "q": "looked",
+       "role": "V"
+      },
+      {
+       "q": "around the room",
+       "role": "M"
+      },
+      {
+       "q": "carefully",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "carefully",
+       "label": "동사 수식 부사",
+       "explanation": "동사 looked를 꾸미므로 형용사 careful이 아니라 부사 carefully를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Eckels looked around the room",
+       "ko": "Eckels는 방을 둘러보았다"
+      },
+      {
+       "en": "carefully.",
+       "ko": "주의 깊게."
+      }
+     ]
+    },
+    {
+     "translation": "벽에 걸린 큰 간판만 빼고 모든 것이 똑같아 보였다.",
+     "contextNote": "처음 장면의 간판이 달라졌다는 첫 단서이다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "looked the same"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Everything",
+       "role": "S"
+      },
+      {
+       "q": "looked",
+       "role": "V"
+      },
+      {
+       "q": "the same",
+       "role": "C"
+      },
+      {
+       "q": "except the big sign on the wall",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "looked the same",
+       "label": "연결동사 보어",
+       "star": true,
+       "explanation": "look은 '~하게 보이다'라는 뜻의 연결동사로, 뒤에 부사가 아니라 보어를 쓴다. the same(똑같은)이 주어의 상태를 설명한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Everything looked the same,",
+       "ko": "모든 것이 똑같아 보였다,"
+      },
+      {
+       "en": "except the big sign on the wall.",
+       "ko": "벽에 걸린 큰 간판만 빼고."
+      }
+     ]
+    },
+    {
+     "translation": "간판에는 이제 이렇게 쓰여 있었다. \"NAIM ANY YEER EN THE PAST.",
+     "contextNote": "NAME ANY YEAR IN THE PAST의 철자가 틀리게 바뀌어, 역사가 달라졌음을 보여 준다.",
+     "roles": [
+      {
+       "q": "The sign",
+       "role": "S"
+      },
+      {
+       "q": "now",
+       "role": "M"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The sign now said,",
+       "ko": "간판에는 이제 이렇게 쓰여 있었다."
+      },
+      {
+       "en": "\"NAIM ANY YEER EN THE PAST.",
+       "ko": "\"NAIM ANY YEER EN THE PAST."
+      }
+     ]
+    },
+    {
+     "translation": "WEE TAEK YU THAIR.\"",
+     "contextNote": "WE TAKE YOU THERE의 철자가 틀리게 바뀐 것이다."
+    },
+    {
+     "translation": "Eckels는 혼란스러웠다.",
+     "contextNote": "달라진 간판을 보고 어리둥절해한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "confused"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Eckels",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "confused",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "confused",
+       "label": "감정분사",
+       "star": true,
+       "explanation": "사람이 혼란을 느끼는 것이므로 과거분사 confused를 쓴다. 혼란을 일으키는 쪽이면 confusing을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Eckels was",
+       "ko": "Eckels는 ~했다"
+      },
+      {
+       "en": "confused.",
+       "ko": "혼란스러웠다."
+      }
+     ]
+    },
+    {
+     "translation": "그리고 그는 TV를 보았다.",
+     "contextNote": "두 번째 단서로 눈을 돌린다.",
+     "roles": [
+      {
+       "q": "Then",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "saw",
+       "role": "V"
+      },
+      {
+       "q": "the TV",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Then,",
+       "ko": "그리고"
+      },
+      {
+       "en": "he saw the TV.",
+       "ko": "그는 TV를 보았다."
+      }
+     ]
+    },
+    {
+     "translation": "뉴스에 새 대통령이 나오고 있었는데, Keith 씨가 아니었다.",
+     "contextNote": "대통령까지 바뀌어 역사가 달라졌음이 분명해진다.",
+     "roles": [
+      {
+       "q": "The new president",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "on the news",
+       "role": "A"
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "was not",
+       "role": "V"
+      },
+      {
+       "q": "Mr. Keith",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but it was not Mr. Keith",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      },
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= the new president"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The new president was on the news,",
+       "ko": "뉴스에 새 대통령이 나오고 있었는데,"
+      },
+      {
+       "en": "but it was not Mr. Keith.",
+       "ko": "Keith 씨가 아니었다."
+      }
+     ]
+    },
+    {
+     "translation": "\"이게 대체 무슨 일이지?\"",
+     "contextNote": "Eckels의 당황스러운 마음을 나타낸다.",
+     "roles": [
+      {
+       "q": "What",
+       "role": "S"
+      },
+      {
+       "q": "'s going on",
+       "role": "V"
+      }
+     ],
+     "points": [
+      {
+       "q": "'s going on",
+       "label": "진행상",
+       "explanation": "「be동사+동사-ing」는 지금 진행 중인 일을 나타낸다. go on은 '(일이) 일어나다'라는 뜻이고, 의문사 What이 주어로 쓰였다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"What's",
+       "ko": "\"무슨 일이"
+      },
+      {
+       "en": "going on?\"",
+       "ko": "일어나고 있는 거지?\""
+      }
+     ]
+    },
+    {
+     "translation": "그는 더욱 혼란스러워졌다.",
+     "contextNote": "혼란이 커진다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "got",
+       "role": "V"
+      },
+      {
+       "q": "more confused",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "got more confused",
+       "label": "연결동사 보어",
+       "star": true,
+       "explanation": "get은 뒤에 형용사가 오면 '~해지다'라는 뜻의 연결동사이다. confused의 비교급은 -er을 붙이지 않고 앞에 more를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He got",
+       "ko": "그는 ~해졌다"
+      },
+      {
+       "en": "more confused.",
+       "ko": "더욱 혼란스러워졌다."
+      }
+     ]
+    },
+    {
+     "translation": "그는 앉아서 신발에 묻은 진흙을 유심히 살펴보았다.",
+     "contextNote": "앞서 말한 진흙에서 원인을 찾기 시작한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "closely"
+      }
+     ],
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "sat down",
+       "role": "V"
+      },
+      {
+       "q": "looked",
+       "role": "V"
+      },
+      {
+       "q": "closely",
+       "role": "M"
+      },
+      {
+       "q": "at the mud on his shoes",
+       "role": "A"
+      }
+     ],
+     "points": [
+      {
+       "q": "closely",
+       "label": "혼동 부사",
+       "star": true,
+       "explanation": "closely는 '자세히, 유심히'라는 뜻의 부사이다. '가까이'라는 뜻의 close와 뜻이 다르므로 구별해야 한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He sat down",
+       "ko": "그는 앉아서"
+      },
+      {
+       "en": "and looked closely",
+       "ko": "유심히 살펴보았다"
+      },
+      {
+       "en": "at the mud on his shoes.",
+       "ko": "신발에 묻은 진흙을."
+      }
+     ]
+    },
+    {
+     "translation": "\"안 돼, 이럴 리가 없어,\" Eckels가 말했다.",
+     "contextNote": "믿을 수 없는 사실을 깨닫기 시작한다.",
+     "roles": [
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "can't be",
+       "role": "V"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Eckels",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "can't be",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "can't는 '~할 수 없다' 외에 '~일 리가 없다'는 강한 부정의 추측도 나타낸다. 여기서는 추측의 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"No,",
+       "ko": "\"안 돼,"
+      },
+      {
+       "en": "it can't be,\"",
+       "ko": "이럴 리가 없어,\""
+      },
+      {
+       "en": "said Eckels.",
+       "ko": "Eckels가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"이게 모두 이 작은 것 때문이라고?\"",
+     "contextNote": "작은 변화가 큰일을 초래한다는 Travis의 경고가 사실로 드러난다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "because of"
+      }
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "all because of this little thing",
+       "role": "A"
+      }
+     ],
+     "points": [
+      {
+       "q": "because of this little thing",
+       "label": "접속사·전치사 대비",
+       "star": true,
+       "explanation": "because of 뒤에는 명사(구)를 쓰고, because 뒤에는 주어와 동사가 있는 절을 쓴다. this little thing이 명사구이므로 because of를 썼다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"It's all",
+       "ko": "\"이게 모두 ~라고"
+      },
+      {
+       "en": "because of this little thing?\"",
+       "ko": "이 작은 것 때문이라고?\""
+      }
+     ]
+    },
+    {
+     "translation": "그는 충격을 받았다.",
+     "contextNote": "사실을 깨달은 Eckels의 반응이다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "shocked",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "shocked",
+       "label": "감정분사",
+       "explanation": "사람이 충격을 느끼는 것이므로 과거분사 shocked를 쓴다. 충격을 주는 쪽이면 shocking을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He was",
+       "ko": "그는 ~했다"
+      },
+      {
+       "en": "shocked.",
+       "ko": "충격을 받았다."
+      }
+     ]
+    },
+    {
+     "translation": "그는 자신의 오른쪽 신발에 묻은 진흙 속에서 죽어 있는 작은 나비 한 마리를 발견했다.",
+     "contextNote": "역사를 바꾼 원인이 밝혀지는 마지막 문장이다.",
+     "roles": [
+      {
+       "q": "In the mud on his right shoe",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "found",
+       "role": "V"
+      },
+      {
+       "q": "a small dead butterfly",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "In the mud on his right shoe,",
+       "ko": "자신의 오른쪽 신발에 묻은 진흙 속에서,"
+      },
+      {
+       "en": "he found a small dead butterfly.",
+       "ko": "그는 죽어 있는 작은 나비 한 마리를 발견했다."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

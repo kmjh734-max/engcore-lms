@@ -1,0 +1,1803 @@
+{
+ "passages": {
+  "4a5d969b-4ba3-4b32-ab59-62efad4b9ee3": {
+   "titleEn": "The Meaning of \"Break a Leg\"",
+   "topicEn": "\"Break a leg\" sounds like a bad wish, but it is a phrase that people say to wish performers good luck.",
+   "topicKo": "'다리 부러지세요'는 나쁜 말처럼 들리지만, 사람들이 공연자들에게 행운을 빌기 위해 말하는 어구이다.",
+   "sentences": [
+    {
+     "translation": "학교 연극의 날이었다.",
+     "contextNote": "이야기의 배경을 먼저 알려 준다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "the day of the school play",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "비인칭 주어 it",
+       "gloss": "날짜·때를 말할 때 쓰는 It. '그것'으로 해석하지 않는다"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was the day",
+       "ko": "날이었다"
+      },
+      {
+       "en": "of the school play.",
+       "ko": "학교 연극의."
+      }
+     ]
+    },
+    {
+     "translation": "Lily는 몇 주 동안 그 연극을 위해 연습했다.",
+     "contextNote": "Lily가 이 연극을 오래 준비했음을 말한다.",
+     "roles": [
+      {
+       "q": "Lily",
+       "role": "S"
+      },
+      {
+       "q": "practiced",
+       "role": "V"
+      },
+      {
+       "q": "for the play",
+       "role": "M"
+      },
+      {
+       "q": "for weeks",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Lily practiced",
+       "ko": "Lily는 연습했다"
+      },
+      {
+       "en": "for the play",
+       "ko": "그 연극을 위해"
+      },
+      {
+       "en": "for weeks.",
+       "ko": "몇 주 동안."
+      }
+     ]
+    },
+    {
+     "translation": "커튼이 막 올라가려는 참에, 그녀는 매우 긴장했다.",
+     "contextNote": "공연 직전 Lily의 긴장을 보여 준다.",
+     "roles": [
+      {
+       "q": "The curtains",
+       "role": "S"
+      },
+      {
+       "q": "were about to go up",
+       "role": "V"
+      },
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "felt",
+       "role": "V"
+      },
+      {
+       "q": "very nervous",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and she felt very nervous",
+       "label": "등위절"
+      }
+     ],
+     "points": [
+      {
+       "q": "felt very nervous",
+       "label": "연결동사 보어",
+       "explanation": "feel은 뒤에 형용사 보어를 받아 '~하게 느끼다'라는 뜻을 나타낸다. 보어 자리이므로 부사 nervously를 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The curtains were about to go up,",
+       "ko": "커튼이 막 올라가려는 참에,"
+      },
+      {
+       "en": "and she felt very nervous.",
+       "ko": "그녀는 매우 긴장했다."
+      }
+     ]
+    },
+    {
+     "translation": "그녀의 친구가 웃으며 말했다, \"다리 부러져!",
+     "contextNote": "이 과에서 뜻을 알아볼 표현 Break a leg가 처음 나온다.",
+     "roles": [
+      {
+       "q": "Her friend",
+       "role": "S"
+      },
+      {
+       "q": "smiled",
+       "role": "V"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"Break a leg!",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Her friend smiled and said,",
+       "ko": "그녀의 친구가 웃으며 말했다,"
+      },
+      {
+       "en": "\"Break a leg!\"",
+       "ko": "\"다리 부러져!"
+      }
+     ]
+    },
+    {
+     "translation": "Lily는 \"고마워.",
+     "contextNote": "뜻밖에도 Lily는 친구의 말에 고마워한다. 다음 문장까지 이어지는 말이다.",
+     "roles": [
+      {
+       "q": "Lily",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"Thanks.",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Lily said,",
+       "ko": "Lily는 말했다"
+      },
+      {
+       "en": "\"Thanks.",
+       "ko": "\"고마워."
+      }
+     ]
+    },
+    {
+     "translation": "그럴게!\"라고 말했다.",
+     "contextNote": "will 뒤에 앞의 break a leg가 생략되었다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "will",
+       "role": "V"
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 무대에 올랐고 성공적으로 공연했다.",
+     "contextNote": "Lily가 공연을 잘 해냈다는 결과를 말한다.",
+     "roles": [
+      {
+       "q": "She",
+       "role": "S"
+      },
+      {
+       "q": "got on",
+       "role": "V"
+      },
+      {
+       "q": "the stage",
+       "role": "O"
+      },
+      {
+       "q": "performed",
+       "role": "V"
+      },
+      {
+       "q": "successfully",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "successfully",
+       "label": "동사 수식 부사",
+       "gloss": "동사 performed를 꾸미는 부사"
+      }
+     ],
+     "points": [
+      {
+       "q": "got on the stage and performed",
+       "label": "동사 병렬",
+       "explanation": "주어 She 하나에 동사 got on과 performed가 and로 이어져 있다. 두 동사 모두 과거 시제로 형태를 맞추었다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "She got on the stage",
+       "ko": "그녀는 무대에 올랐고"
+      },
+      {
+       "en": "and performed successfully.",
+       "ko": "성공적으로 공연했다."
+      }
+     ]
+    },
+    {
+     "translation": "비록 \"다리 부러지세요!\"가 나쁜 것처럼 들릴 수 있지만, 그것은 사실 \"행운을 빌어요!\"를 의미한다.",
+     "contextNote": "표현의 겉뜻과 실제 뜻을 대비해 밝히는 이 글의 중심 문장이다.",
+     "tags": [
+      "주제문",
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "Although"
+      }
+     ],
+     "roles": [
+      {
+       "q": "\"Break a leg!\"",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "may sound",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "like a bad thing",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "actually",
+       "role": "M"
+      },
+      {
+       "q": "means",
+       "role": "V"
+      },
+      {
+       "q": "\"Good luck!",
+       "role": "O"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "Although \"Break a leg!\" may sound like a bad thing",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= \"Break a leg!\""
+      }
+     ],
+     "points": [
+      {
+       "q": "Although \"Break a leg!\" may sound like a bad thing",
+       "label": "양보 부사절",
+       "star": true,
+       "explanation": "접속사 although는 '비록 ~이지만'이라는 뜻으로 뒤에 주어와 동사가 있는 절을 이끈다. 앞뒤 내용이 서로 반대될 때 쓰며, 같은 문장에 but을 함께 쓰지 않는다.",
+       "rewrite": "\"Break a leg!\" may sound like a bad thing, but it actually means \"Good luck!\""
+      },
+      {
+       "q": "sound like a bad thing",
+       "label": "연결동사 보어",
+       "explanation": "sound 뒤에 형용사를 쓰면 '~하게 들리다'이고, 명사를 쓸 때는 like를 붙여 「sound like+명사」(~처럼 들리다)로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Although \"Break a leg!\"",
+       "ko": "비록 \"다리 부러지세요!\"가"
+      },
+      {
+       "en": "may sound like a bad thing,",
+       "ko": "나쁜 것처럼 들릴 수 있지만,"
+      },
+      {
+       "en": "it actually means",
+       "ko": "그것은 사실 의미한다"
+      },
+      {
+       "en": "\"Good luck!\"",
+       "ko": "\"행운을 빌어요!\"를"
+      }
+     ]
+    },
+    {
+     "translation": "20세기 초에 미국에 온 독일 배우들이 이 어구를 처음 사용했다.",
+     "contextNote": "이 표현이 어디에서 시작되었는지 밝힌다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "who came"
+      }
+     ],
+     "roles": [
+      {
+       "q": "German actors who came to the United States in the early 20th century",
+       "role": "S"
+      },
+      {
+       "q": "came",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "to the United States",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "in the early 20th century",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "first",
+       "role": "M"
+      },
+      {
+       "q": "used",
+       "role": "V"
+      },
+      {
+       "q": "this phrase",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "who came to the United States in the early 20th century",
+       "label": "주격 관계대명사",
+       "star": true,
+       "explanation": "who는 선행사 German actors를 꾸미는 절을 이끌고, 절 안에서 주어 역할을 하는 주격 관계대명사이다. 그래서 who 뒤에 동사 came이 바로 온다. 목적어가 빠진 절을 이끄는 목적격 관계대명사와 구별하며, 문장 전체의 동사는 used이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "German actors",
+       "ko": "독일 배우들이"
+      },
+      {
+       "en": "who came to the United States",
+       "ko": "미국에 온"
+      },
+      {
+       "en": "in the early 20th century",
+       "ko": "20세기 초에"
+      },
+      {
+       "en": "first used this phrase.",
+       "ko": "이 어구를 처음 사용했다."
+      }
+     ]
+    },
+    {
+     "translation": "서로에게 불운을 빎으로써, 그들은 그것이 없어질 거라고 믿었다.",
+     "contextNote": "나쁜 말을 주고받은 까닭을 설명한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "By wishing"
+      }
+     ],
+     "roles": [
+      {
+       "q": "By wishing each other bad luck",
+       "role": "M"
+      },
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "believed",
+       "role": "V"
+      },
+      {
+       "q": "that it would go away",
+       "role": "O"
+      },
+      {
+       "q": "it",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "would go away",
+       "role": "V",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that it would go away",
+       "kind": "nominal"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= bad luck"
+      }
+     ],
+     "points": [
+      {
+       "q": "By wishing",
+       "label": "전치사+동명사",
+       "star": true,
+       "explanation": "전치사 by 뒤에는 동명사를 쓰며, 「by+동명사」는 '~함으로써'라는 뜻이다. wish는 뒤에 '~에게'(each other)와 '~을'(bad luck)을 차례로 받았다."
+      },
+      {
+       "q": "that it would go away",
+       "label": "that 명사절",
+       "explanation": "접속사 that이 이끄는 절이 동사 believed의 목적어로 쓰여 '~라고'라는 뜻을 나타낸다. 주절의 동사가 과거이므로 that절에서도 will의 과거형 would를 썼다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "By wishing each other bad luck,",
+       "ko": "서로에게 불운을 빎으로써,"
+      },
+      {
+       "en": "they believed",
+       "ko": "그들은 믿었다"
+      },
+      {
+       "en": "that it would go away.",
+       "ko": "그것이 없어질 거라고."
+      }
+     ]
+    },
+    {
+     "translation": "이 표현은 오늘날에도 여전히 사용된다.",
+     "contextNote": "이 표현이 지금까지 이어지고 있음을 말한다.",
+     "roles": [
+      {
+       "q": "This expression",
+       "role": "S"
+      },
+      {
+       "q": "is still used",
+       "role": "V"
+      },
+      {
+       "q": "today",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "is still used",
+       "label": "수동태",
+       "explanation": "표현은 사람들이 '사용하는' 대상이므로 「be동사+과거분사」의 수동태로 쓴다. 부사 still은 be동사와 과거분사 사이에 왔다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "This expression is still used",
+       "ko": "이 표현은 여전히 사용된다"
+      },
+      {
+       "en": "today.",
+       "ko": "오늘날에도."
+      }
+     ]
+    },
+    {
+     "translation": "'다리 부러지세요'는 사람들이 공연 전에 공연자들에게 행운을 빌기 위해 말하는 어구이다.",
+     "contextNote": "표현의 뜻을 한 문장으로 정리한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "that people say"
+      }
+     ],
+     "roles": [
+      {
+       "q": "\"Break a leg\"",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "a phrase that people say to wish performers good luck before a show",
+       "role": "C"
+      },
+      {
+       "q": "people",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "say",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "to wish performers good luck before a show",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "points": [
+      {
+       "q": "that people say",
+       "label": "목적격 관계대명사",
+       "star": true,
+       "explanation": "that은 선행사 a phrase를 꾸미는 절을 이끌고, 절 안에서 say의 목적어 역할을 하는 목적격 관계대명사이다. 그래서 say 뒤에 목적어가 다시 오지 않으며, 이 that은 생략할 수 있다."
+      },
+      {
+       "q": "to wish performers good luck",
+       "label": "부사적 용법",
+       "explanation": "to부정사가 '~하기 위해'라는 목적을 나타낸다. 「wish+사람+good luck」은 '~에게 행운을 빌다'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Break a leg\" is a phrase",
+       "ko": "'다리 부러지세요'는 어구이다"
+      },
+      {
+       "en": "that people say",
+       "ko": "사람들이 말하는"
+      },
+      {
+       "en": "to wish performers good luck",
+       "ko": "공연자들에게 행운을 빌기 위해"
+      },
+      {
+       "en": "before a show.",
+       "ko": "공연 전에."
+      }
+     ]
+    }
+   ]
+  },
+  "3f50afd7-1c34-4c7e-8b0d-7f26ea87cfe0": {
+   "titleEn": "The Meaning of \"Spill the Beans\"",
+   "topicEn": "\"Spill the beans\" means to reveal a secret, and it comes from an ancient Greek way of voting.",
+   "topicKo": "'콩을 쏟다'는 비밀을 드러낸다는 뜻이고, 고대 그리스의 투표 방법에서 유래했다.",
+   "sentences": [
+    {
+     "translation": "Tommy와 Lisa는 하나를 위한 깜짝 파티를 준비하고 있었다.",
+     "contextNote": "이야기의 상황을 알려 준다.",
+     "roles": [
+      {
+       "q": "Tommy and Lisa",
+       "role": "S"
+      },
+      {
+       "q": "were preparing",
+       "role": "V"
+      },
+      {
+       "q": "a surprise party for Hana",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Tommy and Lisa were preparing",
+       "ko": "Tommy와 Lisa는 준비하고 있었다"
+      },
+      {
+       "en": "a surprise party for Hana.",
+       "ko": "하나를 위한 깜짝 파티를."
+      }
+     ]
+    },
+    {
+     "translation": "그러나 Tommy는 비밀을 지키는 것을 잘하지 못했다.",
+     "contextNote": "파티에 생길 수 있는 걱정거리를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "at keeping"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Tommy",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "good at keeping secrets",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "at keeping",
+       "label": "전치사+동명사",
+       "star": true,
+       "explanation": "「be good at」은 '~을 잘하다'라는 뜻이다. 전치사 at 뒤이므로 동사를 동명사 keeping으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But Tommy was not good",
+       "ko": "그러나 Tommy는 잘하지 못했다"
+      },
+      {
+       "en": "at keeping secrets.",
+       "ko": "비밀을 지키는 것을."
+      }
+     ]
+    },
+    {
+     "translation": "그래서, Lisa는 그에게 \"콩을 쏟지 마.\"라고 말했다.",
+     "contextNote": "이 과에서 뜻을 알아볼 표현 spill the beans가 처음 나온다.",
+     "roles": [
+      {
+       "q": "Lisa",
+       "role": "S"
+      },
+      {
+       "q": "told",
+       "role": "V"
+      },
+      {
+       "q": "him",
+       "role": "IO"
+      },
+      {
+       "q": "\"Don't spill the beans.",
+       "role": "DO"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "So, Lisa told him,",
+       "ko": "그래서, Lisa는 그에게 말했다"
+      },
+      {
+       "en": "\"Don't spill the beans.\"",
+       "ko": "\"콩을 쏟지 마.\""
+      }
+     ]
+    },
+    {
+     "translation": "Tommy는 \"걱정 마.",
+     "contextNote": "Lisa를 안심시키는 말이다. 다음 문장까지 이어진다.",
+     "roles": [
+      {
+       "q": "Tommy",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"Don't worry.",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Tommy said,",
+       "ko": "Tommy는 말했다"
+      },
+      {
+       "en": "\"Don't worry.",
+       "ko": "\"걱정 마."
+      }
+     ]
+    },
+    {
+     "translation": "하나에게 말하지 않겠다고 약속해.\"라고 말했다.",
+     "contextNote": "Tommy가 비밀을 지키겠다고 약속한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "not to tell"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "promise",
+       "role": "V"
+      },
+      {
+       "q": "not to tell Hana",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "not to tell Hana",
+       "label": "to부정사",
+       "star": true,
+       "explanation": "promise는 to부정사를 목적어로 받아 '~하기로 약속하다'라는 뜻을 나타낸다. to부정사를 부정할 때는 not을 to 바로 앞에 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I promise",
+       "ko": "약속해"
+      },
+      {
+       "en": "not to tell Hana.\"",
+       "ko": "하나에게 말하지 않겠다고."
+      }
+     ]
+    },
+    {
+     "translation": "Tommy는 그의 약속을 지켰고 깜짝 파티는 크게 성공했다.",
+     "contextNote": "약속을 지킨 결과를 말한다.",
+     "roles": [
+      {
+       "q": "Tommy",
+       "role": "S"
+      },
+      {
+       "q": "kept",
+       "role": "V"
+      },
+      {
+       "q": "his promise",
+       "role": "O"
+      },
+      {
+       "q": "the surprise party",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a big success",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and the surprise party was a big success",
+       "label": "등위절"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Tommy kept his promise",
+       "ko": "Tommy는 그의 약속을 지켰고"
+      },
+      {
+       "en": "and the surprise party was a big success.",
+       "ko": "깜짝 파티는 크게 성공했다."
+      }
+     ]
+    },
+    {
+     "translation": "하나는 완전히 깜짝 놀랐다.",
+     "contextNote": "파티가 성공했다는 것을 하나의 반응으로 보여 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "surprised"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Hana",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "completely",
+       "role": "M"
+      },
+      {
+       "q": "surprised",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "surprised",
+       "label": "감정분사",
+       "star": true,
+       "explanation": "사람이 놀라움을 느끼는 것이므로 과거분사형 형용사 surprised를 쓴다. 놀라움을 주는 대상을 말할 때는 surprising을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Hana was",
+       "ko": "하나는 ~했다"
+      },
+      {
+       "en": "completely surprised.",
+       "ko": "완전히 깜짝 놀랐다."
+      }
+     ]
+    },
+    {
+     "translation": "어구 '콩을 쏟다'가 무엇을 의미할까?",
+     "contextNote": "질문을 던져 표현의 뜻 설명으로 넘어간다.",
+     "roles": [
+      {
+       "q": "What",
+       "role": "O"
+      },
+      {
+       "q": "does",
+       "role": "V"
+      },
+      {
+       "q": "the phrase \"spill the beans\"",
+       "role": "S"
+      },
+      {
+       "q": "mean",
+       "role": "V"
+      }
+     ],
+     "notes": [
+      {
+       "q": "\"spill the beans\"",
+       "label": "동격구",
+       "gloss": "= the phrase"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "What does the phrase \"spill the beans\"",
+       "ko": "어구 '콩을 쏟다'가 무엇을"
+      },
+      {
+       "en": "mean?",
+       "ko": "의미할까?"
+      }
+     ]
+    },
+    {
+     "translation": "그것은 비밀을 드러내는 것을 의미한다.",
+     "contextNote": "앞 질문에 답하며 표현의 뜻을 밝힌다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "means",
+       "role": "V"
+      },
+      {
+       "q": "to reveal a secret",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "gloss": "= the phrase \"spill the beans\""
+      }
+     ],
+     "points": [
+      {
+       "q": "to reveal a secret",
+       "label": "명사적 용법 to부정사",
+       "star": true,
+       "explanation": "to부정사구가 동사 means의 목적어로 쓰여 '~하는 것을'이라는 뜻을 나타낸다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It means",
+       "ko": "그것은 의미한다"
+      },
+      {
+       "en": "to reveal a secret.",
+       "ko": "비밀을 드러내는 것을."
+      }
+     ]
+    },
+    {
+     "translation": "이 어구는 어디에서 유래한 것일까?",
+     "contextNote": "질문을 던져 표현의 유래 설명으로 넘어간다.",
+     "roles": [
+      {
+       "q": "Where",
+       "role": "A"
+      },
+      {
+       "q": "does",
+       "role": "V"
+      },
+      {
+       "q": "this phrase",
+       "role": "S"
+      },
+      {
+       "q": "come from",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Where does this phrase",
+       "ko": "이 어구는 어디에서"
+      },
+      {
+       "en": "come from?",
+       "ko": "유래한 것일까?"
+      }
+     ]
+    },
+    {
+     "translation": "그것은 고대 그리스의 투표 방법에서 유래한 것이다.",
+     "contextNote": "앞 질문에 답하며 유래를 밝힌다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "comes",
+       "role": "V"
+      },
+      {
+       "q": "from an ancient Greek way of voting",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It comes from",
+       "ko": "그것은 유래한 것이다"
+      },
+      {
+       "en": "an ancient Greek way of voting.",
+       "ko": "고대 그리스의 투표 방법에서."
+      }
+     ]
+    },
+    {
+     "translation": "그리스인들이 투표할 때, 그들은 흰색이나 검은색 콩을 큰 항아리에 넣었다.",
+     "contextNote": "콩으로 투표하던 방법을 설명한다.",
+     "roles": [
+      {
+       "q": "Greeks",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "voted",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "put",
+       "role": "V"
+      },
+      {
+       "q": "a white or black bean",
+       "role": "O"
+      },
+      {
+       "q": "in a big jar",
+       "role": "A"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When Greeks voted",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "When Greeks voted",
+       "label": "시간 부사절",
+       "gloss": "when: '~할 때'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When Greeks voted,",
+       "ko": "그리스인들이 투표할 때,"
+      },
+      {
+       "en": "they put a white or black bean",
+       "ko": "그들은 흰색이나 검은색 콩을 넣었다"
+      },
+      {
+       "en": "in a big jar.",
+       "ko": "큰 항아리에."
+      }
+     ]
+    },
+    {
+     "translation": "투표가 완료되었을 때, 그 콩들은 결과를 드러내기 위해 쏟아졌다.",
+     "contextNote": "콩을 쏟는 일이 결과를 드러내는 일이었음을 말한다. 표현의 뜻과 이어지는 대목이다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "were spilled"
+      }
+     ],
+     "roles": [
+      {
+       "q": "the voting",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "was completed",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the beans",
+       "role": "S"
+      },
+      {
+       "q": "were spilled",
+       "role": "V"
+      },
+      {
+       "q": "to reveal the results",
+       "role": "M"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When the voting was completed",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "were spilled",
+       "label": "수동태",
+       "star": true,
+       "explanation": "콩은 사람이 '쏟는' 대상이므로 「be동사+과거분사」의 수동태로 쓴다. 주어 the beans가 복수이고 과거의 일이므로 were를 쓴다."
+      },
+      {
+       "q": "to reveal the results",
+       "label": "부사적 용법",
+       "explanation": "to부정사가 '~하기 위해'라는 목적을 나타낸다. 콩을 쏟은 목적이 결과를 드러내는 것이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When the voting was completed,",
+       "ko": "투표가 완료되었을 때,"
+      },
+      {
+       "en": "the beans were spilled",
+       "ko": "그 콩들은 쏟아졌다"
+      },
+      {
+       "en": "to reveal the results.",
+       "ko": "결과를 드러내기 위해."
+      }
+     ]
+    },
+    {
+     "translation": "그때부터, 사람들은 이 어구를 새로운 의미로 사용하기 시작했다.",
+     "contextNote": "표현이 오늘날의 뜻을 갖게 된 과정을 맺는다.",
+     "roles": [
+      {
+       "q": "From then",
+       "role": "M"
+      },
+      {
+       "q": "people",
+       "role": "S"
+      },
+      {
+       "q": "began",
+       "role": "V"
+      },
+      {
+       "q": "to use this phrase with a new meaning",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "to use this phrase with a new meaning",
+       "label": "to부정사",
+       "explanation": "begin은 to부정사를 목적어로 받아 '~하기 시작하다'라는 뜻을 나타낸다. 동명사(using)를 써도 뜻이 같다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "From then,",
+       "ko": "그때부터,"
+      },
+      {
+       "en": "people began to use this phrase",
+       "ko": "사람들은 이 어구를 사용하기 시작했다"
+      },
+      {
+       "en": "with a new meaning.",
+       "ko": "새로운 의미로."
+      }
+     ]
+    }
+   ]
+  },
+  "06a1dc26-5391-4dea-a350-0ab65754ce7c": {
+   "titleEn": "The Meaning of \"Take a Rain Check\"",
+   "topicEn": "\"Take a rain check\" means to refuse an offer politely but wish to do it later, and it comes from baseball games.",
+   "topicKo": "'우천 교환권을 받는다'는 제안을 정중하게 거절하지만 나중에 하고 싶다는 뜻이고, 야구 경기에서 유래했다.",
+   "sentences": [
+    {
+     "translation": "Sarah는 그녀의 가장 친한 친구 Emily와 영화를 보러 가고 싶었다.",
+     "contextNote": "이야기의 상황을 알려 준다.",
+     "roles": [
+      {
+       "q": "Sarah",
+       "role": "S"
+      },
+      {
+       "q": "wanted",
+       "role": "V"
+      },
+      {
+       "q": "to see a movie with her best friend, Emily",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "Emily",
+       "label": "동격구",
+       "gloss": "= her best friend"
+      }
+     ],
+     "points": [
+      {
+       "q": "wanted to see",
+       "label": "to부정사",
+       "explanation": "want는 to부정사를 목적어로 받아 '~하고 싶다'는 뜻을 나타낸다. 동명사(seeing)를 목적어로 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Sarah wanted to see a movie",
+       "ko": "Sarah는 영화를 보러 가고 싶었다"
+      },
+      {
+       "en": "with her best friend, Emily.",
+       "ko": "그녀의 가장 친한 친구 Emily와."
+      }
+     ]
+    },
+    {
+     "translation": "그래서 그녀는 Emily에게 물었다, \"오늘 나랑 영화 볼래?",
+     "contextNote": "Sarah가 Emily에게 제안하는 말이다.",
+     "roles": [
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      },
+      {
+       "q": "Emily",
+       "role": "IO"
+      },
+      {
+       "q": "\"Do you want to see a movie with me today?",
+       "role": "DO"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "So, she asked Emily,",
+       "ko": "그래서 그녀는 Emily에게 물었다,"
+      },
+      {
+       "en": "\"Do you want to see a movie",
+       "ko": "\"영화 볼래?"
+      },
+      {
+       "en": "with me today?\"",
+       "ko": "오늘 나랑"
+      }
+     ]
+    },
+    {
+     "translation": "Emily는 대답했다, \"미안하지만, 난 우천 교환권을 받아야만 해.",
+     "contextNote": "이 과에서 뜻을 알아볼 표현 take a rain check가 처음 나온다.",
+     "roles": [
+      {
+       "q": "Emily",
+       "role": "S"
+      },
+      {
+       "q": "replied",
+       "role": "V"
+      },
+      {
+       "q": "\"I'm sorry, but I have to take a rain check.",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "have to take",
+       "label": "조동사 의미",
+       "gloss": "have to: '~해야 한다'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Emily replied,",
+       "ko": "Emily는 대답했다,"
+      },
+      {
+       "en": "\"I'm sorry,",
+       "ko": "\"미안하지만,"
+      },
+      {
+       "en": "but I have to take a rain check.",
+       "ko": "난 우천 교환권을 받아야만 해."
+      }
+     ]
+    },
+    {
+     "translation": "나는 오늘 할머니 댁에 가야 해.",
+     "contextNote": "제안을 거절하는 까닭을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "have to go",
+       "role": "V"
+      },
+      {
+       "q": "to my grandmother's house",
+       "role": "M"
+      },
+      {
+       "q": "today",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I have to go",
+       "ko": "나는 가야 해"
+      },
+      {
+       "en": "to my grandmother's house",
+       "ko": "할머니 댁에"
+      },
+      {
+       "en": "today.\"",
+       "ko": "오늘."
+      }
+     ]
+    },
+    {
+     "translation": "\"괜찮아.",
+     "contextNote": "Sarah가 Emily의 거절을 받아들이는 말이다."
+    },
+    {
+     "translation": "다음에 보자.\"라고 Sarah가 말했다.",
+     "contextNote": "Sarah가 약속을 다음으로 미룬다. do it은 영화를 보는 일을 가리킨다.",
+     "roles": [
+      {
+       "q": "Let's do it another time,\"",
+       "role": "O"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Sarah",
+       "role": "S"
+      }
+     ],
+     "notes": [
+      {
+       "q": "said Sarah",
+       "label": "도치",
+       "gloss": "= Sarah said. 따온 말 뒤에서 동사와 주어의 자리가 바뀜"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Let's do it another time,\"",
+       "ko": "다음에 보자.\"라고"
+      },
+      {
+       "en": "said Sarah.",
+       "ko": "Sarah가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "비록 Sarah는 조금 실망했지만, 그녀는 Emily의 상황을 이해했다.",
+     "contextNote": "실망했지만 친구를 이해하는 Sarah의 마음을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "Although"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Sarah",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "was",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "a little disappointed",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "understood",
+       "role": "V"
+      },
+      {
+       "q": "Emily's situation",
+       "role": "O"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "Although Sarah was a little disappointed",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "Although Sarah was a little disappointed",
+       "label": "양보 부사절",
+       "star": true,
+       "explanation": "접속사 although는 '비록 ~이지만'이라는 뜻으로 뒤에 주어와 동사가 있는 절을 이끈다. 실망했다는 내용과 이해했다는 내용이 서로 반대된다.",
+       "rewrite": "Sarah was a little disappointed, but she understood Emily's situation."
+      },
+      {
+       "q": "disappointed",
+       "label": "감정분사",
+       "explanation": "사람이 실망을 느끼는 것이므로 과거분사형 형용사 disappointed를 쓴다. 실망을 주는 대상을 말할 때는 disappointing을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Although Sarah was a little disappointed,",
+       "ko": "비록 Sarah는 조금 실망했지만,"
+      },
+      {
+       "en": "she understood Emily's situation.",
+       "ko": "그녀는 Emily의 상황을 이해했다."
+      }
+     ]
+    },
+    {
+     "translation": "'우천 교환권을 받는다'가 무엇을 의미할까?",
+     "contextNote": "질문을 던져 표현의 뜻 설명으로 넘어간다.",
+     "roles": [
+      {
+       "q": "What",
+       "role": "O"
+      },
+      {
+       "q": "does",
+       "role": "V"
+      },
+      {
+       "q": "\"take a rain check\"",
+       "role": "S"
+      },
+      {
+       "q": "mean",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "What does \"take a rain check\"",
+       "ko": "'우천 교환권을 받는다'가 무엇을"
+      },
+      {
+       "en": "mean?",
+       "ko": "의미할까?"
+      }
+     ]
+    },
+    {
+     "translation": "그것은 제안을 정중하게 거절하지만 나중에 하고 싶어 한다는 것을 의미한다.",
+     "contextNote": "앞 질문에 답하며 표현의 뜻을 밝힌다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "means",
+       "role": "V"
+      },
+      {
+       "q": "to refuse an offer politely but wish to do it later",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "to refuse an offer politely but wish",
+       "label": "준동사 병렬",
+       "star": true,
+       "explanation": "to refuse와 (to) wish가 but으로 이어져 means의 목적어가 된다. 두 번째 to는 생략되었으므로 wish를 동사원형으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It means",
+       "ko": "그것은 의미한다"
+      },
+      {
+       "en": "to refuse an offer politely",
+       "ko": "제안을 정중하게 거절하지만"
+      },
+      {
+       "en": "but wish to do it later.",
+       "ko": "나중에 하고 싶어 한다는 것을."
+      }
+     ]
+    },
+    {
+     "translation": "어구 '우천 교환권'은 1880년대에 야구 경기에서 처음 사용되었다.",
+     "contextNote": "표현의 유래를 설명하기 시작한다.",
+     "roles": [
+      {
+       "q": "The phrase \"rain check\"",
+       "role": "S"
+      },
+      {
+       "q": "was first used",
+       "role": "V"
+      },
+      {
+       "q": "at a baseball game",
+       "role": "M"
+      },
+      {
+       "q": "in the 1880s",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "\"rain check\"",
+       "label": "동격구",
+       "gloss": "= The phrase"
+      }
+     ],
+     "points": [
+      {
+       "q": "was first used",
+       "label": "수동태",
+       "explanation": "어구는 사람들이 '사용하는' 대상이므로 수동태로 쓴다. 과거의 일이므로 was를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The phrase \"rain check\" was first used",
+       "ko": "어구 '우천 교환권'은 처음 사용되었다"
+      },
+      {
+       "en": "at a baseball game",
+       "ko": "야구 경기에서"
+      },
+      {
+       "en": "in the 1880s.",
+       "ko": "1880년대에."
+      }
+     ]
+    },
+    {
+     "translation": "우천 교환권은 비 때문에 야구 경기가 취소되었을 때 사람들이 미래의 경기를 위해 받는 표였다.",
+     "contextNote": "rain check가 원래 무엇이었는지 설명한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "that people got"
+      }
+     ],
+     "roles": [
+      {
+       "q": "A rain check",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a ticket that people got for a future game when a baseball game was canceled because of rain",
+       "role": "C"
+      },
+      {
+       "q": "people",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "got",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "for a future game",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "a baseball game",
+       "role": "S",
+       "level": 2
+      },
+      {
+       "q": "was canceled",
+       "role": "V",
+       "level": 2
+      },
+      {
+       "q": "because of rain",
+       "role": "M",
+       "level": 2
+      }
+     ],
+     "brackets": [
+      {
+       "q": "when a baseball game was canceled because of rain",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "because of rain",
+       "label": "부사적 어구",
+       "gloss": "because of + 명사: '~ 때문에'"
+      }
+     ],
+     "points": [
+      {
+       "q": "that people got for a future game",
+       "label": "목적격 관계대명사",
+       "star": true,
+       "explanation": "that은 선행사 a ticket을 꾸미는 절을 이끌고, 절 안에서 got의 목적어 역할을 하는 목적격 관계대명사이다. 그래서 got 뒤에 목적어가 다시 오지 않으며, 이 that은 생략할 수 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "A rain check was a ticket",
+       "ko": "우천 교환권은 표였다"
+      },
+      {
+       "en": "that people got for a future game",
+       "ko": "사람들이 미래의 경기를 위해 받는"
+      },
+      {
+       "en": "when a baseball game was canceled",
+       "ko": "야구 경기가 취소되었을 때"
+      },
+      {
+       "en": "because of rain.",
+       "ko": "비 때문에."
+      }
+     ]
+    },
+    {
+     "translation": "이후에, 우천 교환권들이 다른 스포츠 행사들에서 주어졌다.",
+     "contextNote": "rain check가 쓰이는 자리가 넓어졌음을 말한다.",
+     "roles": [
+      {
+       "q": "Later",
+       "role": "M"
+      },
+      {
+       "q": "rain checks",
+       "role": "S"
+      },
+      {
+       "q": "were given",
+       "role": "V"
+      },
+      {
+       "q": "at other sporting events",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Later,",
+       "ko": "이후에,"
+      },
+      {
+       "en": "rain checks were given",
+       "ko": "우천 교환권들이 주어졌다"
+      },
+      {
+       "en": "at other sporting events.",
+       "ko": "다른 스포츠 행사들에서."
+      }
+     ]
+    },
+    {
+     "translation": "시간이 흐르면서, '우천 교환권을 받는다'는 당신이 지금은 어떤 일을 할 수 없고 나중에 그것을 하고 싶다고 말하기 위해 널리 사용되어 왔다.",
+     "contextNote": "표현이 오늘날의 뜻으로 쓰이게 된 과정을 맺는다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "has been widely used"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Over time",
+       "role": "M"
+      },
+      {
+       "q": "\"take a rain check\"",
+       "role": "S"
+      },
+      {
+       "q": "has been widely used",
+       "role": "V"
+      },
+      {
+       "q": "to say that you can't do something now and want to do it later",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "has been widely used",
+       "label": "완료 수동",
+       "star": true,
+       "explanation": "「have/has been+과거분사」는 과거부터 지금까지 '~되어 왔다'는 뜻이다. 표현은 사용되는 대상이므로 수동이고, 오랜 시간 이어져 왔으므로 현재완료로 쓴다."
+      },
+      {
+       "q": "to say that you can't do something now and want to do it later",
+       "label": "부사적 용법",
+       "explanation": "to부정사가 '~하기 위해'라는 목적을 나타낸다. say의 목적어인 that절 안에서 can't do와 want가 and로 이어져 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Over time,",
+       "ko": "시간이 흐르면서,"
+      },
+      {
+       "en": "\"take a rain check\" has been widely used",
+       "ko": "'우천 교환권을 받는다'는 널리 사용되어 왔다"
+      },
+      {
+       "en": "to say",
+       "ko": "말하기 위해"
+      },
+      {
+       "en": "that you can't do something now",
+       "ko": "당신이 지금은 어떤 일을 할 수 없고"
+      },
+      {
+       "en": "and want to do it later.",
+       "ko": "나중에 그것을 하고 싶다고."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

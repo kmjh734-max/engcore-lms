@@ -1,0 +1,1524 @@
+{
+ "passages": {
+  "dc2a65b6-39fc-4f5f-bfb1-7216d270774a": {
+   "titleEn": "Introducing Amelia's Trip to Sokcho",
+   "topicEn": "Amelia from London went to Sokcho with Subin's family and wrote a travel diary.",
+   "topicKo": "런던 출신의 Amelia는 수빈이의 가족과 속초에 다녀와서 여행기를 썼다.",
+   "sentences": [
+    {
+     "translation": "Amelia는 런던 출신이다.",
+     "contextNote": "여행기를 쓴 Amelia가 누구인지 소개한다.",
+     "roles": [
+      {
+       "q": "Amelia",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "from London",
+       "role": "A"
+      }
+     ],
+     "notes": [
+      {
+       "q": "is from",
+       "label": "필수 전치사",
+       "gloss": "be from: '~ 출신이다'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Amelia is",
+       "ko": "Amelia는"
+      },
+      {
+       "en": "from London.",
+       "ko": "런던 출신이다."
+      }
+     ]
+    },
+    {
+     "translation": "지난주에, 그녀는 수빈이의 가족과 함께 속초에 갔다.",
+     "contextNote": "언제, 누구와, 어디로 여행을 갔는지 밝힌다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "went"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Last week",
+       "role": "M"
+      },
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "went",
+       "role": "V"
+      },
+      {
+       "q": "to Sokcho",
+       "role": "A"
+      },
+      {
+       "q": "with Subin's family",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "she",
+       "label": "대명사 선행사",
+       "gloss": "= Amelia"
+      }
+     ],
+     "points": [
+      {
+       "q": "went",
+       "label": "시간 부사 시제",
+       "star": true,
+       "explanation": "Last week(지난주)처럼 분명한 과거를 나타내는 말이 있으면 동사는 과거형을 쓴다. go의 과거형은 goed가 아니라 불규칙하게 변하는 went이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Last week,",
+       "ko": "지난주에,"
+      },
+      {
+       "en": "she went to Sokcho",
+       "ko": "그녀는 속초에 갔다"
+      },
+      {
+       "en": "with Subin's family.",
+       "ko": "수빈이의 가족과 함께."
+      }
+     ]
+    },
+    {
+     "translation": "이것은 Amelia의 여행기이다.",
+     "contextNote": "아래에 이어질 여행기를 안내한다.",
+     "roles": [
+      {
+       "q": "Here",
+       "role": "A"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "Amelia's travel diary",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "Here is",
+       "label": "도치",
+       "explanation": "Here가 문장 맨 앞에 오면 「Here + 동사 + 주어」 어순이 된다. 주어는 뒤에 있는 Amelia's travel diary이고 단수이므로 is를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Here is",
+       "ko": "이것은"
+      },
+      {
+       "en": "Amelia's travel diary.",
+       "ko": "Amelia의 여행기이다."
+      }
+     ]
+    }
+   ]
+  },
+  "ae6bc7fb-f07b-45d9-9c2c-cf0e69e746e3": {
+   "titleEn": "Friday, September 5: Seoraksan and Sokcho Beach",
+   "topicEn": "On the first day, Amelia pushed Heundeulbawi at Seoraksan and camped near Sokcho Beach.",
+   "topicKo": "첫날 Amelia는 설악산에서 흔들바위를 밀어 보고 속초 해수욕장 근처에서 텐트를 치고 지냈다.",
+   "sentences": [
+    {
+     "translation": "오늘은 날씨가 화창했다.",
+     "contextNote": "첫날의 날씨로 일기를 시작한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "It"
+      }
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "sunny",
+       "role": "C"
+      },
+      {
+       "q": "today",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "It",
+       "label": "비인칭 주어 it",
+       "star": true,
+       "explanation": "날씨를 말할 때 쓰는 주어 it을 비인칭 주어라고 한다. 형식상의 주어이므로 '그것은'이라고 해석하지 않는다. 날씨 외에 시간·날짜·요일·거리·명암을 말할 때도 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was sunny",
+       "ko": "날씨가 화창했다"
+      },
+      {
+       "en": "today.",
+       "ko": "오늘은."
+      }
+     ]
+    },
+    {
+     "translation": "수빈이의 가족과 나는 설악산을 등산했고 아주 큰 바위를 보았다.",
+     "contextNote": "설악산에서 큰 바위를 본 일을 말한다.",
+     "roles": [
+      {
+       "q": "Subin's family and I",
+       "role": "S"
+      },
+      {
+       "q": "hiked",
+       "role": "V"
+      },
+      {
+       "q": "Seoraksan",
+       "role": "O"
+      },
+      {
+       "q": "saw",
+       "role": "V"
+      },
+      {
+       "q": "a very big rock",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "hiked Seoraksan and saw a very big rock",
+       "label": "동사 병렬",
+       "star": true,
+       "explanation": "주어 하나에 동사 hiked와 saw가 and로 이어져 있다. 둘 다 과거의 일이므로 과거형으로 맞추며, see의 과거형은 불규칙하게 변하는 saw이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Subin's family and I",
+       "ko": "수빈이의 가족과 나는"
+      },
+      {
+       "en": "hiked Seoraksan",
+       "ko": "설악산을 등산했고"
+      },
+      {
+       "en": "and saw a very big rock.",
+       "ko": "아주 큰 바위를 보았다."
+      }
+     ]
+    },
+    {
+     "translation": "그것은 흔들바위였다.",
+     "contextNote": "앞 문장의 큰 바위가 무엇인지 알려 준다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "Heundeulbawi",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "explanation": "이 It은 앞 문장의 a very big rock을 가리키는 대명사이므로 '그것은'이라고 해석한다. 날씨를 말하는 비인칭 주어 It과 구별해야 한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was",
+       "ko": "그것은"
+      },
+      {
+       "en": "Heundeulbawi.",
+       "ko": "흔들바위였다."
+      }
+     ]
+    },
+    {
+     "translation": "수빈이와 나는 그것을 밀었다.",
+     "contextNote": "바위에서 직접 해 본 일을 말한다.",
+     "roles": [
+      {
+       "q": "Subin and I",
+       "role": "S"
+      },
+      {
+       "q": "pushed",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= Heundeulbawi"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Subin and I",
+       "ko": "수빈이와 나는"
+      },
+      {
+       "en": "pushed it.",
+       "ko": "그것을 밀었다."
+      }
+     ]
+    },
+    {
+     "translation": "그 바위는 조금 흔들렸다.",
+     "contextNote": "밀었더니 바위가 움직인 결과를 말한다.",
+     "roles": [
+      {
+       "q": "The rock",
+       "role": "S"
+      },
+      {
+       "q": "shook",
+       "role": "V"
+      },
+      {
+       "q": "a little",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "shook",
+       "label": "현재·과거",
+       "explanation": "shake(흔들리다)의 과거형은 불규칙하게 변하는 shook이다. a little은 '조금'이라는 뜻으로 동사를 꾸민다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The rock shook",
+       "ko": "그 바위는 흔들렸다"
+      },
+      {
+       "en": "a little.",
+       "ko": "조금."
+      }
+     ]
+    },
+    {
+     "translation": "그것은 무서웠지만, 나는 정말 즐거웠다!",
+     "contextNote": "바위를 민 경험에 대한 Amelia의 느낌을 말한다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "scary",
+       "role": "C"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "had",
+       "role": "V"
+      },
+      {
+       "q": "a lot of fun",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but I had a lot of fun",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      },
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "gloss": "바위를 밀어 흔들린 일"
+      }
+     ],
+     "points": [
+      {
+       "q": "a lot of fun",
+       "label": "수량사",
+       "explanation": "a lot of는 '많은'이라는 뜻으로 셀 수 있는 명사와 셀 수 없는 명사 앞에 모두 쓴다. fun은 셀 수 없는 명사이므로 -s를 붙이지 않으며, have fun은 '즐겁게 보내다'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was scary,",
+       "ko": "그것은 무서웠지만,"
+      },
+      {
+       "en": "but I had a lot of fun!",
+       "ko": "나는 정말 즐거웠다!"
+      }
+     ]
+    },
+    {
+     "translation": "그다음에, 우리는 속초 해수욕장으로 갔다.",
+     "contextNote": "장소가 설악산에서 해수욕장으로 옮겨 간다.",
+     "roles": [
+      {
+       "q": "Next",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "went",
+       "role": "V"
+      },
+      {
+       "q": "to Sokcho Beach",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Next,",
+       "ko": "그다음에,"
+      },
+      {
+       "en": "we went to Sokcho Beach.",
+       "ko": "우리는 속초 해수욕장으로 갔다."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 해변 근처에 두 개의 텐트를 쳤다.",
+     "contextNote": "해변에서 묵을 준비를 한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "put up",
+       "role": "V"
+      },
+      {
+       "q": "two tents",
+       "role": "O"
+      },
+      {
+       "q": "near the beach",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "put up",
+       "label": "현재·과거",
+       "explanation": "put은 현재형과 과거형의 모양이 같은 동사이다. 이 글은 과거의 일을 적은 일기이므로 여기서 put은 과거형이다. put up은 '(텐트를) 치다'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We put up two tents",
+       "ko": "우리는 두 개의 텐트를 쳤다"
+      },
+      {
+       "en": "near the beach.",
+       "ko": "해변 근처에."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 저녁 식사로 한우를 먹었다.",
+     "contextNote": "저녁에 먹은 음식을 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "had",
+       "role": "V"
+      },
+      {
+       "q": "Korean beef",
+       "role": "O"
+      },
+      {
+       "q": "for dinner",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "for dinner",
+       "label": "전명구",
+       "gloss": "'저녁 식사로'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We had Korean beef",
+       "ko": "우리는 한우를 먹었다"
+      },
+      {
+       "en": "for dinner.",
+       "ko": "저녁 식사로."
+      }
+     ]
+    },
+    {
+     "translation": "그것은 맛있었다!",
+     "contextNote": "저녁 식사에 대한 느낌을 말한다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "delicious",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "gloss": "= Korean beef"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was",
+       "ko": "그것은"
+      },
+      {
+       "en": "delicious!",
+       "ko": "맛있었다!"
+      }
+     ]
+    },
+    {
+     "translation": "우리 텐트 안에서, 수빈이와 나는 파도 소리를 들었다.",
+     "contextNote": "밤에 텐트 안에서 겪은 일을 말한다.",
+     "roles": [
+      {
+       "q": "In our tent",
+       "role": "M"
+      },
+      {
+       "q": "Subin and I",
+       "role": "S"
+      },
+      {
+       "q": "heard",
+       "role": "V"
+      },
+      {
+       "q": "the waves",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "In our tent",
+       "label": "전명구",
+       "gloss": "'우리 텐트 안에서'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "In our tent,",
+       "ko": "우리 텐트 안에서,"
+      },
+      {
+       "en": "Subin and I heard the waves.",
+       "ko": "수빈이와 나는 파도 소리를 들었다."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 많이 이야기하고 웃었다.",
+     "contextNote": "텐트 안에서 즐겁게 보낸 시간을 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "talked",
+       "role": "V"
+      },
+      {
+       "q": "laughed",
+       "role": "V"
+      },
+      {
+       "q": "a lot",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "talked and laughed",
+       "label": "동사 병렬",
+       "gloss": "주어 We에 과거 동사 둘"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We talked and laughed",
+       "ko": "우리는 이야기하고 웃었다"
+      },
+      {
+       "en": "a lot.",
+       "ko": "많이."
+      }
+     ]
+    },
+    {
+     "translation": "나는 내일 해돋이를 정말 보고 싶다.",
+     "contextNote": "다음 날의 바람을 말하며 둘째 날 일기로 이어진다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "to see"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "really",
+       "role": "M"
+      },
+      {
+       "q": "want",
+       "role": "V"
+      },
+      {
+       "q": "to see the sunrise tomorrow",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "to see",
+       "label": "명사적 용법 to부정사",
+       "star": true,
+       "explanation": "「to+동사원형」이 동사 want의 목적어 자리에 와서 '~하는 것'이라는 뜻을 나타낸다. want to see는 '보고 싶다'로 해석한다. want·hope·plan·decide 등은 to부정사를 목적어로 쓰며, want seeing이나 want see로 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I really want",
+       "ko": "나는 정말 원한다"
+      },
+      {
+       "en": "to see the sunrise",
+       "ko": "해돋이를 보기를"
+      },
+      {
+       "en": "tomorrow.",
+       "ko": "내일."
+      }
+     ]
+    }
+   ]
+  },
+  "acba3a7c-feb4-4778-9586-4347e991cf0b": {
+   "titleEn": "Saturday, September 6: Sunrise and the Lighthouse",
+   "topicEn": "On the second day, Amelia saw the sunrise, ate gamjajeon, and visited a lighthouse, and she will always remember Korea.",
+   "topicKo": "둘째 날 Amelia는 해돋이를 보고 감자전을 먹고 등대에 올랐으며, 한국을 언제나 기억할 것이다.",
+   "sentences": [
+    {
+     "translation": "우리는 아주 일찍 일어났다.",
+     "contextNote": "해돋이를 보려고 일찍 일어난 일로 둘째 날을 시작한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "woke up",
+       "role": "V"
+      },
+      {
+       "q": "very early",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "woke up",
+       "label": "현재·과거",
+       "explanation": "wake up(일어나다)의 과거형은 불규칙하게 변하는 woke up이다. very early는 동사를 꾸미는 부사구로 '아주 일찍'이라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We woke up",
+       "ko": "우리는 일어났다"
+      },
+      {
+       "en": "very early.",
+       "ko": "아주 일찍."
+      }
+     ]
+    },
+    {
+     "translation": "밖은 어두웠다.",
+     "contextNote": "아직 해가 뜨기 전임을 보여 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "It"
+      }
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "dark",
+       "role": "C"
+      },
+      {
+       "q": "outside",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "It",
+       "label": "비인칭 주어 it",
+       "star": true,
+       "explanation": "밝고 어두운 정도(명암)를 말할 때 쓰는 비인칭 주어 it이다. 뜻이 없는 형식상의 주어이므로 '그것은'이라고 해석하지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was dark",
+       "ko": "어두웠다"
+      },
+      {
+       "en": "outside.",
+       "ko": "밖은."
+      }
+     ]
+    },
+    {
+     "translation": "수빈이와 나는 해변으로 달려갔다.",
+     "contextNote": "해돋이를 보러 해변으로 간다.",
+     "roles": [
+      {
+       "q": "Subin and I",
+       "role": "S"
+      },
+      {
+       "q": "ran",
+       "role": "V"
+      },
+      {
+       "q": "to the beach",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Subin and I ran",
+       "ko": "수빈이와 나는 달려갔다"
+      },
+      {
+       "en": "to the beach.",
+       "ko": "해변으로."
+      }
+     ]
+    },
+    {
+     "translation": "천천히, 하늘이 붉게 변했다.",
+     "contextNote": "해가 뜨면서 달라지는 하늘의 모습을 그린다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "red"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Slowly",
+       "role": "M"
+      },
+      {
+       "q": "the sky",
+       "role": "S"
+      },
+      {
+       "q": "turned",
+       "role": "V"
+      },
+      {
+       "q": "red",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "turned red",
+       "label": "연결동사 보어",
+       "star": true,
+       "explanation": "turn이 '~하게 변하다'라는 뜻일 때 뒤에 형용사 보어가 온다. 우리말로 '붉게'라고 해석되어도 부사가 아니라 형용사 red를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Slowly,",
+       "ko": "천천히,"
+      },
+      {
+       "en": "the sky turned red.",
+       "ko": "하늘이 붉게 변했다."
+      }
+     ]
+    },
+    {
+     "translation": "수빈이가 \"해가 떠오르고 있어.",
+     "contextNote": "수빈이가 해돋이가 시작되었음을 알린다.",
+     "roles": [
+      {
+       "q": "Subin",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"The sun is rising.",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "is rising",
+       "label": "현재진행",
+       "explanation": "「be동사+동사-ing」는 '~하고 있다'는 뜻의 현재진행형이다. 앞의 said는 과거지만, 따옴표 안은 수빈이가 말한 그대로이므로 현재진행형을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Subin said,",
+       "ko": "수빈이가 말했다"
+      },
+      {
+       "en": "\"The sun is rising.",
+       "ko": "\"해가 떠오르고 있어."
+      }
+     ]
+    },
+    {
+     "translation": "소원을 빌어!\"라고 말했다.",
+     "contextNote": "앞 문장에 이어지는 수빈이의 말로, 소원을 빌자고 권한다.",
+     "roles": [
+      {
+       "q": "Make",
+       "role": "V"
+      },
+      {
+       "q": "a wish",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "Make",
+       "label": "동사",
+       "gloss": "주어 없이 동사원형으로 시작하는 명령문"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Make",
+       "ko": "빌어"
+      },
+      {
+       "en": "a wish!\"",
+       "ko": "소원을!"
+      }
+     ]
+    },
+    {
+     "translation": "나는 눈을 감고 소원을 빌었다.",
+     "contextNote": "수빈이의 말대로 소원을 빈다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "closed",
+       "role": "V"
+      },
+      {
+       "q": "my eyes",
+       "role": "O"
+      },
+      {
+       "q": "made",
+       "role": "V"
+      },
+      {
+       "q": "a wish",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "closed my eyes and made a wish",
+       "label": "동사 병렬",
+       "gloss": "주어 I에 과거 동사 둘"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I closed my eyes",
+       "ko": "나는 눈을 감고"
+      },
+      {
+       "en": "and made a wish.",
+       "ko": "소원을 빌었다."
+      }
+     ]
+    },
+    {
+     "translation": "점심 식사로, 우리는 감자전을 먹었다.",
+     "contextNote": "점심에 먹은 음식으로 화제가 바뀐다.",
+     "roles": [
+      {
+       "q": "For lunch",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "ate",
+       "role": "V"
+      },
+      {
+       "q": "gamjajeon",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "For lunch,",
+       "ko": "점심 식사로,"
+      },
+      {
+       "en": "we ate gamjajeon.",
+       "ko": "우리는 감자전을 먹었다."
+      }
+     ]
+    },
+    {
+     "translation": "그것은 팬케이크 같았다.",
+     "contextNote": "외국인 Amelia가 감자전을 아는 음식에 빗대어 설명한다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "like a pancake",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "like a pancake",
+       "label": "전명구",
+       "gloss": "like: '~ 같은'(전치사)"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was",
+       "ko": "그것은"
+      },
+      {
+       "en": "like a pancake.",
+       "ko": "팬케이크 같았다."
+      }
+     ]
+    },
+    {
+     "translation": "난 그것이 정말 좋았다.",
+     "contextNote": "감자전에 대한 느낌을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "loved",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= gamjajeon"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I loved",
+       "ko": "난 정말 좋았다"
+      },
+      {
+       "en": "it.",
+       "ko": "그것이."
+      }
+     ]
+    },
+    {
+     "translation": "점심 식사 후에, 우리는 속초 등대 전망대에 방문했다.",
+     "contextNote": "오후의 장소인 등대 전망대로 옮겨 간다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "visited"
+      }
+     ],
+     "roles": [
+      {
+       "q": "After lunch",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "visited",
+       "role": "V"
+      },
+      {
+       "q": "Sokcho Lighthouse Observatory",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "visited",
+       "label": "자동사·타동사",
+       "explanation": "visit은 목적어를 바로 받는 동사이다. 우리말로 '~에 방문하다'라고 해석되어도 visited to처럼 전치사를 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "After lunch,",
+       "ko": "점심 식사 후에,"
+      },
+      {
+       "en": "we visited",
+       "ko": "우리는 방문했다"
+      },
+      {
+       "en": "Sokcho Lighthouse Observatory.",
+       "ko": "속초 등대 전망대에."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 많은 가파른 계단을 걸어 올라갔다.",
+     "contextNote": "전망대까지 올라가는 길이 힘들었음을 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "walked",
+       "role": "V"
+      },
+      {
+       "q": "up many steep stairs",
+       "role": "A"
+      }
+     ],
+     "points": [
+      {
+       "q": "many steep stairs",
+       "label": "수량사",
+       "explanation": "many는 셀 수 있는 명사의 복수형 앞에 쓰므로 stairs처럼 -s가 붙는다. steep(가파른)도 stairs를 꾸미는 형용사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We walked up",
+       "ko": "우리는 걸어 올라갔다"
+      },
+      {
+       "en": "many steep stairs.",
+       "ko": "많은 가파른 계단을."
+      }
+     ]
+    },
+    {
+     "translation": "우리의 다리는 피곤했다.",
+     "contextNote": "계단을 오른 뒤의 상태를 말한다.",
+     "roles": [
+      {
+       "q": "Our legs",
+       "role": "S"
+      },
+      {
+       "q": "were",
+       "role": "V"
+      },
+      {
+       "q": "tired",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "were tired",
+       "label": "주격보어 형용사",
+       "explanation": "주어 Our legs가 복수이므로 be동사의 과거형은 were를 쓴다. 뒤의 tired는 주어의 상태를 설명하는 주격보어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Our legs",
+       "ko": "우리의 다리는"
+      },
+      {
+       "en": "were tired.",
+       "ko": "피곤했다."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 꼭대기에서, 경치가 아름다웠다.",
+     "contextNote": "힘들었던 오르막과 꼭대기의 아름다운 경치를 대조한다.",
+     "roles": [
+      {
+       "q": "at the top",
+       "role": "M"
+      },
+      {
+       "q": "the view",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "beautiful",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "at the top",
+       "label": "전명구",
+       "gloss": "'꼭대기에서'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But at the top,",
+       "ko": "하지만 꼭대기에서,"
+      },
+      {
+       "en": "the view was beautiful.",
+       "ko": "경치가 아름다웠다."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 그 도시와 바다, 그리고 산들을 보았다.",
+     "contextNote": "꼭대기에서 본 경치를 하나씩 든다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "saw",
+       "role": "V"
+      },
+      {
+       "q": "the city, the ocean, and the mountains",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the city, the ocean, and the mountains",
+       "label": "병렬구조",
+       "gloss": "셋을 이을 때: A, B, and C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We saw",
+       "ko": "우리는 보았다"
+      },
+      {
+       "en": "the city, the ocean, and the mountains.",
+       "ko": "그 도시와 바다, 그리고 산들을."
+      }
+     ]
+    },
+    {
+     "translation": "수빈이는 \"이 등대는 약 70년이 되었어.",
+     "contextNote": "수빈이가 등대에 대해 설명하기 시작한다.",
+     "roles": [
+      {
+       "q": "Subin",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"This lighthouse is about 70 years old.",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "about 70 years old",
+       "label": "주격보어",
+       "explanation": "「숫자+years old」는 나이를 나타내는 형용사구로, be동사 뒤에서 주격보어로 쓰인다. 70은 1보다 크므로 years로 쓰며, about은 '약'이라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Subin said,",
+       "ko": "수빈이는 말했다"
+      },
+      {
+       "en": "\"This lighthouse is",
+       "ko": "\"이 등대는"
+      },
+      {
+       "en": "about 70 years old.",
+       "ko": "약 70년이 되었어."
+      }
+     ]
+    },
+    {
+     "translation": "이것은 아직 밤에 선박들을 위해 빛을 비춰.\"라고 말했다.",
+     "contextNote": "앞 문장에 이어지는 수빈이의 말로, 오래된 등대가 지금도 하는 일을 알려 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "its"
+      }
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "still",
+       "role": "M"
+      },
+      {
+       "q": "shines",
+       "role": "V"
+      },
+      {
+       "q": "its light",
+       "role": "O"
+      },
+      {
+       "q": "for ships",
+       "role": "M"
+      },
+      {
+       "q": "at night",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "gloss": "= This lighthouse"
+      }
+     ],
+     "points": [
+      {
+       "q": "its",
+       "label": "its/it's",
+       "star": true,
+       "explanation": "its는 '그것의'라는 뜻의 소유격으로 뒤의 명사 light를 꾸민다. it's는 it is 또는 it has를 줄인 말이므로 명사 앞 이 자리에 쓸 수 없다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It still shines its light",
+       "ko": "이것은 아직 빛을 비춰"
+      },
+      {
+       "en": "for ships",
+       "ko": "선박들을 위해"
+      },
+      {
+       "en": "at night.\"",
+       "ko": "밤에."
+      }
+     ]
+    },
+    {
+     "translation": "나는 \"와, 그거 놀랍네!\"라고 말했다.",
+     "contextNote": "수빈이의 설명을 듣고 Amelia가 놀라움을 나타낸다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"Wow, that's amazing!\"",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "that",
+       "label": "대명사 선행사",
+       "gloss": "등대가 70년이 되었어도 아직 빛을 비추는 것"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I said,",
+       "ko": "나는 말했다"
+      },
+      {
+       "en": "\"Wow, that's amazing!\"",
+       "ko": "\"와, 그거 놀랍네!\""
+      }
+     ]
+    },
+    {
+     "translation": "이 여행의 모든 순간이 훌륭했다.",
+     "contextNote": "여행 전체에 대한 느낌을 한 문장으로 정리한다.",
+     "tags": [
+      "주제문",
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "was"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Every moment of this trip",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "wonderful",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "Every moment",
+       "label": "each/every",
+       "star": true,
+       "explanation": "every 뒤에는 단수 명사를 쓰고 동사도 단수로 맞춘다. '모든'으로 해석되어도 복수가 아니므로 moment에 -s를 붙이지 않고, be동사는 were가 아니라 was를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Every moment of this trip",
+       "ko": "이 여행의 모든 순간이"
+      },
+      {
+       "en": "was wonderful.",
+       "ko": "훌륭했다."
+      }
+     ]
+    },
+    {
+     "translation": "나는 많은 사진을 찍었다.",
+     "contextNote": "여행의 순간들을 사진으로 남겼음을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "took",
+       "role": "V"
+      },
+      {
+       "q": "many pictures",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I took",
+       "ko": "나는 찍었다"
+      },
+      {
+       "en": "many pictures.",
+       "ko": "많은 사진을."
+      }
+     ]
+    },
+    {
+     "translation": "나는 언제나 한국을 기억할 것이다.",
+     "contextNote": "한국에 대한 마음을 말하며 여행기를 끝맺는다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "will",
+       "role": "V"
+      },
+      {
+       "q": "always",
+       "role": "M"
+      },
+      {
+       "q": "remember",
+       "role": "V"
+      },
+      {
+       "q": "Korea",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "will always remember",
+       "label": "조동사 의미",
+       "explanation": "will은 '~할 것이다'라는 뜻으로 뒤에 동사원형 remember를 쓴다. always 같은 빈도 부사는 조동사 뒤, 일반동사 앞에 놓는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I will always remember",
+       "ko": "나는 언제나 기억할 것이다"
+      },
+      {
+       "en": "Korea.",
+       "ko": "한국을."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

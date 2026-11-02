@@ -39,16 +39,22 @@ export function MiddleSchoolHome({ units, base }: { units: MsUnitSummary[]; base
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {shown.map((u) => (
-          <Link
-            key={u.id}
-            href={`${base}/${u.id}`}
-            className="group rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-violet-400 hover:shadow"
-          >
-            <div className="text-xs font-bold tracking-wide text-violet-600">LESSON {u.lessonNo}</div>
-            <div className="mt-1 text-base font-bold text-slate-900 group-hover:text-violet-700">{u.title}</div>
-            <div className="mt-2 text-xs text-slate-500">문법 · {u.grammarTitles.join(" / ") || "—"}</div>
-            <div className="mt-0.5 text-xs text-slate-400">단어 {u.wordCount}개</div>
-          </Link>
+          <div key={u.id} className="flex flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-violet-400 hover:shadow">
+            <Link href={`${base}/${u.id}`} className="group flex-1">
+              <div className="text-xs font-bold tracking-wide text-violet-600">LESSON {u.lessonNo}</div>
+              <div className="mt-1 text-base font-bold text-slate-900 group-hover:text-violet-700">{u.title}</div>
+              <div className="mt-2 text-xs text-slate-500">문법 · {u.grammarTitles.join(" / ") || "—"}</div>
+              <div className="mt-0.5 text-xs text-slate-400">단어 {u.wordCount}개</div>
+            </Link>
+            <div className="mt-3 flex gap-1.5">
+              <Link href={`${base}/${u.id}/vocab-exam`} className="flex-1 rounded-lg border border-violet-200 bg-violet-50 px-2 py-1.5 text-center text-xs font-semibold text-violet-700 hover:bg-violet-100">
+                단어 시험지 출력
+              </Link>
+              <Link href={`${base}/${u.id}?test=1`} className="flex-1 rounded-lg border border-violet-200 bg-violet-50 px-2 py-1.5 text-center text-xs font-semibold text-violet-700 hover:bg-violet-100">
+                테스트지 출력
+              </Link>
+            </div>
+          </div>
         ))}
       </div>
     </div>

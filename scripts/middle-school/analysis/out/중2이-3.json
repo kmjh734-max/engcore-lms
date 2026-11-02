@@ -1,0 +1,331 @@
+{
+ "passages": {
+  "c17956e2-4245-4129-8f06-514b28eb055e": {
+   "titleEn": "The World of Animal Camouflage",
+   "topicEn": "Some wild animals are very good at camouflage, and it keeps them safe from predators.",
+   "topicKo": "야생의 몇몇 동물은 위장을 매우 잘하며, 위장은 그들을 포식 동물로부터 안전하게 지킨다.",
+   "sentences": [
+    {
+     "translation": "당신은 숨바꼭질을 잘하는가?",
+     "contextNote": "읽는 이에게 친숙한 놀이를 물으며 위장 이야기로 이끈다.",
+     "roles": [{"q": "Are", "role": "V"}, {"q": "you", "role": "S"}, {"q": "good at hide and seek", "role": "C"}],
+     "notes": [{"q": "good at", "label": "필수 전치사", "gloss": "be good at: '~을 잘하다'"}],
+     "chunks": [{"en": "Are you good", "ko": "당신은 잘하는가?"}, {"en": "at hide and seek?", "ko": "숨바꼭질을"}]
+    },
+    {
+     "translation": "야생에서 사는 몇몇 동물들은 위장을 매우 잘한다.",
+     "contextNote": "이 글의 화제인 동물의 위장을 꺼내는 중심 문장이다.",
+     "tags": ["주제문", "어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "which live"}],
+     "roles": [{"q": "Some animals which live in the wild", "role": "S"}, {"q": "live", "role": "V", "level": 1}, {"q": "in the wild", "role": "A", "level": 1}, {"q": "are", "role": "V"}, {"q": "very good at camouflage", "role": "C"}],
+     "points": [{"q": "which live in the wild", "label": "주격 관계대명사", "star": true, "explanation": "which는 사물·동물 선행사 animals를 받고 관계절 안에서 주어 역할을 하는 주격 관계대명사로, 바로 뒤에 동사가 온다. 동사의 수는 선행사에 맞추므로 복수 animals에 맞춰 live를 쓴다. 문장 전체의 동사는 are이다."}],
+     "chunks": [{"en": "Some animals", "ko": "몇몇 동물들은"}, {"en": "which live in the wild", "ko": "야생에서 사는"}, {"en": "are very good at camouflage.", "ko": "위장을 매우 잘한다."}]
+    },
+    {
+     "translation": "당신은 그들을 하늘에서, 땅에서, 그리고 바다에서 볼 수 있다.",
+     "contextNote": "위장하는 동물들이 사는 곳을 말한다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "can see", "role": "V"}, {"q": "them", "role": "O"}, {"q": "in the air, on land, and in the sea", "role": "M"}],
+     "notes": [{"q": "them", "label": "대명사 선행사", "gloss": "= some animals"}],
+     "points": [{"q": "in the air, on land, and in the sea", "label": "병렬구조", "explanation": "전치사구 세 개가 「A, B, and C」로 나란히 이어져 있다. and로 이은 말은 같은 형태로 맞춘다."}],
+     "chunks": [{"en": "You can see them", "ko": "당신은 그들을 볼 수 있다"}, {"en": "in the air, on land, and in the sea.", "ko": "하늘에서, 땅에서, 그리고 바다에서."}]
+    },
+    {
+     "translation": "그들의 특별한 생김새나 능력은 그들을 포식 동물로부터 안전하게 지킨다.",
+     "contextNote": "위장이 동물에게 왜 쓸모 있는지 밝힌다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "keep them safe"}],
+     "roles": [{"q": "Their special looks or abilities", "role": "S"}, {"q": "keep", "role": "V"}, {"q": "them", "role": "O"}, {"q": "safe from predators", "role": "C"}],
+     "notes": [{"q": "them", "label": "대명사 선행사", "gloss": "= some animals"}],
+     "points": [{"q": "keep them safe", "label": "목적격보어 형용사", "star": true, "explanation": "「keep+목적어+형용사」는 '~을 …하게 유지하다[지키다]'라는 뜻이다. 목적어의 상태를 설명하는 목적격보어 자리이므로 부사 safely가 아니라 형용사 safe를 쓴다."}],
+     "chunks": [{"en": "Their special looks or abilities", "ko": "그들의 특별한 생김새나 능력은"}, {"en": "keep them safe", "ko": "그들을 안전하게 지킨다"}, {"en": "from predators.", "ko": "포식 동물로부터."}]
+    },
+    {
+     "translation": "내가 당신을 동물 위장의 세계로 안내하겠다.",
+     "contextNote": "앞으로 여러 동물의 위장을 소개하겠다고 알린다.",
+     "roles": [{"q": "Let", "role": "V"}, {"q": "me", "role": "O"}, {"q": "guide you through the world of animal camouflage", "role": "C"}],
+     "points": [{"q": "Let me guide", "label": "make+O+원형", "explanation": "사역동사 let은 「let+목적어+동사원형」으로 쓴다. 목적격보어 자리에 to guide가 아니라 원형 guide를 쓴다."}],
+     "chunks": [{"en": "Let me guide you", "ko": "내가 당신을 안내하겠다"}, {"en": "through the world of animal camouflage.", "ko": "동물 위장의 세계로."}]
+    }
+   ]
+  },
+  "0ce8e577-63fe-4f1f-b46c-54898ff2e247": {
+   "titleEn": "Mountain Hares That Change Colors",
+   "topicEn": "Mountain hares change colors according to season to hide from predators.",
+   "topicKo": "고산토끼는 포식 동물로부터 숨기 위해 계절에 따라 색을 바꾼다.",
+   "sentences": [
+    {
+     "translation": "고산토끼는 토끼와 비슷하지만, 그들은 (몸이) 더 크고 더 긴 다리를 가지고 있다.",
+     "contextNote": "첫 번째 동물인 고산토끼의 생김새를 토끼와 견주어 소개한다.",
+     "roles": [{"q": "Mountain hares", "role": "S"}, {"q": "are", "role": "V"}, {"q": "like rabbits", "role": "C"}, {"q": "they", "role": "S"}, {"q": "are", "occ": 2, "role": "V"}, {"q": "bigger", "role": "C"}, {"q": "have", "role": "V"}, {"q": "longer legs", "role": "O"}],
+     "notes": [{"q": "like rabbits", "label": "전명구", "gloss": "like: '~와 비슷한'(전치사)"}, {"q": "but they are bigger and have longer legs", "label": "등위절", "gloss": "but: 앞 내용과 반대"}, {"q": "they", "label": "대명사 선행사", "gloss": "= mountain hares"}],
+     "points": [{"q": "are bigger and have longer legs", "label": "동사 병렬", "explanation": "주어 they 하나에 동사 are와 have가 and로 이어져 있다. 주어가 복수이므로 두 동사 모두 복수형으로 맞춘다."}],
+     "chunks": [{"en": "Mountain hares are like rabbits,", "ko": "고산토끼는 토끼와 비슷하지만,"}, {"en": "but they are bigger", "ko": "그들은 (몸이) 더 크고"}, {"en": "and have longer legs.", "ko": "더 긴 다리를 가지고 있다."}]
+    },
+    {
+     "translation": "그들은 매우 멋진 동물이다.",
+     "contextNote": "색을 바꾸는 이야기를 꺼내기 전에 고산토끼를 멋쟁이로 표현한다.",
+     "roles": [{"q": "They", "role": "S"}, {"q": "are", "role": "V"}, {"q": "very stylish animals", "role": "C"}],
+     "chunks": [{"en": "They are", "ko": "그들은 ~이다"}, {"en": "very stylish animals.", "ko": "매우 멋진 동물."}]
+    },
+    {
+     "translation": "고산토끼는 계절에 따라 색을 바꾼다.",
+     "contextNote": "고산토끼의 위장 방법을 한 문장으로 말한다.",
+     "tags": ["주제문"],
+     "roles": [{"q": "Mountain hares", "role": "S"}, {"q": "change", "role": "V"}, {"q": "colors", "role": "O"}, {"q": "according to season", "role": "M"}],
+     "notes": [{"q": "according to season", "label": "부사적 어구", "gloss": "according to + 명사: '~에 따라'"}],
+     "chunks": [{"en": "Mountain hares change colors", "ko": "고산토끼는 색을 바꾼다"}, {"en": "according to season.", "ko": "계절에 따라."}]
+    },
+    {
+     "translation": "여름에, 그들은 바위와 풀에 맞추기 위해 회갈색으로 변한다.",
+     "contextNote": "여름의 위장을 구체적으로 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to match"}],
+     "roles": [{"q": "In summer", "role": "M"}, {"q": "they", "role": "S"}, {"q": "turn", "role": "V"}, {"q": "gray-brown", "role": "C"}, {"q": "to match the rocks and grass", "role": "M"}],
+     "points": [
+      {"q": "turn gray-brown", "label": "연결동사 보어", "explanation": "turn은 뒤에 보어를 받아 '~으로 변하다'라는 뜻을 나타낸다. gray-brown은 주어 they의 색을 설명하는 보어이다."},
+      {"q": "to match the rocks and grass", "label": "부사적 용법", "star": true, "explanation": "to부정사가 '~하기 위해'라는 목적을 나타낸다. 앞의 명사를 꾸미는 것이 아니라, 회갈색으로 변하는 까닭을 말한다."}
+     ],
+     "chunks": [{"en": "In summer,", "ko": "여름에,"}, {"en": "they turn gray-brown", "ko": "그들은 회갈색으로 변한다"}, {"en": "to match the rocks and grass.", "ko": "바위와 풀에 맞추기 위해."}]
+    },
+    {
+     "translation": "겨울에, 그들은 자신들을 눈 속에 위장하기 위해 흰색으로 변한다.",
+     "contextNote": "여름과 대비하여 겨울의 위장을 말한다.",
+     "roles": [{"q": "In winter", "role": "M"}, {"q": "they", "role": "S"}, {"q": "turn", "role": "V"}, {"q": "white", "role": "C"}, {"q": "to camouflage themselves in the snow", "role": "M"}],
+     "points": [{"q": "themselves", "label": "재귀대명사", "explanation": "to camouflage의 행위자와 목적어가 모두 they(고산토끼)로 같으므로 them이 아니라 재귀대명사 themselves를 쓴다."}],
+     "chunks": [{"en": "In winter,", "ko": "겨울에,"}, {"en": "they turn white", "ko": "그들은 흰색으로 변한다"}, {"en": "to camouflage themselves", "ko": "자신들을 위장하기 위해"}, {"en": "in the snow.", "ko": "눈 속에."}]
+    },
+    {
+     "translation": "색을 바꾸는 것은 그들을 들개와 독수리 같은 포식 동물들에게 거의 보이지 않게 만든다.",
+     "contextNote": "색을 바꾸어 얻는 효과를 정리한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "makes them nearly invisible"}],
+     "roles": [{"q": "Changing colors", "role": "S"}, {"q": "makes", "role": "V"}, {"q": "them", "role": "O"}, {"q": "nearly invisible to predators like wild dogs and eagles", "role": "C"}],
+     "notes": [{"q": "like wild dogs and eagles", "label": "전명구", "gloss": "like: '~ 같은' — predators를 꾸밈"}],
+     "points": [
+      {"q": "Changing colors", "label": "동명사 주어", "star": true, "explanation": "동명사구가 주어로 쓰여 '색을 바꾸는 것은'이라는 뜻을 나타낸다. 동명사 주어는 단수로 취급하므로, colors가 복수여도 동사는 makes를 쓴다."},
+      {"q": "makes them nearly invisible", "label": "목적격보어 형용사", "star": true, "explanation": "「make+목적어+형용사」는 '~을 …하게 만들다'라는 뜻이다. 목적격보어 자리이므로 부사 invisibly가 아니라 형용사 invisible을 쓴다. nearly는 invisible을 꾸미는 부사이다."}
+     ],
+     "chunks": [{"en": "Changing colors", "ko": "색을 바꾸는 것은"}, {"en": "makes them nearly invisible", "ko": "그들을 거의 보이지 않게 만든다"}, {"en": "to predators", "ko": "포식 동물들에게"}, {"en": "like wild dogs and eagles.", "ko": "들개와 독수리 같은."}]
+    },
+    {
+     "translation": "알고 있었나요?",
+     "contextNote": "고산토끼에 대한 덧붙이는 정보를 알리는 말이다."
+    },
+    {
+     "translation": "고산토끼는 정말 큰 발을 가지고 있다.",
+     "contextNote": "고산토끼의 또 다른 특징을 말한다.",
+     "roles": [{"q": "Mountain hares", "role": "S"}, {"q": "have", "role": "V"}, {"q": "really big feet", "role": "O"}],
+     "chunks": [{"en": "Mountain hares have", "ko": "고산토끼는 가지고 있다"}, {"en": "really big feet.", "ko": "정말 큰 발을."}]
+    },
+    {
+     "translation": "그것들 덕분에, 고산토끼는 깊은 눈 속에서 깡충깡충 뛰어 포식 동물로부터 도망칠 수 있다.",
+     "contextNote": "큰 발이 어떻게 쓸모 있는지 말한다.",
+     "roles": [{"q": "Thanks to them", "role": "M"}, {"q": "mountain hares", "role": "S"}, {"q": "can hop", "role": "V"}, {"q": "in deep snow", "role": "M"}, {"q": "escape", "role": "V"}, {"q": "from predators", "role": "M"}],
+     "notes": [{"q": "Thanks to them", "label": "부사적 어구", "gloss": "thanks to + 명사: '~ 덕분에'"}, {"q": "them", "label": "대명사 선행사", "gloss": "= really big feet"}],
+     "points": [{"q": "can hop in deep snow and escape", "label": "조동사 공유 병렬", "explanation": "조동사 can에 동사 hop과 escape가 and로 이어져 있다. 두 번째 동사도 can을 함께 받으므로 동사원형 escape를 쓴다."}],
+     "chunks": [{"en": "Thanks to them,", "ko": "그것들 덕분에,"}, {"en": "mountain hares can hop", "ko": "고산토끼는 깡충깡충 뛸 수 있고"}, {"en": "in deep snow", "ko": "깊은 눈 속에서"}, {"en": "and escape from predators.", "ko": "포식 동물로부터 도망칠 수 있다."}]
+    }
+   ]
+  },
+  "2fb70652-4242-4e3d-8597-f7cad29231b8": {
+   "titleEn": "Octopuses That Match Their Surroundings",
+   "topicEn": "Octopuses change colors and patterns to match their surroundings when they feel danger.",
+   "topicKo": "문어는 위험을 느끼면 주변 환경에 맞추어 색과 무늬를 바꾼다.",
+   "sentences": [
+    {
+     "translation": "바닷속 바위를 자세히 보라.",
+     "contextNote": "읽는 이의 눈길을 바닷속으로 이끌며 문어 이야기를 시작한다.",
+     "roles": [{"q": "Look", "role": "V"}, {"q": "closely", "role": "M"}, {"q": "at a rock under the sea", "role": "A"}],
+     "notes": [{"q": "under the sea", "label": "전명구", "gloss": "a rock을 꾸밈"}],
+     "chunks": [{"en": "Look closely", "ko": "자세히 보라"}, {"en": "at a rock", "ko": "바위를"}, {"en": "under the sea.", "ko": "바닷속."}]
+    },
+    {
+     "translation": "만약 그것이 움직인다면, 그것은 문어일지도 모른다.",
+     "contextNote": "바위처럼 보이는 것이 사실은 문어일 수 있음을 말한다.",
+     "roles": [{"q": "it", "role": "S", "level": 1}, {"q": "moves", "role": "V", "level": 1}, {"q": "it", "occ": 2, "role": "S"}, {"q": "might be", "role": "V"}, {"q": "an octopus", "role": "C"}],
+     "brackets": [{"q": "If it moves", "kind": "adverbial"}],
+     "notes": [{"q": "If it moves", "label": "조건 부사절", "gloss": "if: '만약 ~라면'"}, {"q": "might be", "label": "조동사 의미", "gloss": "might: '~일지도 모른다'(약한 추측)"}],
+     "chunks": [{"en": "If it moves,", "ko": "만약 그것이 움직인다면,"}, {"en": "it might be an octopus.", "ko": "그것은 문어일지도 모른다."}]
+    },
+    {
+     "translation": "문어는 둥근 몸과 여덟 개의 긴 팔을 가진 해양 동물이다.",
+     "contextNote": "문어가 어떤 동물인지 설명한다.",
+     "roles": [{"q": "Octopuses", "role": "S"}, {"q": "are", "role": "V"}, {"q": "sea animals with rounded bodies and eight long arms", "role": "C"}],
+     "notes": [{"q": "with rounded bodies and eight long arms", "label": "전명구", "gloss": "with: '~을 가진' — sea animals를 꾸밈"}],
+     "chunks": [{"en": "Octopuses are sea animals", "ko": "문어는 해양 동물이다"}, {"en": "with rounded bodies and eight long arms.", "ko": "둥근 몸과 여덟 개의 긴 팔을 가진."}]
+    },
+    {
+     "translation": "문어는 위험을 느낄 때, 그들의 특별한 위장 기술을 사용한다.",
+     "contextNote": "문어의 위장 이야기를 꺼낸다.",
+     "roles": [{"q": "octopuses", "role": "S", "level": 1}, {"q": "feel", "role": "V", "level": 1}, {"q": "danger", "role": "O", "level": 1}, {"q": "they", "role": "S"}, {"q": "use", "role": "V"}, {"q": "their special camouflage skill", "role": "O"}],
+     "brackets": [{"q": "When octopuses feel danger", "kind": "adverbial"}],
+     "notes": [{"q": "When octopuses feel danger", "label": "시간 부사절", "gloss": "when: '~할 때'"}],
+     "chunks": [{"en": "When octopuses feel danger,", "ko": "문어는 위험을 느낄 때,"}, {"en": "they use their special camouflage skill.", "ko": "그들의 특별한 위장 기술을 사용한다."}]
+    },
+    {
+     "translation": "문어는 그들의 주변 환경에 맞추기 위해 색과 무늬를 바꿀 수 있다.",
+     "contextNote": "위장 기술이 무엇인지 말한다.",
+     "tags": ["주제문"],
+     "roles": [{"q": "Octopuses", "role": "S"}, {"q": "can change", "role": "V"}, {"q": "colors and patterns", "role": "O"}, {"q": "to match their surroundings", "role": "M"}],
+     "notes": [{"q": "to match their surroundings", "label": "부사적 용법", "gloss": "'~하기 위해'(목적)"}],
+     "chunks": [{"en": "Octopuses can change colors and patterns", "ko": "문어는 색과 무늬를 바꿀 수 있다"}, {"en": "to match their surroundings.", "ko": "그들의 주변 환경에 맞추기 위해."}]
+    },
+    {
+     "translation": "만약 그들이 해초 가까이에 있으면, 그들은 해초처럼 보인다.",
+     "contextNote": "주변에 맞춰 변하는 첫 번째 예이다.",
+     "roles": [{"q": "they", "role": "S", "level": 1}, {"q": "'re", "role": "V", "level": 1}, {"q": "near sea plants", "role": "A", "level": 1}, {"q": "they", "occ": 2, "role": "S"}, {"q": "look", "role": "V"}, {"q": "like sea plants", "role": "C"}],
+     "brackets": [{"q": "If they're near sea plants", "kind": "adverbial"}],
+     "notes": [{"q": "If they're near sea plants", "label": "조건 부사절", "gloss": "if: '만약 ~라면'"}],
+     "points": [{"q": "look like sea plants", "label": "연결동사 보어", "star": true, "explanation": "look 뒤에 명사가 올 때는 전치사 like를 함께 써서 「look like+명사」(~처럼 보이다)로 나타낸다. 형용사가 올 때는 like 없이 「look+형용사」로 쓴다."}],
+     "chunks": [{"en": "If they're near sea plants,", "ko": "만약 그들이 해초 가까이에 있으면,"}, {"en": "they look like sea plants.", "ko": "그들은 해초처럼 보인다."}]
+    },
+    {
+     "translation": "만약 그들이 산호초 가까이에 있으면, 그들은 산호초처럼 보인다.",
+     "contextNote": "앞 문장과 같은 형태로 두 번째 예를 든다.",
+     "roles": [{"q": "they", "role": "S", "level": 1}, {"q": "'re", "role": "V", "level": 1}, {"q": "near coral reefs", "role": "A", "level": 1}, {"q": "they", "occ": 2, "role": "S"}, {"q": "look", "role": "V"}, {"q": "like coral reefs", "role": "C"}],
+     "brackets": [{"q": "If they're near coral reefs", "kind": "adverbial"}],
+     "notes": [{"q": "If they're near coral reefs", "label": "조건 부사절"}],
+     "chunks": [{"en": "If they're near coral reefs,", "ko": "만약 그들이 산호초 가까이에 있으면,"}, {"en": "they look like coral reefs.", "ko": "그들은 산호초처럼 보인다."}]
+    },
+    {
+     "translation": "그들은 또한 바위처럼 보이기 위해 조개껍데기를 그들의 몸에 붙일 수 있다.",
+     "contextNote": "색을 바꾸는 것 말고 또 다른 위장 방법을 말한다.",
+     "roles": [{"q": "They", "role": "S"}, {"q": "can also stick", "role": "V"}, {"q": "shells", "role": "O"}, {"q": "on their bodies", "role": "A"}, {"q": "to look like a rock", "role": "M"}],
+     "notes": [{"q": "to look like a rock", "label": "부사적 용법", "gloss": "'~하기 위해'(목적)"}],
+     "chunks": [{"en": "They can also stick shells", "ko": "그들은 또한 조개껍데기를 붙일 수 있다"}, {"en": "on their bodies", "ko": "그들의 몸에"}, {"en": "to look like a rock.", "ko": "바위처럼 보이기 위해."}]
+    },
+    {
+     "translation": "이는 포식 동물을 완전히 속일 수 있다.",
+     "contextNote": "조개껍데기를 붙인 위장의 효과를 말한다.",
+     "roles": [{"q": "This", "role": "S"}, {"q": "can fool", "role": "V"}, {"q": "predators", "role": "O"}, {"q": "completely", "role": "M"}],
+     "notes": [{"q": "This", "label": "대명사 선행사", "gloss": "= 조개껍데기를 몸에 붙여 바위처럼 보이는 것"}],
+     "chunks": [{"en": "This can fool predators", "ko": "이는 포식 동물을 속일 수 있다"}, {"en": "completely.", "ko": "완전히."}]
+    },
+    {
+     "translation": "알고 있었나요?",
+     "contextNote": "문어에 대한 덧붙이는 정보를 알리는 말이다."
+    },
+    {
+     "translation": "문어는 먹물을 퍼뜨릴 수 있다.",
+     "contextNote": "문어의 또 다른 방어 수단을 말한다.",
+     "roles": [{"q": "Octopuses", "role": "S"}, {"q": "can spread", "role": "V"}, {"q": "ink", "role": "O"}],
+     "chunks": [{"en": "Octopuses can spread", "ko": "문어는 퍼뜨릴 수 있다"}, {"en": "ink.", "ko": "먹물을."}]
+    },
+    {
+     "translation": "그것은 포식 동물의 시야를 가리는 먹구름을 만들어 낸다.",
+     "contextNote": "먹물이 포식 동물에게 어떤 작용을 하는지 말한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "that blocks"}],
+     "roles": [{"q": "It", "role": "S"}, {"q": "creates", "role": "V"}, {"q": "a dark cloud that blocks the view of predators", "role": "O"}, {"q": "blocks", "role": "V", "level": 1}, {"q": "the view of predators", "role": "O", "level": 1}],
+     "notes": [{"q": "It", "label": "대명사 선행사", "gloss": "= ink"}],
+     "points": [{"q": "that blocks the view of predators", "label": "주격 관계대명사", "star": true, "explanation": "that은 선행사 a dark cloud를 받고 관계절 안에서 주어 역할을 하는 주격 관계대명사로, 바로 뒤에 동사가 온다. 동사의 수는 선행사에 맞추므로 단수 cloud에 맞춰 blocks를 쓴다."}],
+     "chunks": [{"en": "It creates a dark cloud", "ko": "그것은 먹구름을 만들어 낸다"}, {"en": "that blocks the view of predators.", "ko": "포식 동물의 시야를 가리는."}]
+    },
+    {
+     "translation": "이는 그들에게 도망칠 충분한 시간을 준다.",
+     "contextNote": "먹구름이 문어에게 주는 이득을 말한다.",
+     "roles": [{"q": "This", "role": "S"}, {"q": "gives", "role": "V"}, {"q": "them", "role": "IO"}, {"q": "enough time to escape", "role": "DO"}],
+     "notes": [{"q": "This", "label": "대명사 선행사", "gloss": "= 먹구름이 포식 동물의 시야를 가리는 것"}, {"q": "them", "label": "대명사 선행사", "gloss": "= octopuses"}],
+     "points": [
+      {"q": "gives them enough time", "label": "4형식", "explanation": "「give+간접목적어+직접목적어」는 '~에게 …을 주다'라는 뜻이다. 3형식으로 바꾸면 gives enough time to them이 된다."},
+      {"q": "to escape", "label": "형용사적 용법", "star": true, "explanation": "to부정사가 앞의 명사구 enough time을 꾸며 '도망칠 충분한 시간'이라는 뜻을 나타낸다."}
+     ],
+     "chunks": [{"en": "This gives them enough time", "ko": "이는 그들에게 충분한 시간을 준다"}, {"en": "to escape.", "ko": "도망칠."}]
+    }
+   ]
+  },
+  "98c5e611-a925-4283-a059-71f319a2bc7d": {
+   "titleEn": "Owls Hiding Like Trees",
+   "topicEn": "The special feathers of owls match their environment and protect them from predators.",
+   "topicKo": "부엉이의 특별한 깃털은 자연환경과 어울려 그들을 포식 동물로부터 보호한다.",
+   "sentences": [
+    {
+     "translation": "많은 문화에서, 부엉이는 현명하고 똑똑한 새로 알려져 있다.",
+     "contextNote": "부엉이에 대한 일반적인 인식으로 이야기를 시작한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "are known as"}],
+     "roles": [{"q": "In many cultures", "role": "M"}, {"q": "owls", "role": "S"}, {"q": "are known", "role": "V"}, {"q": "as wise and smart birds", "role": "A"}],
+     "notes": [{"q": "wise and smart", "label": "형용사 병렬"}],
+     "points": [{"q": "are known as", "label": "수동태", "star": true, "explanation": "「be known as」는 '~로 알려져 있다'는 뜻의 수동태 표현이다. 전치사 by가 아니라 as를 쓴다."}],
+     "chunks": [{"en": "In many cultures,", "ko": "많은 문화에서,"}, {"en": "owls are known", "ko": "부엉이는 알려져 있다"}, {"en": "as wise and smart birds.", "ko": "현명하고 똑똑한 새로."}]
+    },
+    {
+     "translation": "그들은 확실히 현명한 방법으로 그들의 위장을 사용한다.",
+     "contextNote": "현명하다는 평판을 위장과 연결한다.",
+     "roles": [{"q": "They", "role": "S"}, {"q": "certainly", "role": "M"}, {"q": "use", "role": "V"}, {"q": "their camouflage", "role": "O"}, {"q": "in a wise way", "role": "M"}],
+     "chunks": [{"en": "They certainly use their camouflage", "ko": "그들은 확실히 그들의 위장을 사용한다"}, {"en": "in a wise way.", "ko": "현명한 방법으로."}]
+    },
+    {
+     "translation": "부엉이의 특별한 깃털은 그들을 포식 동물로부터 보호한다.",
+     "contextNote": "부엉이의 위장 수단인 깃털을 말하는 중심 문장이다.",
+     "tags": ["주제문"],
+     "roles": [{"q": "The special feathers of owls", "role": "S"}, {"q": "protect", "role": "V"}, {"q": "them", "role": "O"}, {"q": "from predators", "role": "A"}],
+     "points": [{"q": "The special feathers of owls protect", "label": "먼 주어 수일치", "explanation": "주어의 중심은 복수인 feathers이고 of owls는 이를 꾸미는 말이다. 동사의 수는 중심어에 맞추므로 protect를 쓴다."}],
+     "chunks": [{"en": "The special feathers of owls", "ko": "부엉이의 특별한 깃털은"}, {"en": "protect them", "ko": "그들을 보호한다"}, {"en": "from predators.", "ko": "포식 동물로부터."}]
+    },
+    {
+     "translation": "그들의 깃털 색과 무늬는 그들의 자연환경과 어울린다.",
+     "contextNote": "깃털이 어떻게 부엉이를 보호하는지 말한다.",
+     "roles": [{"q": "The colors and patterns of their feathers", "role": "S"}, {"q": "match", "role": "V"}, {"q": "their natural environment", "role": "O"}],
+     "chunks": [{"en": "The colors and patterns of their feathers", "ko": "그들의 깃털 색과 무늬는"}, {"en": "match their natural environment.", "ko": "그들의 자연환경과 어울린다."}]
+    },
+    {
+     "translation": "그래서, 그들이 나무에 앉아 있을 때, 그들은 꼭 그 나무의 일부처럼 보인다.",
+     "contextNote": "깃털이 환경과 어울려 생기는 결과를 말한다.",
+     "roles": [{"q": "they", "role": "S", "level": 1}, {"q": "sit", "role": "V", "level": 1}, {"q": "in a tree", "role": "M", "level": 1}, {"q": "they", "occ": 2, "role": "S"}, {"q": "look", "role": "V"}, {"q": "just like part of the tree", "role": "C"}],
+     "brackets": [{"q": "when they sit in a tree", "kind": "adverbial"}],
+     "notes": [{"q": "when they sit in a tree", "label": "시간 부사절", "gloss": "when: '~할 때'"}, {"q": "look just like part of the tree", "label": "연결동사 보어", "gloss": "look like + 명사: '~처럼 보이다'"}],
+     "chunks": [{"en": "So, when they sit in a tree,", "ko": "그래서, 그들이 나무에 앉아 있을 때,"}, {"en": "they look just like part of the tree.", "ko": "그들은 꼭 그 나무의 일부처럼 보인다."}]
+    },
+    {
+     "translation": "그들은 다른 동물에게 거의 보이지 않게 된다.",
+     "contextNote": "앞 문장의 결과를 한 번 더 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "invisible"}],
+     "roles": [{"q": "They", "role": "S"}, {"q": "become", "role": "V"}, {"q": "almost invisible to other animals", "role": "C"}],
+     "points": [{"q": "become almost invisible", "label": "연결동사 보어", "explanation": "become은 뒤에 형용사 보어를 받아 '~하게 되다'라는 뜻을 나타낸다. 보어 자리이므로 부사 invisibly가 아니라 형용사 invisible을 쓴다."}],
+     "chunks": [{"en": "They become almost invisible", "ko": "그들은 거의 보이지 않게 된다"}, {"en": "to other animals.", "ko": "다른 동물에게."}]
+    },
+    {
+     "translation": "이는 야생에서 그들에게 엄청난 이점을 준다!",
+     "contextNote": "위장이 부엉이에게 주는 이득으로 단락을 맺는다.",
+     "roles": [{"q": "This", "role": "S"}, {"q": "gives", "role": "V"}, {"q": "them", "role": "IO"}, {"q": "a huge advantage", "role": "DO"}, {"q": "in the wild", "role": "M"}],
+     "notes": [{"q": "This", "label": "대명사 선행사", "gloss": "= 다른 동물에게 거의 보이지 않게 되는 것"}],
+     "chunks": [{"en": "This gives them a huge advantage", "ko": "이는 그들에게 엄청난 이점을 준다"}, {"en": "in the wild!", "ko": "야생에서!"}]
+    },
+    {
+     "translation": "알고 있었나요?",
+     "contextNote": "부엉이에 대한 덧붙이는 정보를 알리는 말이다."
+    },
+    {
+     "translation": "부엉이는 그들의 머리를 거의 완전히 돌릴 수 있는 놀라운 능력이 있다.",
+     "contextNote": "부엉이의 특별한 능력을 소개한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to turn"}],
+     "roles": [{"q": "Owls", "role": "S"}, {"q": "have", "role": "V"}, {"q": "the amazing ability to turn their heads almost all the way around", "role": "O"}],
+     "points": [{"q": "to turn their heads almost all the way around", "label": "형용사적 용법", "star": true, "explanation": "to부정사가 앞의 명사 ability를 꾸며 '머리를 돌릴 수 있는 능력'이라는 뜻을 나타낸다."}],
+     "chunks": [{"en": "Owls have the amazing ability", "ko": "부엉이는 놀라운 능력이 있다"}, {"en": "to turn their heads", "ko": "그들의 머리를 돌릴 수 있는"}, {"en": "almost all the way around.", "ko": "거의 완전히."}]
+    },
+    {
+     "translation": "그들은 그들의 머리를 움직이는 것만으로 그들의 주변 환경을 살필 수 있다.",
+     "contextNote": "그 능력으로 할 수 있는 일을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "moving"}],
+     "roles": [{"q": "They", "role": "S"}, {"q": "can scan", "role": "V"}, {"q": "their surroundings", "role": "O"}, {"q": "by only moving their heads", "role": "M"}],
+     "points": [{"q": "by only moving their heads", "label": "전치사+동명사", "star": true, "explanation": "전치사 by 뒤에는 동명사를 써서 '~함으로써'라는 뜻을 나타낸다. 전치사의 목적어 자리이므로 동사원형 move나 to move를 쓰지 않는다."}],
+     "chunks": [{"en": "They can scan their surroundings", "ko": "그들은 그들의 주변 환경을 살필 수 있다"}, {"en": "by only moving their heads.", "ko": "그들의 머리를 움직이는 것만으로."}]
+    },
+    {
+     "translation": "이는 그들이 조용히 위험이나 먹이를 발견하도록 돕는다.",
+     "contextNote": "머리를 돌리는 능력의 이점으로 글을 맺는다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to spot"}],
+     "roles": [{"q": "This", "role": "S"}, {"q": "helps", "role": "V"}, {"q": "them", "role": "O"}, {"q": "to spot danger or food quietly", "role": "C"}],
+     "notes": [{"q": "This", "label": "대명사 선행사", "gloss": "= 머리를 움직여 주변을 살피는 것"}],
+     "points": [{"q": "helps them to spot", "label": "help+O+(to) V", "star": true, "explanation": "「help+목적어+to부정사 또는 동사원형」은 '~가 …하도록 돕다'라는 뜻이다. 목적격보어 자리에 to spot과 spot을 모두 쓸 수 있다."}],
+     "chunks": [{"en": "This helps them", "ko": "이는 그들을 돕는다"}, {"en": "to spot danger or food", "ko": "위험이나 먹이를 발견하도록"}, {"en": "quietly.", "ko": "조용히."}]
+    }
+   ]
+  }
+ }
+}

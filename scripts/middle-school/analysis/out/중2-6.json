@@ -1,0 +1,1403 @@
+{
+ "passages": {
+  "4881c6cf-684b-471f-8342-e0c02ace3f1e": {
+   "titleEn": "A Special Favor",
+   "topicEn": "A man asked Dr. Schofield to take pictures of the March 1st gathering and share them with the world.",
+   "topicKo": "한 남자가 Schofield 박사에게 3·1 만세 집회의 사진을 찍어 세계에 알려 달라고 부탁했다.",
+   "sentences": [
+    {
+     "translation": "1919년 2월 28일, 한 남자가 Schofield 박사의 집에 왔다.",
+     "contextNote": "3·1운동 전날의 장면으로 이야기를 연다.",
+     "roles": [
+      {
+       "q": "On February 28, 1919",
+       "role": "M"
+      },
+      {
+       "q": "a man",
+       "role": "S"
+      },
+      {
+       "q": "came",
+       "role": "V"
+      },
+      {
+       "q": "to Dr. Schofield's house",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "On February 28, 1919,",
+       "ko": "1919년 2월 28일,"
+      },
+      {
+       "en": "a man came",
+       "ko": "한 남자가 왔다"
+      },
+      {
+       "en": "to Dr. Schofield's house.",
+       "ko": "Schofield 박사의 집에."
+      }
+     ]
+    },
+    {
+     "translation": "남자: Schofield 박사님, 특별한 부탁이 있습니다.",
+     "contextNote": "남자가 찾아온 이유를 꺼낸다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "to ask"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "have",
+       "role": "V"
+      },
+      {
+       "q": "a special favor to ask you",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "to ask you",
+       "label": "형용사적 용법",
+       "star": true,
+       "explanation": "to부정사가 앞의 명사 a special favor를 꾸며 '~할, ~하는'으로 해석되는 형용사적 용법이다. a special favor to ask you는 '당신에게 부탁할 특별한 일'이라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "A man: Dr. Schofield,",
+       "ko": "남자: Schofield 박사님,"
+      },
+      {
+       "en": "I have a special favor",
+       "ko": "특별한 부탁이 있습니다"
+      },
+      {
+       "en": "to ask you.",
+       "ko": "(당신께) 드릴."
+      }
+     ]
+    },
+    {
+     "translation": "Schofield 박사: 제가 무엇을 해 드릴까요?",
+     "contextNote": "부탁의 내용을 묻는다.",
+     "roles": [
+      {
+       "q": "What",
+       "role": "O"
+      },
+      {
+       "q": "can",
+       "role": "V"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "do",
+       "role": "V"
+      },
+      {
+       "q": "for you",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Dr. Schofield:",
+       "ko": "Schofield 박사:"
+      },
+      {
+       "en": "What can I do",
+       "ko": "제가 무엇을 해 드릴까요"
+      },
+      {
+       "en": "for you?",
+       "ko": "당신을 위해?"
+      }
+     ]
+    },
+    {
+     "translation": "남자: 내일 한국의 독립을 위해 많은 사람들이 모일 예정입니다.",
+     "contextNote": "다음 날 있을 일(3·1운동)을 알린다.",
+     "roles": [
+      {
+       "q": "Many people",
+       "role": "S"
+      },
+      {
+       "q": "are going to gather",
+       "role": "V"
+      },
+      {
+       "q": "tomorrow",
+       "role": "M"
+      },
+      {
+       "q": "for the independence of Korea",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "A man:",
+       "ko": "남자:"
+      },
+      {
+       "en": "Many people are going to gather",
+       "ko": "많은 사람들이 모일 예정입니다"
+      },
+      {
+       "en": "tomorrow",
+       "ko": "내일"
+      },
+      {
+       "en": "for the independence of Korea.",
+       "ko": "한국의 독립을 위해."
+      }
+     ]
+    },
+    {
+     "translation": "그 사건의 사진을 찍어서 세계에 알려 주실 수 있으세요?",
+     "contextNote": "남자가 하려던 부탁의 내용이다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "Could",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "take",
+       "role": "V"
+      },
+      {
+       "q": "pictures of the event",
+       "role": "O"
+      },
+      {
+       "q": "share",
+       "role": "V"
+      },
+      {
+       "q": "them",
+       "role": "O"
+      },
+      {
+       "q": "with the world",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "take pictures of the event and share them",
+       "label": "조동사 공유 병렬",
+       "star": true,
+       "explanation": "조동사 Could 하나에 동사 take와 share가 and로 이어졌다. 두 동사 모두 동사원형으로 쓴다. Could you ~?는 정중하게 부탁하는 표현이고, them은 pictures를 가리킨다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Could you take pictures of the event",
+       "ko": "그 사건의 사진을 찍어서"
+      },
+      {
+       "en": "and share them",
+       "ko": "그것들을 알려 주실 수 있으세요?"
+      },
+      {
+       "en": "with the world?",
+       "ko": "세계에"
+      }
+     ]
+    },
+    {
+     "translation": "3월 1일 오후 2시, Schofield 박사는 한 건물에 숨어 있으면서 밖에 많은 사람들이 모여드는 것을 보았다.",
+     "contextNote": "3·1운동 당일 Schofield 박사가 본 장면이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "gathering"
+      }
+     ],
+     "roles": [
+      {
+       "q": "At 2 p.m. on March 1",
+       "role": "M"
+      },
+      {
+       "q": "Dr. Schofield",
+       "role": "S"
+      },
+      {
+       "q": "was hiding",
+       "role": "V"
+      },
+      {
+       "q": "in a building",
+       "role": "M"
+      },
+      {
+       "q": "saw",
+       "role": "V"
+      },
+      {
+       "q": "a large group of people",
+       "role": "O"
+      },
+      {
+       "q": "gathering outside",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "saw a large group of people gathering",
+       "label": "지각동사 보어",
+       "star": true,
+       "explanation": "see + 목적어 + 현재분사는 '~가 …하고 있는 것을 보다'라는 뜻이다. 목적어(사람들)가 모여드는 동작을 하고 있으므로 목적격보어로 현재분사 gathering을 썼다. 동사원형 gather로도 쓸 수 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "At 2 p.m. on March 1,",
+       "ko": "3월 1일 오후 2시,"
+      },
+      {
+       "en": "Dr. Schofield was hiding in a building",
+       "ko": "Schofield 박사는 한 건물에 숨어 있으면서"
+      },
+      {
+       "en": "and saw a large group of people",
+       "ko": "많은 사람들을 보았다"
+      },
+      {
+       "en": "gathering outside.",
+       "ko": "밖에 모여드는 것을."
+      }
+     ]
+    },
+    {
+     "translation": "그는 사진을 찍기 시작했다.",
+     "contextNote": "부탁받은 일을 실행에 옮긴다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "began",
+       "role": "V"
+      },
+      {
+       "q": "to take pictures",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "began to take",
+       "label": "to부정사",
+       "explanation": "begin은 to부정사를 목적어로 쓸 수 있는 동사로, '~하기 시작하다'라는 뜻이다. began은 begin의 과거형이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He began",
+       "ko": "그는 시작했다"
+      },
+      {
+       "en": "to take pictures.",
+       "ko": "사진을 찍기."
+      }
+     ]
+    },
+    {
+     "translation": "Schofield 박사: 믿을 수 없어!",
+     "contextNote": "눈앞의 광경에 놀라는 말이다."
+    },
+    {
+     "translation": "여기엔 정말 많은 사람들이 있어.",
+     "contextNote": "놀란 이유를 말한다.",
+     "roles": [
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "so many people",
+       "role": "S"
+      },
+      {
+       "q": "here",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "There are",
+       "label": "there be 수일치",
+       "explanation": "There be 구문에서는 be동사 뒤의 말이 실제 주어이다. 복수 명사 people에 맞춰 are를 썼다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There are so many people",
+       "ko": "정말 많은 사람들이 있어"
+      },
+      {
+       "en": "here.",
+       "ko": "여기엔."
+      }
+     ]
+    },
+    {
+     "translation": "내 사진을 통해 세계가 이 중요한 사건에 대해 알게 되기를 바라.",
+     "contextNote": "사진을 찍는 목적과 바람을 드러낸다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "hope",
+       "role": "V"
+      },
+      {
+       "q": "the world",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "will learn",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "about this important event",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "through my pictures",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "the world will learn about this important event through my pictures",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "hope the world",
+       "label": "접속사 that 생략",
+       "explanation": "hope 뒤의 목적어절을 이끄는 접속사 that이 생략되었다. the world will learn ~ 전체가 hope의 목적어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I hope",
+       "ko": "나는 바라"
+      },
+      {
+       "en": "the world will learn about this important event",
+       "ko": "세계가 이 중요한 사건에 대해 알게 되기를"
+      },
+      {
+       "en": "through my pictures.",
+       "ko": "내 사진을 통해."
+      }
+     ]
+    }
+   ]
+  },
+  "ae0db9a2-5557-45ea-ab58-3e2b084bdc97": {
+   "titleEn": "Dr. Schofield's Life in Korea",
+   "topicEn": "Dr. Schofield, a Canadian doctor, learned Korean hard and helped the Korean independence movement.",
+   "topicKo": "캐나다인 의사 Schofield 박사는 한국어를 열심히 배우고 한국의 독립운동을 도왔다.",
+   "sentences": [
+    {
+     "translation": "당신은 석호필을 아는가?",
+     "contextNote": "질문으로 인물을 소개하며 글을 시작한다.",
+     "roles": [
+      {
+       "q": "Do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "know",
+       "role": "V"
+      },
+      {
+       "q": "Seok Hopil",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Do you know",
+       "ko": "당신은 아는가?"
+      },
+      {
+       "en": "Seok Hopil?",
+       "ko": "석호필을"
+      }
+     ]
+    },
+    {
+     "translation": "그의 영어 이름은 Frank W. Schofield였지만, 그는 자신의 한국 이름을 사랑했다.",
+     "roles": [
+      {
+       "q": "His English name",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "Frank W.",
+       "role": "C"
+      },
+      {
+       "q": "Schofield",
+       "role": "C"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "loved",
+       "role": "V"
+      },
+      {
+       "q": "his Korean name",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "His English name was",
+       "ko": "그의 영어 이름은"
+      },
+      {
+       "en": "Frank W.",
+       "ko": "Frank W."
+      },
+      {
+       "en": "Schofield,",
+       "ko": "Schofield였지만,"
+      },
+      {
+       "en": "but he loved his Korean name.",
+       "ko": "그는 자신의 한국 이름을 사랑했다."
+      }
+     ],
+     "notes": [
+      {
+       "q": "but he loved his Korean name",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 대비"
+      }
+     ]
+    },
+    {
+     "translation": "그 이름은 그의 본명과 비슷하게 들렸고 좋은 의미도 담고 있었다.",
+     "contextNote": "한국 이름을 사랑한 이유 두 가지를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "similar"
+      }
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "sounded",
+       "role": "V"
+      },
+      {
+       "q": "similar to his real name",
+       "role": "C"
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "also",
+       "role": "M"
+      },
+      {
+       "q": "had",
+       "role": "V"
+      },
+      {
+       "q": "a good meaning",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and it also had a good meaning",
+       "label": "등위절"
+      }
+     ],
+     "points": [
+      {
+       "q": "sounded similar",
+       "label": "연결동사 보어",
+       "star": true,
+       "explanation": "sound는 '~하게 들리다'라는 뜻의 연결동사로, 뒤에 부사가 아니라 형용사 보어가 온다. 우리말로 '비슷하게'라고 옮겨도 similarly로 쓰지 않는다. similar to는 '~와 비슷한'이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It sounded similar",
+       "ko": "그 이름은 비슷하게 들렸고"
+      },
+      {
+       "en": "to his real name,",
+       "ko": "그의 본명과,"
+      },
+      {
+       "en": "and it also had a good meaning.",
+       "ko": "좋은 의미도 담고 있었다."
+      }
+     ]
+    },
+    {
+     "translation": "Schofield 박사는 캐나다 의사였고, 의학을 가르치기 위해 1916년에 한국에 처음 왔다.",
+     "contextNote": "그가 어떤 사람이고 왜 한국에 왔는지 말한다.",
+     "roles": [
+      {
+       "q": "Dr. Schofield",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a Canadian doctor",
+       "role": "C"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "first",
+       "role": "M"
+      },
+      {
+       "q": "came",
+       "role": "V"
+      },
+      {
+       "q": "to Korea",
+       "role": "A"
+      },
+      {
+       "q": "in 1916",
+       "role": "M"
+      },
+      {
+       "q": "to teach medicine",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and he first came to Korea in 1916 to teach medicine",
+       "label": "등위절"
+      }
+     ],
+     "points": [
+      {
+       "q": "to teach",
+       "label": "부사적 용법",
+       "star": true,
+       "explanation": "to부정사가 '~하기 위해'라는 목적을 나타내는 부사적 용법이다. 한국에 온 이유를 설명한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Dr. Schofield was a Canadian doctor,",
+       "ko": "Schofield 박사는 캐나다 의사였고,"
+      },
+      {
+       "en": "and he first came to Korea",
+       "ko": "한국에 처음 왔다"
+      },
+      {
+       "en": "in 1916",
+       "ko": "1916년에"
+      },
+      {
+       "en": "to teach medicine.",
+       "ko": "의학을 가르치기 위해."
+      }
+     ]
+    },
+    {
+     "translation": "그는 한국어로 가르치고 싶어서, 곧바로 한국어를 배우기 시작했다.",
+     "contextNote": "한국어를 배우기 시작한 이유를 말한다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "wanted",
+       "role": "V"
+      },
+      {
+       "q": "to teach in Korean",
+       "role": "O"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "began",
+       "role": "V"
+      },
+      {
+       "q": "to learn Korean",
+       "role": "O"
+      },
+      {
+       "q": "right away",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "so he began to learn Korean right away",
+       "label": "등위절",
+       "gloss": "so: 그래서"
+      }
+     ],
+     "points": [
+      {
+       "q": "wanted to teach",
+       "label": "to부정사",
+       "explanation": "want는 to부정사를 목적어로 쓰는 동사이다. 뒤 절의 began to learn도 같은 형태이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He wanted to teach in Korean,",
+       "ko": "그는 한국어로 가르치고 싶어서,"
+      },
+      {
+       "en": "so he began to learn Korean",
+       "ko": "한국어를 배우기 시작했다"
+      },
+      {
+       "en": "right away.",
+       "ko": "곧바로."
+      }
+     ]
+    },
+    {
+     "translation": "그는 매우 열심히 공부해서 몇 년 만에 한국어로 가르칠 수 있게 되었다.",
+     "contextNote": "한국어를 배운 노력과 그 결과를 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "so hard that"
+      }
+     ],
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "studied",
+       "role": "V"
+      },
+      {
+       "q": "so hard",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "was able to teach",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "in Korean",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "after only a few years",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that he was able to teach in Korean after only a few years",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "so hard that",
+       "label": "so ... that 구문",
+       "star": true,
+       "rewrite": "He studied very hard, so he was able to teach in Korean after only a few years.",
+       "explanation": "so + 형용사/부사 + that절은 '너무 ~해서 …하다'라는 뜻으로 원인과 결과를 나타낸다. 여기서 hard는 '열심히'라는 뜻의 부사이고, that 뒤에 결과가 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He studied so hard",
+       "ko": "그는 매우 열심히 공부해서"
+      },
+      {
+       "en": "that he was able to teach in Korean",
+       "ko": "한국어로 가르칠 수 있게 되었다"
+      },
+      {
+       "en": "after only a few years.",
+       "ko": "몇 년 만에."
+      }
+     ]
+    },
+    {
+     "translation": "그는 모든 나라는 독립할 권리가 있다고 믿었기에 한국의 독립운동을 도왔다.",
+     "contextNote": "독립운동을 도운 까닭인 그의 믿음을 밝힌다.",
+     "tags": [
+      "주제문"
+     ],
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "believed",
+       "role": "V"
+      },
+      {
+       "q": "every country",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "has",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the right to be independent",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "helped",
+       "role": "V"
+      },
+      {
+       "q": "the Korean independence movement",
+       "role": "O"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that every country has the right to be independent",
+       "kind": "nominal"
+      }
+     ],
+     "notes": [
+      {
+       "q": "so he helped the Korean independence movement",
+       "label": "등위절",
+       "gloss": "so: 그래서"
+      }
+     ],
+     "points": [
+      {
+       "q": "that every country has the right to be independent",
+       "label": "that 명사절",
+       "star": true,
+       "explanation": "that절이 believed의 목적어 역할을 한다. that 뒤에 완전한 절이 오며, '~라고 믿었다'로 해석한다."
+      },
+      {
+       "q": "every country has",
+       "label": "each/every",
+       "explanation": "every 뒤에는 단수 명사를 쓰고, 동사도 단수에 맞춘다. 그래서 countries have가 아니라 country has이다."
+      },
+      {
+       "q": "to be independent",
+       "label": "형용사적 용법",
+       "explanation": "to부정사가 앞의 명사 the right를 꾸민다. the right to be independent는 '독립할 권리'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He believed",
+       "ko": "그는 믿었기에"
+      },
+      {
+       "en": "that every country has the right",
+       "ko": "모든 나라는 권리가 있다고"
+      },
+      {
+       "en": "to be independent,",
+       "ko": "독립할,"
+      },
+      {
+       "en": "so he helped the Korean independence movement.",
+       "ko": "한국의 독립운동을 도왔다."
+      }
+     ]
+    }
+   ]
+  },
+  "bef04744-6a90-43d2-b709-c130cea1e0ab": {
+   "titleEn": "Dr. Schofield's Contribution to Korean Independence",
+   "topicEn": "Dr. Schofield told the world about the March 1st Movement and kept writing about Korea's situation for foreign newspapers.",
+   "topicKo": "Schofield 박사는 3·1운동을 세계에 알리고 한국의 상황에 대해 외국 신문에 계속 글을 썼다.",
+   "sentences": [
+    {
+     "translation": "1919년 3월 1일, Schofield 박사는 탑골 공원에서 사람들이 한국의 독립을 외치는 소리를 들었다.",
+     "contextNote": "3·1운동 당일의 장면을 전한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "shouting"
+      }
+     ],
+     "roles": [
+      {
+       "q": "On March 1, 1919",
+       "role": "M"
+      },
+      {
+       "q": "Dr. Schofield",
+       "role": "S"
+      },
+      {
+       "q": "heard",
+       "role": "V"
+      },
+      {
+       "q": "people",
+       "role": "O"
+      },
+      {
+       "q": "shouting for Korean independence",
+       "role": "C"
+      },
+      {
+       "q": "in Tapgol Park",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "heard people shouting",
+       "label": "지각동사 보어",
+       "star": true,
+       "explanation": "hear + 목적어 + 현재분사는 '~가 …하고 있는 소리를 듣다'라는 뜻이다. 목적어 people이 외치는 동작을 하고 있으므로 목적격보어로 현재분사 shouting을 썼다. 동사원형 shout로도 쓸 수 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "On March 1, 1919,",
+       "ko": "1919년 3월 1일,"
+      },
+      {
+       "en": "Dr. Schofield heard people",
+       "ko": "Schofield 박사는 사람들을 들었다"
+      },
+      {
+       "en": "shouting for Korean independence",
+       "ko": "한국의 독립을 외치는 소리를"
+      },
+      {
+       "en": "in Tapgol Park.",
+       "ko": "탑골 공원에서."
+      }
+     ]
+    },
+    {
+     "translation": "그는 카메라로 그 사건의 사진을 찍었다.",
+     "contextNote": "현장에서 한 일을 말한다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "took",
+       "role": "V"
+      },
+      {
+       "q": "pictures of the event",
+       "role": "O"
+      },
+      {
+       "q": "with his camera",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He took pictures of the event",
+       "ko": "그는 그 사건의 사진을 찍었다"
+      },
+      {
+       "en": "with his camera.",
+       "ko": "카메라로."
+      }
+     ]
+    },
+    {
+     "translation": "그 후 그는 이 역사적인 사건에 대한 기사를 써서 사진과 함께 외국 신문사에 보냈다.",
+     "contextNote": "3·1운동을 세계에 알린 방법을 말한다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "then",
+       "role": "M"
+      },
+      {
+       "q": "wrote",
+       "role": "V"
+      },
+      {
+       "q": "an article about the historic event",
+       "role": "O"
+      },
+      {
+       "q": "sent",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      },
+      {
+       "q": "to foreign newspapers",
+       "role": "A"
+      },
+      {
+       "q": "with his pictures",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "wrote an article about the historic event and sent it",
+       "label": "동사 병렬",
+       "explanation": "주어 He 하나에 동사 wrote와 sent가 and로 이어졌다. 두 동사 모두 과거형으로 맞춘다. it은 an article을 가리킨다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He then wrote an article",
+       "ko": "그 후 그는 기사를 써서"
+      },
+      {
+       "en": "about the historic event",
+       "ko": "이 역사적인 사건에 대한"
+      },
+      {
+       "en": "and sent it to foreign newspapers",
+       "ko": "외국 신문사에 보냈다"
+      },
+      {
+       "en": "with his pictures.",
+       "ko": "사진과 함께."
+      }
+     ]
+    },
+    {
+     "translation": "한국 독립을 위한 Schofield 박사의 투쟁은 3·1운동 이후에도 멈추지 않았다.",
+     "contextNote": "3·1운동 뒤로 이야기가 넘어간다.",
+     "roles": [
+      {
+       "q": "Dr. Schofield's fight for Korean independence",
+       "role": "S"
+      },
+      {
+       "q": "didn't stop",
+       "role": "V"
+      },
+      {
+       "q": "even after the March 1st Movement",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Dr. Schofield's fight for Korean independence",
+       "ko": "한국 독립을 위한 Schofield 박사의 투쟁은"
+      },
+      {
+       "en": "didn't stop",
+       "ko": "멈추지 않았다"
+      },
+      {
+       "en": "even after the March 1st Movement.",
+       "ko": "3·1운동 이후에도."
+      }
+     ]
+    },
+    {
+     "translation": "그는 외국 신문에 한국의 참혹한 상황에 대해 계속해서 글을 썼다.",
+     "contextNote": "멈추지 않은 투쟁의 구체적인 내용이다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "continued",
+       "role": "V"
+      },
+      {
+       "q": "to write about the terrible situation in Korea for foreign newspapers",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "continued to write",
+       "label": "to부정사",
+       "explanation": "continue는 to부정사를 목적어로 쓸 수 있는 동사로, '계속 ~하다'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He continued to write",
+       "ko": "그는 계속해서 글을 썼다"
+      },
+      {
+       "en": "about the terrible situation in Korea",
+       "ko": "한국의 참혹한 상황에 대해"
+      },
+      {
+       "en": "for foreign newspapers.",
+       "ko": "외국 신문에."
+      }
+     ]
+    },
+    {
+     "translation": "그는 일본 경찰의 감시를 받게 되어 1920년에 캐나다로 돌아가야 했다.",
+     "contextNote": "그의 활동이 낳은 결과를 말한다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "under the watchful eye of the Japanese police",
+       "role": "C"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "had to go",
+       "role": "V"
+      },
+      {
+       "q": "back to Canada",
+       "role": "A"
+      },
+      {
+       "q": "in 1920",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "so he had to go back to Canada in 1920",
+       "label": "등위절",
+       "gloss": "so: 그래서"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He was under the watchful eye",
+       "ko": "그는 감시를 받게 되어"
+      },
+      {
+       "en": "of the Japanese police,",
+       "ko": "일본 경찰의,"
+      },
+      {
+       "en": "so he had to go back to Canada",
+       "ko": "캐나다로 돌아가야 했다"
+      },
+      {
+       "en": "in 1920.",
+       "ko": "1920년에."
+      }
+     ]
+    }
+   ]
+  },
+  "d0b62dc3-1ea7-4cbd-9a17-f9ce95f92d0c": {
+   "titleEn": "The Rest of Dr. Schofield's Life",
+   "topicEn": "Dr. Schofield returned to Korea in 1958, helped Koreans for the rest of his life, and was buried in Seoul.",
+   "topicKo": "Schofield 박사는 1958년 한국으로 돌아와 여생 동안 한국인들을 돕다가 서울에 묻혔다.",
+   "sentences": [
+    {
+     "translation": "1958년, 그는 한국 정부의 초청으로 한국으로 돌아와서 다시는 떠나지 않았다.",
+     "contextNote": "다시 한국으로 돌아온 때를 말한다.",
+     "roles": [
+      {
+       "q": "In 1958",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "returned",
+       "role": "V"
+      },
+      {
+       "q": "to Korea",
+       "role": "A"
+      },
+      {
+       "q": "at the invitation of the Korean government",
+       "role": "M"
+      },
+      {
+       "q": "never",
+       "role": "M"
+      },
+      {
+       "q": "left",
+       "role": "V"
+      },
+      {
+       "q": "again",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "at the invitation of the Korean government",
+       "label": "전명구",
+       "gloss": "'한국 정부의 초청으로'"
+      }
+     ],
+     "points": [
+      {
+       "q": "returned to Korea at the invitation of the Korean government and never left",
+       "label": "동사 병렬",
+       "explanation": "주어 he 하나에 동사 returned와 left가 and로 이어졌다. 두 동사 모두 과거형이며, never는 동사 left 앞에 놓인다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "In 1958,",
+       "ko": "1958년,"
+      },
+      {
+       "en": "he returned to Korea",
+       "ko": "그는 한국으로 돌아와서"
+      },
+      {
+       "en": "at the invitation of the Korean government",
+       "ko": "한국 정부의 초청으로"
+      },
+      {
+       "en": "and never left again.",
+       "ko": "다시는 떠나지 않았다."
+      }
+     ]
+    },
+    {
+     "translation": "그는 여생 동안 한국인들, 특히 가난한 학생들을 돕기 위해 열심히 일했다.",
+     "contextNote": "돌아온 뒤에 한 일을 말한다.",
+     "roles": [
+      {
+       "q": "For the rest of his life",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "worked",
+       "role": "V"
+      },
+      {
+       "q": "hard",
+       "role": "M"
+      },
+      {
+       "q": "to help Koreans, especially poor students",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "to help",
+       "label": "부사적 용법",
+       "star": true,
+       "explanation": "to부정사가 '~하기 위해'라는 목적을 나타내는 부사적 용법이다. 열심히 일한 이유를 설명한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "For the rest of his life,",
+       "ko": "여생 동안"
+      },
+      {
+       "en": "he worked hard",
+       "ko": "그는 열심히 일했다"
+      },
+      {
+       "en": "to help Koreans,",
+       "ko": "한국인들을 돕기 위해,"
+      },
+      {
+       "en": "especially poor students.",
+       "ko": "특히 가난한 학생들을."
+      }
+     ]
+    },
+    {
+     "translation": "Schofield 박사는 1970년 4월에 세상을 떠났고, 국립서울현충원에 안장되었다.",
+     "contextNote": "그의 삶의 마지막을 전하며 글을 맺는다.",
+     "roles": [
+      {
+       "q": "Dr. Schofield",
+       "role": "S"
+      },
+      {
+       "q": "died",
+       "role": "V"
+      },
+      {
+       "q": "in April 1970",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "was buried",
+       "role": "V"
+      },
+      {
+       "q": "in Seoul National Cemetery",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and he was buried in Seoul National Cemetery",
+       "label": "등위절"
+      }
+     ],
+     "points": [
+      {
+       "q": "was buried",
+       "label": "수동태",
+       "star": true,
+       "explanation": "be + 과거분사의 수동태로 '안장되었다'라는 뜻이다. 그가 묻는 것이 아니라 묻히는 대상이므로 수동으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Dr. Schofield died",
+       "ko": "Schofield 박사는 세상을 떠났고"
+      },
+      {
+       "en": "in April 1970,",
+       "ko": "1970년 4월에,"
+      },
+      {
+       "en": "and he was buried",
+       "ko": "안장되었다"
+      },
+      {
+       "en": "in Seoul National Cemetery.",
+       "ko": "국립서울현충원에."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,1128 @@
+{
+ "passages": {
+  "09d122f8-59f5-43a7-89d3-e261040169cf": {
+   "titleEn": "Miso Introduces the Baseball Heroes",
+   "topicEn": "Miso introduces some baseball heroes who are not players.",
+   "topicKo": "미소가 선수는 아니지만 야구의 영웅인 사람들을 소개한다.",
+   "sentences": [
+    {
+     "translation": "안녕, 나는 보람 중학교에 다니는 미소야.",
+     "contextNote": "글쓴이 미소가 자기를 소개하며 글을 연다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "Miso from Boram Middle School",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "from Boram Middle School",
+       "label": "전명구",
+       "gloss": "Miso를 꾸밈, '보람 중학교에 다니는'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Hello,",
+       "ko": "안녕,"
+      },
+      {
+       "en": "I'm Miso",
+       "ko": "나는 미소야"
+      },
+      {
+       "en": "from Boram Middle School.",
+       "ko": "보람 중학교에 다니는."
+      }
+     ]
+    },
+    {
+     "translation": "몇몇 야구 영웅들을 만나보자.",
+     "contextNote": "이 글의 소재인 야구 영웅들을 만나 보자고 제안한다.",
+     "roles": [
+      {
+       "q": "meet",
+       "role": "V"
+      },
+      {
+       "q": "some baseball heroes",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "Let's meet",
+       "label": "동사",
+       "star": true,
+       "explanation": "Let's는 Let us를 줄인 말로, 뒤에 동사원형을 써서 '~하자'라고 제안한다. 그래서 meets나 meeting이 아니라 원형 meet를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Let's meet",
+       "ko": "만나보자"
+      },
+      {
+       "en": "some baseball heroes.",
+       "ko": "몇몇 야구 영웅들을."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 선수는 아니야.",
+     "contextNote": "야구 영웅이라고 하면 떠오르는 선수가 아니라고 밝혀 궁금증을 만든다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "are not",
+       "role": "V"
+      },
+      {
+       "q": "the players",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "are not",
+       "label": "2형식",
+       "explanation": "be동사의 부정문은 be동사 뒤에 not을 붙인다. 주어 They가 복수이므로 are not(= aren't)을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They are not",
+       "ko": "그들은 아니야"
+      },
+      {
+       "en": "the players.",
+       "ko": "선수는."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 누굴까?",
+     "contextNote": "읽는 이에게 묻는 말로 뒤에 나올 네 사람의 소개로 이어 준다.",
+     "roles": [
+      {
+       "q": "Who",
+       "role": "C"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "they",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "Who are they",
+       "label": "어순",
+       "explanation": "의문사가 있는 be동사 의문문은 「의문사+be동사+주어」 순서로 쓴다. 주어 they가 복수이므로 are를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Who are",
+       "ko": "누굴까?"
+      },
+      {
+       "en": "they?",
+       "ko": "그들은"
+      }
+     ]
+    }
+   ]
+  },
+  "c7d6b84e-6473-49b0-b044-8eb6adb15a5d": {
+   "titleEn": "Jina the Umpire and Yogi the Bullpen Catcher",
+   "topicEn": "Jina makes fair decisions in games, and Yogi helps pitchers practice.",
+   "topicKo": "Jina는 경기에서 공정하게 판정을 내리고, Yogi는 투수들의 연습을 돕는다.",
+   "sentences": [
+    {
+     "translation": "Jina: 나는 모든 것을 매우 주의 깊게 지켜봐요.",
+     "contextNote": "첫 번째 인물 Jina가 자기 일을 설명하기 시작한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "carefully"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "watch",
+       "role": "V"
+      },
+      {
+       "q": "everything",
+       "role": "O"
+      },
+      {
+       "q": "very carefully",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "carefully",
+       "label": "동사 수식 부사",
+       "star": true,
+       "explanation": "동사 watch를 꾸미는 자리이므로 형용사 careful이 아니라 부사 carefully를 쓴다. very는 그 부사를 다시 꾸며 준다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Jina:",
+       "ko": "Jina:"
+      },
+      {
+       "en": "I watch everything",
+       "ko": "나는 모든 것을 지켜봐요"
+      },
+      {
+       "en": "very carefully.",
+       "ko": "매우 주의 깊게."
+      }
+     ]
+    },
+    {
+     "translation": "나는 야구 경기 중에 큰 결정을 내려요.",
+     "contextNote": "심판이 경기 중에 하는 일을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "make",
+       "role": "V"
+      },
+      {
+       "q": "big decisions",
+       "role": "O"
+      },
+      {
+       "q": "during baseball games",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "during baseball games",
+       "label": "전명구",
+       "gloss": "during: '~ 동안에'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I make big decisions",
+       "ko": "나는 큰 결정을 내려요"
+      },
+      {
+       "en": "during baseball games.",
+       "ko": "야구 경기 중에."
+      }
+     ]
+    },
+    {
+     "translation": "나는 \"볼\", \"스트라이크\", \"세이프\", 그리고 \"아웃\"과 같은 단어들을 사용해요.",
+     "contextNote": "심판이 쓰는 말을 예로 들어 Jina의 직업을 짐작하게 한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "use",
+       "role": "V"
+      },
+      {
+       "q": "words like, \"ball,\" \"strike,\" \"safe,\" and \"out",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "like, \"ball,\" \"strike,\" \"safe,\" and \"out",
+       "label": "전명구",
+       "gloss": "like: '~와 같은'(전치사), words를 꾸밈"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I use words",
+       "ko": "나는 단어들을 사용해요"
+      },
+      {
+       "en": "like, \"ball,\" \"strike,\" \"safe,\" and \"out.\"",
+       "ko": "\"볼\", \"스트라이크\", \"세이프\", 그리고 \"아웃\"과 같은."
+      }
+     ]
+    },
+    {
+     "translation": "내 목소리는 매우 커요.",
+     "contextNote": "심판의 특징(큰 목소리)을 말한다.",
+     "roles": [
+      {
+       "q": "My voice",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "very loud",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "very loud",
+       "label": "주격보어 형용사",
+       "explanation": "be동사 뒤에 형용사 loud가 와서 주어 My voice의 상태를 설명한다. very는 형용사 loud를 꾸미는 부사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "My voice",
+       "ko": "내 목소리는"
+      },
+      {
+       "en": "is very loud.",
+       "ko": "매우 커요."
+      }
+     ]
+    },
+    {
+     "translation": "모두가 나를 들을 수 있어요.",
+     "contextNote": "목소리가 커서 모두에게 들린다는 앞 문장의 결과이다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "can hear"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Everyone",
+       "role": "S"
+      },
+      {
+       "q": "can hear",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "can hear",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "can은 '~할 수 있다'라는 뜻의 조동사로, 뒤에는 항상 동사원형을 쓴다. 주어 Everyone이 단수여도 can hears로 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Everyone can hear",
+       "ko": "모두가 들을 수 있어요"
+      },
+      {
+       "en": "me.",
+       "ko": "나를."
+      }
+     ]
+    },
+    {
+     "translation": "나는 항상 공정해요!",
+     "contextNote": "심판에게 가장 중요한 태도(공정함)로 Jina의 소개를 맺는다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "always",
+       "role": "M"
+      },
+      {
+       "q": "fair",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "always",
+       "label": "동사 수식 부사",
+       "explanation": "always(항상)처럼 얼마나 자주 하는지 나타내는 빈도부사는 be동사 뒤, 일반동사 앞에 온다. 여기서는 be동사 'm 뒤에 왔다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm always",
+       "ko": "나는 항상"
+      },
+      {
+       "en": "fair!",
+       "ko": "공정해요!"
+      }
+     ]
+    },
+    {
+     "translation": "Yogi: 나는 야구 경기를 하지 않아요.",
+     "contextNote": "두 번째 인물 Yogi가 선수가 아니라는 점부터 밝힌다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "don't play",
+       "role": "V"
+      },
+      {
+       "q": "in baseball games",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "don't play",
+       "label": "동사",
+       "explanation": "일반동사의 부정문은 동사 앞에 do not(= don't)을 쓰고 뒤의 동사는 원형으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Yogi:",
+       "ko": "Yogi:"
+      },
+      {
+       "en": "I don't play",
+       "ko": "나는 경기를 하지 않아요"
+      },
+      {
+       "en": "in baseball games.",
+       "ko": "야구 경기에서."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 투수들은 나를 필요로 해요.",
+     "contextNote": "경기에 나서지 않아도 Yogi가 꼭 필요한 사람임을 말한다.",
+     "roles": [
+      {
+       "q": "pitchers",
+       "role": "S"
+      },
+      {
+       "q": "need",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "me",
+       "label": "대명사 격",
+       "explanation": "동사 need의 목적어 자리이므로 주격 I가 아니라 목적격 me를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But pitchers need",
+       "ko": "하지만 투수들은 필요로 해요"
+      },
+      {
+       "en": "me.",
+       "ko": "나를."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 나와 연습해요.",
+     "contextNote": "투수들이 Yogi를 필요로 하는 이유를 말한다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "practice",
+       "role": "V"
+      },
+      {
+       "q": "with me",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "They",
+       "label": "대명사 선행사",
+       "gloss": "= pitchers"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They practice",
+       "ko": "그들은 연습해요"
+      },
+      {
+       "en": "with me.",
+       "ko": "나와."
+      }
+     ]
+    },
+    {
+     "translation": "보라!",
+     "contextNote": "읽는 이의 눈길을 끌어 지금 벌어지는 장면으로 이끈다."
+    },
+    {
+     "translation": "투수 한 명이 야구공을 던지고 있어요.",
+     "contextNote": "지금 일어나는 장면을 현재진행으로 그린다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "is throwing"
+      }
+     ],
+     "roles": [
+      {
+       "q": "A pitcher",
+       "role": "S"
+      },
+      {
+       "q": "is throwing",
+       "role": "V"
+      },
+      {
+       "q": "a baseball",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "is throwing",
+       "label": "현재진행",
+       "star": true,
+       "explanation": "현재진행은 「be동사+동사-ing」로 '~하고 있다'는 뜻이다. 주어 A pitcher가 3인칭 단수이므로 be동사 is를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "A pitcher is throwing",
+       "ko": "투수 한 명이 던지고 있어요"
+      },
+      {
+       "en": "a baseball.",
+       "ko": "야구공을."
+      }
+     ]
+    },
+    {
+     "translation": "나는 그것을 잡을 거예요.",
+     "contextNote": "던지는 공을 받는 Yogi의 역할을 보여 준다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "will catch",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= a baseball"
+      }
+     ],
+     "points": [
+      {
+       "q": "will catch",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "will은 '~할 것이다'라는 뜻으로 앞으로의 일을 나타내는 조동사이며, 뒤에는 동사원형을 쓴다. 앞 문장은 지금 하는 일(현재진행), 이 문장은 곧 할 일(will)이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I will catch",
+       "ko": "나는 잡을 거예요"
+      },
+      {
+       "en": "it.",
+       "ko": "그것을."
+      }
+     ]
+    },
+    {
+     "translation": "그 투수는 나와 함께 몸을 천천히 풀고 있어요.",
+     "contextNote": "Yogi가 투수의 몸풀기를 돕는 사람임을 정리한다.",
+     "roles": [
+      {
+       "q": "The pitcher",
+       "role": "S"
+      },
+      {
+       "q": "is warming up",
+       "role": "V"
+      },
+      {
+       "q": "with me",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "is warming up",
+       "label": "현재진행",
+       "explanation": "「be동사+동사-ing」의 현재진행이다. warm up은 '몸을 풀다'라는 뜻이고, 진행형에서는 warm에 -ing를 붙인다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The pitcher is warming up",
+       "ko": "그 투수는 몸을 천천히 풀고 있어요"
+      },
+      {
+       "en": "with me.",
+       "ko": "나와 함께."
+      }
+     ]
+    }
+   ]
+  },
+  "9974c3ee-d365-43c2-8dc1-f0c05021f71d": {
+   "titleEn": "Teo the Data Analyst and Wally the Mascot",
+   "topicEn": "Teo finds useful facts in baseball data, and Wally has fun with fans in a heavy bear suit.",
+   "topicKo": "Teo는 야구 자료에서 유용한 사실을 찾아내고, Wally는 무거운 곰 의상을 입고 팬들과 즐거운 시간을 보낸다.",
+   "sentences": [
+    {
+     "translation": "Teo: 나는 야구 경기에 관한 자료를 수집해요.",
+     "contextNote": "세 번째 인물 Teo가 자기 일을 설명하기 시작한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "collect",
+       "role": "V"
+      },
+      {
+       "q": "data about baseball games",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "about baseball games",
+       "label": "전명구",
+       "gloss": "data를 꾸밈, '야구 경기에 관한'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Teo:",
+       "ko": "Teo:"
+      },
+      {
+       "en": "I collect data",
+       "ko": "나는 자료를 수집해요"
+      },
+      {
+       "en": "about baseball games.",
+       "ko": "야구 경기에 관한."
+      }
+     ]
+    },
+    {
+     "translation": "나는 그 자료를 컴퓨터에 입력해요.",
+     "contextNote": "모은 자료로 하는 다음 일을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "put",
+       "role": "V"
+      },
+      {
+       "q": "the data",
+       "role": "O"
+      },
+      {
+       "q": "into a computer",
+       "role": "A"
+      }
+     ],
+     "points": [
+      {
+       "q": "put the data into a computer",
+       "label": "3형식",
+       "explanation": "put은 '넣다'라는 뜻으로, 목적어 the data와 어디에 넣는지 나타내는 into a computer가 함께 있어야 뜻이 완성된다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I put the data",
+       "ko": "나는 그 자료를 입력해요"
+      },
+      {
+       "en": "into a computer.",
+       "ko": "컴퓨터에."
+      }
+     ]
+    },
+    {
+     "translation": "그러면 나는 유용한 사실을 찾을 수 있어요.",
+     "contextNote": "자료를 입력해서 얻는 결과를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "can find"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Then",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "can find",
+       "role": "V"
+      },
+      {
+       "q": "useful facts",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "can find",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "can은 '~할 수 있다'라는 능력을 나타내는 조동사로, 뒤에 동사원형 find를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Then",
+       "ko": "그러면"
+      },
+      {
+       "en": "I can find",
+       "ko": "나는 찾을 수 있어요"
+      },
+      {
+       "en": "useful facts.",
+       "ko": "유용한 사실을."
+      }
+     ]
+    },
+    {
+     "translation": "누가 흐린 날에 공을 잘 던질까?",
+     "contextNote": "Teo가 찾아내는 유용한 사실의 첫 번째 예이다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "Who",
+       "role": "S"
+      },
+      {
+       "q": "will pitch",
+       "role": "V"
+      },
+      {
+       "q": "well",
+       "role": "M"
+      },
+      {
+       "q": "on cloudy days",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "Who will pitch",
+       "label": "어순",
+       "star": true,
+       "explanation": "의문사 Who가 주어인 의문문은 따로 주어를 쓰지 않고 「Who+동사」 순서로 쓴다. will 뒤에는 동사원형 pitch가 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Who will pitch well",
+       "ko": "누가 공을 잘 던질까?"
+      },
+      {
+       "en": "on cloudy days?",
+       "ko": "흐린 날에"
+      }
+     ]
+    },
+    {
+     "translation": "누가 야간 경기에서 공을 가장 잘 칠까?",
+     "contextNote": "유용한 사실의 두 번째 예로, 앞 문장과 같은 틀이다.",
+     "roles": [
+      {
+       "q": "Who",
+       "role": "S"
+      },
+      {
+       "q": "will hit",
+       "role": "V"
+      },
+      {
+       "q": "best",
+       "role": "M"
+      },
+      {
+       "q": "in night games",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "best",
+       "label": "최상급",
+       "gloss": "well의 최상급, '가장 잘'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Who will hit best",
+       "ko": "누가 공을 가장 잘 칠까?"
+      },
+      {
+       "en": "in night games?",
+       "ko": "야간 경기에서"
+      }
+     ]
+    },
+    {
+     "translation": "나는 수학을 매우 잘해요!",
+     "contextNote": "Teo의 일에 필요한 강점(수학)으로 소개를 맺는다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "very good at math",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "good at",
+       "label": "필수 전치사",
+       "star": true,
+       "explanation": "be good at은 '~을 잘하다'라는 뜻으로 전치사 at과 짝을 이룬다. 전치사 뒤에는 명사 math가 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm very good",
+       "ko": "나는 매우 잘해요"
+      },
+      {
+       "en": "at math!",
+       "ko": "수학을!"
+      }
+     ]
+    },
+    {
+     "translation": "Wally: 치즈!",
+     "contextNote": "네 번째 인물 Wally가 사진 찍을 때 하는 말로 등장한다."
+    },
+    {
+     "translation": "나는 팬과 사진을 찍고 있어요.",
+     "contextNote": "앞의 「치즈!」가 사진을 찍는 장면임을 알려 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "'m taking"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m taking",
+       "role": "V"
+      },
+      {
+       "q": "a picture",
+       "role": "O"
+      },
+      {
+       "q": "with a fan",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "'m taking",
+       "label": "현재진행",
+       "star": true,
+       "explanation": "「be동사+동사-ing」의 현재진행으로 지금 하고 있는 일을 나타낸다. 주어 I에 맞춰 am(축약 'm)을 쓰고, take처럼 -e로 끝나는 동사는 e를 빼고 -ing를 붙인다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm taking a picture",
+       "ko": "나는 사진을 찍고 있어요"
+      },
+      {
+       "en": "with a fan.",
+       "ko": "팬과."
+      }
+     ]
+    },
+    {
+     "translation": "나는 모든 사람과 즐거운 시간을 보내요.",
+     "contextNote": "마스코트로서 Wally가 하는 일을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "have",
+       "role": "V"
+      },
+      {
+       "q": "fun",
+       "role": "O"
+      },
+      {
+       "q": "with everyone",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "have fun",
+       "label": "3형식",
+       "gloss": "'즐거운 시간을 보내다'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I have fun",
+       "ko": "나는 즐거운 시간을 보내요"
+      },
+      {
+       "en": "with everyone.",
+       "ko": "모든 사람과."
+      }
+     ]
+    },
+    {
+     "translation": "나는 커다란 곰 의상을 입어요.",
+     "contextNote": "Wally가 마스코트임을 알 수 있는 단서이다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "wear",
+       "role": "V"
+      },
+      {
+       "q": "a big bear suit",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I wear",
+       "ko": "나는 입어요"
+      },
+      {
+       "en": "a big bear suit.",
+       "ko": "커다란 곰 의상을."
+      }
+     ]
+    },
+    {
+     "translation": "그 의상은 매우 무거워요.",
+     "contextNote": "마스코트 일의 어려운 점을 말한다.",
+     "roles": [
+      {
+       "q": "The suit",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "very heavy",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The suit",
+       "ko": "그 의상은"
+      },
+      {
+       "en": "is very heavy.",
+       "ko": "매우 무거워요."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 괜찮아요.",
+     "contextNote": "힘들어도 괜찮다며 다음 문장의 이유로 이어 간다.",
+     "roles": [
+      {
+       "q": "that",
+       "role": "S"
+      },
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "okay",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "that",
+       "label": "대명사 선행사",
+       "gloss": "= 의상이 무거운 것"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But that's",
+       "ko": "하지만 그것은"
+      },
+      {
+       "en": "okay.",
+       "ko": "괜찮아요."
+      }
+     ]
+    },
+    {
+     "translation": "모두가 나를 사랑해요!",
+     "contextNote": "무거운 의상도 괜찮은 이유로 Wally의 소개를 맺는다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "loves"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Everyone",
+       "role": "S"
+      },
+      {
+       "q": "loves",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "loves",
+       "label": "동사",
+       "star": true,
+       "explanation": "Everyone은 '모두'라는 뜻이지만 단수로 취급한다. 그래서 일반동사 현재형에 -s를 붙여 loves로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Everyone loves",
+       "ko": "모두가 사랑해요"
+      },
+      {
+       "en": "me!",
+       "ko": "나를!"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

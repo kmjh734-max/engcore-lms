@@ -1,0 +1,1989 @@
+{
+ "passages": {
+  "63e3e3ce-48cf-47c1-944f-947075e74ac0": {
+   "titleEn": "Nick's Question About Words",
+   "topicEn": "Curious Nick asks his teacher how words get their meanings and doubts her answer.",
+   "topicKo": "호기심 많은 Nick은 단어가 어떻게 뜻을 가지는지 선생님께 묻고, 선생님의 답에 의문을 품는다.",
+   "sentences": [
+    {
+     "translation": "Nick Allen은 5학년이었다.",
+     "contextNote": "주인공 Nick을 소개한다.",
+     "roles": [
+      {
+       "q": "Nick Allen",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "in the fifth grade",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Nick Allen was",
+       "ko": "Nick Allen은 ~이었다"
+      },
+      {
+       "en": "in the fifth grade.",
+       "ko": "5학년."
+      }
+     ]
+    },
+    {
+     "translation": "어느 날 영어 수업 시간에, 그는 선생님께 여쭈었다. \"단어들은 어떻게 그 뜻을 가지게 되나요?",
+     "contextNote": "이야기의 출발점이 되는 Nick의 질문이다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "One day",
+       "role": "M"
+      },
+      {
+       "q": "in English class",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      },
+      {
+       "q": "his teacher",
+       "role": "IO"
+      },
+      {
+       "q": "How",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "do",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "words",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "get",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "their meanings",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "points": [
+      {
+       "q": "asked his teacher",
+       "label": "4형식",
+       "star": true,
+       "explanation": "ask는 「ask+사람+물어보는 내용」으로 쓰는 수여동사이다. his teacher가 간접목적어이고, 따옴표 안의 질문이 직접목적어에 해당한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "One day in English class,",
+       "ko": "어느 날 영어 수업 시간에,"
+      },
+      {
+       "en": "he asked his teacher,",
+       "ko": "그는 선생님께 여쭈었다."
+      },
+      {
+       "en": "\"How do words get",
+       "ko": "\"단어들은 어떻게 가지게 되나요"
+      },
+      {
+       "en": "their meanings?",
+       "ko": "그 뜻을?"
+      }
+     ]
+    },
+    {
+     "translation": "왜 dog라는 단어는 개를 뜻하나요?",
+     "contextNote": "질문을 구체적인 단어로 바꿔 묻는다.",
+     "roles": [
+      {
+       "q": "Why",
+       "role": "M"
+      },
+      {
+       "q": "does",
+       "role": "V"
+      },
+      {
+       "q": "the word dog",
+       "role": "S"
+      },
+      {
+       "q": "mean",
+       "role": "V"
+      },
+      {
+       "q": "a dog",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "does the word dog mean",
+       "label": "어순",
+       "explanation": "주어 the word dog가 3인칭 단수이므로 does를 쓰고, 뒤의 동사는 원형 mean으로 쓴다(means ×)."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Why does the word dog mean",
+       "ko": "왜 dog라는 단어는 뜻하나요"
+      },
+      {
+       "en": "a dog?",
+       "ko": "개를?"
+      }
+     ]
+    },
+    {
+     "translation": "왜 그것은 책을 뜻할 수 없나요?",
+     "contextNote": "뜻이 왜 하나로 정해져 있는지 되묻는다.",
+     "roles": [
+      {
+       "q": "Why",
+       "role": "M"
+      },
+      {
+       "q": "can't",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "mean",
+       "role": "V"
+      },
+      {
+       "q": "a book",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= the word dog"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Why can't it mean",
+       "ko": "왜 그것은 뜻할 수 없나요"
+      },
+      {
+       "en": "a book?\"",
+       "ko": "책을?"
+      }
+     ]
+    },
+    {
+     "translation": "Granger 선생님은 대답하셨다. \"사람들이 단어들에 뜻을 주는 거란다.",
+     "contextNote": "뜻은 사람들이 정한다는 선생님의 답이다. 뒤에 나오는 'frindle' 이야기의 바탕이 된다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "give meanings to words"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Mrs. Granger",
+       "role": "S"
+      },
+      {
+       "q": "answered",
+       "role": "V"
+      },
+      {
+       "q": "People",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "give",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "meanings",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "to words",
+       "role": "A",
+       "level": 1
+      }
+     ],
+     "points": [
+      {
+       "q": "give meanings to words",
+       "label": "3형식",
+       "star": true,
+       "explanation": "수여동사 give는 「give+간접목적어+직접목적어」 4형식과 「give+직접목적어+to+간접목적어」 3형식으로 모두 쓴다. 두 형식을 서로 바꿔 쓰는 문제가 자주 나온다.",
+       "rewrite": "People give words meanings."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Mrs. Granger answered,",
+       "ko": "Granger 선생님은 대답하셨다."
+      },
+      {
+       "en": "\"People give meanings",
+       "ko": "\"사람들이 뜻을 주는 거란다"
+      },
+      {
+       "en": "to words.\"",
+       "ko": "단어들에."
+      }
+     ]
+    },
+    {
+     "translation": "Nick은 물었다. \"어떻게요?",
+     "contextNote": "선생님의 답에 다시 묻는다.",
+     "roles": [
+      {
+       "q": "Nick",
+       "role": "S"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Nick asked,",
+       "ko": "Nick은 물었다."
+      },
+      {
+       "en": "\"How?\"",
+       "ko": "\"어떻게요?"
+      }
+     ]
+    },
+    {
+     "translation": "Granger 선생님은 말씀하셨다. \"너, 나, 그리고 이 나라의 모든 사람이 그 뜻에 동의했단다.",
+     "contextNote": "뜻은 모두의 약속이라는 설명이다.",
+     "roles": [
+      {
+       "q": "Mrs. Granger",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "You, me, and everyone in the country",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "agreed",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "on the meaning",
+       "role": "A",
+       "level": 1
+      }
+     ],
+     "points": [
+      {
+       "q": "agreed on",
+       "label": "필수 전치사",
+       "explanation": "agree on ~은 '~에 동의하다, ~에 합의하다'라는 뜻으로, agree 뒤에 전치사 on이 짝으로 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Mrs. Granger said,",
+       "ko": "Granger 선생님은 말씀하셨다."
+      },
+      {
+       "en": "\"You, me, and everyone in the country",
+       "ko": "\"너, 나, 그리고 이 나라의 모든 사람이"
+      },
+      {
+       "en": "agreed on the meaning.\"",
+       "ko": "그 뜻에 동의했단다."
+      }
+     ]
+    },
+    {
+     "translation": "Nick은 생각했다. \"정말?",
+     "contextNote": "선생님의 말에 의문을 품는다.",
+     "roles": [
+      {
+       "q": "Nick",
+       "role": "S"
+      },
+      {
+       "q": "thought",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Nick thought,",
+       "ko": "Nick은 생각했다."
+      },
+      {
+       "en": "\"Really?",
+       "ko": "\"정말?"
+      }
+     ]
+    },
+    {
+     "translation": "나는 동의하지 않았는데.\"",
+     "contextNote": "자기는 동의한 적이 없다는 생각이 'frindle'을 만드는 계기가 된다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "didn't agree",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I",
+       "ko": "나는"
+      },
+      {
+       "en": "didn't agree.\"",
+       "ko": "동의하지 않았는데.\""
+      }
+     ]
+    }
+   ]
+  },
+  "fa6dec5e-c591-416d-8a90-a3e0fab590c5": {
+   "titleEn": "The Birth of a New Word",
+   "topicEn": "Nick calls a pen a frindle, and soon all his classmates are using the new word.",
+   "topicKo": "Nick이 펜을 'frindle'이라고 부르자, 곧 학급 친구들 모두가 그 새 단어를 쓰게 된다.",
+   "sentences": [
+    {
+     "translation": "집에 오는 길에, Nick은 거리에서 펜 하나를 보았다.",
+     "contextNote": "새 단어를 만들게 되는 사건이 시작된다.",
+     "roles": [
+      {
+       "q": "On the way home",
+       "role": "M"
+      },
+      {
+       "q": "Nick",
+       "role": "S"
+      },
+      {
+       "q": "saw",
+       "role": "V"
+      },
+      {
+       "q": "a pen",
+       "role": "O"
+      },
+      {
+       "q": "on the street",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "On the way home",
+       "label": "전명구",
+       "gloss": "'집에 오는 길에'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "On the way home,",
+       "ko": "집에 오는 길에,"
+      },
+      {
+       "en": "Nick saw a pen",
+       "ko": "Nick은 펜 하나를 보았다"
+      },
+      {
+       "en": "on the street.",
+       "ko": "거리에서."
+      }
+     ]
+    },
+    {
+     "translation": "그는 그 펜을 주웠다.",
+     "contextNote": "앞 문장에 이어지는 행동이다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "picked up the pen"
+      }
+     ],
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "picked up",
+       "role": "V"
+      },
+      {
+       "q": "the pen",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "picked up the pen",
+       "label": "3형식",
+       "explanation": "pick up은 '~을 줍다'라는 뜻이다. 목적어가 명사이면 picked the pen up으로도 쓰지만, 대명사이면 picked it up 어순만 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He picked up",
+       "ko": "그는 주웠다"
+      },
+      {
+       "en": "the pen.",
+       "ko": "그 펜을."
+      }
+     ]
+    },
+    {
+     "translation": "그는 생각이 하나 떠올랐다.",
+     "contextNote": "펜에 새 이름을 붙일 생각이 났음을 말한다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "had",
+       "role": "V"
+      },
+      {
+       "q": "an idea",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He had",
+       "ko": "그는 떠올랐다"
+      },
+      {
+       "en": "an idea.",
+       "ko": "생각이 하나."
+      }
+     ]
+    },
+    {
+     "translation": "\"오늘부터, 너의 새 이름은 'frindle'이야.\"",
+     "contextNote": "Nick이 펜에게 새 이름을 붙여 주는 말이다.",
+     "roles": [
+      {
+       "q": "From today",
+       "role": "M"
+      },
+      {
+       "q": "your new name",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "frindle",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"From today,",
+       "ko": "\"오늘부터,"
+      },
+      {
+       "en": "your new name is frindle.\"",
+       "ko": "너의 새 이름은 'frindle'이야.\""
+      }
+     ]
+    },
+    {
+     "translation": "다음 날, 그는 친구들에게 그의 새로운 단어에 대해 말했다.",
+     "contextNote": "새 단어가 퍼지기 시작한다.",
+     "roles": [
+      {
+       "q": "The next day",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "told",
+       "role": "V"
+      },
+      {
+       "q": "his friends",
+       "role": "O"
+      },
+      {
+       "q": "about his new word",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The next day,",
+       "ko": "다음 날,"
+      },
+      {
+       "en": "he told his friends",
+       "ko": "그는 친구들에게 말했다"
+      },
+      {
+       "en": "about his new word.",
+       "ko": "그의 새로운 단어에 대해."
+      }
+     ]
+    },
+    {
+     "translation": "그 주의 끝 무렵에는, 그의 학급 친구들 모두가 그 단어를 사용하고 있었다.",
+     "contextNote": "단어가 일주일 만에 학급 전체로 퍼진다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "were using"
+      }
+     ],
+     "roles": [
+      {
+       "q": "By the end of the week",
+       "role": "M"
+      },
+      {
+       "q": "all his classmates",
+       "role": "S"
+      },
+      {
+       "q": "were using",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "were using",
+       "label": "과거진행",
+       "star": true,
+       "explanation": "「was/were+동사-ing」는 과거의 어느 때에 '~하고 있었다'는 뜻이다. 주어 all his classmates가 복수이므로 were를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "By the end of the week,",
+       "ko": "그 주의 끝 무렵에는,"
+      },
+      {
+       "en": "all his classmates were using it.",
+       "ko": "그의 학급 친구들 모두가 그 단어를 사용하고 있었다."
+      }
+     ]
+    },
+    {
+     "translation": "\"내가 너의 'frindle'을 빌릴 수 있을까?\"",
+     "contextNote": "친구들이 실제로 'frindle'이라는 단어를 쓰는 예이다.",
+     "roles": [
+      {
+       "q": "Can",
+       "role": "V"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "borrow",
+       "role": "V"
+      },
+      {
+       "q": "your frindle",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Can I borrow",
+       "ko": "\"내가 빌릴 수 있을까"
+      },
+      {
+       "en": "your frindle?\"",
+       "ko": "너의 'frindle'을?\""
+      }
+     ]
+    },
+    {
+     "translation": "\"나는 너의 빨간 'frindle'이 예쁘다고 생각해.\"",
+     "contextNote": "친구들이 'frindle'을 쓰는 또 다른 예이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "that your red frindle is pretty"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "think",
+       "role": "V"
+      },
+      {
+       "q": "that your red frindle is pretty",
+       "role": "O"
+      },
+      {
+       "q": "your red frindle",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "is",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "pretty",
+       "role": "C",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that your red frindle is pretty",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "that your red frindle is pretty",
+       "label": "that 명사절",
+       "star": true,
+       "explanation": "접속사 that이 이끄는 절이 '~라고, ~하는 것'이라는 뜻으로 think의 목적어가 된다. that 뒤에는 주어와 동사를 갖춘 완전한 절이 오고, 목적어로 쓰인 that은 생략할 수 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"I think",
+       "ko": "\"나는 생각해"
+      },
+      {
+       "en": "that your red frindle is pretty.\"",
+       "ko": "너의 빨간 'frindle'이 예쁘다고.\""
+      }
+     ]
+    }
+   ]
+  },
+  "76f1f150-b738-458b-b2ef-cc5c75e95ba4": {
+   "titleEn": "Mrs. Granger Against Frindle",
+   "topicEn": "Mrs. Granger tells the students to stop using frindle, but the word spreads across the whole country.",
+   "topicKo": "Granger 선생님은 학생들에게 'frindle'을 쓰지 말라고 하지만, 그 단어는 온 나라로 퍼져 나간다.",
+   "sentences": [
+    {
+     "translation": "어느 날 수업이 끝난 후, Granger 선생님은 Nick을 불렀다.",
+     "contextNote": "선생님과 Nick의 갈등이 시작된다.",
+     "roles": [
+      {
+       "q": "One day",
+       "role": "M"
+      },
+      {
+       "q": "after class",
+       "role": "M"
+      },
+      {
+       "q": "Mrs. Granger",
+       "role": "S"
+      },
+      {
+       "q": "called",
+       "role": "V"
+      },
+      {
+       "q": "Nick",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "One day after class,",
+       "ko": "어느 날 수업이 끝난 후,"
+      },
+      {
+       "en": "Mrs. Granger called Nick.",
+       "ko": "Granger 선생님은 Nick을 불렀다."
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 말했다. \"'frindle'은 진짜 단어가 아니야.",
+     "contextNote": "선생님이 'frindle'을 인정하지 않는다.",
+     "roles": [
+      {
+       "q": "She",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Frindle",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "is",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "a real word",
+       "role": "C",
+       "level": 1
+      }
+     ],
+     "chunks": [
+      {
+       "en": "She said,",
+       "ko": "그녀는 말했다."
+      },
+      {
+       "en": "\"Frindle is not a real word.",
+       "ko": "\"'frindle'은 진짜 단어가 아니야."
+      }
+     ]
+    },
+    {
+     "translation": "너와 너희 반 친구들은 그것을 사용하는 것을 멈춰야 해.\"",
+     "contextNote": "선생님이 Nick에게 'frindle'을 그만 쓰라고 한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "stop using"
+      }
+     ],
+     "roles": [
+      {
+       "q": "You and your classmates",
+       "role": "S"
+      },
+      {
+       "q": "should stop",
+       "role": "V"
+      },
+      {
+       "q": "using it",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "stop using",
+       "label": "동사+동명사",
+       "star": true,
+       "explanation": "stop은 동명사를 목적어로 받아 '~하는 것을 멈추다'라는 뜻이 된다. stop to use로 쓰면 '사용하기 위해 멈추다'로 뜻이 달라진다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You and your classmates should stop",
+       "ko": "너와 너희 반 친구들은 멈춰야 해"
+      },
+      {
+       "en": "using it.\"",
+       "ko": "그것을 사용하는 것을.\""
+      }
+     ]
+    },
+    {
+     "translation": "Nick은 말했다. \"선생님께서 기분이 좋지 않으신 건 알겠어요.",
+     "contextNote": "Nick이 선생님의 마음을 헤아리며 대답을 시작한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "that you're not happy"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Nick",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "know",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "that you're not happy",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "you",
+       "role": "S",
+       "level": 2
+      },
+      {
+       "q": "'re",
+       "role": "V",
+       "level": 2
+      },
+      {
+       "q": "happy",
+       "role": "C",
+       "level": 2
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that you're not happy",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "that you're not happy",
+       "label": "that 명사절",
+       "star": true,
+       "explanation": "that절이 know의 목적어로, '선생님께서 기분이 좋지 않으시다는 것'이라는 뜻이다. that 뒤에 주어 you와 동사 're가 갖춰져 있고, 이 that은 생략할 수 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Nick said,",
+       "ko": "Nick은 말했다."
+      },
+      {
+       "en": "\"I know",
+       "ko": "\"알겠어요"
+      },
+      {
+       "en": "that you're not happy.",
+       "ko": "선생님께서 기분이 좋지 않으신 건."
+      }
+     ]
+    },
+    {
+     "translation": "정말 죄송하지만, 너무 늦었어요.",
+     "contextNote": "이미 되돌릴 수 없다는 점을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "really sorry",
+       "role": "C"
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "too late",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but it's too late",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm really sorry,",
+       "ko": "정말 죄송하지만,"
+      },
+      {
+       "en": "but it's too late.",
+       "ko": "너무 늦었어요."
+      }
+     ]
+    },
+    {
+     "translation": "이제는 모두가 그것을 사용하고 있어요.\"",
+     "contextNote": "너무 늦었다고 한 까닭을 밝힌다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "is using"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Everyone",
+       "role": "S"
+      },
+      {
+       "q": "is using",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      },
+      {
+       "q": "now",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "is using",
+       "label": "현재진행",
+       "explanation": "everyone은 '모든 사람'이라는 뜻이지만 단수로 취급하므로 are가 아니라 is를 쓴다. 「be동사+동사-ing」는 지금 진행 중인 일을 나타낸다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Everyone is using it",
+       "ko": "모두가 그것을 사용하고 있어요"
+      },
+      {
+       "en": "now.\"",
+       "ko": "이제는.\""
+      }
+     ]
+    },
+    {
+     "translation": "Granger 선생님은 편지 한 통을 꺼냈다.",
+     "contextNote": "뒤에 다시 나올 편지가 처음 등장한다.",
+     "roles": [
+      {
+       "q": "Mrs. Granger",
+       "role": "S"
+      },
+      {
+       "q": "took out",
+       "role": "V"
+      },
+      {
+       "q": "a letter",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Mrs. Granger took out",
+       "ko": "Granger 선생님은 꺼냈다"
+      },
+      {
+       "en": "a letter.",
+       "ko": "편지 한 통을."
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 말했다. \"나는 너를 위해 이 편지를 썼단다.",
+     "contextNote": "편지를 Nick에게 쓴 것임을 밝힌다.",
+     "roles": [
+      {
+       "q": "She",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "wrote",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "this letter",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "for you",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "notes": [
+      {
+       "q": "for you",
+       "label": "전명구",
+       "gloss": "'너를 위해'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "She said,",
+       "ko": "그녀는 말했다."
+      },
+      {
+       "en": "\"I wrote this letter",
+       "ko": "\"나는 이 편지를 썼단다"
+      },
+      {
+       "en": "for you.",
+       "ko": "너를 위해."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 나는 그것을 네게 오늘 주지 않을 거야.",
+     "contextNote": "편지를 지금은 주지 않겠다고 하여 궁금증을 남긴다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "give it to you"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m not going to give",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      },
+      {
+       "q": "to you",
+       "role": "A"
+      },
+      {
+       "q": "today",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "give it to you",
+       "label": "3형식",
+       "star": true,
+       "explanation": "give를 3형식으로 쓸 때는 「give+직접목적어+to+간접목적어」 순서이다. 직접목적어가 it 같은 대명사이면 give you it이라고 쓰지 않고 give it to you로 쓴다. be going to는 '~할 것이다'라는 뜻이고, 부정은 be동사 뒤에 not을 붙인다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But I'm not going to give it",
+       "ko": "하지만 나는 그것을 주지 않을 거야"
+      },
+      {
+       "en": "to you",
+       "ko": "네게"
+      },
+      {
+       "en": "today.",
+       "ko": "오늘."
+      }
+     ]
+    },
+    {
+     "translation": "나는 이 편지를 언젠가 네게 보낼 거야.\"",
+     "contextNote": "뒤에 Nick이 받게 될 소포를 미리 알리는 말이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "send you this letter"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "will send",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "IO"
+      },
+      {
+       "q": "this letter",
+       "role": "DO"
+      },
+      {
+       "q": "some day",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "send you this letter",
+       "label": "4형식",
+       "star": true,
+       "explanation": "수여동사 send는 「send+간접목적어(~에게)+직접목적어(~을)」로 쓴다. 3형식으로 바꾸면 간접목적어 앞에 to를 붙인다.",
+       "rewrite": "I will send this letter to you some day."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I will send you this letter",
+       "ko": "나는 이 편지를 네게 보낼 거야"
+      },
+      {
+       "en": "some day.\"",
+       "ko": "언젠가.\""
+      }
+     ]
+    },
+    {
+     "translation": "다음 날 아침, Granger 선생님은 학급에 말했다. \"'frindle'을 사용하는 것을 멈추라!",
+     "contextNote": "선생님이 학급 전체에게 'frindle'을 쓰지 말라고 한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "Stop using"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The next morning",
+       "role": "M"
+      },
+      {
+       "q": "Mrs. Granger",
+       "role": "S"
+      },
+      {
+       "q": "told",
+       "role": "V"
+      },
+      {
+       "q": "the class",
+       "role": "IO"
+      },
+      {
+       "q": "Stop",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "using frindle",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "points": [
+      {
+       "q": "Stop using",
+       "label": "동사+동명사",
+       "explanation": "주어 없이 동사원형으로 시작하는 명령문이다. stop 뒤에 동명사 using을 써서 '사용하는 것을 멈추라'는 뜻이 된다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The next morning,",
+       "ko": "다음 날 아침,"
+      },
+      {
+       "en": "Mrs. Granger told the class,",
+       "ko": "Granger 선생님은 학급에 말했다."
+      },
+      {
+       "en": "\"Stop using frindle!",
+       "ko": "\"'frindle'을 사용하는 것을 멈추라!"
+      }
+     ]
+    },
+    {
+     "translation": "'frindle'은 진짜 단어가 아니야.\"",
+     "contextNote": "앞에 나온 말을 되풀이하며 금지하는 까닭을 말한다.",
+     "roles": [
+      {
+       "q": "Frindle",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "a real word",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Frindle is not",
+       "ko": "'frindle'은 아니야"
+      },
+      {
+       "en": "a real word.\"",
+       "ko": "진짜 단어가.\""
+      }
+     ]
+    },
+    {
+     "translation": "하지만 점점 더 많은 학생들이 그것을 사용했다.",
+     "contextNote": "금지했는데도 오히려 더 퍼진다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "more and more students",
+       "role": "S"
+      },
+      {
+       "q": "used",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "more and more",
+       "label": "비교급 and 비교급",
+       "explanation": "「비교급+and+비교급」은 '점점 더 ~한'이라는 뜻이다. more and more students는 '점점 더 많은 학생들'이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But more and more students",
+       "ko": "하지만 점점 더 많은 학생들이"
+      },
+      {
+       "en": "used it.",
+       "ko": "그것을 사용했다."
+      }
+     ]
+    },
+    {
+     "translation": "다른 학교의 학생들이 그것을 사용하기 시작했다.",
+     "contextNote": "단어가 학교 밖으로 퍼진다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "started using"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Students in other schools",
+       "role": "S"
+      },
+      {
+       "q": "started",
+       "role": "V"
+      },
+      {
+       "q": "using it",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "in other schools",
+       "label": "전명구",
+       "gloss": "Students를 꾸밈"
+      }
+     ],
+     "points": [
+      {
+       "q": "started using",
+       "label": "동사+동명사",
+       "explanation": "start는 동명사와 to부정사를 모두 목적어로 받으며 뜻이 같다. started to use it으로 바꿔 쓸 수 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Students in other schools",
+       "ko": "다른 학교의 학생들이"
+      },
+      {
+       "en": "started using it.",
+       "ko": "그것을 사용하기 시작했다."
+      }
+     ]
+    },
+    {
+     "translation": "곧, 전국의 학생들이 그것을 사용하고 있었다.",
+     "contextNote": "단어가 온 나라로 퍼진 결과를 말한다.",
+     "roles": [
+      {
+       "q": "Soon",
+       "role": "M"
+      },
+      {
+       "q": "students in the whole country",
+       "role": "S"
+      },
+      {
+       "q": "were using",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "were using",
+       "label": "과거진행",
+       "explanation": "주어의 중심어 students가 복수이므로 were를 쓴다. 바로 앞의 country에 맞추어 was로 쓰지 않도록 한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Soon,",
+       "ko": "곧,"
+      },
+      {
+       "en": "students in the whole country",
+       "ko": "전국의 학생들이"
+      },
+      {
+       "en": "were using it.",
+       "ko": "그것을 사용하고 있었다."
+      }
+     ]
+    }
+   ]
+  },
+  "90babfc3-d197-4f99-ab5f-bdda56d8895e": {
+   "titleEn": "Frindle in the Dictionary",
+   "topicEn": "Years later, Nick learns that frindle is in the dictionary and that Mrs. Granger was on his side from the beginning.",
+   "topicKo": "여러 해 뒤 Nick은 'frindle'이 사전에 실렸고, Granger 선생님이 처음부터 자기편이었음을 알게 된다.",
+   "sentences": [
+    {
+     "translation": "시간이 흘렀고 Nick은 졸업했다.",
+     "contextNote": "시간이 흐른 뒤로 장면이 바뀐다.",
+     "roles": [
+      {
+       "q": "Time",
+       "role": "S"
+      },
+      {
+       "q": "passed",
+       "role": "V"
+      },
+      {
+       "q": "Nick",
+       "role": "S"
+      },
+      {
+       "q": "graduated",
+       "role": "V"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and Nick graduated",
+       "label": "등위절"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Time passed",
+       "ko": "시간이 흘렀고"
+      },
+      {
+       "en": "and Nick graduated.",
+       "ko": "Nick은 졸업했다."
+      }
+     ]
+    },
+    {
+     "translation": "그는 'frindle'에 대해 잊었다.",
+     "contextNote": "뒤의 반전을 위해 'frindle'을 잊었다고 말해 둔다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "forgot",
+       "role": "V"
+      },
+      {
+       "q": "about frindle",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He forgot",
+       "ko": "그는 잊었다"
+      },
+      {
+       "en": "about frindle.",
+       "ko": "'frindle'에 대해."
+      }
+     ]
+    },
+    {
+     "translation": "그가 21살이 되었을 때, 그는 Granger 선생님으로부터 소포 하나를 받았다.",
+     "contextNote": "앞서 말한 편지가 든 소포가 도착한다.",
+     "roles": [
+      {
+       "q": "he",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "turned",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "21",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "he",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "received",
+       "role": "V"
+      },
+      {
+       "q": "a package",
+       "role": "O"
+      },
+      {
+       "q": "from Mrs. Granger",
+       "role": "M"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When he turned 21",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "When he turned 21",
+       "label": "시간 부사절",
+       "gloss": "'그가 21살이 되었을 때'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When he turned 21,",
+       "ko": "그가 21살이 되었을 때,"
+      },
+      {
+       "en": "he received a package",
+       "ko": "그는 소포 하나를 받았다"
+      },
+      {
+       "en": "from Mrs. Granger.",
+       "ko": "Granger 선생님으로부터."
+      }
+     ]
+    },
+    {
+     "translation": "그것에는 펜 한 자루와 편지 한 통, 그리고 사전 하나가 있었다.",
+     "contextNote": "소포에 든 것을 말한다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "had",
+       "role": "V"
+      },
+      {
+       "q": "a pen, a letter, and a dictionary",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "gloss": "= a package"
+      },
+      {
+       "q": "a pen, a letter, and a dictionary",
+       "label": "명사구 병렬"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It had",
+       "ko": "그것에는 있었다"
+      },
+      {
+       "en": "a pen, a letter, and a dictionary.",
+       "ko": "펜 한 자루와 편지 한 통, 그리고 사전 하나가."
+      }
+     ]
+    },
+    {
+     "translation": "사전 위에는 쪽지가 하나 있었다.",
+     "contextNote": "쪽지가 사전을 펴 보게 만든다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "There was"
+      }
+     ],
+     "roles": [
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a note",
+       "role": "S"
+      },
+      {
+       "q": "on the dictionary",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "There was",
+       "label": "there be 수일치",
+       "star": true,
+       "explanation": "「There+be동사+명사」는 '~이 있다'라는 뜻이고, 실제 주어는 be동사 뒤의 명사이다. a note가 단수이고 과거의 일이므로 was를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There was a note",
+       "ko": "쪽지가 하나 있었다"
+      },
+      {
+       "en": "on the dictionary.",
+       "ko": "사전 위에는."
+      }
+     ]
+    },
+    {
+     "translation": "\"541쪽을 보라.\"",
+     "contextNote": "쪽지에 적힌 말이다.",
+     "roles": [
+      {
+       "q": "See",
+       "role": "V"
+      },
+      {
+       "q": "page 541",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"See",
+       "ko": "\"보라"
+      },
+      {
+       "en": "page 541.\"",
+       "ko": "541쪽을.\""
+      }
+     ]
+    },
+    {
+     "translation": "Nick은 자신의 눈을 믿을 수 없었다.",
+     "contextNote": "541쪽을 본 Nick의 놀라움을 나타낸다.",
+     "roles": [
+      {
+       "q": "Nick",
+       "role": "S"
+      },
+      {
+       "q": "couldn't believe",
+       "role": "V"
+      },
+      {
+       "q": "his eyes",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "couldn't believe",
+       "label": "조동사 의미",
+       "explanation": "couldn't는 can't의 과거형으로 '~할 수 없었다'라는 뜻이고, 뒤에는 동사원형을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Nick couldn't believe",
+       "ko": "Nick은 믿을 수 없었다"
+      },
+      {
+       "en": "his eyes.",
+       "ko": "자신의 눈을."
+      }
+     ]
+    },
+    {
+     "translation": "그 페이지에서, 그는 'frindle'이라는 단어를 발견했다!",
+     "contextNote": "'frindle'이 사전에 실렸다는 반전이 드러난다.",
+     "roles": [
+      {
+       "q": "On that page",
+       "role": "M"
+      },
+      {
+       "q": "he",
+       "role": "S"
+      },
+      {
+       "q": "found",
+       "role": "V"
+      },
+      {
+       "q": "the word frindle",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "On that page,",
+       "ko": "그 페이지에서,"
+      },
+      {
+       "en": "he found the word frindle!",
+       "ko": "그는 'frindle'이라는 단어를 발견했다!"
+      }
+     ]
+    },
+    {
+     "translation": "축하한다!",
+     "contextNote": "여기서부터 Granger 선생님의 편지 내용이다."
+    },
+    {
+     "translation": "'frindle'은 이제 진짜 단어야.",
+     "contextNote": "선생님이 전에 한 말(진짜 단어가 아니다)과 대비된다.",
+     "roles": [
+      {
+       "q": "Frindle",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "now",
+       "role": "M"
+      },
+      {
+       "q": "a real word",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Frindle is now",
+       "ko": "'frindle'은 이제 ~이야"
+      },
+      {
+       "en": "a real word.",
+       "ko": "진짜 단어."
+      }
+     ]
+    },
+    {
+     "translation": "나는 처음부터 네 편이었단다.",
+     "contextNote": "선생님이 사실은 Nick을 응원했음을 밝힌다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "on your side",
+       "role": "A"
+      },
+      {
+       "q": "from the beginning",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "from the beginning",
+       "label": "전명구",
+       "gloss": "'처음부터'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I was on your side",
+       "ko": "나는 네 편이었단다"
+      },
+      {
+       "en": "from the beginning.",
+       "ko": "처음부터."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 모든 좋은 이야기에는 '나쁜 사람'이 필요하지.",
+     "contextNote": "일부러 반대한 까닭을 이야기에 빗대어 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "every good story needs"
+      }
+     ],
+     "roles": [
+      {
+       "q": "every good story",
+       "role": "S"
+      },
+      {
+       "q": "needs",
+       "role": "V"
+      },
+      {
+       "q": "a \"bad guy",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "every good story needs",
+       "label": "each/every",
+       "star": true,
+       "explanation": "every 뒤에는 단수 명사가 오고, 동사도 단수에 맞춘다. 그래서 stories가 아니라 story, need가 아니라 needs를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But every good story needs",
+       "ko": "하지만 모든 좋은 이야기에는 필요하지"
+      },
+      {
+       "en": "a \"bad guy.\"",
+       "ko": "'나쁜 사람'이."
+      }
+     ]
+    },
+    {
+     "translation": "내가 그 역할을 했단다.",
+     "contextNote": "선생님 자신이 그 '나쁜 사람' 역할을 맡았음을 밝힌다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "played",
+       "role": "V"
+      },
+      {
+       "q": "that role",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I played",
+       "ko": "내가 했단다"
+      },
+      {
+       "en": "that role.",
+       "ko": "그 역할을."
+      }
+     ]
+    },
+    {
+     "translation": "네가 이해해 주기를 바란다...",
+     "contextNote": "Nick에게 이해를 부탁하며 편지를 맺는다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "that you understand"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "hope",
+       "role": "V"
+      },
+      {
+       "q": "that you understand",
+       "role": "O"
+      },
+      {
+       "q": "you",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "understand",
+       "role": "V",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that you understand",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "that you understand",
+       "label": "that 명사절",
+       "star": true,
+       "explanation": "that절이 hope의 목적어로, '네가 이해해 주기를'이라는 뜻이다. that 뒤에 주어와 동사가 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I hope",
+       "ko": "바란다"
+      },
+      {
+       "en": "that you understand...",
+       "ko": "네가 이해해 주기를..."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

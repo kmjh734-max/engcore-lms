@@ -8,6 +8,9 @@ import { MiddleSchoolUnitWorkspace } from "./MiddleSchoolUnitWorkspace";
 import { getAcademyBrandingForCurrentUser } from "@/lib/tenant/academy-branding";
 import { decodeQuestionIds, sortMsQuestions } from "@/lib/middle-school/exam-print";
 import { MsExamPrintView } from "./MsExamViews";
+import { LessonPackVocabExam } from "@/components/lesson-materials/LessonPackVocabExam";
+import { vocabSetAsProject } from "@/lib/lesson-materials/vocab-set-exam";
+import type { VocabItem } from "@/types/database";
 
 /** 관리자·강사 화면이 같이 쓰는 중학교 수업자료 쪽(base = /admin/middle-school 등) */
 export async function MiddleSchoolHomePage({ base }: { base: string }) {
@@ -25,7 +28,7 @@ export async function MiddleSchoolHomePage({ base }: { base: string }) {
   );
 }
 
-export async function MiddleSchoolUnitPage({ base, unitId }: { base: string; unitId: string }) {
+export async function MiddleSchoolUnitPage({ base, unitId, test = false }: { base: string; unitId: string; test?: boolean }) {
   const profile = await getCurrentProfile();
   if (!profile?.academy_id || !(await isMiddleSchoolOpen(profile.academy_id))) notFound();
   const [unit, academyName] = await Promise.all([
@@ -42,8 +45,39 @@ export async function MiddleSchoolUnitPage({ base, unitId }: { base: string; uni
           {unit.grade} {unit.publisher} {unit.lessonNo}과 <span className="text-slate-500">· {unit.title}</span>
         </h1>
       </header>
-      <MiddleSchoolUnitWorkspace unit={unit} questions={questions} academyName={academyName ?? ""} base={base} />
+      <MiddleSchoolUnitWorkspace unit={unit} questions={questions} academyName={academyName ?? ""} base={base} startTest={test} />
     </div>
+  );
+}
+
+/** 단어 시험지: 고등 수업용 자료 「단어 시험지」와 같은 화면(그 과 단어장으로, 크레딧 없음) */
+export async function MiddleSchoolVocabExamPage({ base, unitId }: { base: string; unitId: string }) {
+  const profile = await getCurrentProfile();
+  if (!profile?.academy_id || !(await isMiddleSchoolOpen(profile.academy_id))) notFound();
+  const unit = await loadMsUnit(profile.academy_id, unitId);
+  if (!unit) notFound();
+  const branding = await getAcademyBrandingForCurrentUser();
+  const POS = /^((?:n|v|a|adj|adv|prep|conj|pron|int)\.)\s*/;
+  const seen = new Set<string>();
+  const items = unit.words
+    .filter((w) => {
+      const k = w.word.trim().toLowerCase();
+      if (!k || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    })
+    .map((w) => ({ word: w.word.trim(), meaning: w.meaning.replace(POS, ""), part_of_speech: w.meaning.match(POS)?.[1] ?? null }) as VocabItem);
+  const title = `${unit.grade} ${unit.publisher} ${unit.lessonNo}과 단어`;
+  return (
+    <LessonPackVocabExam
+      role={base.startsWith("/admin") ? "admin" : "teacher"}
+      docName={title}
+      projects={[vocabSetAsProject({ id: unit.id, title }, items)]}
+      fromWordSet
+      closeBase={base}
+      logoSrc={branding.logoUrl}
+      academyName={branding.name || ""}
+    />
   );
 }
 

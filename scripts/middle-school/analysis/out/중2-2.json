@@ -1,0 +1,1816 @@
+{
+ "passages": {
+  "92b80d9a-c2f2-4f0e-9a14-1619b96fae83": {
+   "titleEn": "Texting: How Teens Talk",
+   "topicEn": "Texting is the main way teenagers communicate, so it is useful to learn tips for texting better.",
+   "topicKo": "문자 메시지는 십 대의 주요 의사소통 수단이므로, 문자로 더 잘 소통하는 방법을 아는 것이 유용하다.",
+   "sentences": [
+    {
+     "translation": "문자 메시지는 요즘 많은 사람들, 특히 십 대들의 주요 의사소통 수단이다.",
+     "contextNote": "글의 소재인 문자 메시지를 소개한다.",
+     "roles": [
+      {
+       "q": "Texting",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "the main way of communication",
+       "role": "C"
+      },
+      {
+       "q": "for many people",
+       "role": "M"
+      },
+      {
+       "q": "these days",
+       "role": "M"
+      },
+      {
+       "q": "especially for teenagers",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "Texting",
+       "label": "동명사 주어",
+       "explanation": "동명사 Texting(문자 메시지를 보내는 것)이 주어로 쓰였다. 동명사 주어는 단수로 취급하므로 동사는 is를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Texting is",
+       "ko": "문자 메시지는 ~이다"
+      },
+      {
+       "en": "the main way of communication",
+       "ko": "주요 의사소통 수단"
+      },
+      {
+       "en": "for many people these days,",
+       "ko": "요즘 많은 사람들의,"
+      },
+      {
+       "en": "especially for teenagers.",
+       "ko": "특히 십 대들의."
+      }
+     ]
+    },
+    {
+     "translation": "문자 메시지를 통해 어떻게 의사소통을 더 잘할 수 있는지 알고 싶은가?",
+     "contextNote": "읽는 이에게 물어 뒤에 나올 조언으로 이끈다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "how you can communicate"
+      }
+     ],
+     "roles": [
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "want",
+       "role": "V"
+      },
+      {
+       "q": "to know how you can communicate better through texting",
+       "role": "O"
+      },
+      {
+       "q": "you",
+       "occ": 2,
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "can communicate",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "better",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "through texting",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "how you can communicate better through texting",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "how you can communicate better through texting",
+       "label": "간접의문문 어순",
+       "star": true,
+       "explanation": "의문문이 문장 안에서 명사 역할을 하는 간접의문문으로, know의 목적어이다. 어순은 「의문사+주어+동사」이므로 how can you communicate로 쓰지 않는다."
+      },
+      {
+       "q": "through texting",
+       "label": "전치사+동명사",
+       "explanation": "전치사 through 뒤에는 동명사를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Do you want to know",
+       "ko": "알고 싶은가?"
+      },
+      {
+       "en": "how you can communicate better",
+       "ko": "어떻게 의사소통을 더 잘할 수 있는지"
+      },
+      {
+       "en": "through texting?",
+       "ko": "문자 메시지를 통해"
+      }
+     ]
+    },
+    {
+     "translation": "여기 몇 가지 유용한 팁이 있다.",
+     "contextNote": "본격적인 조언이 시작됨을 알린다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "are"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Here",
+       "role": "A"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "some useful tips",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "Here are",
+       "label": "장소 도치",
+       "star": true,
+       "explanation": "Here가 문장 앞으로 나오면 「동사+주어」 어순이 된다. 실제 주어 some useful tips가 복수이므로 are를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Here are",
+       "ko": "여기 있다"
+      },
+      {
+       "en": "some useful tips.",
+       "ko": "몇 가지 유용한 팁이."
+      }
+     ]
+    }
+   ]
+  },
+  "e1d1baa2-f268-4b75-bb6b-ce72f76ae83e": {
+   "titleEn": "Know Who You Are Talking To",
+   "topicEn": "You should think about who you are texting and be careful with short expressions when you text adults.",
+   "topicKo": "누구와 이야기하는지 생각하고, 어른들에게 문자를 보낼 때는 줄임말에 주의해야 한다.",
+   "sentences": [
+    {
+     "translation": "당신이 누구와 이야기하고 있는지 알아야 한다.",
+     "contextNote": "첫 번째 팁을 한 문장으로 말한다.",
+     "tags": [
+      "주제문",
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "who you are talking to"
+      }
+     ],
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "need",
+       "role": "V"
+      },
+      {
+       "q": "to know who you are talking to",
+       "role": "O"
+      },
+      {
+       "q": "you",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "are talking",
+       "role": "V",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "who you are talking to",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "who you are talking to",
+       "label": "간접의문문 어순",
+       "star": true,
+       "explanation": "know의 목적어로 쓰인 간접의문문으로, 「의문사+주어+동사」 어순을 따른다. who는 전치사 to의 목적어이므로 to가 절의 맨 끝에 남아 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You need to know",
+       "ko": "당신은 알아야 한다"
+      },
+      {
+       "en": "who you are talking to.",
+       "ko": "누구와 이야기하고 있는지."
+      }
+     ]
+    },
+    {
+     "translation": "Henry는 방금 엄마에게 다음과 같은 문자 메시지를 보냈다.",
+     "contextNote": "팁을 설명하기 위한 예를 든다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "Henry",
+       "role": "S"
+      },
+      {
+       "q": "just",
+       "role": "M"
+      },
+      {
+       "q": "sent",
+       "role": "V"
+      },
+      {
+       "q": "the following text message",
+       "role": "O"
+      },
+      {
+       "q": "to his mother",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "sent the following text message to his mother",
+       "label": "3형식",
+       "star": true,
+       "explanation": "send는 「send+사람+물건」(4형식)으로도, 「send+물건+to+사람」(3형식)으로도 쓴다. 3형식으로 바꾸면 사람 앞에 전치사 to를 쓴다.",
+       "rewrite": "→ Henry just sent his mother the following text message."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Henry just sent",
+       "ko": "Henry는 방금 보냈다"
+      },
+      {
+       "en": "the following text message",
+       "ko": "다음과 같은 문자 메시지를"
+      },
+      {
+       "en": "to his mother.",
+       "ko": "엄마에게."
+      }
+     ]
+    },
+    {
+     "translation": "- 엄마, 조금만 더 기다려 주세요.",
+     "contextNote": "Henry가 엄마에게 보낸 메시지이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "to wait"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "want",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "O"
+      },
+      {
+       "q": "to wait just a little longer",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "want you to wait",
+       "label": "목적격보어 to부정사",
+       "star": true,
+       "explanation": "「want+목적어+to부정사」는 '(목적어)가 ~하기를 원하다'라는 뜻이다. 기다리는 사람은 주어 I가 아니라 목적어 you이다. 목적격보어 자리에 동사원형(wait)이나 동명사(waiting)를 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "- Mom, I want you",
+       "ko": "- 엄마, 저는 엄마가 ~하기를 원해요"
+      },
+      {
+       "en": "to wait just a little longer.",
+       "ko": "조금만 더 기다려 주시기를."
+      }
+     ]
+    },
+    {
+     "translation": "곧 갈게요.",
+     "contextNote": "BRT는 be right there의 줄임말이다. 앞 메시지에 이어진다."
+    },
+    {
+     "translation": "당신은 Henry의 엄마가 BRT를 정확히 이해했다고 생각하는가?",
+     "contextNote": "줄임말이 어른에게 통하지 않을 수 있다는 점을 묻는다.",
+     "roles": [
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "think",
+       "role": "V"
+      },
+      {
+       "q": "Henry's mother correctly understood BRT",
+       "role": "O"
+      },
+      {
+       "q": "Henry's mother",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "correctly",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "understood",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "BRT",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "Henry's mother correctly understood BRT",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "Henry's mother correctly understood BRT",
+       "label": "접속사 that 생략",
+       "explanation": "think 뒤에 목적어절을 이끄는 접속사 that이 생략되었다. 일반동사의 의문문이므로 문장 앞에 Do를 쓰고, 주어 뒤의 think는 원형으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Do you think",
+       "ko": "당신은 생각하는가?"
+      },
+      {
+       "en": "Henry's mother correctly understood BRT?",
+       "ko": "Henry의 엄마가 BRT를 정확히 이해했다고"
+      }
+     ]
+    },
+    {
+     "translation": "아마도 그렇지 않을 것이다.",
+     "contextNote": "앞 질문에 대한 답이다."
+    },
+    {
+     "translation": "친구들에게 문자 메시지를 보낼 때 BRT(곧 갈게), JK(농담이야), 또는 LOL(소리 내어 웃음) 같은 표현들을 사용할 수 있다.",
+     "contextNote": "친구 사이에서는 줄임말을 써도 된다는 점을 말한다.",
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "can use",
+       "role": "V"
+      },
+      {
+       "q": "expressions like BRT (be right there), JK (just kidding), or LOL (laughing out loud)",
+       "role": "O"
+      },
+      {
+       "q": "you",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "text",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "your friends",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "when you text your friends",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "when you text your friends",
+       "label": "시간 부사절",
+       "explanation": "접속사 when이 이끄는 절로 '~할 때'라는 뜻이다. when 뒤에는 주어와 동사가 온다. text는 여기서 '~에게 문자 메시지를 보내다'라는 동사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You can use expressions",
+       "ko": "표현들을 사용할 수 있다"
+      },
+      {
+       "en": "like BRT (be right there), JK (just kidding), or LOL (laughing out loud)",
+       "ko": "BRT(곧 갈게), JK(농담이야), 또는 LOL(소리 내어 웃음) 같은"
+      },
+      {
+       "en": "when you text your friends.",
+       "ko": "친구들에게 문자 메시지를 보낼 때."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 선생님이나 부모님께 문자 메시지를 보낼 때는 그런 표현을 쓰는 것에 주의하라.",
+     "contextNote": "어른에게는 줄임말을 조심하라는 이 팁의 핵심이다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "However",
+       "role": "M"
+      },
+      {
+       "q": "be",
+       "role": "V"
+      },
+      {
+       "q": "careful",
+       "role": "C"
+      },
+      {
+       "q": "with such expressions",
+       "role": "M"
+      },
+      {
+       "q": "you",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "text",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "your teachers or parents",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "when you text your teachers or parents",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "with such expressions",
+       "label": "전명구",
+       "gloss": "be careful with: '~에 주의하다'"
+      }
+     ],
+     "points": [
+      {
+       "q": "be careful",
+       "label": "동사",
+       "star": true,
+       "explanation": "주어 없이 동사원형으로 시작하는 명령문이다. be동사의 명령문은 Be로 시작하고, 뒤에 형용사 careful이 보어로 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "However, be careful",
+       "ko": "하지만 주의하라"
+      },
+      {
+       "en": "with such expressions",
+       "ko": "그런 표현을 쓰는 것에"
+      },
+      {
+       "en": "when you text your teachers or parents.",
+       "ko": "선생님이나 부모님께 문자 메시지를 보낼 때는."
+      }
+     ]
+    },
+    {
+     "translation": "그들 중 일부는 이런 표현의 의미를 모를 수도 있다는 것을 이해해야 한다.",
+     "contextNote": "앞 본문에 이어 어른들에게 줄임말을 조심해야 하는 까닭을 말한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "need",
+       "role": "V"
+      },
+      {
+       "q": "to understand that some of them may not know the meanings of such expressions",
+       "role": "O"
+      },
+      {
+       "q": "some of them",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "may not know",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the meanings of such expressions",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that some of them may not know the meanings of such expressions",
+       "kind": "nominal"
+      }
+     ],
+     "notes": [
+      {
+       "q": "some of them",
+       "label": "부분 표현",
+       "gloss": "them = your teachers or parents"
+      }
+     ],
+     "points": [
+      {
+       "q": "that some of them may not know the meanings of such expressions",
+       "label": "that 명사절",
+       "star": true,
+       "explanation": "that이 이끄는 절이 understand의 목적어로 쓰여 '~라는 것을'이라는 뜻을 나타낸다."
+      },
+      {
+       "q": "may not know",
+       "label": "조동사 의미",
+       "explanation": "may not은 '~하지 않을지도 모른다'라는 약한 추측을 나타내고, 뒤에는 동사원형을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You need to understand",
+       "ko": "이해해야 한다"
+      },
+      {
+       "en": "that some of them may not know",
+       "ko": "그들 중 일부는 모를 수도 있다는 것을"
+      },
+      {
+       "en": "the meanings of such expressions.",
+       "ko": "이런 표현의 의미를."
+      }
+     ]
+    }
+   ]
+  },
+  "f5aa3f97-06fb-4c7d-b9f3-baec62083b6a": {
+   "titleEn": "People Use Emojis Differently",
+   "topicEn": "People use emojis in different ways, and the same emoji can mean different things to different people.",
+   "topicKo": "사람들은 이모지를 저마다 다르게 쓰고, 같은 이모지도 사람마다 다른 뜻일 수 있다.",
+   "sentences": [
+    {
+     "translation": "당신은 사람들이 이모지를 다르게 사용한다는 점을 이해해야 한다.",
+     "contextNote": "두 번째 팁을 한 문장으로 말한다.",
+     "tags": [
+      "주제문"
+     ],
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "need",
+       "role": "V"
+      },
+      {
+       "q": "to understand that people use emojis differently",
+       "role": "O"
+      },
+      {
+       "q": "people",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "use",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "emojis",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "differently",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that people use emojis differently",
+       "kind": "nominal"
+      }
+     ],
+     "notes": [
+      {
+       "q": "that people use emojis differently",
+       "label": "that 명사절",
+       "gloss": "understand의 목적어"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You need to understand",
+       "ko": "당신은 이해해야 한다"
+      },
+      {
+       "en": "that people use emojis differently.",
+       "ko": "사람들이 이모지를 다르게 사용한다는 점을."
+      }
+     ]
+    },
+    {
+     "translation": "어제 지수는 남동생 지후에게 생일 선물을 주었다.",
+     "contextNote": "팁을 설명하기 위한 지수의 이야기를 시작한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "Yesterday",
+       "role": "M"
+      },
+      {
+       "q": "Jisu",
+       "role": "S"
+      },
+      {
+       "q": "gave",
+       "role": "V"
+      },
+      {
+       "q": "a birthday gift",
+       "role": "O"
+      },
+      {
+       "q": "to her little brother Jihoo",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "gave a birthday gift to her little brother Jihoo",
+       "label": "3형식",
+       "explanation": "give는 「give+사람+물건」(4형식)으로도, 「give+물건+to+사람」(3형식)으로도 쓴다. 3형식에서는 사람 앞에 전치사 to를 쓴다.",
+       "rewrite": "→ Jisu gave her little brother Jihoo a birthday gift."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Yesterday, Jisu gave",
+       "ko": "어제 지수는 주었다"
+      },
+      {
+       "en": "a birthday gift",
+       "ko": "생일 선물을"
+      },
+      {
+       "en": "to her little brother Jihoo.",
+       "ko": "남동생 지후에게."
+      }
+     ]
+    },
+    {
+     "translation": "이후에, 그녀는 다음과 같은 문자 메시지를 받았다.",
+     "contextNote": "지후가 보낸 답장으로 이어진다.",
+     "roles": [
+      {
+       "q": "Later",
+       "role": "M"
+      },
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "got",
+       "role": "V"
+      },
+      {
+       "q": "the following text message",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Later,",
+       "ko": "이후에,"
+      },
+      {
+       "en": "she got the following text message.",
+       "ko": "그녀는 다음과 같은 문자 메시지를 받았다."
+      }
+     ]
+    },
+    {
+     "translation": "- 선물이 아주 마음에 들었어.",
+     "contextNote": "지후가 보낸 메시지이다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "loved",
+       "role": "V"
+      },
+      {
+       "q": "your gift",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "- I loved",
+       "ko": "- 아주 마음에 들었어"
+      },
+      {
+       "en": "your gift.",
+       "ko": "선물이."
+      }
+     ]
+    },
+    {
+     "translation": "정말 고마워.",
+     "contextNote": "앞 메시지에 이어진다."
+    },
+    {
+     "translation": "\"웃는 얼굴()이 하나뿐이네?",
+     "contextNote": "메시지를 받은 지수의 생각이다.",
+     "notes": [
+      {
+       "q": "smiling face",
+       "label": "분사 명사 수식",
+       "gloss": "smiling이 face를 꾸밈, '웃는'"
+      }
+     ]
+    },
+    {
+     "translation": "내 선물이 마음에 안 들었나 봐.\"라고 지수는 생각했다.",
+     "contextNote": "이모지 수만 보고 오해한 지수의 생각을 보여 준다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "guess",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "he didn't like my gift",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "he",
+       "role": "S",
+       "level": 2
+      },
+      {
+       "q": "didn't like",
+       "role": "V",
+       "level": 2
+      },
+      {
+       "q": "my gift",
+       "role": "O",
+       "level": 2
+      },
+      {
+       "q": "Jisu",
+       "role": "S"
+      },
+      {
+       "q": "thought",
+       "role": "V"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "he didn't like my gift",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "he didn't like my gift",
+       "label": "접속사 that 생략",
+       "explanation": "guess 뒤에 목적어절을 이끄는 접속사 that이 생략되었다. 일반동사의 과거 부정은 「did not(didn't)+동사원형」이므로 liked로 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I guess",
+       "ko": "~인가 봐"
+      },
+      {
+       "en": "he didn't like my gift,\"",
+       "ko": "내 선물이 마음에 안 들었나,\""
+      },
+      {
+       "en": "Jisu thought.",
+       "ko": "라고 지수는 생각했다."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 누군가와 대화할 때, 말뿐만 아니라 얼굴 표정과 몸짓 언어도 사용한다.",
+     "contextNote": "실제 대화에서는 말 말고도 다른 수단을 쓴다는 점을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "not only words but also facial expressions and body language"
+      }
+     ],
+     "roles": [
+      {
+       "q": "we",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "talk",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "with someone",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "we",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "use",
+       "role": "V"
+      },
+      {
+       "q": "not only words but also facial expressions and body language",
+       "role": "O"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When we talk with someone",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "When we talk with someone",
+       "label": "시간 부사절",
+       "gloss": "'~할 때'"
+      }
+     ],
+     "points": [
+      {
+       "q": "not only words but also facial expressions and body language",
+       "label": "not only A but also B",
+       "star": true,
+       "explanation": "'A뿐만 아니라 B도'라는 뜻으로, A와 B에는 같은 형태의 말을 쓴다. 여기서는 A와 B가 모두 명사이다.",
+       "rewrite": "→ facial expressions and body language as well as words"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When we talk with someone,",
+       "ko": "우리는 누군가와 대화할 때,"
+      },
+      {
+       "en": "we use not only words",
+       "ko": "말뿐만 아니라"
+      },
+      {
+       "en": "but also facial expressions and body language.",
+       "ko": "얼굴 표정과 몸짓 언어도 사용한다."
+      }
+     ]
+    },
+    {
+     "translation": "문자 메시지를 보낼 때, 우리는 대신 이모지를 사용한다.",
+     "contextNote": "문자에서는 표정과 몸짓을 이모지가 대신한다는 점을 말한다.",
+     "roles": [
+      {
+       "q": "In texting",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "use",
+       "role": "V"
+      },
+      {
+       "q": "emojis",
+       "role": "O"
+      },
+      {
+       "q": "instead",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "In texting",
+       "label": "전치사+동명사",
+       "explanation": "전치사 In 뒤에는 동명사를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "In texting,",
+       "ko": "문자 메시지를 보낼 때,"
+      },
+      {
+       "en": "we use emojis",
+       "ko": "우리는 이모지를 사용한다"
+      },
+      {
+       "en": "instead.",
+       "ko": "대신."
+      }
+     ]
+    },
+    {
+     "translation": "때때로 () 같은 작은 이모지가 많은 말보다 더 큰 의미를 말할 수 있다.",
+     "contextNote": "이모지의 힘을 말한다.",
+     "roles": [
+      {
+       "q": "Sometimes",
+       "role": "M"
+      },
+      {
+       "q": "a little emoji like",
+       "role": "S"
+      },
+      {
+       "q": "can speak",
+       "role": "V"
+      },
+      {
+       "q": "louder than many words",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "louder than many words",
+       "label": "비교급",
+       "explanation": "「비교급+than」은 '~보다 더 …한(하게)'이라는 뜻이다. loud의 비교급 louder가 동사 speak를 꾸민다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Sometimes, a little emoji like",
+       "ko": "때때로 () 같은 작은 이모지가"
+      },
+      {
+       "en": "can speak louder",
+       "ko": "더 큰 의미를 말할 수 있다"
+      },
+      {
+       "en": "than many words.",
+       "ko": "많은 말보다."
+      }
+     ]
+    },
+    {
+     "translation": "문제는 모든 사람이 이모지를 같은 방식으로 사용하는 것은 아니라는 것이다.",
+     "contextNote": "이모지 때문에 오해가 생기는 까닭을 밝힌다.",
+     "tags": [
+      "주제문",
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "not everybody uses"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The problem",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "that not everybody uses emojis in the same way",
+       "role": "C"
+      },
+      {
+       "q": "not everybody",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "uses",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "emojis",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "in the same way",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that not everybody uses emojis in the same way",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "that not everybody uses emojis in the same way",
+       "label": "that 명사절",
+       "explanation": "that절이 be동사 is의 주격보어로 쓰여 '~라는 것'이라는 뜻을 나타낸다."
+      }
+     ],
+     "callouts": [
+      {
+       "q": "not everybody",
+       "title": "부분 부정",
+       "body": "not everybody는 '모든 사람이 ~인 것은 아니다'라는 뜻이다. '아무도 ~않다'라는 뜻이 아니다. everybody는 단수이므로 동사는 uses를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The problem is",
+       "ko": "문제는 ~이다"
+      },
+      {
+       "en": "that not everybody uses emojis",
+       "ko": "모든 사람이 이모지를 사용하는 것은 아니라는 것"
+      },
+      {
+       "en": "in the same way.",
+       "ko": "같은 방식으로."
+      }
+     ]
+    },
+    {
+     "translation": "어떤 사람들은 이모지를 많이 사용하는 것을 좋아하고, 어떤 사람들은 그렇지 않다.",
+     "contextNote": "앞 문장의 차이를 첫 번째 예로 보여 준다.",
+     "roles": [
+      {
+       "q": "Some people",
+       "role": "S"
+      },
+      {
+       "q": "like",
+       "role": "V"
+      },
+      {
+       "q": "to use them a lot",
+       "role": "O"
+      },
+      {
+       "q": "some",
+       "role": "S"
+      },
+      {
+       "q": "don't",
+       "role": "V"
+      }
+     ],
+     "notes": [
+      {
+       "q": "them",
+       "label": "대명사 선행사",
+       "gloss": "= emojis"
+      },
+      {
+       "q": "and some don't",
+       "label": "등위절"
+      }
+     ],
+     "points": [
+      {
+       "q": "don't",
+       "label": "대동사",
+       "star": true,
+       "explanation": "don't 뒤에 앞에 나온 like to use them a lot이 반복되어 생략되었다. 일반동사의 반복을 피할 때 do(부정은 don't)를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Some people like",
+       "ko": "어떤 사람들은 좋아하고,"
+      },
+      {
+       "en": "to use them a lot,",
+       "ko": "이모지를 많이 사용하는 것을"
+      },
+      {
+       "en": "and some don't.",
+       "ko": "어떤 사람들은 그렇지 않다."
+      }
+     ]
+    },
+    {
+     "translation": "게다가 같은 이모지도 사람마다 다른 것을 의미할 수 있다.",
+     "contextNote": "차이의 두 번째 예를 덧붙인다.",
+     "roles": [
+      {
+       "q": "In addition",
+       "role": "M"
+      },
+      {
+       "q": "the same emojis",
+       "role": "S"
+      },
+      {
+       "q": "can mean",
+       "role": "V"
+      },
+      {
+       "q": "different things",
+       "role": "O"
+      },
+      {
+       "q": "to different people",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "In addition",
+       "label": "부사적 어구",
+       "gloss": "'게다가'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "In addition,",
+       "ko": "게다가"
+      },
+      {
+       "en": "the same emojis can mean different things",
+       "ko": "같은 이모지도 다른 것을 의미할 수 있다"
+      },
+      {
+       "en": "to different people.",
+       "ko": "사람마다."
+      }
+     ]
+    }
+   ]
+  },
+  "ea49aab1-dfd8-44c6-b055-1d727451933a": {
+   "titleEn": "Sometimes, Pick Up the Phone",
+   "topicEn": "Misunderstandings can easily happen in texts, so it is better to call about sensitive issues.",
+   "topicKo": "문자에서는 오해가 쉽게 생기므로, 민감한 문제는 전화로 이야기하는 것이 좋다.",
+   "sentences": [
+    {
+     "translation": "때때로 당신은 전화기를 들어야 한다.",
+     "contextNote": "세 번째 팁을 한 문장으로 말한다.",
+     "tags": [
+      "주제문"
+     ],
+     "roles": [
+      {
+       "q": "Sometimes",
+       "role": "M"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "need",
+       "role": "V"
+      },
+      {
+       "q": "to pick up the phone",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Sometimes,",
+       "ko": "때때로"
+      },
+      {
+       "en": "you need to pick up the phone.",
+       "ko": "당신은 전화기를 들어야 한다."
+      }
+     ]
+    },
+    {
+     "translation": "Amy는 방금 가장 친한 친구인 나리로부터 다음과 같은 문자 메시지를 받았다.",
+     "contextNote": "팁을 설명하기 위한 Amy의 이야기를 시작한다.",
+     "roles": [
+      {
+       "q": "Amy",
+       "role": "S"
+      },
+      {
+       "q": "just",
+       "role": "M"
+      },
+      {
+       "q": "got",
+       "role": "V"
+      },
+      {
+       "q": "the following text message",
+       "role": "O"
+      },
+      {
+       "q": "from her best friend Nari",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Amy just got",
+       "ko": "Amy는 방금 받았다"
+      },
+      {
+       "en": "the following text message",
+       "ko": "다음과 같은 문자 메시지를"
+      },
+      {
+       "en": "from her best friend Nari.",
+       "ko": "가장 친한 친구인 나리로부터."
+      }
+     ]
+    },
+    {
+     "translation": "- 네가 정말 내 뒷담화를 했니?",
+     "contextNote": "나리가 보낸 메시지이다.",
+     "roles": [
+      {
+       "q": "Did",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "really",
+       "role": "M"
+      },
+      {
+       "q": "talk",
+       "role": "V"
+      },
+      {
+       "q": "behind my back",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "Did you really talk",
+       "label": "동사",
+       "explanation": "일반동사의 과거 의문문은 「Did+주어+동사원형 ~?」으로 만든다. Did가 과거를 나타내므로 talked로 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "- Did you really talk",
+       "ko": "- 네가 정말 했니?"
+      },
+      {
+       "en": "behind my back?",
+       "ko": "내 뒷담화를"
+      }
+     ]
+    },
+    {
+     "translation": "나는 네가 나에게 사과하기를 원해.",
+     "contextNote": "나리가 Amy에게 바라는 것을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "to apologize"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "want",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "O"
+      },
+      {
+       "q": "to apologize to me",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "want you to apologize",
+       "label": "목적격보어 to부정사",
+       "star": true,
+       "explanation": "「want+목적어+to부정사」는 '(목적어)가 ~하기를 원하다'라는 뜻이다. 사과하는 사람은 목적어 you이므로, to apologize는 you를 설명하는 목적격보어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I want you",
+       "ko": "나는 네가 ~하기를 원해"
+      },
+      {
+       "en": "to apologize to me.",
+       "ko": "나에게 사과하기를."
+      }
+     ]
+    },
+    {
+     "translation": "Amy는 나리에게 문자 메시지를 보내서 상황을 설명하고 싶었지만, 다시 생각했다.",
+     "contextNote": "Amy가 처음 떠올린 방법과 망설임을 말한다.",
+     "roles": [
+      {
+       "q": "Amy",
+       "role": "S"
+      },
+      {
+       "q": "wanted",
+       "role": "V"
+      },
+      {
+       "q": "to text Nari and explain the situation",
+       "role": "O"
+      },
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "thought",
+       "role": "V"
+      },
+      {
+       "q": "again",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but she thought again",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "points": [
+      {
+       "q": "to text Nari and explain the situation",
+       "label": "to 공유 병렬",
+       "star": true,
+       "explanation": "wanted의 목적어인 to text와 (to) explain이 and로 이어져 있다. 두 번째 to는 생략되었으므로 explain은 동사원형으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Amy wanted to text Nari",
+       "ko": "Amy는 나리에게 문자 메시지를 보내서"
+      },
+      {
+       "en": "and explain the situation,",
+       "ko": "상황을 설명하고 싶었지만,"
+      },
+      {
+       "en": "but she thought again.",
+       "ko": "다시 생각했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"음, 이건 문자로 하기엔 너무 큰 일이야.\" 그녀는 혼잣말을 하며 나리에게 전화를 걸었다.",
+     "contextNote": "문자 대신 전화를 택하는 대목이다.",
+     "roles": [
+      {
+       "q": "this",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "is",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "too much",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "for a text",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "to herself",
+       "role": "M"
+      },
+      {
+       "q": "called",
+       "role": "V"
+      },
+      {
+       "q": "Nari",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "said to herself and called Nari",
+       "label": "동사 병렬",
+       "explanation": "주어 she 하나에 동사 said와 called가 and로 이어져 있다. say to oneself는 '혼잣말을 하다'라는 뜻으로, 주어 she에 맞춰 재귀대명사 herself를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Well, this is too much",
+       "ko": "\"음, 이건 너무 큰 일이야"
+      },
+      {
+       "en": "for a text,\"",
+       "ko": "문자로 하기엔.\""
+      },
+      {
+       "en": "she said to herself",
+       "ko": "그녀는 혼잣말을 하며"
+      },
+      {
+       "en": "and called Nari.",
+       "ko": "나리에게 전화를 걸었다."
+      }
+     ]
+    },
+    {
+     "translation": "문자 메시지는 일상적인 상황에서는 괜찮지만 때로는 전화를 해야 할 필요가 있다.",
+     "contextNote": "Amy의 이야기에서 얻는 팁의 내용을 정리한다.",
+     "tags": [
+      "주제문"
+     ],
+     "roles": [
+      {
+       "q": "Texting",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "okay",
+       "role": "C"
+      },
+      {
+       "q": "for casual situations",
+       "role": "M"
+      },
+      {
+       "q": "sometimes",
+       "role": "M"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "need",
+       "role": "V"
+      },
+      {
+       "q": "to pick up the phone",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but sometimes, you need to pick up the phone",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Texting is okay",
+       "ko": "문자 메시지는 괜찮지만"
+      },
+      {
+       "en": "for casual situations,",
+       "ko": "일상적인 상황에서는"
+      },
+      {
+       "en": "but sometimes,",
+       "ko": "때로는"
+      },
+      {
+       "en": "you need to pick up the phone.",
+       "ko": "전화를 해야 할 필요가 있다."
+      }
+     ]
+    },
+    {
+     "translation": "문자 메시지를 보낼 때 오해가 쉽게 생길 수 있기 때문이다.",
+     "contextNote": "전화를 해야 하는 까닭을 밝힌다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "can easily happen"
+      }
+     ],
+     "roles": [
+      {
+       "q": "This",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "because misunderstandings can easily happen when you text",
+       "role": "C"
+      },
+      {
+       "q": "misunderstandings",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "can easily happen",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "you",
+       "role": "S",
+       "level": 2
+      },
+      {
+       "q": "text",
+       "role": "V",
+       "level": 2
+      }
+     ],
+     "brackets": [
+      {
+       "q": "when you text",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "because misunderstandings can easily happen when you text",
+       "label": "이유 부사절",
+       "star": true,
+       "explanation": "This is because ~는 '이것은 ~ 때문이다'라는 뜻으로, because 뒤에 앞 문장의 이유가 온다."
+      },
+      {
+       "q": "can easily happen",
+       "label": "자동사·타동사",
+       "explanation": "happen(일어나다)은 목적어를 받지 않는 자동사이므로 수동태(be happened)로 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "This is because",
+       "ko": "이것은 ~ 때문이다"
+      },
+      {
+       "en": "misunderstandings can easily happen",
+       "ko": "오해가 쉽게 생길 수 있기"
+      },
+      {
+       "en": "when you text.",
+       "ko": "문자 메시지를 보낼 때."
+      }
+     ]
+    },
+    {
+     "translation": "친구들과 민감한 문제에 대해 이야기해야 하는가?",
+     "contextNote": "다음 조언이 필요한 상황을 묻는다.",
+     "roles": [
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "need",
+       "role": "V"
+      },
+      {
+       "q": "to talk about sensitive issues with your friends",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Do you need to talk",
+       "ko": "이야기해야 하는가?"
+      },
+      {
+       "en": "about sensitive issues",
+       "ko": "민감한 문제에 대해"
+      },
+      {
+       "en": "with your friends?",
+       "ko": "친구들과"
+      }
+     ]
+    },
+    {
+     "translation": "그렇다면, 그들에게 문자 메시지를 보내지 마라.",
+     "contextNote": "앞 질문에 대한 조언이다.",
+     "roles": [
+      {
+       "q": "Then",
+       "role": "M"
+      },
+      {
+       "q": "don't text",
+       "role": "V"
+      },
+      {
+       "q": "them",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "don't text",
+       "label": "동사",
+       "explanation": "'~하지 마라'라는 부정 명령문은 「Don't+동사원형」으로 만든다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Then,",
+       "ko": "그렇다면,"
+      },
+      {
+       "en": "don't text them.",
+       "ko": "그들에게 문자 메시지를 보내지 마라."
+      }
+     ]
+    },
+    {
+     "translation": "대신 그들에게 전화하라.",
+     "contextNote": "세 번째 팁을 행동으로 정리하며 끝맺는다.",
+     "roles": [
+      {
+       "q": "Call",
+       "role": "V"
+      },
+      {
+       "q": "them",
+       "role": "O"
+      },
+      {
+       "q": "instead",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Call them",
+       "ko": "그들에게 전화하라"
+      },
+      {
+       "en": "instead.",
+       "ko": "대신."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

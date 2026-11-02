@@ -1,0 +1,386 @@
+{
+ "passages": {
+  "b11c9398-8063-4d33-98cb-a033b7e71960": {
+   "titleEn": "Goldilocks Loved Social Media",
+   "topicEn": "A little girl named Goldilocks liked to share photos on social media, but her everyday posts did not get many likes.",
+   "topicKo": "Goldilocks라는 어린 소녀는 소셜 미디어에 사진을 공유하기를 좋아했지만, 일상적인 게시물은 '좋아요'를 많이 받지 못했다.",
+   "sentences": [
+    {
+     "translation": "작은 마을에 금발의 어린 소녀가 있었다.",
+     "contextNote": "옛이야기처럼 주인공을 처음 소개하며 글을 연다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "was"}],
+     "roles": [{"q": "was", "role": "V"}, {"q": "a little girl with golden hair", "role": "S"}, {"q": "in a small town", "role": "M"}],
+     "notes": [{"q": "with golden hair", "label": "전명구", "gloss": "a little girl을 꾸밈, '금발의'"}],
+     "points": [{"q": "There was", "label": "there be 수일치", "star": true, "explanation": "There be 문장에서 There는 주어가 아니고, be동사 뒤의 말이 진짜 주어이다. 주어 a little girl이 단수이고 과거의 일이므로 was를 쓴다."}],
+     "chunks": [{"en": "There was a little girl", "ko": "어린 소녀가 있었다"}, {"en": "with golden hair", "ko": "금발의"}, {"en": "in a small town.", "ko": "작은 마을에."}]
+    },
+    {
+     "translation": "그녀의 이름은 Goldilocks였다.",
+     "contextNote": "주인공의 이름을 밝힌다.",
+     "roles": [{"q": "Her name", "role": "S"}, {"q": "was", "role": "V"}, {"q": "Goldilocks", "role": "C"}],
+     "chunks": [{"en": "Her name was", "ko": "그녀의 이름은 ~였다"}, {"en": "Goldilocks.", "ko": "Goldilocks."}]
+    },
+    {
+     "translation": "그녀는 소셜 미디어에 사진을 공유하는 것을 좋아했다.",
+     "contextNote": "이야기 전체를 끌고 가는 주인공의 취미를 말한다.",
+     "roles": [{"q": "She", "role": "S"}, {"q": "liked", "role": "V"}, {"q": "to share photos on social media", "role": "O"}],
+     "points": [{"q": "to share", "label": "명사적 용법 to부정사", "explanation": "to부정사가 동사 liked의 목적어 자리에 와서 '공유하는 것을'이라는 뜻을 나타낸다. like는 동명사도 목적어로 쓸 수 있어 liked sharing으로 바꿔 쓸 수 있다."}],
+     "chunks": [{"en": "She liked", "ko": "그녀는 좋아했다"}, {"en": "to share photos", "ko": "사진을 공유하는 것을"}, {"en": "on social media.", "ko": "소셜 미디어에."}]
+    },
+    {
+     "translation": "처음에, 그녀는 일상적인 것들을 올렸지만, 사람들은 그녀에게 '좋아요'를 많이 주지 않았다.",
+     "contextNote": "일상 사진으로는 반응이 적었다는 점이 뒤에 더 자극적인 사진을 올리게 되는 계기가 된다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "At first", "role": "M"}, {"q": "she", "role": "S"}, {"q": "posted", "role": "V"}, {"q": "everyday things", "role": "O"}, {"q": "people", "role": "S"}, {"q": "didn't give", "role": "V"}, {"q": "her", "role": "IO"}, {"q": "many likes", "role": "DO"}],
+     "notes": [{"q": "everyday", "label": "명사 수식 형용사", "gloss": "'일상적인' — 부사구 every day(매일)와 구별"}, {"q": "but people didn't give her many likes", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "points": [{"q": "didn't give her many likes", "label": "4형식", "star": true, "explanation": "give는 '~에게 …을 주다'라는 뜻의 수여동사로, 「give+간접목적어(사람)+직접목적어(사물)」 순서로 쓴다. 간접목적어 her는 목적격이다. 3형식으로 바꾸면 사람 앞에 전치사 to를 쓴다.", "rewrite": "people didn't give many likes to her"}],
+     "chunks": [{"en": "At first,", "ko": "처음에,"}, {"en": "she posted everyday things,", "ko": "그녀는 일상적인 것들을 올렸지만,"}, {"en": "but people didn't give her", "ko": "사람들은 그녀에게 주지 않았다"}, {"en": "many likes.", "ko": "'좋아요'를 많이."}]
+    }
+   ]
+  },
+  "003fd6c2-29b0-4df2-81c0-72bc256534b6": {
+   "titleEn": "More Likes and a Strange Cottage in the Forest",
+   "topicEn": "Goldilocks posted more and more shocking pictures to get likes, and one day she walked into a strange cottage in the forest.",
+   "topicKo": "Goldilocks는 '좋아요'를 받으려고 점점 더 충격적인 사진을 올렸고, 어느 날 숲속의 낯선 오두막집에 들어갔다.",
+   "sentences": [
+    {
+     "translation": "\"어떻게 하면 더 많은 '좋아요'를 받을 수 있지?\"라고 그녀는 생각했다.",
+     "contextNote": "반응을 더 얻고 싶은 주인공의 고민을 보여 준다.",
+     "roles": [{"q": "\"What should I do to get more likes?\"", "role": "O"}, {"q": "she", "role": "S"}, {"q": "thought", "role": "V"}],
+     "points": [
+      {"q": "What should I do", "label": "어순", "explanation": "의문사가 있는 의문문은 「의문사+조동사+주어+동사원형」 순서로 쓴다. should는 '~해야 한다'는 뜻의 조동사이다."},
+      {"q": "to get more likes", "label": "부사적 용법", "star": true, "explanation": "to부정사가 '~하기 위해'라는 목적의 뜻으로 쓰였다. '더 많은 좋아요를 받기 위해 무엇을 해야 할까?'라는 뜻이다."}
+     ],
+     "chunks": [{"en": "\"What should I do", "ko": "\"무엇을 해야 할까"}, {"en": "to get more likes?\"", "ko": "더 많은 '좋아요'를 받기 위해?\""}, {"en": "she thought.", "ko": "그녀는 생각했다."}]
+    },
+    {
+     "translation": "\"알았다!",
+     "contextNote": "해결 방법이 떠오른 순간의 혼잣말이다."
+    },
+    {
+     "translation": "웃긴 사진들을 올려야겠어.\"",
+     "contextNote": "주인공이 떠올린 첫 번째 방법이다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "should post", "role": "V"}, {"q": "funny pictures", "role": "O"}],
+     "points": [{"q": "should post", "label": "조동사 의미", "explanation": "should는 '~해야 한다'는 뜻의 조동사로, 뒤에는 동사원형을 쓴다."}],
+     "chunks": [{"en": "I should post", "ko": "올려야겠어"}, {"en": "funny pictures.\"", "ko": "웃긴 사진들을.\""}]
+    },
+    {
+     "translation": "이제, 그녀의 게시물은 많은 '좋아요'를 받고 있었고, Goldilocks는 행복했다.",
+     "contextNote": "웃긴 사진으로 바꾸자 반응이 늘어난 결과를 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "were getting"}],
+     "roles": [{"q": "Now", "role": "M"}, {"q": "her posts", "role": "S"}, {"q": "were getting", "role": "V"}, {"q": "a lot of likes", "role": "O"}, {"q": "Goldilocks", "role": "S"}, {"q": "was", "role": "V"}, {"q": "happy", "role": "C"}],
+     "notes": [{"q": "and Goldilocks was happy", "label": "등위절", "gloss": "and로 이은 두 번째 절"}],
+     "points": [{"q": "were getting", "label": "과거진행", "star": true, "explanation": "과거진행형은 「was/were+동사-ing」로 '~하고 있었다'는 뜻이다. 주어 her posts가 복수이므로 were를 쓴다. get처럼 「단모음+단자음」으로 끝나는 동사는 자음을 한 번 더 쓰고 -ing를 붙인다."}],
+     "chunks": [{"en": "Now,", "ko": "이제,"}, {"en": "her posts were getting a lot of likes,", "ko": "그녀의 게시물은 많은 '좋아요'를 받고 있었고,"}, {"en": "and Goldilocks was happy.", "ko": "Goldilocks는 행복했다."}]
+    },
+    {
+     "translation": "하지만, 그녀의 팔로워들은 곧 지루해졌다.",
+     "contextNote": "상황이 바뀌는 전환점으로, 더 자극적인 사진을 올리는 이유가 된다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "bored"}],
+     "roles": [{"q": "Her followers", "role": "S"}, {"q": "however", "role": "M"}, {"q": "soon", "role": "M"}, {"q": "got", "role": "V"}, {"q": "bored", "role": "C"}],
+     "notes": [{"q": "however", "label": "삽입구", "gloss": "'하지만' — 쉼표 둘 사이에 끼움"}],
+     "points": [{"q": "got bored", "label": "감정분사", "star": true, "explanation": "get은 뒤에 형용사 보어가 오면 '~해지다'라는 뜻이다. 주어 Her followers가 지루함을 느끼는 사람들이므로 boring이 아니라 bored를 쓴다."}],
+     "chunks": [{"en": "Her followers, however,", "ko": "하지만, 그녀의 팔로워들은"}, {"en": "soon got bored.", "ko": "곧 지루해졌다."}]
+    },
+    {
+     "translation": "그래서, 그녀는 더 충격적인 사진들을 올리기로 결심했다.",
+     "contextNote": "관심을 잃지 않으려고 점점 더 자극적인 쪽으로 가는 모습을 보여 준다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to post"}],
+     "roles": [{"q": "she", "role": "S"}, {"q": "decided", "role": "V"}, {"q": "to post more shocking pictures", "role": "O"}],
+     "notes": [{"q": "more shocking", "label": "비교급", "gloss": "긴 형용사는 more를 앞에 씀"}],
+     "points": [{"q": "decided to post", "label": "to부정사", "star": true, "explanation": "decide는 to부정사를 목적어로 쓰는 동사이다. 'decide to+동사원형'은 '~하기로 결심하다'라는 뜻이며, 동명사 posting은 쓰지 않는다."}],
+     "chunks": [{"en": "So,", "ko": "그래서,"}, {"en": "she decided", "ko": "그녀는 결심했다"}, {"en": "to post more shocking pictures.", "ko": "더 충격적인 사진들을 올리기로."}]
+    },
+    {
+     "translation": "어느 날, 그녀는 숲에서 산책을 하다가 한 오두막집을 발견했다.",
+     "contextNote": "장면이 숲속으로 옮겨 가며 사건이 시작된다.",
+     "roles": [{"q": "One day", "role": "M"}, {"q": "she", "role": "S"}, {"q": "was taking", "role": "V"}, {"q": "a walk", "role": "O"}, {"q": "in the forest", "role": "M"}, {"q": "found", "role": "V"}, {"q": "a cottage", "role": "O"}],
+     "points": [
+      {"q": "was taking", "label": "과거진행", "explanation": "주어 she가 단수이므로 was를 쓴다. take처럼 -e로 끝나는 동사는 e를 빼고 -ing를 붙인다. take a walk는 '산책하다'라는 뜻이다."},
+      {"q": "was taking a walk in the forest and found a cottage", "label": "동사 병렬", "explanation": "주어 she 하나에 동사 was taking과 found가 and로 이어졌다. found는 find의 과거형이다."}
+     ],
+     "chunks": [{"en": "One day,", "ko": "어느 날,"}, {"en": "she was taking a walk", "ko": "그녀는 산책을 하다가"}, {"en": "in the forest", "ko": "숲에서"}, {"en": "and found a cottage.", "ko": "한 오두막집을 발견했다."}]
+    },
+    {
+     "translation": "그녀는 문을 두드렸지만, 아무 대답이 없었다.",
+     "contextNote": "집에 아무도 없다는 것을 알려 뒤에 허락 없이 들어가는 장면으로 이어진다.",
+     "roles": [{"q": "She", "role": "S"}, {"q": "knocked", "role": "V"}, {"q": "on the door", "role": "M"}, {"q": "was", "role": "V"}, {"q": "no answer", "role": "S"}],
+     "notes": [{"q": "on the door", "label": "전명구", "gloss": "knock on: '~을 두드리다'"}, {"q": "but there was no answer", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "chunks": [{"en": "She knocked on the door,", "ko": "그녀는 문을 두드렸지만,"}, {"en": "but there was no answer.", "ko": "아무 대답이 없었다."}]
+    },
+    {
+     "translation": "날이 어두워지고 있었고, 비가 내리기 시작했다.",
+     "contextNote": "날이 어둡고 비가 내려 오두막집에 들어가게 되는 상황을 만든다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "It"}],
+     "roles": [{"q": "It", "role": "S"}, {"q": "was getting", "role": "V"}, {"q": "dark", "role": "C"}, {"q": "it", "role": "S"}, {"q": "started", "role": "V"}, {"q": "to rain", "role": "O"}],
+     "notes": [{"q": "and it started to rain", "label": "등위절", "gloss": "and로 이은 두 번째 절"}],
+     "points": [
+      {"q": "It", "label": "비인칭 주어 it", "star": true, "explanation": "날씨·명암·시간·거리 등을 말할 때 주어 자리에 쓰는 it으로, '그것'이라고 해석하지 않는다. 이 문장의 두 it은 모두 비인칭 주어로, 앞은 명암을, 뒤는 날씨를 나타낸다."},
+      {"q": "was getting dark", "label": "연결동사 보어", "explanation": "get 뒤에 형용사 dark가 와서 '어두워지다'라는 뜻이 된다. 진행형으로 쓰여 '어두워지고 있었다'로 해석한다."},
+      {"q": "started to rain", "label": "to부정사", "explanation": "start는 to부정사와 동명사를 모두 목적어로 쓸 수 있어 started raining으로 바꿔 써도 뜻이 같다."}
+     ],
+     "chunks": [{"en": "It was getting dark,", "ko": "날이 어두워지고 있었고,"}, {"en": "and it started", "ko": "시작했다"}, {"en": "to rain.", "ko": "비가 내리기."}]
+    },
+    {
+     "translation": "그녀는 문을 열고 안으로 걸어 들어갔다.",
+     "contextNote": "대답이 없는데도 남의 집에 들어간다. 이 행동이 뒤의 문제로 이어진다.",
+     "roles": [{"q": "She", "role": "S"}, {"q": "opened", "role": "V"}, {"q": "the door", "role": "O"}, {"q": "walked", "role": "V"}, {"q": "inside", "role": "M"}],
+     "points": [{"q": "opened the door and walked inside", "label": "동사 병렬", "explanation": "주어 She 하나에 과거 동사 opened와 walked가 and로 이어졌다. and로 이은 두 동사는 시제를 같게 쓴다."}],
+     "chunks": [{"en": "She opened the door", "ko": "그녀는 문을 열고"}, {"en": "and walked inside.", "ko": "안으로 걸어 들어갔다."}]
+    }
+   ]
+  },
+  "7e7cfa16-e3a4-409b-b643-34a8d19c7d67": {
+   "titleEn": "Selfies in the Bears' Cottage",
+   "topicEn": "Without asking, Goldilocks ate the soup, broke a chair, slept in a bed and posted her selfies on social media.",
+   "topicKo": "Goldilocks는 허락 없이 수프를 먹고 의자를 부수고 침대에서 잠들었으며, 찍은 셀피를 소셜 미디어에 올렸다.",
+   "sentences": [
+    {
+     "translation": "식탁 위에는 수프 세 그릇이 있었다.",
+     "contextNote": "집 안에서 처음 발견한 것을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "were"}],
+     "roles": [{"q": "were", "role": "V"}, {"q": "three bowls of soup", "role": "S"}, {"q": "on a table", "role": "M"}],
+     "notes": [{"q": "three bowls of soup", "label": "가산·불가산", "gloss": "soup은 셀 수 없어 bowl로 셈"}],
+     "points": [{"q": "There were", "label": "there be 수일치", "star": true, "explanation": "be동사는 뒤의 진짜 주어에 수를 맞춘다. 중심 낱말 bowls가 복수이므로 was가 아니라 were를 쓴다."}],
+     "chunks": [{"en": "There were three bowls of soup", "ko": "수프 세 그릇이 있었다"}, {"en": "on a table.", "ko": "식탁 위에는."}]
+    },
+    {
+     "translation": "그녀는 가장 작은 그릇의 수프를 먹었고 미소를 지으며 셀피를 찍었다.",
+     "contextNote": "남의 음식을 먹고 사진까지 찍는 모습을 보여 준다.",
+     "roles": [{"q": "She", "role": "S"}, {"q": "ate", "role": "V"}, {"q": "the smallest one", "role": "O"}, {"q": "took", "role": "V"}, {"q": "selfies", "role": "O"}, {"q": "with a smile", "role": "M"}],
+     "notes": [{"q": "one", "label": "one/ones", "gloss": "= bowl of soup, 앞에 나온 명사를 대신함"}, {"q": "with a smile", "label": "전명구", "gloss": "'미소를 지으며'"}],
+     "points": [{"q": "the smallest", "label": "최상급", "star": true, "explanation": "최상급은 「the+형용사-est」로 '가장 ~한'이라는 뜻이다. small의 최상급은 smallest이고, 앞에 the를 쓴다."}],
+     "chunks": [{"en": "She ate the smallest one", "ko": "그녀는 가장 작은 그릇의 수프를 먹었고"}, {"en": "and took selfies", "ko": "셀피를 찍었다"}, {"en": "with a smile.", "ko": "미소를 지으며."}]
+    },
+    {
+     "translation": "의자도 세 개 있었다.",
+     "contextNote": "수프에 이어 다음으로 눈에 띈 것을 말한다.",
+     "roles": [{"q": "were", "role": "V"}, {"q": "also", "role": "M"}, {"q": "three chairs", "role": "S"}],
+     "chunks": [{"en": "There were also", "ko": "또한 있었다"}, {"en": "three chairs.", "ko": "의자 세 개가."}]
+    },
+    {
+     "translation": "그녀는 가장 작은 의자 위에서 몇 번이고 뛰었다.",
+     "contextNote": "남의 물건을 함부로 쓰는 모습으로, 의자가 부서지는 원인이 된다.",
+     "roles": [{"q": "She", "role": "S"}, {"q": "jumped", "role": "V"}, {"q": "on the smallest one", "role": "M"}, {"q": "again and again", "role": "M"}],
+     "notes": [{"q": "one", "label": "one/ones", "gloss": "= chair"}, {"q": "again and again", "label": "부사구", "gloss": "'몇 번이고, 되풀이해서'"}],
+     "chunks": [{"en": "She jumped", "ko": "그녀는 뛰었다"}, {"en": "on the smallest one", "ko": "가장 작은 의자 위에서"}, {"en": "again and again.", "ko": "몇 번이고."}]
+    },
+    {
+     "translation": "의자가 부서졌지만, 그녀는 신경 쓰지 않았다.",
+     "contextNote": "잘못을 하고도 대수롭지 않게 여기는 태도를 드러낸다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "didn't care"}],
+     "roles": [{"q": "It", "role": "S"}, {"q": "broke", "role": "V"}, {"q": "she", "role": "S"}, {"q": "didn't care", "role": "V"}],
+     "notes": [{"q": "It", "label": "it 지시", "gloss": "= 가장 작은 의자, 비인칭 주어가 아님"}, {"q": "but she didn't care", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "points": [
+      {"q": "broke", "label": "자동사·타동사", "explanation": "여기서 break는 목적어 없이 '부서지다'라는 뜻의 자동사이다. 과거형은 불규칙하게 broke로 쓴다."},
+      {"q": "didn't care", "label": "동사", "star": true, "explanation": "일반동사의 과거 부정문은 동사 앞에 did not(= didn't)을 쓰고, 뒤의 동사는 원형으로 쓴다(didn't cared ×)."}
+     ],
+     "chunks": [{"en": "It broke,", "ko": "의자가 부서졌지만,"}, {"en": "but she didn't care.", "ko": "그녀는 신경 쓰지 않았다."}]
+    },
+    {
+     "translation": "\"너무 재미있어!\"라고 Goldilocks가 외쳤다.",
+     "contextNote": "남의 집 의자를 부수고도 즐거워하는 철없는 모습을 보여 준다.",
+     "roles": [{"q": "\"It's so fun!\"", "role": "O"}, {"q": "shouted", "role": "V"}, {"q": "Goldilocks", "role": "S"}],
+     "points": [{"q": "shouted Goldilocks", "label": "도치", "star": true, "explanation": "따옴표로 묶은 말이 문장 앞으로 나오면 그 뒤를 「동사+주어」 순서로 쓸 수 있다. Goldilocks shouted로 써도 뜻은 같다."}],
+     "chunks": [{"en": "\"It's so fun!\"", "ko": "\"너무 재미있어!\"라고"}, {"en": "shouted Goldilocks.", "ko": "Goldilocks가 외쳤다."}]
+    },
+    {
+     "translation": "그녀는 다시 셀피를 찍었고 모든 셀피를 소셜 미디어에 올렸다.",
+     "contextNote": "남의 집에서 찍은 사진을 공개한 것이 뒤에 나오는 문제의 핵심이다.",
+     "roles": [{"q": "She", "role": "S"}, {"q": "took", "role": "V"}, {"q": "selfies", "role": "O"}, {"q": "again", "role": "M"}, {"q": "posted", "role": "V"}, {"q": "all the selfies", "role": "O"}, {"q": "on social media", "role": "M"}],
+     "notes": [{"q": "all the selfies", "label": "수량사", "gloss": "「all+the+복수명사」 어순"}],
+     "points": [{"q": "took selfies again and posted all the selfies on social media", "label": "동사 병렬", "explanation": "주어 She 하나에 과거 동사 took과 posted가 and로 이어졌다. took은 take의 불규칙 과거형이다."}],
+     "chunks": [{"en": "She took selfies again", "ko": "그녀는 다시 셀피를 찍었고"}, {"en": "and posted all the selfies", "ko": "모든 셀피를 올렸다"}, {"en": "on social media.", "ko": "소셜 미디어에."}]
+    },
+    {
+     "translation": "그런 다음, 그녀는 위층으로 올라가 침대 세 개를 발견했다.",
+     "contextNote": "장면이 위층으로 옮겨 간다.",
+     "roles": [{"q": "Then", "role": "M"}, {"q": "she", "role": "S"}, {"q": "went", "role": "V"}, {"q": "upstairs", "role": "M"}, {"q": "found", "role": "V"}, {"q": "three beds", "role": "O"}],
+     "notes": [{"q": "upstairs", "label": "동사 수식 부사", "gloss": "부사이므로 앞에 to를 쓰지 않음(went to upstairs ×)"}],
+     "chunks": [{"en": "Then,", "ko": "그런 다음,"}, {"en": "she went upstairs", "ko": "그녀는 위층으로 올라가"}, {"en": "and found three beds.", "ko": "침대 세 개를 발견했다."}]
+    },
+    {
+     "translation": "그녀는 피곤해서 가장 작은 침대에서 잠들었다.",
+     "contextNote": "주인공이 잠든 사이 곰들이 돌아오는 다음 장면을 준비한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "felt tired"}],
+     "roles": [{"q": "She", "role": "S"}, {"q": "felt", "role": "V"}, {"q": "tired", "role": "C"}, {"q": "fell", "role": "V"}, {"q": "asleep", "role": "C"}, {"q": "in the smallest bed", "role": "M"}],
+     "points": [
+      {"q": "felt tired", "label": "연결동사 보어", "star": true, "explanation": "feel은 뒤에 부사가 아니라 형용사 보어를 써서 '~하게 느끼다'라는 뜻을 나타낸다. felt는 feel의 과거형이다."},
+      {"q": "fell asleep", "label": "연결동사 보어", "explanation": "fall asleep은 '잠들다'라는 뜻이다. asleep은 보어로 쓰는 형용사이고, fell은 fall의 과거형이다(felt와 혼동 주의)."}
+     ],
+     "chunks": [{"en": "She felt tired", "ko": "그녀는 피곤해서"}, {"en": "and fell asleep", "ko": "잠들었다"}, {"en": "in the smallest bed.", "ko": "가장 작은 침대에서."}]
+    }
+   ]
+  },
+  "e4f0573e-a37c-4639-b0b7-34551378e648": {
+   "titleEn": "Caught by the Three Bears",
+   "topicEn": "The three bears came home and found out what Goldilocks had done, and she said sorry and promised to clean their house.",
+   "topicKo": "집에 돌아온 곰 세 마리가 Goldilocks가 한 일을 알게 되었고, 그녀는 사과하며 집을 청소하겠다고 약속했다.",
+   "sentences": [
+    {
+     "translation": "약 한 시간 후에, 곰 세 마리가 집으로 돌아왔다.",
+     "contextNote": "집주인인 곰들이 돌아오며 이야기의 갈등이 시작된다.",
+     "roles": [{"q": "About an hour later", "role": "M"}, {"q": "three bears", "role": "S"}, {"q": "came", "role": "V"}, {"q": "home", "role": "M"}],
+     "notes": [{"q": "home", "label": "동사 수식 부사", "gloss": "'집으로' — 부사이므로 to를 쓰지 않음"}],
+     "chunks": [{"en": "About an hour later,", "ko": "약 한 시간 후에,"}, {"en": "three bears came home.", "ko": "곰 세 마리가 집으로 돌아왔다."}]
+    },
+    {
+     "translation": "\"누군가 내 수프를 먹고 내 의자를 부서뜨렸어요!\"라고 아기곰이 외쳤다.",
+     "contextNote": "누군가 집에 들어왔다는 사실을 아기곰이 먼저 알아차린다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "\"Someone ate my soup and broke my chair!\"", "role": "O"}, {"q": "cried", "role": "V"}, {"q": "Baby Bear", "role": "S"}],
+     "notes": [{"q": "ate my soup and broke my chair", "label": "동사 병렬", "gloss": "주어 Someone에 동사 둘"}, {"q": "cried Baby Bear", "label": "도치", "gloss": "따옴표 뒤 「동사+주어」"}],
+     "points": [{"q": "broke my chair", "label": "자동사·타동사", "star": true, "explanation": "여기서 break는 목적어 my chair를 받는 타동사로, '~을 부수다'라는 뜻이다. 본문3의 It broke.에서는 목적어 없이 '부서지다'라는 자동사로 쓰였다."}],
+     "chunks": [{"en": "\"Someone ate my soup", "ko": "\"누군가 내 수프를 먹고"}, {"en": "and broke my chair!\"", "ko": "내 의자를 부서뜨렸어요!\"라고"}, {"en": "cried Baby Bear.", "ko": "아기곰이 외쳤다."}]
+    },
+    {
+     "translation": "그들은 위층으로 가서 Goldilocks를 봤다.",
+     "contextNote": "곰들이 잠들어 있는 침입자를 발견한다.",
+     "roles": [{"q": "They", "role": "S"}, {"q": "went", "role": "V"}, {"q": "upstairs", "role": "M"}, {"q": "saw", "role": "V"}, {"q": "Goldilocks", "role": "O"}],
+     "notes": [{"q": "They", "label": "대명사 선행사", "gloss": "= three bears"}],
+     "chunks": [{"en": "They went upstairs", "ko": "그들은 위층으로 가서"}, {"en": "and saw Goldilocks.", "ko": "Goldilocks를 봤다."}]
+    },
+    {
+     "translation": "엄마곰이 Goldilocks 옆에서 휴대폰을 발견했다.",
+     "contextNote": "게시물을 알게 되는 계기인 휴대폰이 나온다.",
+     "roles": [{"q": "Mother Bear", "role": "S"}, {"q": "found", "role": "V"}, {"q": "a phone", "role": "O"}, {"q": "next to Goldilocks", "role": "M"}],
+     "notes": [{"q": "next to Goldilocks", "label": "전명구", "gloss": "next to: '~ 옆에'"}],
+     "chunks": [{"en": "Mother Bear found a phone", "ko": "엄마곰이 휴대폰을 발견했다"}, {"en": "next to Goldilocks.", "ko": "Goldilocks 옆에서."}]
+    },
+    {
+     "translation": "\"끔찍해!",
+     "contextNote": "게시물을 본 엄마곰의 놀람과 분노가 드러난다.",
+     "roles": [{"q": "This", "role": "S"}, {"q": "is", "role": "V"}, {"q": "terrible", "role": "C"}],
+     "chunks": [{"en": "\"This is", "ko": "\"이건"}, {"en": "terrible!", "ko": "끔찍해!"}]
+    },
+    {
+     "translation": "우리 집에 관한 이 모든 게시물을 보라.\"라고 엄마곰이 화가 나서 외쳤다.",
+     "contextNote": "무엇이 끔찍한지 구체적으로 밝힌다. 집이 허락 없이 공개되었다는 것이 문제이다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "Look at all these posts of our home,\"", "role": "O"}, {"q": "shouted", "role": "V"}, {"q": "Mother Bear", "role": "S"}, {"q": "angrily", "role": "M"}],
+     "notes": [{"q": "all these posts", "label": "수량사", "gloss": "「all+these+복수명사」 어순"}, {"q": "of our home", "label": "전명구", "gloss": "posts를 꾸밈, '우리 집에 관한'"}],
+     "points": [
+      {"q": "Look at", "label": "동사", "star": true, "explanation": "주어 없이 동사원형으로 시작하는 명령문으로, '~하라'라는 뜻이다. look at은 '~을 보다'라는 뜻으로, 목적어 앞에 at을 쓴다."},
+      {"q": "angrily", "label": "동사 수식 부사", "explanation": "동사 shouted를 꾸미는 부사이다. 형용사 angry의 y를 i로 바꾸고 -ly를 붙여 만든다."}
+     ],
+     "chunks": [{"en": "Look at all these posts", "ko": "이 모든 게시물을 보라"}, {"en": "of our home,\"", "ko": "우리 집에 관한.\"라고"}, {"en": "shouted Mother Bear angrily.", "ko": "엄마곰이 화가 나서 외쳤다."}]
+    },
+    {
+     "translation": "Goldilocks는 놀라서 벌떡 일어났다.",
+     "contextNote": "곰들의 외침에 잠에서 깬 Goldilocks의 반응이다.",
+     "roles": [{"q": "Goldilocks", "role": "S"}, {"q": "jumped up", "role": "V"}, {"q": "in surprise", "role": "M"}],
+     "notes": [{"q": "in surprise", "label": "전명구", "gloss": "'놀라서'"}],
+     "chunks": [{"en": "Goldilocks jumped up", "ko": "Goldilocks는 벌떡 일어났다"}, {"en": "in surprise.", "ko": "놀라서."}]
+    },
+    {
+     "translation": "\"너는 우리 집에 침입해서 우리의 허락 없이 이 사진들을 올렸어.",
+     "contextNote": "아빠곰이 Goldilocks의 두 가지 잘못(침입, 무단 게시)을 짚어 말한다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "broke into", "role": "V"}, {"q": "our house", "role": "O"}, {"q": "posted", "role": "V"}, {"q": "these pictures", "role": "O"}, {"q": "without our permission", "role": "M"}],
+     "notes": [{"q": "broke into", "label": "필수 전치사", "gloss": "break into: '~에 침입하다'"}, {"q": "without our permission", "label": "전명구", "gloss": "'우리의 허락 없이'"}],
+     "points": [{"q": "broke into our house and posted these pictures", "label": "동사 병렬", "explanation": "주어 You 하나에 과거 동사 broke와 posted가 and로 이어졌다. 두 동사의 시제를 같게 쓴다."}],
+     "chunks": [{"en": "\"You broke into our house", "ko": "\"너는 우리 집에 침입해서"}, {"en": "and posted these pictures", "ko": "이 사진들을 올렸어"}, {"en": "without our permission.", "ko": "우리의 허락 없이."}]
+    },
+    {
+     "translation": "너는 이런 것들이 잘못이라는 것을 모르니?\"라고 아빠곰이 말했다.",
+     "contextNote": "허락 없이 들어가고 사진을 올리는 것이 잘못임을 깨우쳐 주는 말이다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "Don't you know these things are wrong?\"", "role": "O"}, {"q": "said", "role": "V"}, {"q": "Father Bear", "role": "S"}],
+     "notes": [{"q": "said Father Bear", "label": "도치", "gloss": "따옴표 뒤 「동사+주어」"}],
+     "points": [{"q": "these things are wrong", "label": "접속사 that 생략", "star": true, "explanation": "know의 목적어 자리에 온 명사절로, 앞에 접속사 that이 생략되었다. '이런 것들이 잘못이라는 것을'로 해석한다.", "rewrite": "Don't you know that these things are wrong?"}],
+     "chunks": [{"en": "Don't you know", "ko": "너는 모르니"}, {"en": "these things are wrong?\"", "ko": "이런 것들이 잘못이라는 것을?\"라고"}, {"en": "said Father Bear.", "ko": "아빠곰이 말했다."}]
+    },
+    {
+     "translation": "\"용서해 주세요.",
+     "contextNote": "Goldilocks가 잘못을 알고 사과한다.",
+     "roles": [{"q": "Please", "role": "M"}, {"q": "forgive", "role": "V"}, {"q": "me", "role": "O"}],
+     "points": [{"q": "forgive", "label": "동사", "explanation": "주어 없이 동사원형으로 시작하는 명령문이다. 앞에 Please를 붙이면 공손한 부탁이 된다."}],
+     "chunks": [{"en": "\"Please forgive", "ko": "\"부디 용서하라"}, {"en": "me.", "ko": "나를."}]
+    },
+    {
+     "translation": "정말 죄송해요, 여름이 끝날 때까지 매일 여러분 집을 청소할게요.\"라고 Goldilocks가 말했다.",
+     "contextNote": "사과에 그치지 않고 잘못을 갚겠다고 약속한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "'ll clean"}],
+     "roles": [{"q": "I'm so sorry, and I'll clean your house every day until the end of the summer,\"", "role": "O"}, {"q": "said", "role": "V"}, {"q": "Goldilocks", "role": "S"}],
+     "notes": [{"q": "every day", "label": "부사구", "gloss": "'매일' — 형용사 everyday(일상적인)와 구별"}, {"q": "until the end of the summer", "label": "전명구", "gloss": "until: '~까지 (계속)'"}],
+     "points": [{"q": "'ll clean", "label": "조동사 의미", "star": true, "explanation": "'ll은 will의 축약으로 '~할 것이다, ~하겠다'라는 뜻이며 뒤에는 동사원형을 쓴다. 여기서는 앞으로 하겠다는 약속을 나타낸다."}],
+     "chunks": [{"en": "I'm so sorry,", "ko": "정말 죄송해요,"}, {"en": "and I'll clean your house", "ko": "여러분 집을 청소할게요"}, {"en": "every day", "ko": "매일"}, {"en": "until the end of the summer,\"", "ko": "여름이 끝날 때까지.\"라고"}, {"en": "said Goldilocks.", "ko": "Goldilocks가 말했다."}]
+    }
+   ]
+  },
+  "e24c2542-134f-4ce2-8bf6-3011f72e6318": {
+   "titleEn": "Online Posts Live On Forever",
+   "topicEn": "Goldilocks deleted her posts, but others had already shared them, so she learned to think twice before posting.",
+   "topicKo": "Goldilocks는 게시물을 지웠지만 다른 사람들이 이미 공유한 뒤여서, 게시하기 전에 다시 생각해야 한다는 것을 배웠다.",
+   "sentences": [
+    {
+     "translation": "여름 내내, Goldilocks는 열심히 일했다.",
+     "contextNote": "약속대로 잘못을 갚는 모습을 보여 준다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "hard"}],
+     "roles": [{"q": "All summer long", "role": "M"}, {"q": "Goldilocks", "role": "S"}, {"q": "worked", "role": "V"}, {"q": "hard", "role": "M"}],
+     "notes": [{"q": "All summer long", "label": "부사구", "gloss": "'여름 내내'"}],
+     "points": [{"q": "hard", "label": "혼동 부사", "star": true, "explanation": "hard는 형용사와 부사의 형태가 같으며, 여기서는 동사 worked를 꾸미는 부사로 '열심히'라는 뜻이다. hardly(거의 ~않다)와 뜻이 다르므로 구별해야 한다."}],
+     "chunks": [{"en": "All summer long,", "ko": "여름 내내,"}, {"en": "Goldilocks worked hard.", "ko": "Goldilocks는 열심히 일했다."}]
+    },
+    {
+     "translation": "마지막 날에 Goldilocks는 \"나는 오두막집에 관한 내 게시물을 모두 삭제했으니 걱정하지 마세요.\"라고 아빠곰에게 말했다.",
+     "contextNote": "게시물을 지웠으니 문제가 해결되었다고 생각하는 Goldilocks의 착각이 드러난다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "On the last day", "role": "M"}, {"q": "Goldilocks", "role": "S"}, {"q": "said", "role": "V"}, {"q": "to Father Bear", "role": "M"}, {"q": "\"I deleted all my posts of your cottage, so please don't worry.\"", "role": "O"}],
+     "notes": [{"q": "all my posts", "label": "수량사", "gloss": "「all+소유격+복수명사」 어순"}, {"q": "so please don't worry", "label": "등위절", "gloss": "so: '그러니' — 앞이 이유, 뒤가 결과"}],
+     "points": [{"q": "don't worry", "label": "동사", "star": true, "explanation": "「Don't+동사원형」은 '~하지 말라'라는 뜻의 부정 명령문이다. 앞에 please를 붙이면 공손한 부탁이 된다."}],
+     "chunks": [{"en": "On the last day,", "ko": "마지막 날에"}, {"en": "Goldilocks said to Father Bear,", "ko": "Goldilocks는 아빠곰에게 말했다"}, {"en": "\"I deleted all my posts of your cottage,", "ko": "\"나는 오두막집에 관한 내 게시물을 모두 삭제했으니"}, {"en": "so please don't worry.\"", "ko": "걱정하지 마세요.\""}]
+    },
+    {
+     "translation": "\"너는 아직도 이해하지 못하는구나.",
+     "contextNote": "지우면 끝이라는 생각이 틀렸음을 아빠곰이 짚어 준다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "still", "role": "M"}, {"q": "don't understand", "role": "V"}],
+     "points": [{"q": "still don't understand", "label": "동사 수식 부사", "explanation": "still은 '아직도'라는 뜻의 부사로, 부정문에서는 부정어 don't 앞에 온다."}],
+     "chunks": [{"en": "\"You still", "ko": "\"너는 아직도"}, {"en": "don't understand.", "ko": "이해하지 못하는구나."}]
+    },
+    {
+     "translation": "다른 사람들이 이미 소셜 미디어에 그것들을 공유했어.",
+     "contextNote": "지워도 소용없는 이유를 말한다. 이미 다른 사람들에게 퍼졌기 때문이다.",
+     "roles": [{"q": "Other people", "role": "S"}, {"q": "already", "role": "M"}, {"q": "shared", "role": "V"}, {"q": "them", "role": "O"}, {"q": "on social media", "role": "M"}],
+     "notes": [{"q": "Other people", "label": "another/other", "gloss": "other+복수명사: '다른 ~들'"}, {"q": "them", "label": "대명사 선행사", "gloss": "= Goldilocks의 게시물"}],
+     "chunks": [{"en": "Other people already shared them", "ko": "다른 사람들이 이미 그것들을 공유했어"}, {"en": "on social media.", "ko": "소셜 미디어에."}]
+    },
+    {
+     "translation": "너의 게시물은 영원히 남아 있을 거야.\"라고 아빠곰이 말했다.",
+     "contextNote": "이 글의 교훈: 온라인에 올린 것은 지워도 사라지지 않는다.",
+     "tags": ["주제문"],
+     "roles": [{"q": "Your posts will live on forever,\"", "role": "O"}, {"q": "said", "role": "V"}, {"q": "Father Bear", "role": "S"}],
+     "points": [{"q": "will live on", "label": "조동사 의미", "star": true, "explanation": "will은 '~할 것이다'라는 뜻의 조동사로 뒤에 동사원형을 쓴다. live on은 '계속 살아 있다, 남아 있다'라는 뜻으로, 주어 Your posts가 복수지만 조동사 will의 형태는 변하지 않는다."}],
+     "chunks": [{"en": "Your posts will live on", "ko": "너의 게시물은 남아 있을 거야"}, {"en": "forever,\"", "ko": "영원히.\"라고"}, {"en": "said Father Bear.", "ko": "아빠곰이 말했다."}]
+    },
+    {
+     "translation": "\"아, 그 생각은 하지 못했어요.\"라고 Goldilocks가 말했다.",
+     "contextNote": "Goldilocks가 비로소 자기 생각이 짧았음을 깨닫는다.",
+     "roles": [{"q": "\"Oh, I didn't think about that,\"", "role": "O"}, {"q": "said", "role": "V"}, {"q": "Goldilocks", "role": "S"}],
+     "notes": [{"q": "that", "label": "대명사 선행사", "gloss": "= 게시물이 이미 퍼져 영원히 남는다는 것"}],
+     "chunks": [{"en": "\"Oh,", "ko": "\"아,"}, {"en": "I didn't think about that,\"", "ko": "그 생각은 하지 못했어요.\"라고"}, {"en": "said Goldilocks.", "ko": "Goldilocks가 말했다."}]
+    },
+    {
+     "translation": "\"이제부터 '게시'를 누르기 전에 다시 생각할게요.\"",
+     "contextNote": "이야기를 맺는 다짐으로, 글 전체의 교훈을 실천하겠다는 말이다.",
+     "tags": ["주제문", "어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "press"}],
+     "roles": [{"q": "From now on", "role": "M"}, {"q": "I", "role": "S"}, {"q": "'ll think", "role": "V"}, {"q": "twice", "role": "M"}, {"q": "I", "occ": 2, "role": "S", "level": 1}, {"q": "press", "role": "V", "level": 1}, {"q": "POST", "role": "O", "level": 1}],
+     "brackets": [{"q": "before I press POST", "kind": "adverbial"}],
+     "notes": [{"q": "From now on", "label": "부사구", "gloss": "'이제부터'"}],
+     "points": [{"q": "before I press POST", "label": "시간·조건절 현재", "star": true, "explanation": "before가 이끄는 시간 부사절에서는 미래의 일도 현재시제로 쓴다. 그래서 will press가 아니라 press를 쓴다. 주절에는 미래를 나타내는 'll(will)을 쓴다."}],
+     "chunks": [{"en": "\"From now on,", "ko": "\"이제부터"}, {"en": "I'll think twice", "ko": "다시 생각할게요"}, {"en": "before I press POST.\"", "ko": "'게시'를 누르기 전에.\""}]
+    }
+   ]
+  }
+ }
+}

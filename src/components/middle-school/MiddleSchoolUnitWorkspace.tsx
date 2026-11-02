@@ -65,13 +65,16 @@ export function MiddleSchoolUnitWorkspace({
   questions,
   academyName,
   base,
+  startTest = false,
 }: {
   unit: MsUnit;
   questions: MsQuestion[];
   academyName: string;
   base: string;
+  /** 과 카드 「테스트지 출력」: 워크북 탭에서 바로 뽑아 연다 */
+  startTest?: boolean;
 }) {
-  const [tab, setTab] = useState<TabId>("lesson");
+  const [tab, setTab] = useState<TabId>(startTest ? "workbook" : "lesson");
   const [design, setDesign] = useMaterialDesign();
   const [lesson, setLesson] = useState<MsLessonOptions>({
     sections: { words: true, grammar: true, dialogue: true, reading: true },
@@ -82,7 +85,7 @@ export function MiddleSchoolUnitWorkspace({
   const [answers, setAnswers] = useState(true);
   const [length, setLength] = useState<MsDrawLength>("normal");
   /** 뽑은 테스트지(뽑을 때마다 새 seed) — null이면 워크북 전체 */
-  const [drawSeed, setDrawSeed] = useState<string | null>(null);
+  const [drawSeed, setDrawSeed] = useState<string | null>(startTest ? unit.id : null);
   /** 분석서: 모양 A·B·C(고등 분석서와 같다) · 전체 해석/직독직해 */
   const [analysis, setAnalysis] = useState<MsAnalysisOptions>({ style: "a", translation: "full" });
   const analyzed = msAnalyzed(unit).length;

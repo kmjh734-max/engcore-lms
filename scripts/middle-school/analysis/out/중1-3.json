@@ -1,0 +1,443 @@
+{
+ "passages": {
+  "c671b948-665e-4cb6-911a-2c7b41e62449": {
+   "titleEn": "Yuna's Team Decides to Enter the Dance Contest",
+   "topicEn": "Yuna suggests entering the school dance contest, and her friends agree even though they are terrible dancers.",
+   "topicKo": "유나가 학교 춤 경연 대회에 나가자고 제안하고, 친구들은 춤을 못 추지만 함께하기로 한다.",
+   "sentences": [
+    {
+     "translation": "매년, 유나의 학교는 춤 경연 대회를 개최한다.",
+     "contextNote": "이야기의 배경인 학교 춤 경연 대회를 소개한다.",
+     "roles": [{"q": "Every year", "role": "M"}, {"q": "Yuna's school", "role": "S"}, {"q": "holds", "role": "V"}, {"q": "a dance contest", "role": "O"}],
+     "notes": [{"q": "Every year", "label": "each/every", "gloss": "every + 단수명사: '매 ~, ~마다'"}],
+     "points": [{"q": "holds", "label": "동사", "explanation": "주어 Yuna's school은 3인칭 단수이고 매년 되풀이되는 일이므로 현재형 holds를 쓴다. hold는 여기서 '(행사를) 개최하다'라는 뜻이다."}],
+     "chunks": [{"en": "Every year,", "ko": "매년,"}, {"en": "Yuna's school holds", "ko": "유나의 학교는 개최한다"}, {"en": "a dance contest.", "ko": "춤 경연 대회를."}]
+    },
+    {
+     "translation": "올해 대회는 다음 달에 있다.",
+     "contextNote": "대회가 얼마 남지 않았음을 알린다.",
+     "roles": [{"q": "This year's contest", "role": "S"}, {"q": "is", "role": "V"}, {"q": "next month", "role": "A"}],
+     "points": [{"q": "is next month", "label": "1형식", "explanation": "여기서 be동사는 '~이다'가 아니라 '(~에) 있다'는 뜻이다. next month(다음 달에)는 언제 있는지 나타내는 말로, 앞에 전치사를 쓰지 않는다."}],
+     "chunks": [{"en": "This year's contest is", "ko": "올해 대회는 있다"}, {"en": "next month.", "ko": "다음 달에."}]
+    },
+    {
+     "translation": "유나: 팀을 만들어서 대회에 참가하자.",
+     "contextNote": "유나가 친구들에게 함께 대회에 나가자고 제안한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "Let's make"}],
+     "roles": [{"q": "make", "role": "V"}, {"q": "a team", "role": "O"}, {"q": "enter", "role": "V"}, {"q": "the contest", "role": "O"}],
+     "points": [
+      {"q": "Let's make", "label": "동사", "star": true, "explanation": "「Let's + 동사원형」은 '~하자'라고 제안하는 명령문이다. 부정은 「Let's not + 동사원형」으로 쓴다."},
+      {"q": "make a team and enter the contest", "label": "동사 병렬", "explanation": "Let's 뒤에 make와 enter가 and로 이어져 있으므로 두 동사 모두 동사원형으로 쓴다. enter는 전치사 없이 바로 목적어를 받는다."}
+     ],
+     "chunks": [{"en": "Yuna:", "ko": "유나:"}, {"en": "Let's make a team", "ko": "팀을 만들어서"}, {"en": "and enter the contest.", "ko": "대회에 참가하자."}]
+    },
+    {
+     "translation": "수호: 농담하는 거지?",
+     "contextNote": "수호가 유나의 제안에 놀라며 되묻는다.",
+     "roles": [{"q": "Are", "role": "V"}, {"q": "you", "role": "S"}, {"q": "kidding", "role": "V"}],
+     "points": [{"q": "Are you kidding", "label": "현재진행", "explanation": "현재진행형의 의문문은 「Be동사 + 주어 + 동사-ing ~?」로 만든다. kid처럼 「짧은 모음 + 자음」으로 끝나는 동사는 자음을 한 번 더 쓰고 -ing를 붙인다."}],
+     "chunks": [{"en": "Suho:", "ko": "수호:"}, {"en": "Are you kidding?", "ko": "농담하는 거지?"}]
+    },
+    {
+     "translation": "우리는 모두 춤을 정말 못 추잖아.",
+     "contextNote": "수호가 대회에 나가기 어렵다고 보는 까닭을 말한다.",
+     "roles": [{"q": "We", "role": "S"}, {"q": "'re", "role": "V"}, {"q": "terrible dancers", "role": "C"}],
+     "points": [{"q": "terrible dancers", "label": "2형식", "explanation": "주어 We가 복수이므로 be동사 are(축약 're)를 쓰고, terrible dancers가 주격보어이다. all은 We를 받아 '우리 모두'라는 뜻을 더한다. 직역하면 '형편없는 춤꾼들'로, '춤을 정말 못 춘다'는 뜻이다."}],
+     "chunks": [{"en": "We're all", "ko": "우리는 모두"}, {"en": "terrible dancers.", "ko": "춤을 정말 못 추잖아."}]
+    },
+    {
+     "translation": "보라: 알아, 하지만 나는 관심 있어.",
+     "contextNote": "보라는 춤을 못 춘다는 말을 인정하면서도 관심을 보인다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "know", "role": "V"}, {"q": "I", "occ": 2, "role": "S"}, {"q": "'m", "role": "V"}, {"q": "interested", "role": "C"}],
+     "notes": [{"q": "but I'm interested", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "points": [{"q": "interested", "label": "주격보어 형용사", "explanation": "be동사 뒤의 형용사 interested('관심 있는')가 주어 I의 상태를 설명하는 주격보어이다."}],
+     "chunks": [{"en": "Bora:", "ko": "보라:"}, {"en": "I know,", "ko": "알아,"}, {"en": "but I'm interested.", "ko": "하지만 나는 관심 있어."}]
+    },
+    {
+     "translation": "민수: 나도.",
+     "contextNote": "민수도 보라처럼 관심이 있다고 말한다."
+    },
+    {
+     "translation": "재미있을 거야.",
+     "contextNote": "민수가 대회에 나가면 재미있을 것이라고 기대한다.",
+     "roles": [{"q": "It", "role": "S"}, {"q": "'ll be", "role": "V"}, {"q": "fun", "role": "C"}],
+     "points": [{"q": "'ll be", "label": "조동사 의미", "explanation": "will(축약 'll)은 '~할 것이다'라는 뜻으로 앞으로의 일을 나타내며, 뒤에는 동사원형을 쓴다. be동사의 원형은 be이다."}],
+     "chunks": [{"en": "It'll be", "ko": "그것은 ~일 거야"}, {"en": "fun.", "ko": "재미있는."}]
+    },
+    {
+     "translation": "유나: 해 보자.",
+     "contextNote": "유나가 다시 한번 함께하자고 말한다.",
+     "roles": [{"q": "do", "role": "V"}, {"q": "it", "role": "O"}],
+     "notes": [{"q": "it", "label": "대명사 선행사", "gloss": "= 팀을 만들어 대회에 참가하는 일"}],
+     "chunks": [{"en": "Yuna:", "ko": "유나:"}, {"en": "Let's do it.", "ko": "해 보자."}]
+    },
+    {
+     "translation": "괜찮지, 수호야?",
+     "contextNote": "아직 망설이는 수호의 뜻을 묻는다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "Sounds good"}],
+     "roles": [{"q": "Sounds", "role": "V"}, {"q": "good", "role": "C"}],
+     "points": [{"q": "Sounds good", "label": "연결동사 보어", "star": true, "explanation": "sound는 '~하게 들리다'라는 뜻의 연결동사로, 뒤에 부사가 아니라 형용사 보어(good)가 온다(well ×). 말할 때 주어 That이 빠진 문장이어서 동사로 시작한다."}],
+     "chunks": [{"en": "Sounds good,", "ko": "괜찮지,"}, {"en": "Suho?", "ko": "수호야?"}]
+    },
+    {
+     "translation": "수호: 그러지 뭐.",
+     "contextNote": "수호가 마지못해 동의한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "guess", "role": "V"}],
+     "chunks": [{"en": "Suho:", "ko": "수호:"}, {"en": "I guess so.", "ko": "그러지 뭐."}]
+    },
+    {
+     "translation": "이후에 무슨 일이 일어날까?",
+     "contextNote": "읽는 이의 궁금증을 불러일으켜 뒤의 두 상황으로 이어 준다.",
+     "roles": [{"q": "What", "role": "S"}, {"q": "will happen", "role": "V"}, {"q": "next", "role": "M"}],
+     "points": [{"q": "What will happen", "label": "어순", "explanation": "의문사 What이 주어이므로 주어를 따로 쓰지 않고 바로 동사가 이어진다. happen은 목적어가 필요 없는 동사이다."}],
+     "chunks": [{"en": "What will happen", "ko": "무슨 일이 일어날까"}, {"en": "next?", "ko": "이후에?"}]
+    },
+    {
+     "translation": "다음 두 가지 다른 상황을 읽어 보라.",
+     "contextNote": "뒤에 이어지는 두 가지 이야기를 읽으라고 안내한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "Read"}],
+     "roles": [{"q": "Read", "role": "V"}, {"q": "the following two different situations", "role": "O"}],
+     "points": [{"q": "Read", "label": "동사", "star": true, "explanation": "주어 없이 동사원형으로 시작하는 명령문으로, '~하라'라는 뜻이다."}],
+     "chunks": [{"en": "Read", "ko": "읽어 보라"}, {"en": "the following two different situations.", "ko": "다음 두 가지 다른 상황을."}]
+    }
+   ]
+  },
+  "ae6620a4-429c-464b-a100-89be65b595ba": {
+   "titleEn": "Situation 1: No One Looks Happy",
+   "topicEn": "Two weeks before the contest, Yuna's team is making many mistakes, and Minsu misses practice.",
+   "topicKo": "대회 14일 전, 유나의 팀은 실수를 많이 해 의욕을 잃고, 민수는 연습에 빠진다.",
+   "sentences": [
+    {
+     "translation": "<대회 14일 전> 유나와 팀원들은 연습실에 있지만, 아무도 즐거워 보이지 않는다.",
+     "contextNote": "첫 번째 상황의 시작으로, 팀의 어두운 분위기를 보여 준다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "looks happy"}],
+     "roles": [{"q": "Yuna and her teammates", "role": "S"}, {"q": "are", "role": "V"}, {"q": "in the practice room", "role": "A"}, {"q": "no one", "role": "S"}, {"q": "looks", "role": "V"}, {"q": "happy", "role": "C"}],
+     "notes": [{"q": "Yuna and her teammates", "label": "병렬구조", "gloss": "and로 이은 주어 → 복수"}, {"q": "but no one looks happy", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "points": [{"q": "looks happy", "label": "연결동사 보어", "star": true, "explanation": "look은 '~하게 보이다'라는 뜻의 연결동사로, 뒤에 부사(happily)가 아니라 형용사 happy를 쓴다. no one은 단수로 취급하므로 looks로 쓰고, 그 자체에 부정의 뜻이 있어 '아무도 ~않다'로 해석한다."}],
+     "chunks": [{"en": "D-14", "ko": "<대회 14일 전>"}, {"en": "Yuna and her teammates are", "ko": "유나와 팀원들은 있다"}, {"en": "in the practice room,", "ko": "연습실에,"}, {"en": "but no one looks happy.", "ko": "하지만 아무도 즐거워 보이지 않는다."}]
+    },
+    {
+     "translation": "수호: 우리는 실수를 너무 많이 하고 있어.",
+     "contextNote": "팀이 힘들어하는 이유로 잦은 실수를 든다.",
+     "roles": [{"q": "We", "role": "S"}, {"q": "'re making", "role": "V"}, {"q": "too many mistakes", "role": "O"}],
+     "points": [
+      {"q": "'re making", "label": "현재진행", "explanation": "「be동사 + 동사-ing」로 지금 진행 중인 일을 나타낸다. make는 e를 빼고 -ing를 붙인다."},
+      {"q": "too many mistakes", "label": "수량사", "explanation": "mistake는 셀 수 있는 명사이므로 복수형 mistakes 앞에 much가 아니라 many를 쓴다. too는 '너무'라는 뜻으로 many를 꾸민다."}
+     ],
+     "chunks": [{"en": "Suho:", "ko": "수호:"}, {"en": "We're making", "ko": "우리는 하고 있어"}, {"en": "too many mistakes.", "ko": "실수를 너무 많이."}]
+    },
+    {
+     "translation": "보라: 그래.",
+     "contextNote": "보라가 수호의 말에 동의한다."
+    },
+    {
+     "translation": "우리는 가망이 없어.",
+     "contextNote": "실수 앞에서 포기하는 부정적인 태도가 드러난다.",
+     "roles": [{"q": "We", "role": "S"}, {"q": "'re", "role": "V"}, {"q": "hopeless", "role": "C"}],
+     "notes": [{"q": "hopeless", "label": "주격보어 형용사", "gloss": "'가망이 없는' — 주어 We의 상태"}],
+     "chunks": [{"en": "We're", "ko": "우리는 ~이야"}, {"en": "hopeless.", "ko": "가망이 없는."}]
+    },
+    {
+     "translation": "수호: 그런데, 민수는 어디 있어?",
+     "contextNote": "연습에 나오지 않은 민수를 찾으며 화제를 바꾼다.",
+     "roles": [{"q": "By the way", "role": "M"}, {"q": "where", "role": "A"}, {"q": "'s", "role": "V"}, {"q": "Minsu", "role": "S"}],
+     "notes": [{"q": "By the way", "label": "부사구", "gloss": "'그런데' — 화제를 바꿀 때"}],
+     "points": [{"q": "where's Minsu", "label": "어순", "explanation": "의문사가 있는 be동사 의문문은 「의문사 + be동사 + 주어 ~?」 어순으로 쓴다. where's는 where is를 줄인 말이고, 여기서 be동사는 '(~에) 있다'는 뜻이다."}],
+     "chunks": [{"en": "Suho:", "ko": "수호:"}, {"en": "By the way,", "ko": "그런데,"}, {"en": "where's Minsu?", "ko": "민수는 어디 있어?"}]
+    },
+    {
+     "translation": "유나: 음, 아프대.",
+     "contextNote": "유나가 민수가 빠진 이유를 전한다.",
+     "roles": [{"q": "he", "role": "S"}, {"q": "'s", "role": "V"}, {"q": "sick", "role": "C"}],
+     "notes": [{"q": "he", "label": "대명사 선행사", "gloss": "= Minsu"}],
+     "chunks": [{"en": "Yuna:", "ko": "유나:"}, {"en": "Well,", "ko": "음,"}, {"en": "he's sick.", "ko": "아프대."}]
+    },
+    {
+     "translation": "나한테 문자했어.",
+     "contextNote": "민수가 아프다는 것을 어떻게 알았는지 밝힌다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "texted"}],
+     "roles": [{"q": "He", "role": "S"}, {"q": "texted", "role": "V"}, {"q": "me", "role": "O"}],
+     "points": [{"q": "texted", "label": "동사", "star": true, "explanation": "규칙 동사의 과거형은 동사원형에 -ed를 붙여 만든다. 과거형은 주어의 인칭·수와 상관없이 같은 형태이다. text는 여기서 '문자를 보내다'라는 동사이다."}],
+     "chunks": [{"en": "He texted", "ko": "그가 문자했어"}, {"en": "me.", "ko": "나한테."}]
+    },
+    {
+     "translation": "보라: 정말?",
+     "contextNote": "보라가 유나의 말을 의심하며 되묻는다."
+    },
+    {
+     "translation": "내가 어젯밤에 민수를 봤는데, 괜찮았어.",
+     "contextNote": "민수가 아프다는 말이 사실이 아닐 수 있음을 내비친다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "saw"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "saw", "role": "V"}, {"q": "him", "role": "O"}, {"q": "last night", "role": "M"}, {"q": "he", "role": "S"}, {"q": "was", "role": "V"}, {"q": "all right", "role": "C"}],
+     "notes": [{"q": "and he was all right", "label": "등위절", "gloss": "and로 이은 두 번째 절"}],
+     "points": [
+      {"q": "saw", "label": "시간 부사 시제", "star": true, "explanation": "last night처럼 과거를 나타내는 말이 있으면 동사도 과거형을 쓴다. see는 불규칙 동사로 see-saw로 변한다."},
+      {"q": "was", "label": "동사", "explanation": "be동사의 과거형은 am·is일 때 was, are일 때 were이다. 주어 he가 3인칭 단수이므로 was를 쓴다."}
+     ],
+     "chunks": [{"en": "I saw him", "ko": "내가 민수를 봤는데"}, {"en": "last night,", "ko": "어젯밤에,"}, {"en": "and he was all right.", "ko": "괜찮았어."}]
+    }
+   ]
+  },
+  "729d1f55-b36c-499f-b104-03a541e69aab": {
+   "titleEn": "Situation 1: The Team Gives Up",
+   "topicEn": "The day before the contest, the team stops practicing and finally quits, feeling hopeless.",
+   "topicKo": "대회 하루 전, 팀은 연습을 멈추고 가망이 없다고 느끼며 결국 그만둔다.",
+   "sentences": [
+    {
+     "translation": "<대회 1일 전> 대회는 내일이지만, 유나와 팀원들은 연습하지 않고 있다.",
+     "contextNote": "대회를 코앞에 두고도 연습하지 않는 상황을 보여 준다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "are not practicing"}],
+     "roles": [{"q": "The contest", "role": "S"}, {"q": "is", "role": "V"}, {"q": "tomorrow", "role": "A"}, {"q": "Yuna and her teammates", "role": "S"}, {"q": "are not practicing", "role": "V"}],
+     "notes": [{"q": "but Yuna and her teammates are not practicing", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "points": [{"q": "are not practicing", "label": "현재진행", "star": true, "explanation": "현재진행형의 부정문은 be동사 뒤에 not을 붙여 「be동사 + not + 동사-ing」로 쓴다. practice는 e를 빼고 -ing를 붙인다."}],
+     "chunks": [{"en": "D-1", "ko": "<대회 1일 전>"}, {"en": "The contest is tomorrow,", "ko": "대회는 내일이지만,"}, {"en": "but Yuna and her teammates are not practicing.", "ko": "유나와 팀원들은 연습하지 않고 있다."}]
+    },
+    {
+     "translation": "수호: 난 너무 피곤해.",
+     "contextNote": "수호가 지친 마음을 드러낸다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "so tired", "role": "C"}],
+     "notes": [{"q": "so", "label": "형용사 수식 부사", "gloss": "'너무' — tired를 꾸밈"}],
+     "chunks": [{"en": "Suho:", "ko": "수호:"}, {"en": "I'm so tired.", "ko": "난 너무 피곤해."}]
+    },
+    {
+     "translation": "민수: 나도.",
+     "contextNote": "민수도 지쳤다고 말한다."
+    },
+    {
+     "translation": "우리는 나아지지 않고 있어.",
+     "contextNote": "연습해도 소용없다는 부정적인 생각을 말한다.",
+     "roles": [{"q": "We", "role": "S"}, {"q": "'re not getting", "role": "V"}, {"q": "anywhere", "role": "M"}],
+     "points": [{"q": "'re not getting", "label": "현재진행", "explanation": "get처럼 「짧은 모음 + 자음」으로 끝나는 동사는 t를 한 번 더 쓰고 -ing를 붙인다. not getting anywhere는 '아무 데도 이르지 못하고 있다', 곧 '나아지지 않고 있다'는 뜻이다."}],
+     "chunks": [{"en": "We're not getting", "ko": "우리는 이르지 못하고 있어"}, {"en": "anywhere.", "ko": "아무 데도(나아지지 않고 있어)."}]
+    },
+    {
+     "translation": "보라: 그래.",
+     "contextNote": "보라가 민수의 말에 동의한다."
+    },
+    {
+     "translation": "우리는 시간만 낭비하고 있는 거야.",
+     "contextNote": "연습이 쓸모없다고 여기는 태도가 드러난다.",
+     "roles": [{"q": "We", "role": "S"}, {"q": "'re", "role": "V"}, {"q": "just", "role": "M"}, {"q": "wasting", "role": "V"}, {"q": "our time", "role": "O"}],
+     "points": [{"q": "'re just wasting", "label": "현재진행", "explanation": "be동사와 동사-ing 사이에 부사 just가 끼어 있는 현재진행형이다. waste는 e를 빼고 -ing를 붙인다."}],
+     "chunks": [{"en": "We're just wasting", "ko": "우리는 낭비하고 있을 뿐이야"}, {"en": "our time.", "ko": "시간을."}]
+    },
+    {
+     "translation": "유나: 춤 경연 대회는 좋은 생각이 아니었어.",
+     "contextNote": "제안했던 유나마저 대회 참가를 후회한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "was not"}],
+     "roles": [{"q": "The dance contest", "role": "S"}, {"q": "was", "role": "V"}, {"q": "a good idea", "role": "C"}],
+     "points": [{"q": "was not", "label": "동사", "star": true, "explanation": "be동사 과거형의 부정문은 was/were 뒤에 not을 붙인다. 주어 The dance contest가 3인칭 단수이므로 was를 쓰고, was not은 wasn't로 줄여 쓸 수 있다."}],
+     "chunks": [{"en": "Yuna:", "ko": "유나:"}, {"en": "The dance contest", "ko": "춤 경연 대회는"}, {"en": "was not a good idea.", "ko": "좋은 생각이 아니었어."}]
+    },
+    {
+     "translation": "수호: 동의해, 하지만 네 잘못은 아니야.",
+     "contextNote": "수호가 유나의 말에 동의하면서 유나 탓은 아니라고 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "agree", "role": "V"}, {"q": "it", "role": "S"}, {"q": "'s", "role": "V"}, {"q": "your fault", "role": "C"}],
+     "notes": [{"q": "but it's not your fault", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "points": [{"q": "it's", "label": "its/it's", "explanation": "it's는 it is를 줄인 말이고, its는 '그것의'라는 뜻의 소유격이다. 여기는 주어와 동사가 필요한 자리이므로 it's를 쓴다."}],
+     "chunks": [{"en": "Suho:", "ko": "수호:"}, {"en": "I agree,", "ko": "동의해,"}, {"en": "but it's not your fault.", "ko": "하지만 네 잘못은 아니야."}]
+    },
+    {
+     "translation": "유나: 우리 그냥 그만두는 게 어때?",
+     "contextNote": "유나가 대회를 포기하자고 제안한다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "don't", "role": "V"}, {"q": "we", "role": "S"}, {"q": "just", "role": "M"}, {"q": "quit", "role": "V"}],
+     "points": [{"q": "Why don't we", "label": "동사", "star": true, "explanation": "「Why don't we + 동사원형 ~?」은 '우리 ~하는 게 어때?'라고 제안하는 표현으로, 「Let's + 동사원형」으로 바꿔 쓸 수 있다.", "rewrite": "Let's just quit."}],
+     "chunks": [{"en": "Yuna:", "ko": "유나:"}, {"en": "Why don't we just quit?", "ko": "우리 그냥 그만두는 게 어때?"}]
+    },
+    {
+     "translation": "몇 주간의 불만스러운 연습 후에, 그들은 결국 그만두었다.",
+     "contextNote": "첫 번째 상황의 결말: 팀은 끝내 포기한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "quit"}],
+     "roles": [{"q": "After weeks of unhappy practices", "role": "M"}, {"q": "they", "role": "S"}, {"q": "finally", "role": "M"}, {"q": "quit", "role": "V"}],
+     "notes": [{"q": "After weeks of unhappy practices", "label": "전명구", "gloss": "'몇 주간의 불만스러운 연습 후에'"}],
+     "points": [{"q": "quit", "label": "동사", "star": true, "explanation": "quit은 과거형도 원형과 같은 quit인 불규칙 동사이다(quited ×). 지난 일을 말하는 문장이므로 여기서는 과거형으로 '그만두었다'고 해석한다."}],
+     "chunks": [{"en": "After weeks of unhappy practices,", "ko": "몇 주간의 불만스러운 연습 후에,"}, {"en": "they finally quit.", "ko": "그들은 결국 그만두었다."}]
+    },
+    {
+     "translation": "그들은 가망이 없다고 느꼈다.",
+     "contextNote": "포기한 뒤 남은 부정적인 감정을 정리한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "felt hopeless"}],
+     "roles": [{"q": "They", "role": "S"}, {"q": "felt", "role": "V"}, {"q": "hopeless", "role": "C"}],
+     "points": [{"q": "felt hopeless", "label": "연결동사 보어", "star": true, "explanation": "feel은 불규칙 동사로 과거형이 felt이다. '~하게 느끼다'라는 뜻의 연결동사이므로 뒤에 부사가 아니라 형용사 hopeless를 보어로 쓴다."}],
+     "chunks": [{"en": "They felt", "ko": "그들은 느꼈다"}, {"en": "hopeless.", "ko": "가망이 없다고."}]
+    }
+   ]
+  },
+  "639229a1-403d-4bfd-a9f6-b66013359c7a": {
+   "titleEn": "Situation 2: Cheering Each Other On",
+   "topicEn": "In the second situation, the team practices hard and encourages Suho when he makes a mistake.",
+   "topicKo": "두 번째 상황에서 팀은 열심히 연습하고, 수호가 실수하면 서로 격려한다.",
+   "sentences": [
+    {
+     "translation": "<대회 14일 전> 유나와 팀원들은 연습실에서 열심히 연습하고 있다.",
+     "contextNote": "같은 D-14이지만 상황 1과 달리 열심히 연습하는 모습으로 시작한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "are practicing"}],
+     "roles": [{"q": "Yuna and her teammates", "role": "S"}, {"q": "are practicing", "role": "V"}, {"q": "hard", "role": "M"}, {"q": "in the practice room", "role": "M"}],
+     "notes": [{"q": "hard", "label": "혼동 부사", "gloss": "부사 '열심히' (hardly는 '거의 ~않다')"}, {"q": "in the practice room", "label": "전명구", "gloss": "'연습실에서'"}],
+     "points": [{"q": "are practicing", "label": "현재진행", "star": true, "explanation": "주어 Yuna and her teammates가 복수이므로 be동사 are를 쓴 현재진행형이다. practice는 e를 빼고 -ing를 붙인다."}],
+     "chunks": [{"en": "D-14", "ko": "<대회 14일 전>"}, {"en": "Yuna and her teammates are practicing hard", "ko": "유나와 팀원들은 열심히 연습하고 있다"}, {"en": "in the practice room.", "ko": "연습실에서."}]
+    },
+    {
+     "translation": "수호: 내가 또 실수했어.",
+     "contextNote": "수호가 연습 중 실수한 것을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "made"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "made", "role": "V"}, {"q": "a mistake", "role": "O"}, {"q": "again", "role": "M"}],
+     "points": [{"q": "made", "label": "동사", "star": true, "explanation": "make는 불규칙 동사로 과거형이 made이다(maked ×). make a mistake는 '실수하다'라는 뜻이다."}],
+     "chunks": [{"en": "Suho:", "ko": "수호:"}, {"en": "I made a mistake", "ko": "내가 실수했어"}, {"en": "again.", "ko": "또."}]
+    },
+    {
+     "translation": "미안해.",
+     "contextNote": "수호가 팀원들에게 사과한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "sorry", "role": "C"}],
+     "chunks": [{"en": "I'm", "ko": "나는 ~해"}, {"en": "sorry.", "ko": "미안한."}]
+    },
+    {
+     "translation": "유나: 힘내라!",
+     "contextNote": "상황 1과 달리 유나가 수호를 격려한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "Cheer up"}],
+     "roles": [{"q": "Cheer up", "role": "V"}],
+     "points": [{"q": "Cheer up", "label": "동사", "star": true, "explanation": "주어 없이 동사원형으로 시작하는 명령문으로, '~하라'라는 뜻이다. cheer up은 '힘을 내다'라는 뜻이다."}],
+     "chunks": [{"en": "Yuna:", "ko": "유나:"}, {"en": "Cheer up!", "ko": "힘내라!"}]
+    },
+    {
+     "translation": "너는 할 수 있어.",
+     "contextNote": "수호에게 용기를 주는 긍정적인 말이다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "can do", "role": "V"}, {"q": "it", "role": "O"}],
+     "points": [{"q": "can do", "label": "조동사 의미", "explanation": "can은 '~할 수 있다'는 뜻의 조동사이고, 뒤에는 동사원형을 쓴다."}],
+     "chunks": [{"en": "You can do", "ko": "너는 할 수 있어"}, {"en": "it.", "ko": "그것을."}]
+    },
+    {
+     "translation": "민수: 맞아.",
+     "contextNote": "민수가 유나의 말에 동의한다."
+    },
+    {
+     "translation": "걱정하지 마라, 수호야.",
+     "contextNote": "민수가 수호를 안심시킨다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "Don't worry"}],
+     "roles": [{"q": "Don't worry", "role": "V"}],
+     "points": [{"q": "Don't worry", "label": "동사", "star": true, "explanation": "부정 명령문은 「Don't + 동사원형」으로 쓰고 '~하지 마라'라는 뜻이다. 쉼표 뒤의 Suho는 부르는 말이고 주어가 아니다."}],
+     "chunks": [{"en": "Don't worry,", "ko": "걱정하지 마라,"}, {"en": "Suho.", "ko": "수호야."}]
+    },
+    {
+     "translation": "우리는 누구나 실수해.",
+     "contextNote": "실수는 누구에게나 있는 일이라는 이 글의 긍정적인 생각을 담았다.",
+     "tags": ["주제문"],
+     "roles": [{"q": "We all", "role": "S"}, {"q": "make", "role": "V"}, {"q": "mistakes", "role": "O"}],
+     "points": [{"q": "make", "label": "현재·과거", "explanation": "앞의 I made a mistake는 방금 있었던 일이라 과거형이고, 이 문장은 누구에게나 늘 있는 일이라 현재형 make를 쓴다."}],
+     "chunks": [{"en": "We all make", "ko": "우리는 누구나 해"}, {"en": "mistakes.", "ko": "실수를."}]
+    },
+    {
+     "translation": "보라: 자.",
+     "contextNote": "보라가 다시 해 보자고 팀원들을 북돋운다."
+    },
+    {
+     "translation": "한 번 더 해 보자!",
+     "contextNote": "실수에도 포기하지 않고 다시 도전한다.",
+     "roles": [{"q": "do", "role": "V"}, {"q": "it", "role": "O"}, {"q": "one more time", "role": "M"}],
+     "notes": [{"q": "one more time", "label": "부사구", "gloss": "'한 번 더'"}],
+     "points": [{"q": "Let's do", "label": "동사", "explanation": "「Let's + 동사원형」은 '~하자'라고 제안하는 명령문이다."}],
+     "chunks": [{"en": "Let's do it", "ko": "해 보자"}, {"en": "one more time!", "ko": "한 번 더!"}]
+    },
+    {
+     "translation": "거의 다 왔어.",
+     "contextNote": "목표에 가까워졌다는 말로 팀의 사기를 높인다.",
+     "roles": [{"q": "We", "role": "S"}, {"q": "'re", "role": "V"}, {"q": "almost there", "role": "A"}],
+     "notes": [{"q": "almost there", "label": "부사구", "gloss": "'거의 다 온'"}],
+     "chunks": [{"en": "We're", "ko": "우리는 왔어"}, {"en": "almost there.", "ko": "거의 다."}]
+    }
+   ]
+  },
+  "a55523ca-4385-4def-a941-19c23941bbb9": {
+   "titleEn": "Situation 2: Happy without a Prize",
+   "topicEn": "Yuna's team wins no prize, but they are happy and proud because they finished the dance and did their best.",
+   "topicKo": "유나의 팀은 상을 받지 못했지만, 춤을 끝내고 최선을 다했기에 행복하고 자랑스럽다.",
+   "sentences": [
+    {
+     "translation": "<대회 당일> 대회가 지금 끝났다.",
+     "contextNote": "두 번째 상황의 결말로 넘어간다.",
+     "roles": [{"q": "The contest", "role": "S"}, {"q": "is", "role": "V"}, {"q": "over", "role": "C"}, {"q": "now", "role": "M"}],
+     "notes": [{"q": "over", "label": "주격보어 형용사", "gloss": "'끝난' — be over: 끝나다"}],
+     "chunks": [{"en": "D-Day", "ko": "<대회 당일>"}, {"en": "The contest is over", "ko": "대회가 끝났다"}, {"en": "now.", "ko": "지금."}]
+    },
+    {
+     "translation": "유나 팀은 어떤 상도 받지 못했지만, 그들은 모두 행복해 보인다.",
+     "contextNote": "상을 받지 못해도 행복하다는 점이 이 글의 핵심이다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "didn't win"}],
+     "roles": [{"q": "Yuna's team", "role": "S"}, {"q": "didn't win", "role": "V"}, {"q": "any prizes", "role": "O"}, {"q": "they all", "role": "S"}, {"q": "look", "role": "V"}, {"q": "happy", "role": "C"}],
+     "notes": [{"q": "but they all look happy", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "points": [
+      {"q": "didn't win", "label": "동사", "star": true, "explanation": "일반동사 과거형의 부정문은 「did not(didn't) + 동사원형」으로 쓴다. 주어와 상관없이 didn't를 쓰고, 뒤의 동사는 과거형이 아니라 원형 win으로 쓴다(didn't won ×)."},
+      {"q": "any prizes", "label": "수량사", "explanation": "부정문에서 '어떤, 조금의'라는 뜻으로 any를 쓴다. not ~ any는 '어떤 ~도 ~않다'로 해석한다."},
+      {"q": "look happy", "label": "연결동사 보어", "explanation": "look 뒤에는 부사가 아니라 형용사 보어를 쓴다. 지금의 모습을 말하므로 앞 절의 과거와 달리 현재형 look을 썼다."}
+     ],
+     "chunks": [{"en": "Yuna's team didn't win", "ko": "유나 팀은 받지 못했지만"}, {"en": "any prizes,", "ko": "어떤 상도,"}, {"en": "but they all look happy.", "ko": "그들은 모두 행복해 보인다."}]
+    },
+    {
+     "translation": "유나: 잘했어!",
+     "contextNote": "유나가 팀원들을 칭찬한다."
+    },
+    {
+     "translation": "우리가 해냈어.",
+     "contextNote": "끝까지 해낸 기쁨을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "made"}],
+     "roles": [{"q": "We", "role": "S"}, {"q": "made", "role": "V"}, {"q": "it", "role": "O"}],
+     "points": [{"q": "made it", "label": "동사", "star": true, "explanation": "make it은 '해내다, 성공하다'라는 뜻의 표현이다. make의 과거형은 불규칙하게 made로 쓴다."}],
+     "chunks": [{"en": "We made", "ko": "우리가 해냈어"}, {"en": "it.", "ko": "그것을."}]
+    },
+    {
+     "translation": "민수: 맞아!",
+     "contextNote": "민수가 기쁘게 맞장구친다."
+    },
+    {
+     "translation": "우리는 큰 실수 없이 춤을 끝냈어.",
+     "contextNote": "상을 못 받았어도 해낸 일을 구체적으로 말한다.",
+     "roles": [{"q": "We", "role": "S"}, {"q": "finished", "role": "V"}, {"q": "the dance", "role": "O"}, {"q": "without a big mistake", "role": "M"}],
+     "notes": [{"q": "without a big mistake", "label": "전명구", "gloss": "'큰 실수 없이'"}],
+     "points": [{"q": "finished", "label": "동사", "explanation": "규칙 동사의 과거형으로, 원형 finish에 -ed를 붙였다."}],
+     "chunks": [{"en": "We finished the dance", "ko": "우리는 춤을 끝냈어"}, {"en": "without a big mistake.", "ko": "큰 실수 없이."}]
+    },
+    {
+     "translation": "기분이 좋아!",
+     "contextNote": "지금의 기쁜 마음을 표현한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "feel", "role": "V"}, {"q": "great", "role": "C"}],
+     "points": [{"q": "feel great", "label": "연결동사 보어", "explanation": "feel 뒤에는 부사가 아니라 형용사 보어를 쓴다. 여기서는 형용사 great가 주어의 기분을 설명한다."}],
+     "chunks": [{"en": "I feel", "ko": "나는 기분이"}, {"en": "great!", "ko": "좋아!"}]
+    },
+    {
+     "translation": "보라: 우리는 최선을 다했고, 나는 우리 모두가 너무 자랑스러워.",
+     "contextNote": "결과보다 최선을 다한 과정이 중요하다는 주제를 담았다.",
+     "tags": ["주제문", "어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "did"}],
+     "roles": [{"q": "We", "role": "S"}, {"q": "did", "role": "V"}, {"q": "our best", "role": "O"}, {"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "so proud of all of us", "role": "C"}],
+     "notes": [{"q": "and I'm so proud of all of us", "label": "등위절", "gloss": "and로 이은 두 번째 절"}, {"q": "proud of", "label": "필수 전치사", "gloss": "be proud of ~: '~을 자랑스러워하다'"}],
+     "points": [{"q": "did", "label": "동사", "star": true, "explanation": "do는 불규칙 동사로 과거형이 did이다. do one's best는 '최선을 다하다'라는 뜻이다."}],
+     "chunks": [{"en": "Bora:", "ko": "보라:"}, {"en": "We did our best,", "ko": "우리는 최선을 다했고,"}, {"en": "and I'm so proud", "ko": "나는 너무 자랑스러워"}, {"en": "of all of us.", "ko": "우리 모두가."}]
+    },
+    {
+     "translation": "수호: 응원해 줘서 고마워, 얘들아.",
+     "contextNote": "수호가 자신을 격려해 준 친구들에게 고마움을 전한다.",
+     "roles": [{"q": "Thank", "role": "V"}, {"q": "you", "role": "O"}, {"q": "for your support", "role": "M"}],
+     "notes": [{"q": "Thank you for", "label": "필수 전치사", "gloss": "Thank you for ~: '~에 대해 고마워'"}],
+     "chunks": [{"en": "Suho:", "ko": "수호:"}, {"en": "Thank you for your support,", "ko": "응원해 줘서 고마워,"}, {"en": "everyone.", "ko": "얘들아."}]
+    }
+   ]
+  }
+ }
+}

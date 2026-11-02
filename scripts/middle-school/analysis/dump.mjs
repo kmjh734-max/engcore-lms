@@ -8,7 +8,10 @@ import { fileURLToPath } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const [grade = "중1", lesson = "1", publisher = "동아(윤정미)"] = process.argv.slice(2);
+// 동아(이병민)은 학년에 「이」: dump.mjs 중1이 2 → in/중1이-2.json
+const [gradeRaw = "중1", lesson = "1"] = process.argv.slice(2);
+const grade = gradeRaw.replace(/이$/, "");
+const publisher = gradeRaw.endsWith("이") ? "동아(이병민)" : "동아(윤정미)";
 const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const { data: academy } = await sb.from("academies").select("id").eq("slug", "jeongsu").single();
 const { data: unit } = await sb
@@ -31,6 +34,6 @@ const out = {
   passages: texts.map((t) => ({ id: t.id, part: t.part, title: t.title, lines: t.lines.map((l) => ({ en: l.en, ko: l.ko })) })),
 };
 fs.mkdirSync(path.join(here, "in"), { recursive: true });
-const file = path.join(here, "in", `${grade}-${lesson}.json`);
+const file = path.join(here, "in", `${gradeRaw}-${lesson}.json`);
 fs.writeFileSync(file, JSON.stringify(out, null, 1));
 console.log(file, "본문", out.passages.length, "문장", out.passages.reduce((s, p) => s + p.lines.length, 0));

@@ -57,6 +57,7 @@ export function LessonPackVocabExam({
   listOnly = false,
   editHref = null,
   examHref = null,
+  closeBase = null,
 }: {
   role: "admin" | "teacher";
   docName: string;
@@ -73,8 +74,10 @@ export function LessonPackVocabExam({
   editHref?: string | null;
   /** 단어장 화면에서 시험지 화면으로 */
   examHref?: string | null;
+  /** 닫으면 돌아갈 곳(기본은 자료함) */
+  closeBase?: string | null;
 }) {
-  const base = role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials";
+  const base = closeBase ?? (role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials");
   const [md, chooseMd] = useMaterialDesign();
   const ready = useMemo(() => projects.filter(isTestBookProjectReady), [projects]);
   const missing = projects.length - ready.length;

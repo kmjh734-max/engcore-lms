@@ -1,0 +1,265 @@
+{
+ "passages": {
+  "999ada50-5d12-48b2-a8ea-0947ace83259": {
+   "titleEn": "How a Volcano Led to the Bicycle",
+   "topicEn": "After the eruption of Mt. Tambora, many horses were killed for food, so people needed a new way to travel, and the first bicycle was invented.",
+   "topicKo": "탐보라산 폭발 뒤 많은 말들이 식용으로 죽임을 당해 사람들에게 새로운 이동 수단이 필요해졌고, 최초의 자전거가 발명되었다.",
+   "sentences": [
+    {
+     "translation": "1815년 인도네시아의 화산인 탐보라산이 폭발했다.",
+     "contextNote": "자전거 발명의 출발점이 된 사건을 연다.",
+     "roles": [{"q": "Mt. Tambora", "role": "S"}, {"q": "exploded", "role": "V"}, {"q": "in 1815", "role": "M"}],
+     "brackets": [{"q": "a volcano in Indonesia", "kind": "inserted"}],
+     "notes": [{"q": "a volcano in Indonesia", "label": "동격구", "gloss": "= Mt. Tambora"}],
+     "points": [{"q": "exploded", "label": "1형식", "explanation": "explode는 목적어가 필요 없는 자동사이므로 수동태로 쓰지 않는다(was exploded ×). 쉼표 사이의 a volcano in Indonesia는 Mt. Tambora가 무엇인지 덧붙여 설명하는 말이다."}],
+     "chunks": [{"en": "Mt. Tambora, a volcano in Indonesia,", "ko": "인도네시아의 화산인 탐보라산이"}, {"en": "exploded", "ko": "폭발했다"}, {"en": "in 1815.", "ko": "1815년에."}]
+    },
+    {
+     "translation": "이 폭발은 거대한 재 구름을 만들었고, 그래서 전 세계적으로 농작물이 자라지 못했다.",
+     "contextNote": "화산 폭발이 농작물 피해로 이어진 과정을 말한다.",
+     "roles": [{"q": "The explosion", "role": "S"}, {"q": "created", "role": "V"}, {"q": "a huge cloud of ash", "role": "O"}, {"q": "crops", "role": "S"}, {"q": "failed", "role": "V"}, {"q": "around the world", "role": "M"}],
+     "points": [{"q": "so crops failed around the world", "label": "등위절", "explanation": "so(그래서)는 앞 절의 결과를 잇는 접속사로, 뒤에 주어 crops와 동사 failed가 따로 있는 절이 온다. 여기서 fail은 '실패하다'가 아니라 농작물이 '자라지 못하다'라는 뜻이다."}],
+     "chunks": [{"en": "The explosion created", "ko": "이 폭발은 만들었고"}, {"en": "a huge cloud of ash,", "ko": "거대한 재 구름을,"}, {"en": "so crops failed", "ko": "그래서 농작물이 자라지 못했다"}, {"en": "around the world.", "ko": "전 세계적으로."}]
+    },
+    {
+     "translation": "그 결과, 사람들은 먹을 음식이 충분하지 않았다.",
+     "contextNote": "농작물 피해의 결과인 식량 부족을 말한다.",
+     "roles": [{"q": "As a result", "role": "M"}, {"q": "people", "role": "S"}, {"q": "didn't have", "role": "V"}, {"q": "enough food to eat", "role": "O"}],
+     "notes": [{"q": "As a result", "label": "부사적 어구", "gloss": "'그 결과'"}],
+     "points": [{"q": "to eat", "label": "형용사적 용법", "star": true, "explanation": "to eat이 앞의 명사 food를 꾸며 '먹을 음식'이라는 뜻을 만든다. 명사를 뒤에서 꾸미는 to부정사의 형용사적 용법이다."}],
+     "chunks": [{"en": "As a result,", "ko": "그 결과,"}, {"en": "people didn't have", "ko": "사람들은 충분하지 않았다"}, {"en": "enough food to eat.", "ko": "먹을 음식이."}]
+    },
+    {
+     "translation": "놀랍게도, 이로 인해 이동이 어려워졌다.",
+     "contextNote": "식량 부족이 뜻밖에 이동 문제로 이어졌음을 알리고 다음 질문을 끌어낸다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "difficult"}],
+     "roles": [{"q": "Surprisingly", "role": "M"}, {"q": "this", "role": "S"}, {"q": "made", "role": "V"}, {"q": "traveling", "role": "O"}, {"q": "difficult", "role": "C"}],
+     "notes": [{"q": "Surprisingly", "label": "문장 부사", "gloss": "문장 전체를 꾸밈"}, {"q": "this", "label": "대명사 선행사", "gloss": "= 사람들에게 먹을 음식이 부족해진 일"}],
+     "points": [{"q": "made traveling difficult", "label": "5형식", "star": true, "explanation": "「make+목적어+목적격보어」는 '~을 …하게 만들다'라는 뜻이다. 목적어 traveling(이동하는 것)의 상태를 설명하는 보어 자리이므로 부사 difficultly가 아니라 형용사 difficult를 쓴다."}],
+     "chunks": [{"en": "Surprisingly,", "ko": "놀랍게도,"}, {"en": "this made traveling difficult.", "ko": "이로 인해 이동이 어려워졌다."}]
+    },
+    {
+     "translation": "왜일까?",
+     "contextNote": "앞 문장의 이유를 궁금하게 만드는 질문이다."
+    },
+    {
+     "translation": "당시, 사람들은 말을 탔는데, 많은 말들이 식용으로 죽임을 당했다.",
+     "contextNote": "앞 질문의 답: 이동 수단이던 말이 식량이 되어 줄어들었다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "were killed"}],
+     "roles": [{"q": "In those days", "role": "M"}, {"q": "people", "role": "S"}, {"q": "rode", "role": "V"}, {"q": "horses", "role": "O"}, {"q": "many horses", "role": "S"}, {"q": "were killed", "role": "V"}, {"q": "for food", "role": "M"}],
+     "notes": [{"q": "but many horses were killed for food", "label": "등위절"}],
+     "points": [{"q": "were killed", "label": "수동태", "star": true, "explanation": "말들은 죽이는 쪽이 아니라 죽임을 당하는 쪽이므로 「be동사+과거분사」의 수동태를 쓴다. 주어 many horses가 복수이고 과거의 일이므로 be동사는 were이다."}],
+     "chunks": [{"en": "In those days,", "ko": "당시,"}, {"en": "people rode horses,", "ko": "사람들은 말을 탔는데,"}, {"en": "but many horses were killed", "ko": "많은 말들이 죽임을 당했다"}, {"en": "for food.", "ko": "식용으로."}]
+    },
+    {
+     "translation": "사람들은 이동하기 위한 새로운 수단이 필요했고, 1817년 독일에서 Karl von Drais가 최초의 자전거를 발명했다.",
+     "contextNote": "말을 대신할 이동 수단으로 자전거가 등장한다.",
+     "roles": [{"q": "People", "role": "S"}, {"q": "needed", "role": "V"}, {"q": "a new way to travel", "role": "O"}, {"q": "Karl von Drais", "role": "S"}, {"q": "invented", "role": "V"}, {"q": "the first bicycle", "role": "O"}, {"q": "in Germany", "role": "M"}, {"q": "in 1817", "role": "M"}],
+     "notes": [{"q": "and Karl von Drais invented the first bicycle in Germany in 1817", "label": "등위절"}],
+     "points": [{"q": "to travel", "label": "형용사적 용법", "star": true, "explanation": "to travel이 앞의 명사 way를 꾸며 '이동하기 위한 수단'이라는 뜻을 만든다."}],
+     "chunks": [{"en": "People needed", "ko": "사람들은 필요했고"}, {"en": "a new way to travel,", "ko": "이동하기 위한 새로운 수단이,"}, {"en": "and Karl von Drais invented", "ko": "Karl von Drais가 발명했다"}, {"en": "the first bicycle", "ko": "최초의 자전거를"}, {"en": "in Germany in 1817.", "ko": "1817년 독일에서."}]
+    },
+    {
+     "translation": "Drais의 자전거는 나무로 된 두 개의 바퀴가 있었지만 페달은 없었다.",
+     "contextNote": "최초의 자전거의 생김새를 설명한다.",
+     "roles": [{"q": "Drais's bicycle", "role": "S"}, {"q": "had", "role": "V"}, {"q": "two wooden wheels but no pedals", "role": "O"}],
+     "notes": [{"q": "two wooden wheels but no pedals", "label": "명사구 병렬", "gloss": "but으로 이은 두 목적어"}],
+     "chunks": [{"en": "Drais's bicycle had", "ko": "Drais의 자전거는 있었지만"}, {"en": "two wooden wheels", "ko": "나무로 된 두 개의 바퀴가"}, {"en": "but no pedals.", "ko": "페달은 없었다."}]
+    },
+    {
+     "translation": "페달 없이 어떻게 움직였을까?",
+     "contextNote": "페달이 없다는 앞 문장에서 생기는 궁금증을 묻는다.",
+     "roles": [{"q": "How", "role": "M"}, {"q": "did", "role": "V"}, {"q": "it", "role": "S"}, {"q": "move", "role": "V"}, {"q": "without pedals", "role": "M"}],
+     "notes": [{"q": "without pedals", "label": "전명구", "gloss": "'페달 없이'"}],
+     "points": [{"q": "did it move", "label": "어순", "explanation": "일반동사 과거형의 의문문은 「(의문사+)did+주어+동사원형」의 순서로 쓴다. did가 과거를 나타내므로 뒤의 동사는 moved가 아니라 원형 move이다."}],
+     "chunks": [{"en": "How did it move", "ko": "어떻게 움직였을까"}, {"en": "without pedals?", "ko": "페달 없이?"}]
+    },
+    {
+     "translation": "음, 타는 사람들이 단순히 발로 자전거를 앞으로 밀었다.",
+     "contextNote": "앞 질문의 답: 발로 밀어서 움직였다.",
+     "roles": [{"q": "riders", "role": "S"}, {"q": "simply", "role": "M"}, {"q": "pushed", "role": "V"}, {"q": "the bicycle", "role": "O"}, {"q": "forward", "role": "M"}, {"q": "with their feet", "role": "M"}],
+     "notes": [{"q": "with their feet", "label": "전명구", "gloss": "with: '~으로'(도구)"}],
+     "chunks": [{"en": "Well, riders simply pushed", "ko": "음, 타는 사람들이 단순히 밀었다"}, {"en": "the bicycle forward", "ko": "자전거를 앞으로"}, {"en": "with their feet.", "ko": "발로."}]
+    },
+    {
+     "translation": "오늘날의 자전거는 19세기 많은 발명가들의 노력의 결과이다.",
+     "contextNote": "지금의 자전거가 나오기까지의 과정을 정리하며 글을 맺는다.",
+     "roles": [{"q": "The present-day bicycle", "role": "S"}, {"q": "is", "role": "V"}, {"q": "the result of many inventors' work in the 19th century", "role": "C"}],
+     "notes": [{"q": "many inventors'", "label": "소유격", "gloss": "-s로 끝나는 복수 명사의 소유격은 '만 붙임"}],
+     "chunks": [{"en": "The present-day bicycle", "ko": "오늘날의 자전거는"}, {"en": "is the result", "ko": "결과이다"}, {"en": "of many inventors' work", "ko": "많은 발명가들의 노력의"}, {"en": "in the 19th century.", "ko": "19세기."}]
+    }
+   ]
+  },
+  "aa38f097-20e0-4646-aa02-4df8ae73fc4b": {
+   "titleEn": "Whiteout: Born from Typing Mistakes",
+   "topicEn": "Bette Graham, a bad typist, invented Whiteout after she saw window painters correct their mistakes by painting over them.",
+   "topicKo": "타자 실력이 좋지 않던 Bette Graham은 창문 페인트공들이 실수를 덧칠해 고치는 것을 보고 수정액을 발명했다.",
+   "sentences": [
+    {
+     "translation": "수정액은 Bette Graham에 의해 발명되었다.",
+     "contextNote": "수정액과 그 발명가를 소개하며 글을 연다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "was invented"}],
+     "roles": [{"q": "Whiteout", "role": "S"}, {"q": "was invented", "role": "V"}, {"q": "by Bette Graham", "role": "M"}],
+     "points": [{"q": "was invented", "label": "수동태", "star": true, "explanation": "수정액은 발명되는 대상이므로 「be동사+과거분사」의 수동태를 쓴다. 동작을 한 사람은 「by+행위자」로 나타낸다. 주어가 단수이고 과거의 일이므로 be동사는 was이다.", "rewrite": "Bette Graham invented Whiteout."}],
+     "chunks": [{"en": "Whiteout was invented", "ko": "수정액은 발명되었다"}, {"en": "by Bette Graham.", "ko": "Bette Graham에 의해."}]
+    },
+    {
+     "translation": "1956년 Graham은 미국 텍사스의 한 은행에서 일하고 있었다.",
+     "contextNote": "발명 당시 Graham의 상황(은행 근무)을 말한다.",
+     "roles": [{"q": "In 1956", "role": "M"}, {"q": "Graham", "role": "S"}, {"q": "was working", "role": "V"}, {"q": "at a bank in Texas, USA", "role": "M"}],
+     "points": [{"q": "was working", "label": "과거진행", "explanation": "과거진행형은 「was/were+동사-ing」로 '~하고 있었다'는 뜻이다. In 1956이라는 과거 시점에 진행 중이던 일을 나타낸다."}],
+     "chunks": [{"en": "In 1956,", "ko": "1956년"}, {"en": "Graham was working", "ko": "Graham은 일하고 있었다"}, {"en": "at a bank in Texas, USA.", "ko": "미국 텍사스의 한 은행에서."}]
+    },
+    {
+     "translation": "그 당시, 사람들은 작은 실수 하나라도 하면 전체 페이지를 다시 입력해야 했다.",
+     "contextNote": "당시 타자 작업의 불편함을 보여 준다. 발명이 필요했던 이유이다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "had to retype"}],
+     "roles": [{"q": "At that time", "role": "M"}, {"q": "people", "role": "S"}, {"q": "had to retype", "role": "V"}, {"q": "the whole page", "role": "O"}, {"q": "they", "role": "S", "level": 1}, {"q": "made", "role": "V", "level": 1}, {"q": "even a small mistake", "role": "O", "level": 1}],
+     "brackets": [{"q": "when they made even a small mistake", "kind": "adverbial"}],
+     "notes": [{"q": "when they made even a small mistake", "label": "시간 부사절", "gloss": "when: '~할 때, ~하면'"}],
+     "points": [{"q": "had to retype", "label": "조동사 의미", "star": true, "explanation": "have to는 '~해야 한다'는 뜻으로 뒤에 동사원형을 쓰며, must와 뜻이 비슷하다. 과거의 일은 had to로 쓴다(must에는 과거형이 없다)."}],
+     "chunks": [{"en": "At that time,", "ko": "그 당시,"}, {"en": "people had to retype", "ko": "사람들은 다시 입력해야 했다"}, {"en": "the whole page", "ko": "전체 페이지를"}, {"en": "when they made even a small mistake.", "ko": "작은 실수 하나라도 하면."}]
+    },
+    {
+     "translation": "Graham은 타자 실력이 좋지 않아서 해결책이 필요했다.",
+     "contextNote": "Graham에게 해결책이 특히 절실했던 이유를 말한다.",
+     "roles": [{"q": "Graham", "role": "S"}, {"q": "was", "role": "V"}, {"q": "a bad typist", "role": "C"}, {"q": "she", "role": "S"}, {"q": "needed", "role": "V"}, {"q": "a solution", "role": "O"}],
+     "notes": [{"q": "so she needed a solution", "label": "등위절", "gloss": "so: '그래서'"}],
+     "chunks": [{"en": "Graham was a bad typist,", "ko": "Graham은 타자 실력이 좋지 않아서"}, {"en": "so she needed a solution.", "ko": "해결책이 필요했다."}]
+    },
+    {
+     "translation": "어느 날 Graham은 창문을 칠하는 페인트공들을 보았다.",
+     "contextNote": "해결의 실마리가 된 장면이 나온다.",
+     "roles": [{"q": "One day", "role": "M"}, {"q": "Graham", "role": "S"}, {"q": "saw", "role": "V"}, {"q": "some window painters", "role": "O"}],
+     "notes": [{"q": "One day", "label": "부사구", "gloss": "'어느 날'"}],
+     "chunks": [{"en": "One day,", "ko": "어느 날"}, {"en": "Graham saw", "ko": "Graham은 보았다"}, {"en": "some window painters.", "ko": "창문을 칠하는 페인트공들을."}]
+    },
+    {
+     "translation": "그들은 실수했을 때 단순히 그 위에 페인트를 덧칠하는 것으로 실수를 수정했다.",
+     "contextNote": "페인트공들의 방법이 수정액 발명의 아이디어가 된다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "by simply painting"}],
+     "roles": [{"q": "they", "role": "S", "level": 1}, {"q": "made", "role": "V", "level": 1}, {"q": "a mistake", "role": "O", "level": 1}, {"q": "they", "occ": 2, "role": "S"}, {"q": "corrected", "role": "V"}, {"q": "it", "role": "O"}, {"q": "by simply painting over it", "role": "M"}],
+     "brackets": [{"q": "When they made a mistake", "kind": "adverbial"}],
+     "notes": [{"q": "When they made a mistake", "label": "시간 부사절", "gloss": "'~했을 때'"}],
+     "points": [{"q": "by simply painting", "label": "전치사+동명사", "star": true, "explanation": "「by+동명사」는 '~함으로써'라는 뜻이다. 전치사 뒤에는 동사원형이 아니라 동명사를 쓰므로 painting이 왔다. simply는 동명사 painting을 꾸미는 부사이다."}],
+     "chunks": [{"en": "When they made a mistake,", "ko": "그들은 실수했을 때"}, {"en": "they corrected it", "ko": "실수를 수정했다"}, {"en": "by simply painting over it.", "ko": "단순히 그 위에 페인트를 덧칠하는 것으로."}]
+    },
+    {
+     "translation": "그다음 날 그녀는 자신만의 흰색 페인트를 만들어 오타를 수정하는 데 사용했다.",
+     "contextNote": "페인트공에게서 얻은 아이디어를 Graham이 자기 일에 적용한다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "The next day", "role": "M"}, {"q": "she", "role": "S"}, {"q": "made", "role": "V"}, {"q": "her own white paint", "role": "O"}, {"q": "used", "role": "V"}, {"q": "it", "role": "O"}, {"q": "to correct her typing mistakes", "role": "M"}],
+     "points": [
+      {"q": "made her own white paint and used it", "label": "동사 병렬", "explanation": "주어 she 하나에 동사 made와 used가 and로 이어져 있다. 두 동사 모두 과거형으로 형태를 맞춘다."},
+      {"q": "to correct", "label": "부사적 용법", "star": true, "explanation": "to correct는 '수정하기 위해'라는 뜻으로 목적을 나타내는 to부정사의 부사적 용법이다. be used to(~에 익숙하다)와 다른 표현이므로 뒤에 동사원형을 쓴다."}
+     ],
+     "chunks": [{"en": "The next day,", "ko": "그다음 날"}, {"en": "she made her own white paint", "ko": "그녀는 자신만의 흰색 페인트를 만들어"}, {"en": "and used it", "ko": "사용했다"}, {"en": "to correct her typing mistakes.", "ko": "오타를 수정하는 데."}]
+    },
+    {
+     "translation": "놀랍게도, 아무도 알아차리지 못했다!",
+     "contextNote": "페인트로 고친 자국이 눈에 띄지 않을 만큼 효과가 좋았음을 보여 준다.",
+     "roles": [{"q": "Surprisingly", "role": "M"}, {"q": "nobody", "role": "S"}, {"q": "noticed", "role": "V"}],
+     "notes": [{"q": "Surprisingly", "label": "문장 부사", "gloss": "문장 전체를 꾸밈"}],
+     "points": [{"q": "nobody", "label": "주어", "explanation": "nobody는 '아무도 ~않다'라는 뜻으로 그 자체에 부정의 의미가 있으므로 not을 함께 쓰지 않는다."}],
+     "chunks": [{"en": "Surprisingly,", "ko": "놀랍게도,"}, {"en": "nobody noticed!", "ko": "아무도 알아차리지 못했다!"}]
+    },
+    {
+     "translation": "곧 은행의 모든 사람들이 그것을 사용하기 시작했다.",
+     "contextNote": "Graham의 흰색 페인트가 주변으로 퍼져 나간 결과를 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "began using"}],
+     "roles": [{"q": "Soon", "role": "M"}, {"q": "everybody at the bank", "role": "S"}, {"q": "began", "role": "V"}, {"q": "using it", "role": "O"}],
+     "points": [{"q": "began using", "label": "동명사", "star": true, "explanation": "begin은 목적어로 동명사와 to부정사를 모두 쓸 수 있어 began to use it으로 바꿔 쓸 수 있다. using it은 began의 목적어이다.", "rewrite": "Soon, everybody at the bank began to use it."}],
+     "chunks": [{"en": "Soon,", "ko": "곧"}, {"en": "everybody at the bank", "ko": "은행의 모든 사람들이"}, {"en": "began using it.", "ko": "그것을 사용하기 시작했다."}]
+    }
+   ]
+  },
+  "5da0039c-1050-4fc7-839c-23a60947e659": {
+   "titleEn": "The First Webcam and a Coffee Pot",
+   "topicEn": "The first webcam was invented so that researchers could check a coffee pot without making disappointing trips to it.",
+   "topicKo": "최초의 웹캠은 연구원들이 실망스러운 발걸음 없이 커피포트를 확인할 수 있도록 발명되었다.",
+   "sentences": [
+    {
+     "translation": "최초의 웹캠은 커피포트를 지켜보기 위해 발명되었다.",
+     "contextNote": "웹캠이 뜻밖의 목적으로 발명되었음을 먼저 알려 흥미를 끈다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "was invented"}],
+     "roles": [{"q": "The first webcam", "role": "S"}, {"q": "was invented", "role": "V"}, {"q": "to watch a coffee pot", "role": "M"}],
+     "points": [
+      {"q": "was invented", "label": "수동태", "star": true, "explanation": "웹캠은 발명되는 대상이므로 「be동사+과거분사」의 수동태를 쓴다. 누가 발명했는지가 중요하지 않아 by 행위자가 없다."},
+      {"q": "to watch", "label": "부사적 용법", "explanation": "to watch는 '지켜보기 위해'라는 뜻으로 발명된 목적을 나타내는 to부정사의 부사적 용법이다."}
+     ],
+     "chunks": [{"en": "The first webcam was invented", "ko": "최초의 웹캠은 발명되었다"}, {"en": "to watch a coffee pot.", "ko": "커피포트를 지켜보기 위해."}]
+    },
+    {
+     "translation": "1991년 Quentin Stafford-Fraser 박사와 Paul Jardetzky 박사는 영국의 한 컴퓨터 연구소에서 일하고 있었다.",
+     "contextNote": "발명가 두 사람과 당시 배경을 소개한다.",
+     "roles": [{"q": "In 1991", "role": "M"}, {"q": "Dr. Quentin Stafford-Fraser and Dr. Paul Jardetzky", "role": "S"}, {"q": "were working", "role": "V"}, {"q": "at a computer lab in England", "role": "M"}],
+     "points": [{"q": "were working", "label": "과거진행", "explanation": "주어가 and로 이은 두 사람이라 복수이므로 be동사는 were를 쓴다. 「was/were+동사-ing」는 과거에 진행 중이던 일을 나타낸다."}],
+     "chunks": [{"en": "In 1991,", "ko": "1991년"}, {"en": "Dr. Quentin Stafford-Fraser and Dr. Paul Jardetzky", "ko": "Quentin Stafford-Fraser 박사와 Paul Jardetzky 박사는"}, {"en": "were working", "ko": "일하고 있었다"}, {"en": "at a computer lab in England.", "ko": "영국의 한 컴퓨터 연구소에서."}]
+    },
+    {
+     "translation": "일을 더 잘하기 위해, 그들은 많은 양의 커피가 필요했다.",
+     "contextNote": "문제의 시작인 커피에 대한 필요를 말한다.",
+     "roles": [{"q": "To work better", "role": "M"}, {"q": "they", "role": "S"}, {"q": "needed", "role": "V"}, {"q": "lots of coffee", "role": "O"}],
+     "points": [
+      {"q": "To work", "label": "부사적 용법", "star": true, "explanation": "문장 앞의 To work better는 '일을 더 잘하기 위해'라는 뜻으로 목적을 나타내는 to부정사의 부사적 용법이다. 주어가 아니므로 뒤에 they needed라는 주어와 동사가 따로 나온다."},
+      {"q": "lots of coffee", "label": "수량사", "explanation": "lots of는 셀 수 있는 명사와 셀 수 없는 명사 앞에 모두 쓴다. coffee는 셀 수 없는 명사이므로 -s를 붙이지 않는다."}
+     ],
+     "chunks": [{"en": "To work better,", "ko": "일을 더 잘하기 위해,"}, {"en": "they needed", "ko": "그들은 필요했다"}, {"en": "lots of coffee.", "ko": "많은 양의 커피가."}]
+    },
+    {
+     "translation": "하지만 건물에는 커피 머신이 한 대뿐이었다.",
+     "contextNote": "필요한 커피에 비해 머신이 부족한 문제 상황을 제시한다.",
+     "roles": [{"q": "However", "role": "M"}, {"q": "was", "role": "V"}, {"q": "only one coffee machine", "role": "S"}, {"q": "in the building", "role": "M"}],
+     "points": [{"q": "there was", "label": "there be 수일치", "star": true, "explanation": "There는 주어가 아니며 be동사 뒤의 only one coffee machine이 실제 주어이다. 주어가 단수이고 과거의 일이므로 was를 쓴다."}],
+     "chunks": [{"en": "However,", "ko": "하지만"}, {"en": "there was only one coffee machine", "ko": "커피 머신이 한 대뿐이었다"}, {"en": "in the building.", "ko": "건물에는."}]
+    },
+    {
+     "translation": "그래서 그들은 비어 있는 커피포트로 실망스러운 발걸음을 많이 해야 했다.",
+     "contextNote": "커피 머신이 하나뿐이라 겪은 불편을 말한다. 웹캠을 만든 직접적인 이유이다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "disappointing"}],
+     "roles": [{"q": "they", "role": "S"}, {"q": "had to make", "role": "V"}, {"q": "many disappointing trips to the empty coffee pot", "role": "O"}],
+     "points": [
+      {"q": "had to make", "label": "조동사 의미", "star": true, "explanation": "had to는 have to(~해야 한다)의 과거형으로 뒤에 동사원형 make를 쓴다."},
+      {"q": "disappointing", "label": "감정분사", "explanation": "발걸음(trips)이 실망감을 주는 것이므로 현재분사 disappointing을 쓴다. 사람이 실망을 느낄 때는 과거분사 disappointed를 쓴다."}
+     ],
+     "chunks": [{"en": "So, they had to make", "ko": "그래서 그들은 해야 했다"}, {"en": "many disappointing trips", "ko": "실망스러운 발걸음을 많이"}, {"en": "to the empty coffee pot.", "ko": "비어 있는 커피포트로."}]
+    },
+    {
+     "translation": "해결책으로, 두 연구원은 커피 머신 앞에 카메라를 설치했다.",
+     "contextNote": "문제를 풀기 위한 두 연구원의 행동이 나온다.",
+     "roles": [{"q": "As a solution", "role": "M"}, {"q": "the two researchers", "role": "S"}, {"q": "set up", "role": "V"}, {"q": "a camera", "role": "O"}, {"q": "in front of the coffee machine", "role": "M"}],
+     "notes": [{"q": "As a solution", "label": "전명구", "gloss": "as: '~으로(서)'(전치사)"}, {"q": "in front of the coffee machine", "label": "전명구", "gloss": "'커피 머신 앞에'"}],
+     "points": [{"q": "set up", "label": "동사", "explanation": "set은 현재형·과거형·과거분사형이 모두 set으로 같다. 여기서는 과거의 일을 말하므로 과거형이다. set up은 '설치하다'라는 뜻이다."}],
+     "chunks": [{"en": "As a solution,", "ko": "해결책으로,"}, {"en": "the two researchers set up", "ko": "두 연구원은 설치했다"}, {"en": "a camera", "ko": "카메라를"}, {"en": "in front of the coffee machine.", "ko": "커피 머신 앞에."}]
+    },
+    {
+     "translation": "그 카메라는 1분에 세 번씩 커피포트의 사진을 찍었다.",
+     "contextNote": "카메라가 어떻게 작동했는지 설명한다.",
+     "roles": [{"q": "The camera", "role": "S"}, {"q": "took", "role": "V"}, {"q": "pictures of the coffee pot", "role": "O"}, {"q": "three times a minute", "role": "M"}],
+     "notes": [{"q": "three times a minute", "label": "부사구", "gloss": "a: '~마다' → 1분에 세 번"}],
+     "chunks": [{"en": "The camera took", "ko": "그 카메라는 찍었다"}, {"en": "pictures of the coffee pot", "ko": "커피포트의 사진을"}, {"en": "three times a minute.", "ko": "1분에 세 번씩."}]
+    },
+    {
+     "translation": "특수 소프트웨어를 사용해 건물에 있는 모든 연구원들이 사내 통신망으로 사진을 볼 수 있었다.",
+     "contextNote": "최초의 웹캠이 문제를 해결한 방법을 말한다.",
+     "roles": [{"q": "With special software", "role": "M"}, {"q": "all the researchers in the building", "role": "S"}, {"q": "could see", "role": "V"}, {"q": "the pictures", "role": "O"}, {"q": "on their local network", "role": "M"}],
+     "notes": [{"q": "With special software", "label": "전명구", "gloss": "with: '~을 사용해'(도구)"}],
+     "points": [{"q": "could see", "label": "조동사 의미", "explanation": "could는 can의 과거형으로 '~할 수 있었다'는 뜻이며 뒤에 동사원형을 쓴다."}],
+     "chunks": [{"en": "With special software,", "ko": "특수 소프트웨어를 사용해"}, {"en": "all the researchers in the building", "ko": "건물에 있는 모든 연구원들이"}, {"en": "could see the pictures", "ko": "사진을 볼 수 있었다"}, {"en": "on their local network.", "ko": "사내 통신망으로."}]
+    },
+    {
+     "translation": "더 이상 실망스러운 발걸음은 없었다!",
+     "contextNote": "웹캠 덕분에 문제가 해결되었음을 짧게 맺는다."
+    }
+   ]
+  }
+ }
+}

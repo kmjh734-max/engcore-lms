@@ -1,0 +1,409 @@
+{
+ "passages": {
+  "02b28658-a64d-43e9-a098-e556822d3606": {
+   "titleEn": "Meet Bonhomme, the Carnival Mascot",
+   "topicEn": "Bonhomme, the mascot of the Quebec Winter Carnival, welcomes visitors and offers to show them what to do.",
+   "topicKo": "퀘벡 윈터 카니발의 마스코트 Bonhomme이 방문객을 맞이하며 이곳에서 할 일을 보여 주겠다고 한다.",
+   "sentences": [
+    {
+     "translation": "안녕하세요!",
+     "contextNote": "마스코트가 읽는 이에게 건네는 인사이다."
+    },
+    {
+     "translation": "퀘벡 윈터 카니발에 오신 것을 환영합니다.",
+     "contextNote": "글의 배경이 되는 축제를 알린다."
+    },
+    {
+     "translation": "저는 카니발의 마스코트인 Bonhomme이에요.",
+     "contextNote": "글쓴이인 Bonhomme이 자신을 소개한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "am", "role": "V"}, {"q": "Bonhomme, the mascot of the carnival", "role": "C"}],
+     "notes": [{"q": "the mascot of the carnival", "label": "동격구", "gloss": "= Bonhomme"}],
+     "chunks": [{"en": "I am Bonhomme,", "ko": "저는 Bonhomme이에요"}, {"en": "the mascot of the carnival.", "ko": "카니발의 마스코트인."}]
+    },
+    {
+     "translation": "저는 커다란 눈사람이에요.",
+     "contextNote": "Bonhomme의 모습을 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "am", "role": "V"}, {"q": "a big snowman", "role": "C"}],
+     "chunks": [{"en": "I am", "ko": "저는 ~이에요"}, {"en": "a big snowman.", "ko": "커다란 눈사람."}]
+    },
+    {
+     "translation": "당신이 보는 것처럼, 저는 크고 빨간 모자를 쓰고 특별한 허리띠를 하고 있어요.",
+     "contextNote": "Bonhomme의 차림을 구체적으로 말한다.",
+     "roles": [{"q": "you", "role": "S", "level": 1}, {"q": "can see", "role": "V", "level": 1}, {"q": "I", "role": "S"}, {"q": "'m wearing", "role": "V"}, {"q": "a big red hat and a special belt", "role": "O"}],
+     "brackets": [{"q": "As you can see", "kind": "adverbial"}],
+     "notes": [{"q": "As you can see", "label": "양태 부사절", "gloss": "as: '~처럼'"}],
+     "chunks": [{"en": "As you can see,", "ko": "당신이 보는 것처럼,"}, {"en": "I'm wearing a big red hat", "ko": "저는 크고 빨간 모자를 쓰고"}, {"en": "and a special belt.", "ko": "특별한 허리띠를 하고 있어요."}]
+    },
+    {
+     "translation": "당신은 카니발에서 잊지 못할 추억을 집으로 가져가고 싶나요?",
+     "contextNote": "읽는 이에게 물어 다음 문장의 안내로 이끈다.",
+     "roles": [{"q": "Do", "role": "V"}, {"q": "you", "role": "S"}, {"q": "want", "role": "V"}, {"q": "to take home an unforgettable memory from the carnival", "role": "O"}],
+     "chunks": [{"en": "Do you want to take home", "ko": "당신은 집으로 가져가고 싶나요?"}, {"en": "an unforgettable memory", "ko": "잊지 못할 추억을"}, {"en": "from the carnival?", "ko": "카니발에서"}]
+    },
+    {
+     "translation": "나를 따라오라, 그러면 이곳에서 무엇을 해야 할지 당신에게 보여 줄 것이다.",
+     "contextNote": "이제부터 카니발을 안내한다는 것을 알린다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "what to do"}],
+     "roles": [{"q": "Follow", "role": "V"}, {"q": "me", "role": "O"}, {"q": "I", "role": "S"}, {"q": "'ll show", "role": "V"}, {"q": "you", "role": "IO"}, {"q": "what to do here", "role": "DO"}],
+     "notes": [{"q": "and I'll show you what to do here", "label": "등위절", "gloss": "명령문 + and: '~하라, 그러면'"}],
+     "points": [{"q": "what to do", "label": "명사적 용법 to부정사", "star": true, "explanation": "「의문사+to부정사」는 명사처럼 쓰이며, what to do는 '무엇을 해야 할지'라는 뜻이다. 여기서는 show의 직접목적어이다.", "rewrite": "I'll show you what you should do here."}],
+     "chunks": [{"en": "Follow me,", "ko": "나를 따라오라,"}, {"en": "and I'll show you", "ko": "그러면 당신에게 보여 줄 것이다"}, {"en": "what to do here.", "ko": "이곳에서 무엇을 해야 할지."}]
+    },
+    {
+     "translation": "알고 있었나요?",
+     "contextNote": "카니발에 대한 덧붙임 정보의 머리말이다."
+    },
+    {
+     "translation": "• Bonhomme은 프랑스어로 '좋은 사람'을 의미해요.",
+     "contextNote": "Bonhomme이라는 이름의 뜻을 알려 준다.",
+     "roles": [{"q": "Bonhomme", "role": "S"}, {"q": "means", "role": "V"}, {"q": "\"good man\"", "role": "O"}, {"q": "in French", "role": "M"}],
+     "chunks": [{"en": "• Bonhomme means \"good man\"", "ko": "• Bonhomme은 '좋은 사람'을 의미해요"}, {"en": "in French.", "ko": "프랑스어로."}]
+    },
+    {
+     "translation": "• 퀘벡 윈터 카니발은 캐나다 퀘벡에서 보통 1월과 2월 사이에 10일 동안 열려요.",
+     "contextNote": "축제의 때와 장소를 알려 준다.",
+     "roles": [{"q": "The Quebec Winter Carnival", "role": "S"}, {"q": "is usually held", "role": "V"}, {"q": "for 10 days", "role": "M"}, {"q": "between January and February", "role": "M"}, {"q": "in Quebec, Canada", "role": "M"}],
+     "points": [{"q": "is usually held", "label": "수동태", "explanation": "축제는 사람들이 '여는' 대상이므로 「be동사+과거분사」의 수동태로 쓴다. hold의 과거분사는 held이다."}],
+     "chunks": [{"en": "• The Quebec Winter Carnival is usually held", "ko": "• 퀘벡 윈터 카니발은 보통 열려요"}, {"en": "for 10 days", "ko": "10일 동안"}, {"en": "between January and February", "ko": "1월과 2월 사이에"}, {"en": "in Quebec, Canada.", "ko": "캐나다 퀘벡에서."}]
+    }
+   ]
+  },
+  "77f38983-1775-4d94-b5c4-1314bda055c7": {
+   "titleEn": "Bonhomme's Ice Palace",
+   "topicEn": "A new ice palace is built every year, and visitors can enjoy sculptures, concerts, and performances there.",
+   "topicKo": "얼음 궁전은 매년 새로 지어지고, 방문객은 그곳에서 조각과 콘서트, 공연을 즐길 수 있다.",
+   "sentences": [
+    {
+     "translation": "이것은 제 얼음 궁전이에요.",
+     "contextNote": "첫 번째 안내 장소를 소개한다.",
+     "roles": [{"q": "This", "role": "S"}, {"q": "is", "role": "V"}, {"q": "my ice palace", "role": "C"}],
+     "chunks": [{"en": "This is", "ko": "이것은 ~이에요"}, {"en": "my ice palace.", "ko": "제 얼음 궁전."}]
+    },
+    {
+     "translation": "매년, 새로운 얼음 궁전이 카니발을 위해 지어져요.",
+     "contextNote": "궁전의 특징을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "is built"}],
+     "roles": [{"q": "Every year", "role": "M"}, {"q": "a new ice palace", "role": "S"}, {"q": "is built", "role": "V"}, {"q": "for the carnival", "role": "M"}],
+     "points": [{"q": "is built", "label": "수동태", "star": true, "explanation": "궁전은 사람들이 '짓는' 대상이므로 「be동사+과거분사」의 수동태로 쓴다. build의 과거분사는 built이다."}],
+     "chunks": [{"en": "Every year,", "ko": "매년,"}, {"en": "a new ice palace is built", "ko": "새로운 얼음 궁전이 지어져요"}, {"en": "for the carnival.", "ko": "카니발을 위해."}]
+    },
+    {
+     "translation": "그래서, 저는 매년 새로운 집을 가진답니다!",
+     "contextNote": "앞 문장의 결과를 재미있게 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "have", "role": "V"}, {"q": "a new home", "role": "O"}, {"q": "each year", "role": "M"}],
+     "chunks": [{"en": "So, I have a new home", "ko": "그래서, 저는 새로운 집을 가진답니다"}, {"en": "each year!", "ko": "매년!"}]
+    },
+    {
+     "translation": "궁전이 얼음과 눈으로 만들어지기 때문에, 그것은 낮 동안 아름답게 빛나요.",
+     "contextNote": "낮에 보는 궁전의 모습을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "beautifully"}],
+     "roles": [{"q": "the palace", "role": "S", "level": 1}, {"q": "is made", "role": "V", "level": 1}, {"q": "of ice and snow", "role": "A", "level": 1}, {"q": "it", "role": "S"}, {"q": "shines", "role": "V"}, {"q": "beautifully", "role": "M"}, {"q": "during the day", "role": "M"}],
+     "brackets": [{"q": "Because the palace is made of ice and snow", "kind": "adverbial"}],
+     "notes": [{"q": "Because the palace is made of ice and snow", "label": "이유 부사절", "gloss": "because: '~ 때문에'"}],
+     "points": [{"q": "beautifully", "label": "동사 수식 부사", "star": true, "explanation": "동사 shines를 꾸미는 말이므로 형용사 beautiful이 아니라 부사 beautifully를 쓴다."}],
+     "chunks": [{"en": "Because the palace is made", "ko": "궁전이 만들어지기 때문에,"}, {"en": "of ice and snow,", "ko": "얼음과 눈으로"}, {"en": "it shines beautifully", "ko": "그것은 아름답게 빛나요"}, {"en": "during the day.", "ko": "낮 동안."}]
+    },
+    {
+     "translation": "밤에, 그것은 많은 불빛들로 훨씬 더 아름다워요.",
+     "contextNote": "밤에 보는 궁전의 모습을 낮과 견주어 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "even more beautiful"}],
+     "roles": [{"q": "At night", "role": "M"}, {"q": "it", "role": "S"}, {"q": "is", "role": "V"}, {"q": "even more beautiful", "role": "C"}, {"q": "with many lights", "role": "M"}],
+     "points": [{"q": "even more beautiful", "label": "비교급 강조", "star": true, "explanation": "even은 비교급을 강조하여 '훨씬'이라는 뜻을 나타낸다. much·far·a lot도 같은 뜻으로 쓰지만, very는 비교급을 꾸미지 못한다."}],
+     "chunks": [{"en": "At night,", "ko": "밤에,"}, {"en": "it is even more beautiful", "ko": "그것은 훨씬 더 아름다워요"}, {"en": "with many lights.", "ko": "많은 불빛들로."}]
+    },
+    {
+     "translation": "내 환상적인 얼음 정원을 보라.",
+     "contextNote": "다음 볼거리인 얼음 정원으로 안내한다.",
+     "roles": [{"q": "Take a look at", "role": "V"}, {"q": "my fantastic ice garden", "role": "O"}],
+     "chunks": [{"en": "Take a look at", "ko": "보라"}, {"en": "my fantastic ice garden.", "ko": "내 환상적인 얼음 정원을."}]
+    },
+    {
+     "translation": "당신은 여기서 나무들, 꽃들, 그리고 동물들의 놀라운 얼음 조각들을 볼 수 있어요.",
+     "contextNote": "얼음 정원에서 볼 수 있는 것을 말한다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "can see", "role": "V"}, {"q": "amazing ice sculptures of trees, flowers, and animals", "role": "O"}, {"q": "here", "role": "M"}],
+     "points": [{"q": "amazing", "label": "감정분사", "explanation": "조각들이 놀라움을 주는 것이므로 현재분사형 형용사 amazing을 쓴다. 사람이 놀라움을 느낄 때는 amazed를 쓴다."}],
+     "chunks": [{"en": "You can see", "ko": "당신은 볼 수 있어요"}, {"en": "amazing ice sculptures", "ko": "놀라운 얼음 조각들을"}, {"en": "of trees, flowers, and animals", "ko": "나무들, 꽃들, 그리고 동물들의"}, {"en": "here.", "ko": "여기서."}]
+    },
+    {
+     "translation": "당신은 또한 신나는 콘서트와 공연들을 즐길 수 있어요.",
+     "contextNote": "궁전에서 즐길 거리를 하나 더 말한다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "can also enjoy", "role": "V"}, {"q": "exciting concerts and performances", "role": "O"}],
+     "chunks": [{"en": "You can also enjoy", "ko": "당신은 또한 즐길 수 있어요"}, {"en": "exciting concerts and performances.", "ko": "신나는 콘서트와 공연들을."}]
+    },
+    {
+     "translation": "춤추는 것을 좋아하나요?",
+     "contextNote": "읽는 이에게 물어 다음 문장으로 이끈다.",
+     "roles": [{"q": "Do", "role": "V"}, {"q": "you", "role": "S"}, {"q": "like", "role": "V"}, {"q": "to dance", "role": "O"}],
+     "chunks": [{"en": "Do you like", "ko": "좋아하나요?"}, {"en": "to dance?", "ko": "춤추는 것을"}]
+    },
+    {
+     "translation": "어떻게 저처럼 춤추는지 제가 당신에게 가르쳐 줄 수 있어요.",
+     "contextNote": "Bonhomme이 함께 즐기자고 권하는 말이다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "how to dance"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "can teach", "role": "V"}, {"q": "you", "role": "IO"}, {"q": "how to dance like me", "role": "DO"}],
+     "points": [{"q": "how to dance", "label": "명사적 용법 to부정사", "star": true, "explanation": "「의문사+to부정사」는 명사처럼 쓰이며, how to dance는 '어떻게 춤추는지, 춤추는 방법'이라는 뜻이다. 여기서는 teach의 직접목적어이다."}],
+     "chunks": [{"en": "I can teach you", "ko": "제가 당신에게 가르쳐 줄 수 있어요"}, {"en": "how to dance", "ko": "어떻게 춤추는지"}, {"en": "like me.", "ko": "저처럼."}]
+    }
+   ]
+  },
+  "4783de94-571b-416a-af3a-b48e2bcaf93b": {
+   "titleEn": "The Thrilling Toboggan Slide",
+   "topicEn": "The toboggan slide is so fast that it feels like a roller coaster, and riders can enjoy amazing views of Quebec.",
+   "topicKo": "터보건 활강은 너무 빨라서 롤러코스터처럼 느껴지고, 타는 사람은 퀘벡의 놀라운 경관을 즐길 수 있다.",
+   "sentences": [
+    {
+     "translation": "카니발에서 당신이 할 수 있는 정말 많은 흥미로운 활동들도 있어요.",
+     "contextNote": "궁전에 이어 즐길 수 있는 활동으로 화제를 옮긴다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "activities you can do"}],
+     "roles": [{"q": "are", "role": "V"}, {"q": "also", "role": "M"}, {"q": "so many interesting activities you can do at the carnival", "role": "S"}, {"q": "you", "role": "S", "level": 1}, {"q": "can do", "role": "V", "level": 1}, {"q": "at the carnival", "role": "M", "level": 1}],
+     "notes": [{"q": "There are", "label": "there be 수일치", "gloss": "실제 주어 activities가 복수이므로 are"}],
+     "points": [{"q": "activities you can do", "label": "관계사 생략", "star": true, "explanation": "activities와 you 사이에 목적격 관계대명사 which(that)가 생략되었다. you can do at the carnival이 activities를 꾸미며, do의 목적어가 앞의 activities이다."}],
+     "chunks": [{"en": "There are also", "ko": "~도 있어요"}, {"en": "so many interesting activities", "ko": "정말 많은 흥미로운 활동들"}, {"en": "you can do at the carnival.", "ko": "카니발에서 당신이 할 수 있는."}]
+    },
+    {
+     "translation": "터보건 활강장은 1884년에 지어졌고 길이가 200미터예요.",
+     "contextNote": "터보건 활강장의 역사와 크기를 알려 준다.",
+     "roles": [{"q": "The toboggan slide", "role": "S"}, {"q": "was built", "role": "V"}, {"q": "in 1884", "role": "M"}, {"q": "is", "role": "V"}, {"q": "200 meters long", "role": "C"}],
+     "points": [{"q": "was built in 1884 and is", "label": "동사 병렬", "explanation": "주어 하나에 동사 was built와 is가 and로 이어져 있다. 지어진 것은 과거의 일이고 길이는 지금의 사실이므로 시제가 다르다."}],
+     "chunks": [{"en": "The toboggan slide was built", "ko": "터보건 활강장은 지어졌고"}, {"en": "in 1884", "ko": "1884년에"}, {"en": "and is 200 meters long.", "ko": "길이가 200미터예요."}]
+    },
+    {
+     "translation": "터보건은 길고 좁은 썰매예요.",
+     "contextNote": "터보건이 무엇인지 설명한다.",
+     "roles": [{"q": "A toboggan", "role": "S"}, {"q": "is", "role": "V"}, {"q": "a long narrow sled", "role": "C"}],
+     "chunks": [{"en": "A toboggan is", "ko": "터보건은 ~예요"}, {"en": "a long narrow sled.", "ko": "길고 좁은 썰매."}]
+    },
+    {
+     "translation": "당신이 속도를 좋아한다면, 터보건을 타라.",
+     "contextNote": "터보건을 타 보라고 권한다.",
+     "roles": [{"q": "you", "role": "S", "level": 1}, {"q": "like", "role": "V", "level": 1}, {"q": "speed", "role": "O", "level": 1}, {"q": "get on", "role": "V"}, {"q": "the toboggan", "role": "O"}],
+     "brackets": [{"q": "If you like speed", "kind": "adverbial"}],
+     "notes": [{"q": "If you like speed", "label": "조건 부사절", "gloss": "if: '만약 ~라면'"}],
+     "chunks": [{"en": "If you like speed,", "ko": "당신이 속도를 좋아한다면,"}, {"en": "get on the toboggan.", "ko": "터보건을 타라."}]
+    },
+    {
+     "translation": "그것은 너무 빨라서 마치 당신이 롤러코스터에 탄 것처럼 느낄 거예요.",
+     "contextNote": "터보건이 얼마나 빠른지 말한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "so fast that"}],
+     "roles": [{"q": "It", "role": "S"}, {"q": "is", "role": "V"}, {"q": "so fast", "role": "C"}, {"q": "you", "role": "S", "level": 1}, {"q": "will feel", "role": "V", "level": 1}, {"q": "like you are on a roller coaster", "role": "C", "level": 1}, {"q": "you", "occ": 2, "role": "S", "level": 2}, {"q": "are", "role": "V", "level": 2}, {"q": "on a roller coaster", "role": "C", "level": 2}],
+     "brackets": [{"q": "that you will feel like you are on a roller coaster", "kind": "adverbial"}],
+     "notes": [{"q": "It", "label": "대명사 선행사", "gloss": "= the toboggan"}],
+     "points": [{"q": "so fast that", "label": "so ... that 구문", "star": true, "explanation": "「so+형용사/부사+that+주어+동사」는 '너무 ~해서 …하다'라는 뜻이다. 앞이 원인(너무 빠름), that절이 결과(롤러코스터에 탄 듯한 느낌)이다.", "rewrite": "It is very fast, so you will feel like you are on a roller coaster."}],
+     "chunks": [{"en": "It is so fast", "ko": "그것은 너무 빨라서"}, {"en": "that you will feel", "ko": "당신은 느낄 거예요"}, {"en": "like you are on a roller coaster.", "ko": "마치 롤러코스터에 탄 것처럼."}]
+    },
+    {
+     "translation": "당신이 미끄러져 내려가는 동안, 당신은 퀘벡의 놀라운 경관을 즐길 수 있어요.",
+     "contextNote": "터보건을 타며 즐길 수 있는 것을 말한다.",
+     "roles": [{"q": "you", "role": "S", "level": 1}, {"q": "'re sliding down", "role": "V", "level": 1}, {"q": "you", "occ": 2, "role": "S"}, {"q": "can enjoy", "role": "V"}, {"q": "amazing views of Quebec", "role": "O"}],
+     "brackets": [{"q": "While you're sliding down", "kind": "adverbial"}],
+     "notes": [{"q": "While you're sliding down", "label": "시간 부사절", "gloss": "while: '~하는 동안'"}],
+     "chunks": [{"en": "While you're sliding down,", "ko": "당신이 미끄러져 내려가는 동안,"}, {"en": "you can enjoy", "ko": "당신은 즐길 수 있어요"}, {"en": "amazing views of Quebec.", "ko": "퀘벡의 놀라운 경관을."}]
+    },
+    {
+     "translation": "당신의 왼쪽에서 거대한 유명한 성을 볼 수 있어요.",
+     "contextNote": "왼쪽으로 보이는 경관을 말한다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "can see", "role": "V"}, {"q": "a huge famous castle", "role": "O"}, {"q": "on your left", "role": "M"}],
+     "chunks": [{"en": "You can see a huge famous castle", "ko": "거대한 유명한 성을 볼 수 있어요"}, {"en": "on your left.", "ko": "당신의 왼쪽에서."}]
+    },
+    {
+     "translation": "당신의 오른쪽에서는, 얼음에 뒤덮인 아름다운 강을 볼 수 있어요.",
+     "contextNote": "오른쪽으로 보이는 경관을 말한다.",
+     "roles": [{"q": "On your right", "role": "M"}, {"q": "you", "role": "S"}, {"q": "can see", "role": "V"}, {"q": "a beautiful icy river", "role": "O"}],
+     "chunks": [{"en": "On your right,", "ko": "당신의 오른쪽에서는,"}, {"en": "you can see", "ko": "볼 수 있어요"}, {"en": "a beautiful icy river.", "ko": "얼음에 뒤덮인 아름다운 강을."}]
+    }
+   ]
+  },
+  "d53a770e-8dfd-4636-ba41-1e37cf533af3": {
+   "titleEn": "The Exciting Ice Canoe Race",
+   "topicEn": "The Ice Canoe Race is one of the best parts of the carnival and is so exciting that you will forget about the cold.",
+   "topicKo": "아이스 카누 경주는 카니발의 최고의 부분 중 하나이고, 너무 흥미진진해서 추위를 잊게 된다.",
+   "sentences": [
+    {
+     "translation": "강을 따라 있는 많은 군중이 보인다면, 아이스 카누 경주를 볼 시간이에요.",
+     "contextNote": "다음 볼거리인 아이스 카누 경주로 안내한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "time to watch"}],
+     "roles": [{"q": "you", "role": "S", "level": 1}, {"q": "see", "role": "V", "level": 1}, {"q": "a large crowd along the river", "role": "O", "level": 1}, {"q": "it", "role": "S"}, {"q": "'s", "role": "V"}, {"q": "time to watch the Ice Canoe Race", "role": "C"}],
+     "brackets": [{"q": "If you see a large crowd along the river", "kind": "adverbial"}],
+     "notes": [{"q": "If you see a large crowd along the river", "label": "조건 부사절", "gloss": "if: '만약 ~라면'"}],
+     "points": [{"q": "to watch the Ice Canoe Race", "label": "형용사적 용법", "star": true, "explanation": "to부정사가 앞의 명사 time을 꾸며 '~할 시간'이라는 뜻을 나타낸다. 「It's time to+동사원형」은 '~할 시간이다'로 외워 둔다."}],
+     "chunks": [{"en": "If you see a large crowd", "ko": "많은 군중이 보인다면,"}, {"en": "along the river,", "ko": "강을 따라 있는"}, {"en": "it's time", "ko": "시간이에요"}, {"en": "to watch the Ice Canoe Race.", "ko": "아이스 카누 경주를 볼."}]
+    },
+    {
+     "translation": "이 경주는 카니발의 최고의 부분 중 하나라서, 당신은 그것을 놓쳐서는 안 돼요.",
+     "contextNote": "이 경주를 꼭 봐야 하는 까닭을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "one of the best parts"}],
+     "roles": [{"q": "This race", "role": "S"}, {"q": "is", "role": "V"}, {"q": "one of the best parts of the carnival", "role": "C"}, {"q": "you", "role": "S"}, {"q": "shouldn't miss", "role": "V"}, {"q": "it", "role": "O"}],
+     "notes": [{"q": "and you shouldn't miss it", "label": "등위절"}],
+     "points": [{"q": "one of the best parts", "label": "one of 최상급", "star": true, "explanation": "「one of the+최상급+복수명사」는 '가장 ~한 것 중 하나'라는 뜻이다. of 뒤에는 복수명사 parts를 쓴다."}],
+     "chunks": [{"en": "This race is one of the best parts", "ko": "이 경주는 최고의 부분 중 하나라서,"}, {"en": "of the carnival,", "ko": "카니발의"}, {"en": "and you shouldn't miss it.", "ko": "당신은 그것을 놓쳐서는 안 돼요."}]
+    },
+    {
+     "translation": "카누 팀들은 약 3킬로미터를 얼음에 뒤덮인 강을 거쳐 경주해야 해요.",
+     "contextNote": "경주 방법을 설명한다.",
+     "roles": [{"q": "Canoe teams", "role": "S"}, {"q": "have to race", "role": "V"}, {"q": "through the icy river", "role": "M"}, {"q": "for about three kilometers", "role": "M"}],
+     "chunks": [{"en": "Canoe teams have to race", "ko": "카누 팀들은 경주해야 해요"}, {"en": "through the icy river", "ko": "얼음에 뒤덮인 강을 거쳐"}, {"en": "for about three kilometers.", "ko": "약 3킬로미터를."}]
+    },
+    {
+     "translation": "팀들은 보통 다섯 명의 팀원으로 구성되고, 남성과 여성 모두 팀에 들어갈 수 있어요.",
+     "contextNote": "팀을 어떻게 꾸리는지 설명한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "both men and women"}],
+     "roles": [{"q": "Teams", "role": "S"}, {"q": "are usually made up", "role": "V"}, {"q": "of five members", "role": "A"}, {"q": "both men and women", "role": "S"}, {"q": "can join", "role": "V"}, {"q": "the team", "role": "O"}],
+     "notes": [{"q": "and both men and women can join the team", "label": "등위절"}],
+     "points": [{"q": "both men and women", "label": "both A and B", "star": true, "explanation": "「both A and B」는 'A와 B 둘 다'라는 뜻이며, 주어로 쓰이면 복수로 취급한다."}],
+     "chunks": [{"en": "Teams are usually made up", "ko": "팀들은 보통 구성되고,"}, {"en": "of five members,", "ko": "다섯 명의 팀원으로"}, {"en": "and both men and women", "ko": "남성과 여성 모두"}, {"en": "can join the team.", "ko": "팀에 들어갈 수 있어요."}]
+    },
+    {
+     "translation": "보라!",
+     "contextNote": "경주 장면으로 읽는 이의 눈길을 끈다."
+    },
+    {
+     "translation": "한 팀이 얼음에 갇혀서 움직일 수 없어요!",
+     "contextNote": "경주 중에 생긴 어려움을 보여 준다.",
+     "roles": [{"q": "One team", "role": "S"}, {"q": "is", "role": "V"}, {"q": "stuck", "role": "C"}, {"q": "in the ice", "role": "M"}, {"q": "can't move", "role": "V"}],
+     "points": [{"q": "is stuck in the ice and can't move", "label": "동사 병렬", "explanation": "주어 One team 하나에 동사 is와 can't move가 and로 이어져 있다."}],
+     "chunks": [{"en": "One team is stuck", "ko": "한 팀이 갇혀서"}, {"en": "in the ice", "ko": "얼음에"}, {"en": "and can't move!", "ko": "움직일 수 없어요!"}]
+    },
+    {
+     "translation": "그 팀원들은 강물 쪽에 도착하기 위해 얼음 위에 있는 카누를 밀어야 해요.",
+     "contextNote": "갇힌 팀이 어떻게 하는지 말한다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "The members", "role": "S"}, {"q": "have to push", "role": "V"}, {"q": "their canoe", "role": "O"}, {"q": "on the ice", "role": "M"}, {"q": "to get to the water", "role": "M"}],
+     "points": [{"q": "to get to the water", "label": "부사적 용법", "star": true, "explanation": "to부정사가 '~하기 위해'라는 목적을 나타낸다. 카누를 미는 목적이 강물 쪽에 도착하는 것이다."}],
+     "chunks": [{"en": "The members have to push their canoe", "ko": "그 팀원들은 카누를 밀어야 해요"}, {"en": "on the ice", "ko": "얼음 위에 있는"}, {"en": "to get to the water.", "ko": "강물 쪽에 도착하기 위해."}]
+    },
+    {
+     "translation": "휴!",
+     "contextNote": "팀이 위기를 넘겨 안도하는 말이다."
+    },
+    {
+     "translation": "그들은 다시 강물 속에 있어요.",
+     "contextNote": "팀이 강물로 돌아왔음을 말한다.",
+     "roles": [{"q": "They", "role": "S"}, {"q": "are", "role": "V"}, {"q": "in the water", "role": "A"}, {"q": "again", "role": "M"}],
+     "chunks": [{"en": "They are in the water", "ko": "그들은 강물 속에 있어요"}, {"en": "again.", "ko": "다시."}]
+    },
+    {
+     "translation": "저는 그들이 결승선까지 도착할 수 있기를 바라요.",
+     "contextNote": "Bonhomme이 팀을 응원하는 말이다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "hope", "role": "V"}, {"q": "they can make it to the finish line", "role": "O"}, {"q": "they", "role": "S", "level": 1}, {"q": "can make it", "role": "V", "level": 1}, {"q": "to the finish line", "role": "M", "level": 1}],
+     "brackets": [{"q": "they can make it to the finish line", "kind": "nominal"}],
+     "points": [{"q": "they can make it to the finish line", "label": "접속사 that 생략", "explanation": "hope 뒤에 목적어절을 이끄는 접속사 that이 생략되었다. make it은 여기서 '도착하다, 해내다'라는 뜻이다."}],
+     "chunks": [{"en": "I hope", "ko": "저는 바라요"}, {"en": "they can make it", "ko": "그들이 도착할 수 있기를"}, {"en": "to the finish line.", "ko": "결승선까지."}]
+    },
+    {
+     "translation": "경주가 너무 흥미진진해서 당신은 추위를 잊게 될 거예요.",
+     "contextNote": "경주의 재미를 강조하며 이 부분을 맺는다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "so exciting that"}],
+     "roles": [{"q": "The race", "role": "S"}, {"q": "is", "role": "V"}, {"q": "so exciting", "role": "C"}, {"q": "you", "role": "S", "level": 1}, {"q": "will forget", "role": "V", "level": 1}, {"q": "about the cold", "role": "M", "level": 1}],
+     "brackets": [{"q": "that you will forget about the cold", "kind": "adverbial"}],
+     "points": [{"q": "so exciting that", "label": "so ... that 구문", "star": true, "explanation": "「so+형용사/부사+that+주어+동사」는 '너무 ~해서 …하다'라는 뜻이다. 앞이 원인(너무 흥미진진함), that절이 결과(추위를 잊음)이다. 경주가 흥미를 주는 것이므로 excited가 아니라 exciting을 쓴다.", "rewrite": "The race is very exciting, so you will forget about the cold."}],
+     "chunks": [{"en": "The race is so exciting", "ko": "경주가 너무 흥미진진해서"}, {"en": "that you will forget", "ko": "당신은 잊게 될 거예요"}, {"en": "about the cold.", "ko": "추위를."}]
+    }
+   ]
+  },
+  "41191744-39b5-4fad-832c-331a7b697c24": {
+   "titleEn": "Sweet Winter Treats",
+   "topicEn": "The carnival has many delicious treats, such as hot chocolate and maple taffy made in a special way.",
+   "topicKo": "카니발에는 핫초코와 특별한 방법으로 만드는 메이플 태피 같은 맛있는 간식이 많다.",
+   "sentences": [
+    {
+     "translation": "이 모든 흥미진진한 활동들 후, 저는 정말 배가 고파요.",
+     "contextNote": "활동 이야기에서 먹을거리 이야기로 넘어간다.",
+     "roles": [{"q": "After all these exciting activities", "role": "M"}, {"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "really hungry", "role": "C"}],
+     "chunks": [{"en": "After all these exciting activities,", "ko": "이 모든 흥미진진한 활동들 후,"}, {"en": "I'm really hungry.", "ko": "저는 정말 배가 고파요."}]
+    },
+    {
+     "translation": "카니발에는 먹을 맛있는 간식들이 많이 있어요.",
+     "contextNote": "이 부분의 화제인 간식을 소개한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to eat"}],
+     "roles": [{"q": "are", "role": "V"}, {"q": "many delicious treats to eat at the carnival", "role": "S"}],
+     "points": [{"q": "to eat", "label": "형용사적 용법", "star": true, "explanation": "to부정사가 앞의 명사 treats를 꾸며 '먹을 간식'이라는 뜻을 나타낸다. 실제 주어 treats가 복수이므로 There are를 쓴다."}],
+     "chunks": [{"en": "There are many delicious treats", "ko": "맛있는 간식들이 많이 있어요"}, {"en": "to eat", "ko": "먹을"}, {"en": "at the carnival.", "ko": "카니발에는."}]
+    },
+    {
+     "translation": "핫초코 한 잔 어때요?",
+     "contextNote": "첫 번째 간식을 권한다. How about 뒤에는 명사나 동명사를 쓴다."
+    },
+    {
+     "translation": "그것은 추운 날씨에 항상 완벽한 음료예요.",
+     "contextNote": "핫초코를 권하는 까닭을 말한다.",
+     "roles": [{"q": "It", "role": "S"}, {"q": "'s", "role": "V"}, {"q": "always", "role": "M"}, {"q": "the perfect drink in cold weather", "role": "C"}],
+     "notes": [{"q": "It", "label": "대명사 선행사", "gloss": "= a cup of hot chocolate"}],
+     "chunks": [{"en": "It's always the perfect drink", "ko": "그것은 항상 완벽한 음료예요"}, {"en": "in cold weather.", "ko": "추운 날씨에."}]
+    },
+    {
+     "translation": "당신은 메이플 태피도 맛봐야 해요.",
+     "contextNote": "두 번째 간식을 권한다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "also", "role": "M"}, {"q": "have to try", "role": "V"}, {"q": "maple taffy", "role": "O"}],
+     "chunks": [{"en": "You also have to try", "ko": "당신은 ~도 맛봐야 해요"}, {"en": "maple taffy.", "ko": "메이플 태피."}]
+    },
+    {
+     "translation": "그것은 여기서 특별한 방법으로 만들어져요.",
+     "contextNote": "메이플 태피의 특징을 말한다. It's made는 It is made의 줄임말로, 메이플 태피는 만들어지는 대상이므로 수동태이다.",
+     "roles": [{"q": "It", "role": "S"}, {"q": "'s made", "role": "V"}, {"q": "in a special way", "role": "M"}, {"q": "here", "role": "M"}],
+     "chunks": [{"en": "It's made", "ko": "그것은 만들어져요"}, {"en": "in a special way", "ko": "특별한 방법으로"}, {"en": "here.", "ko": "여기서."}]
+    },
+    {
+     "translation": "그것을 어떻게 만드는지 배워 보자.",
+     "contextNote": "만드는 방법 설명으로 넘어간다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "how to make"}],
+     "roles": [{"q": "Let's learn", "role": "V"}, {"q": "how to make it", "role": "O"}],
+     "points": [{"q": "how to make", "label": "명사적 용법 to부정사", "star": true, "explanation": "「의문사+to부정사」는 명사처럼 쓰이며, how to make는 '어떻게 만드는지, 만드는 방법'이라는 뜻이다. 여기서는 learn의 목적어이다."}],
+     "chunks": [{"en": "Let's learn", "ko": "배워 보자"}, {"en": "how to make it.", "ko": "그것을 어떻게 만드는지."}]
+    },
+    {
+     "translation": "눈 위에 뜨거운 메이플 시럽을 부으라.",
+     "contextNote": "만드는 방법의 첫 단계이다.",
+     "roles": [{"q": "Pour", "role": "V"}, {"q": "hot maple syrup", "role": "O"}, {"q": "on the snow", "role": "M"}],
+     "chunks": [{"en": "Pour hot maple syrup", "ko": "뜨거운 메이플 시럽을 부으라"}, {"en": "on the snow.", "ko": "눈 위에."}]
+    },
+    {
+     "translation": "그런 다음 그 시럽 위에 막대를 놓고 재빨리 돌돌 감으라.",
+     "contextNote": "만드는 방법의 다음 단계이다.",
+     "roles": [{"q": "Then", "role": "M"}, {"q": "place", "role": "V"}, {"q": "a stick", "role": "O"}, {"q": "on the syrup", "role": "A"}, {"q": "quickly", "role": "M"}, {"q": "roll", "role": "V"}, {"q": "it", "role": "O"}, {"q": "around", "role": "M"}],
+     "points": [{"q": "place a stick on the syrup and quickly roll", "label": "동사 병렬", "explanation": "명령문의 동사 place와 roll이 and로 이어져 있다. 두 동사 모두 동사원형으로 쓴다."}],
+     "chunks": [{"en": "Then place a stick", "ko": "그런 다음 막대를 놓고"}, {"en": "on the syrup", "ko": "그 시럽 위에"}, {"en": "and quickly roll it around.", "ko": "재빨리 돌돌 감으라."}]
+    },
+    {
+     "translation": "이제, 당신에게 맛있는 메이플 태피가 있어요!",
+     "contextNote": "만드는 방법의 결과를 말한다.",
+     "roles": [{"q": "Now", "role": "M"}, {"q": "you", "role": "S"}, {"q": "have", "role": "V"}, {"q": "delicious maple taffy", "role": "O"}],
+     "chunks": [{"en": "Now,", "ko": "이제,"}, {"en": "you have delicious maple taffy!", "ko": "당신에게 맛있는 메이플 태피가 있어요!"}]
+    },
+    {
+     "translation": "당신이 카니발에 와서 저를 만나길 바라요.",
+     "contextNote": "읽는 이를 축제에 초대하며 글을 맺는다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "hope", "role": "V"}, {"q": "you come and see me at the carnival", "role": "O"}, {"q": "you", "role": "S", "level": 1}, {"q": "come", "role": "V", "level": 1}, {"q": "see", "role": "V", "level": 1}, {"q": "me", "role": "O", "level": 1}, {"q": "at the carnival", "role": "M", "level": 1}],
+     "brackets": [{"q": "you come and see me at the carnival", "kind": "nominal"}],
+     "points": [{"q": "you come and see me at the carnival", "label": "접속사 that 생략", "explanation": "hope 뒤에 목적어절을 이끄는 접속사 that이 생략되었다. 절 안에서 동사 come과 see가 and로 이어져 있다."}],
+     "chunks": [{"en": "I hope", "ko": "저는 바라요"}, {"en": "you come and see me", "ko": "당신이 와서 저를 만나길"}, {"en": "at the carnival.", "ko": "카니발에."}]
+    },
+    {
+     "translation": "오, 더 많은 정보를 원한다면 우리 웹사이트를 확인하는 것을 잊지 말라.",
+     "contextNote": "더 알아볼 곳을 알려 주며 글을 맺는다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to check"}],
+     "roles": [{"q": "don't forget", "role": "V"}, {"q": "to check our website for more information", "role": "O"}],
+     "points": [{"q": "forget to check", "label": "to V / V-ing 의미 변화", "star": true, "explanation": "「forget to+동사원형」은 '(앞으로) ~할 것을 잊다'이고, 「forget+동명사」는 '(이미) ~한 것을 잊다'이다. 앞으로 할 일이므로 to check를 쓴다."}],
+     "chunks": [{"en": "Oh, don't forget", "ko": "오, 잊지 말라"}, {"en": "to check our website", "ko": "우리 웹사이트를 확인하는 것을"}, {"en": "for more information.", "ko": "더 많은 정보를 원한다면."}]
+    },
+    {
+     "translation": "안녕!",
+     "contextNote": "마지막 작별 인사이다."
+    }
+   ]
+  }
+ }
+}

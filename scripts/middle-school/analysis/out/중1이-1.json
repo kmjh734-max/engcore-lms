@@ -1,0 +1,951 @@
+{
+ "passages": {
+  "5b0344a0-2606-43aa-9e06-efab6b3c3098": {
+   "titleEn": "Somi and Her School Band",
+   "topicEn": "Somi, a first-year middle school student from Korea, plays the drums in her school band.",
+   "topicKo": "한국 출신의 중학교 1학년 소미는 학교 밴드에서 드럼을 친다.",
+   "sentences": [
+    {
+     "translation": "안녕, 내 이름은 소미야.",
+     "contextNote": "첫 번째 글쓴이 소미가 인사하며 자기를 소개한다.",
+     "roles": [
+      {
+       "q": "my name",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "Somi",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "is",
+       "label": "2형식",
+       "star": true,
+       "explanation": "주어 my name은 3인칭 단수이므로 be동사는 is를 쓴다. 'my name = Somi'처럼 주어와 보어가 같은 것을 가리키는 2형식 문장이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Hi,",
+       "ko": "안녕,"
+      },
+      {
+       "en": "my name is Somi.",
+       "ko": "내 이름은 소미야."
+      }
+     ]
+    },
+    {
+     "translation": "나는 한국 출신이야.",
+     "contextNote": "어느 나라 출신인지 밝힌다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "from Korea",
+       "role": "A"
+      }
+     ],
+     "points": [
+      {
+       "q": "'m from",
+       "label": "필수 전치사",
+       "star": true,
+       "explanation": "「be동사+from+장소」는 '~ 출신이다'라는 뜻이다. 주어가 I이므로 be동사는 am을 쓰고, I am은 I'm으로 줄여 쓸 수 있다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm",
+       "ko": "나는 ~이야"
+      },
+      {
+       "en": "from Korea.",
+       "ko": "한국 출신."
+      }
+     ]
+    },
+    {
+     "translation": "나는 중학교 1학년이야.",
+     "contextNote": "학년을 밝히며 새 학교생활 이야기로 이어 간다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "in the first year of middle school",
+       "role": "A"
+      }
+     ],
+     "notes": [
+      {
+       "q": "in the first year of middle school",
+       "label": "전명구",
+       "gloss": "'중학교 1학년에'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm",
+       "ko": "나는 ~이야"
+      },
+      {
+       "en": "in the first year of middle school.",
+       "ko": "중학교 1학년."
+      }
+     ]
+    },
+    {
+     "translation": "모든 것이 새롭고 신이 나.",
+     "contextNote": "중학교에 올라온 뒤의 기분을 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "is"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Everything",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "new and exciting",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "new and exciting",
+       "label": "형용사 병렬",
+       "gloss": "and로 이은 두 형용사 보어"
+      }
+     ],
+     "points": [
+      {
+       "q": "is",
+       "label": "2형식",
+       "star": true,
+       "explanation": "Everything은 '모든 것'이라는 뜻이지만 단수로 취급하므로 be동사 is를 쓴다(are ×). 뒤의 형용사 new와 exciting이 주어의 상태를 설명하는 주격보어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Everything",
+       "ko": "모든 것이"
+      },
+      {
+       "en": "is new and exciting.",
+       "ko": "새롭고 신이 나."
+      }
+     ]
+    },
+    {
+     "translation": "나는 내 책가방에 드럼 채가 있어.",
+     "contextNote": "책가방 속 물건으로 자신이 하는 활동을 꺼낸다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "have",
+       "role": "V"
+      },
+      {
+       "q": "drumsticks",
+       "role": "O"
+      },
+      {
+       "q": "in my school bag",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "have",
+       "label": "3형식",
+       "star": true,
+       "explanation": "have는 뒤에 목적어가 오는 일반동사로, '~을 가지고 있다'라는 뜻이다. 주어 I는 1인칭이므로 원형 그대로 쓰며, drumsticks가 목적어이고 in my school bag은 수식어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I have drumsticks",
+       "ko": "나는 드럼 채가 있어"
+      },
+      {
+       "en": "in my school bag.",
+       "ko": "내 책가방에."
+      }
+     ]
+    },
+    {
+     "translation": "나는 학교 밴드에서 드럼을 쳐.",
+     "contextNote": "드럼 채가 있는 까닭: 학교 밴드의 드럼 연주자이다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "the drums"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "play",
+       "role": "V"
+      },
+      {
+       "q": "the drums",
+       "role": "O"
+      },
+      {
+       "q": "in the school band",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "play the drums",
+       "label": "관사",
+       "star": true,
+       "explanation": "'악기를 연주하다'라고 할 때는 악기 이름 앞에 the를 붙인다. 운동 경기 이름 앞에는 the를 쓰지 않는 것(play rugby)과 구별한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I play the drums",
+       "ko": "나는 드럼을 쳐"
+      },
+      {
+       "en": "in the school band.",
+       "ko": "학교 밴드에서."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 케이팝 노래를 연주해.",
+     "contextNote": "밴드가 연주하는 음악을 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "play",
+       "role": "V"
+      },
+      {
+       "q": "K-pop songs",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We play",
+       "ko": "우리는 연주해"
+      },
+      {
+       "en": "K-pop songs.",
+       "ko": "케이팝 노래를."
+      }
+     ]
+    },
+    {
+     "translation": "우리의 노래들은 멋져!",
+     "contextNote": "밴드 노래에 대한 자부심으로 글을 맺는다.",
+     "roles": [
+      {
+       "q": "Our songs",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "great",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "are",
+       "label": "2형식",
+       "explanation": "주어 Our songs는 복수이므로 be동사 are를 쓴다. 형용사 great가 주어를 설명하는 주격보어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Our songs",
+       "ko": "우리의 노래들은"
+      },
+      {
+       "en": "are great!",
+       "ko": "멋져!"
+      }
+     ]
+    }
+   ]
+  },
+  "5e14dc84-0a69-4f00-9be3-83960e12fd72": {
+   "titleEn": "Luca and His Rugby Team",
+   "topicEn": "Luca from New Zealand, where people love rugby, plays rugby on his school team.",
+   "topicKo": "사람들이 럭비를 아주 좋아하는 뉴질랜드 출신의 Luca는 학교 럭비 팀에서 활동한다.",
+   "sentences": [
+    {
+     "translation": "안녕.",
+     "contextNote": "두 번째 글쓴이 Luca가 인사한다."
+    },
+    {
+     "translation": "나는 Luca야.",
+     "contextNote": "자기 이름을 밝힌다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "Luca",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm",
+       "ko": "나는"
+      },
+      {
+       "en": "Luca.",
+       "ko": "Luca야."
+      }
+     ]
+    },
+    {
+     "translation": "나는 뉴질랜드 출신이야.",
+     "contextNote": "어느 나라 출신인지 밝힌다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "from New Zealand",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm",
+       "ko": "나는 ~이야"
+      },
+      {
+       "en": "from New Zealand.",
+       "ko": "뉴질랜드 출신."
+      }
+     ]
+    },
+    {
+     "translation": "우리나라 사람들은 럭비를 아주 좋아해.",
+     "contextNote": "뉴질랜드에서 럭비가 인기 있다는 점을 말하며 럭비 이야기로 넘어간다.",
+     "roles": [
+      {
+       "q": "People",
+       "role": "S"
+      },
+      {
+       "q": "love",
+       "role": "V"
+      },
+      {
+       "q": "rugby",
+       "role": "O"
+      },
+      {
+       "q": "in my country",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "People love",
+       "label": "동사",
+       "star": true,
+       "explanation": "People(사람들)은 -s가 없어도 복수 명사이다. 그래서 일반동사에 -s를 붙이지 않고 원형 love를 쓴다(loves ×)."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "People love rugby",
+       "ko": "사람들은 럭비를 아주 좋아해"
+      },
+      {
+       "en": "in my country.",
+       "ko": "우리나라에서."
+      }
+     ]
+    },
+    {
+     "translation": "나는 내 책가방에 럭비공이 있어.",
+     "contextNote": "책가방 속 물건으로 자신이 하는 활동을 꺼낸다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "have",
+       "role": "V"
+      },
+      {
+       "q": "a rugby ball",
+       "role": "O"
+      },
+      {
+       "q": "in my school bag",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I have a rugby ball",
+       "ko": "나는 럭비공이 있어"
+      },
+      {
+       "en": "in my school bag.",
+       "ko": "내 책가방에."
+      }
+     ]
+    },
+    {
+     "translation": "나는 학교 럭비 팀에 속해 있어.",
+     "contextNote": "럭비공이 있는 까닭: 학교 럭비 팀의 선수이다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "on the school rugby team",
+       "role": "A"
+      }
+     ],
+     "points": [
+      {
+       "q": "'m on the school rugby team",
+       "label": "1형식",
+       "star": true,
+       "explanation": "여기서 be동사는 '~이다'가 아니라 '(~에) 있다, 속해 있다'는 뜻이다. be on the team은 '그 팀의 일원이다'라는 표현으로, on the school rugby team이 동사에 꼭 필요한 말이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm",
+       "ko": "나는 속해 있어"
+      },
+      {
+       "en": "on the school rugby team.",
+       "ko": "학교 럭비 팀에."
+      }
+     ]
+    },
+    {
+     "translation": "나는 럭비를 아주 잘해.",
+     "contextNote": "자신의 럭비 실력을 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "play rugby"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "play",
+       "role": "V"
+      },
+      {
+       "q": "rugby",
+       "role": "O"
+      },
+      {
+       "q": "very well",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "play rugby",
+       "label": "관사",
+       "star": true,
+       "explanation": "운동 경기 이름 앞에는 the를 쓰지 않는다(play the rugby ×). 악기 이름 앞에 the를 붙이는 것(play the drums)과 구별한다."
+      },
+      {
+       "q": "very well",
+       "label": "동사 수식 부사",
+       "explanation": "well(잘)은 동사 play를 꾸미는 부사이고, very는 well을 꾸며 '아주 잘'이라는 뜻이 된다. good은 형용사이므로 이 자리에 쓸 수 없다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I play rugby",
+       "ko": "나는 럭비를 해"
+      },
+      {
+       "en": "very well.",
+       "ko": "아주 잘."
+      }
+     ]
+    },
+    {
+     "translation": "우리 팀은 경기 전에 춤을 춰.",
+     "contextNote": "팀의 특별한 경기 전 모습을 소개한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "dances"
+      }
+     ],
+     "roles": [
+      {
+       "q": "My team",
+       "role": "S"
+      },
+      {
+       "q": "dances",
+       "role": "V"
+      },
+      {
+       "q": "before games",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "dances",
+       "label": "동사",
+       "star": true,
+       "explanation": "My team은 여러 명이 모인 것이지만 하나의 팀으로 보아 3인칭 단수로 쓴다. 그래서 일반동사 현재형 dance에 -s를 붙여 dances로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "My team dances",
+       "ko": "우리 팀은 춤을 춰"
+      },
+      {
+       "en": "before games.",
+       "ko": "경기 전에."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 강해!",
+     "contextNote": "팀에 대한 자부심으로 글을 맺는다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "strong",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "strong",
+       "label": "주격보어 형용사",
+       "explanation": "be동사 뒤에 형용사 strong이 와서 주어 We의 상태를 설명하는 주격보어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We are",
+       "ko": "우리는"
+      },
+      {
+       "en": "strong!",
+       "ko": "강해!"
+      }
+     ]
+    }
+   ]
+  },
+  "ed8c1c8f-c616-40c1-af05-d0893d02b05e": {
+   "titleEn": "Mariam and Her School's Hat Rule",
+   "topicEn": "In sunny Dubai, Mariam's school has a special rule: students don't play outside without a hat.",
+   "topicKo": "햇빛이 강한 두바이에 있는 Mariam의 학교에는 모자 없이 밖에서 놀지 않는다는 특별한 규칙이 있다.",
+   "sentences": [
+    {
+     "translation": "안녕!",
+     "contextNote": "세 번째 글쓴이 Mariam이 인사한다."
+    },
+    {
+     "translation": "나는 Mariam이야.",
+     "contextNote": "자기 이름을 밝힌다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'m",
+       "role": "V"
+      },
+      {
+       "q": "Mariam",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I'm",
+       "ko": "나는"
+      },
+      {
+       "en": "Mariam.",
+       "ko": "Mariam이야."
+      }
+     ]
+    },
+    {
+     "translation": "나는 두바이에 살아.",
+     "contextNote": "사는 곳을 밝힌다. 뒤에 나올 햇빛 이야기의 배경이다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "live",
+       "role": "V"
+      },
+      {
+       "q": "in Dubai",
+       "role": "A"
+      }
+     ],
+     "points": [
+      {
+       "q": "live in Dubai",
+       "label": "1형식",
+       "explanation": "live는 목적어가 필요 없는 동사이지만 '~에 살다'라고 할 때는 사는 곳을 나타내는 말이 꼭 필요하다. 그래서 전치사 in과 함께 쓴다(live Dubai ×)."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I live",
+       "ko": "나는 살아"
+      },
+      {
+       "en": "in Dubai.",
+       "ko": "두바이에."
+      }
+     ]
+    },
+    {
+     "translation": "여기는 햇빛이 매우 강해.",
+     "contextNote": "모자 규칙이 생긴 까닭(강한 햇빛)을 먼저 말한다.",
+     "roles": [
+      {
+       "q": "The sunlight",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "very strong",
+       "role": "C"
+      },
+      {
+       "q": "here",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "very strong",
+       "label": "형용사 수식 부사",
+       "gloss": "very가 형용사 strong을 꾸밈"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The sunlight is very strong",
+       "ko": "햇빛이 매우 강해"
+      },
+      {
+       "en": "here.",
+       "ko": "여기는."
+      }
+     ]
+    },
+    {
+     "translation": "우리 학교는 특별한 규칙이 있어.",
+     "contextNote": "글의 중심 소재인 학교 규칙을 꺼낸다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "has"
+      }
+     ],
+     "roles": [
+      {
+       "q": "My school",
+       "role": "S"
+      },
+      {
+       "q": "has",
+       "role": "V"
+      },
+      {
+       "q": "a special rule",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "has",
+       "label": "동사",
+       "star": true,
+       "explanation": "주어 My school은 3인칭 단수이다. have의 3인칭 단수 현재형은 haves가 아니라 has로, 형태가 불규칙하게 바뀐다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "My school has",
+       "ko": "우리 학교는 있어"
+      },
+      {
+       "en": "a special rule.",
+       "ko": "특별한 규칙이."
+      }
+     ]
+    },
+    {
+     "translation": "그것은 '모자 없이, 놀기 금지'야.",
+     "contextNote": "앞 문장의 특별한 규칙이 무엇인지 밝힌다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "No hat, no play",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "gloss": "= a special rule"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It's",
+       "ko": "그것은 ~야"
+      },
+      {
+       "en": "\"No hat, no play.\"",
+       "ko": "'모자 없이, 놀기 금지'."
+      }
+     ]
+    },
+    {
+     "translation": "학생들은 모자 없이 밖에서 놀지 않아.",
+     "contextNote": "규칙의 내용을 풀어 설명한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "don't play"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Students",
+       "role": "S"
+      },
+      {
+       "q": "don't play",
+       "role": "V"
+      },
+      {
+       "q": "outside",
+       "role": "M"
+      },
+      {
+       "q": "without a hat",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "don't play",
+       "label": "동사",
+       "star": true,
+       "explanation": "일반동사의 부정문은 동사 앞에 do not/does not을 붙인다. 주어 Students가 복수이므로 do not(= don't)을 쓰고, 뒤의 동사는 원형 play로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Students don't play",
+       "ko": "학생들은 놀지 않아"
+      },
+      {
+       "en": "outside",
+       "ko": "밖에서"
+      },
+      {
+       "en": "without a hat.",
+       "ko": "모자 없이."
+      }
+     ]
+    },
+    {
+     "translation": "나는 내 책가방에 파란 모자가 있어.",
+     "contextNote": "규칙과 이어지는 책가방 속 물건을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "have",
+       "role": "V"
+      },
+      {
+       "q": "a blue hat",
+       "role": "O"
+      },
+      {
+       "q": "in my school bag",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I have a blue hat",
+       "ko": "나는 파란 모자가 있어"
+      },
+      {
+       "en": "in my school bag.",
+       "ko": "내 책가방에."
+      }
+     ]
+    },
+    {
+     "translation": "파란색은 내가 가장 좋아하는 색이야.",
+     "contextNote": "모자가 파란 까닭을 덧붙이며 글을 맺는다.",
+     "roles": [
+      {
+       "q": "Blue",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "my favorite color",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "is",
+       "label": "2형식",
+       "explanation": "색깔 이름 Blue는 여기서 '파란색'이라는 명사로, 3인칭 단수 주어이므로 be동사 is를 쓴다. 앞 문장의 a blue hat에서 blue는 명사를 꾸미는 형용사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Blue is",
+       "ko": "파란색은"
+      },
+      {
+       "en": "my favorite color.",
+       "ko": "내가 가장 좋아하는 색이야."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

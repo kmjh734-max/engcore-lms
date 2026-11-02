@@ -9,7 +9,8 @@ import fs from "node:fs";
 
 const OUT = process.argv[2];
 const LESSON = Number(process.argv[3] ?? 1);
-const GRADE = process.argv[4] ?? "중1";
+const GRADE = (process.argv[4] ?? "중1").replace(/이$/, ""); // 동아(이병민)은 중1이
+const PUBLISHER = (process.argv[4] ?? "").endsWith("이") ? "동아(이병민)" : "동아(윤정미)";
 const env = Object.fromEntries(
   fs.readFileSync(".env.local", "utf8").split(/\r?\n/).filter((l) => l.includes("=") && !l.startsWith("#"))
     .map((l) => { const i = l.indexOf("="); return [l.slice(0, i).trim(), l.slice(i + 1).trim().replace(/^"|"$/g, "")]; }),
@@ -26,7 +27,7 @@ const sb = createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPA
 const u = new URL(link.properties.action_link);
 const { error: e2 } = await sb.auth.verifyOtp({ type: "magiclink", token_hash: u.searchParams.get("token") ?? u.searchParams.get("token_hash") });
 if (e2) throw e2;
-const { data: unit } = await admin.from("ms_units").select("id").eq("academy_id", ACADEMY).eq("grade", GRADE).eq("lesson_no", LESSON).single();
+const { data: unit } = await admin.from("ms_units").select("id").eq("academy_id", ACADEMY).eq("grade", GRADE).eq("publisher", PUBLISHER).eq("lesson_no", LESSON).single();
 
 const browser = await puppeteer.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe", headless: true, protocolTimeout: 900000 });
 const page = await browser.newPage();

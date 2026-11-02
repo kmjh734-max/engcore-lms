@@ -1,0 +1,1838 @@
+{
+ "passages": {
+  "3fb4bb38-f036-4f01-9a95-eee47945fba7": {
+   "titleEn": "Fly High, Our School's Cheerleading Club",
+   "topicEn": "The cheerleading club Fly High cheered on the school team, and the team won the game in the end.",
+   "topicKo": "응원 동아리 Fly High가 학교 팀을 응원했고, 팀은 결국 경기에서 이겼다.",
+   "sentences": [
+    {
+     "translation": "우리 학교의 응원 동아리 Fly High를 만나 보자.",
+     "contextNote": "기사의 첫 소재인 응원 동아리를 소개한다.",
+     "roles": [
+      {
+       "q": "meet",
+       "role": "V"
+      },
+      {
+       "q": "Fly High, our school's cheerleading club",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "our school's cheerleading club",
+       "label": "동격구",
+       "gloss": "= Fly High"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Let's meet Fly High,",
+       "ko": "Fly High를 만나 보자"
+      },
+      {
+       "en": "our school's cheerleading club.",
+       "ko": "우리 학교의 응원 동아리인."
+      }
+     ]
+    },
+    {
+     "translation": "그 동아리는 2년 전에 한 학생의 아이디어에서 시작되었습니다.",
+     "contextNote": "동아리가 생겨난 과정을 말한다.",
+     "roles": [
+      {
+       "q": "The club",
+       "role": "S"
+      },
+      {
+       "q": "started",
+       "role": "V"
+      },
+      {
+       "q": "from an idea of one student",
+       "role": "M"
+      },
+      {
+       "q": "two years ago",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The club started",
+       "ko": "그 동아리는 시작되었습니다"
+      },
+      {
+       "en": "from an idea of one student",
+       "ko": "한 학생의 아이디어에서"
+      },
+      {
+       "en": "two years ago.",
+       "ko": "2년 전에."
+      }
+     ]
+    },
+    {
+     "translation": "이제는, 그 동아리에 10명의 소녀와 6명의 소년이 있습니다.",
+     "contextNote": "지금 동아리의 규모를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "there are"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Now",
+       "role": "M"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "10 girls and 6 boys",
+       "role": "S"
+      },
+      {
+       "q": "in the club",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "there are",
+       "label": "there be 수일치",
+       "star": true,
+       "explanation": "「There+be동사」는 '~이 있다'는 뜻이고, 뒤에 오는 말이 실제 주어이다. 실제 주어 10 girls and 6 boys가 복수이므로 are를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Now,",
+       "ko": "이제는,"
+      },
+      {
+       "en": "there are 10 girls and 6 boys",
+       "ko": "10명의 소녀와 6명의 소년이 있습니다"
+      },
+      {
+       "en": "in the club.",
+       "ko": "그 동아리에."
+      }
+     ]
+    },
+    {
+     "translation": "각 멤버는 특별한 에너지를 가지고 있습니다.",
+     "contextNote": "동아리 멤버들의 특징을 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "Each member has"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Each member",
+       "role": "S"
+      },
+      {
+       "q": "has",
+       "role": "V"
+      },
+      {
+       "q": "a special energy",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "Each member has",
+       "label": "each/every",
+       "star": true,
+       "explanation": "each는 '각각의'라는 뜻으로 뒤에 단수 명사가 오고, 단수로 취급한다. 그래서 명사는 member, 동사는 has를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Each member has",
+       "ko": "각 멤버는 가지고 있습니다"
+      },
+      {
+       "en": "a special energy.",
+       "ko": "특별한 에너지를."
+      }
+     ]
+    },
+    {
+     "translation": "여러분은 최근 학교 농구 경기를 기억하나요?",
+     "contextNote": "읽는 이에게 물어 농구 경기 이야기로 들어간다.",
+     "roles": [
+      {
+       "q": "Do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "remember",
+       "role": "V"
+      },
+      {
+       "q": "the recent school basketball game",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Do you remember",
+       "ko": "여러분은 기억하나요?"
+      },
+      {
+       "en": "the recent school basketball game?",
+       "ko": "최근 학교 농구 경기를"
+      }
+     ]
+    },
+    {
+     "translation": "2쿼터 후에, 우리 팀은 20점 차이로 지고 있었습니다.",
+     "contextNote": "경기 초반에 팀이 크게 뒤지고 있었음을 말한다.",
+     "roles": [
+      {
+       "q": "After two quarters",
+       "role": "M"
+      },
+      {
+       "q": "our team",
+       "role": "S"
+      },
+      {
+       "q": "was losing",
+       "role": "V"
+      },
+      {
+       "q": "by 20 points",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "was losing",
+       "label": "과거진행",
+       "gloss": "'지고 있었다'"
+      },
+      {
+       "q": "by 20 points",
+       "label": "전명구",
+       "gloss": "by: 차이를 나타냄"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "After two quarters,",
+       "ko": "2쿼터 후에,"
+      },
+      {
+       "en": "our team was losing",
+       "ko": "우리 팀은 지고 있었습니다"
+      },
+      {
+       "en": "by 20 points.",
+       "ko": "20점 차이로."
+      }
+     ]
+    },
+    {
+     "translation": "하프 타임 동안, Fly High가 코트에 나왔습니다.",
+     "contextNote": "분위기를 바꾼 Fly High의 등장을 말한다.",
+     "roles": [
+      {
+       "q": "During halftime",
+       "role": "M"
+      },
+      {
+       "q": "Fly High",
+       "role": "S"
+      },
+      {
+       "q": "came",
+       "role": "V"
+      },
+      {
+       "q": "on the court",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "During halftime",
+       "label": "접속사·전치사 대비",
+       "gloss": "during+명사, while+주어+동사"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "During halftime,",
+       "ko": "하프 타임 동안,"
+      },
+      {
+       "en": "Fly High came",
+       "ko": "Fly High가 나왔습니다"
+      },
+      {
+       "en": "on the court.",
+       "ko": "코트에."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 멋지게 공연했습니다.",
+     "contextNote": "공연의 인상을 한마디로 말한다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "performed",
+       "role": "V"
+      },
+      {
+       "q": "wonderfully",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "wonderfully",
+       "label": "동사 수식 부사",
+       "gloss": "동사 performed를 꾸밈"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They performed",
+       "ko": "그들은 공연했습니다"
+      },
+      {
+       "en": "wonderfully.",
+       "ko": "멋지게."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 공중에서 돌았고 인간 피라미드를 만들었습니다.",
+     "contextNote": "공연의 구체적인 동작을 말한다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "flipped",
+       "role": "V"
+      },
+      {
+       "q": "in the air",
+       "role": "M"
+      },
+      {
+       "q": "made",
+       "role": "V"
+      },
+      {
+       "q": "a human pyramid",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "flipped in the air and made",
+       "label": "동사 병렬",
+       "explanation": "주어 They 하나에 동사 flipped와 made가 and로 이어져 있다. 두 동사 모두 과거 시제로 형태를 맞추었다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They flipped in the air",
+       "ko": "그들은 공중에서 돌았고"
+      },
+      {
+       "en": "and made a human pyramid.",
+       "ko": "인간 피라미드를 만들었습니다."
+      }
+     ]
+    },
+    {
+     "translation": "그러고 나서 그들은 \"절대 포기하지 마!\"라고 외쳤습니다.",
+     "contextNote": "선수들과 관중에게 전한 응원의 말이다.",
+     "roles": [
+      {
+       "q": "Then",
+       "role": "M"
+      },
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "shouted",
+       "role": "V"
+      },
+      {
+       "q": "Never give up",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Then they shouted,",
+       "ko": "그러고 나서 그들은 외쳤습니다"
+      },
+      {
+       "en": "\"Never give up!\"",
+       "ko": "\"절대 포기하지 마!\"라고"
+      }
+     ]
+    },
+    {
+     "translation": "그리고 어떻게 되었을까요?",
+     "contextNote": "경기 결과에 궁금증을 일으키는 말이다. guess what은 상대의 관심을 끄는 표현이다."
+    },
+    {
+     "translation": "결국에는 우리 팀이 그 경기에서 이겼습니다.",
+     "contextNote": "응원 뒤에 얻은 경기 결과를 말한다.",
+     "roles": [
+      {
+       "q": "Our team",
+       "role": "S"
+      },
+      {
+       "q": "won",
+       "role": "V"
+      },
+      {
+       "q": "the game",
+       "role": "O"
+      },
+      {
+       "q": "in the end",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Our team won the game",
+       "ko": "우리 팀이 그 경기에서 이겼습니다"
+      },
+      {
+       "en": "in the end.",
+       "ko": "결국에는."
+      }
+     ]
+    }
+   ]
+  },
+  "a72357a8-f387-42b5-9a75-ee3b668ee59c": {
+   "titleEn": "Jina's Story of Fly High",
+   "topicEn": "Jina, the captain of Fly High, feels proud of the club, and everyone can watch its performance at the festival.",
+   "topicKo": "Fly High의 회장 지나는 동아리를 자랑스러워하고, 축제에서 누구나 그 공연을 볼 수 있다.",
+   "sentences": [
+    {
+     "translation": "그 동아리의 회장인 지나는 말했습니다, \"나는 동아리 멤버들을 믿기 때문에 공중에서 돌 수 있어요.",
+     "contextNote": "회장 지나의 말을 옮기며 동아리 멤버 사이의 믿음을 보여 준다.",
+     "roles": [
+      {
+       "q": "Jina, the captain of the club",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "I can flip in the air because I trust my club members",
+       "role": "O"
+      },
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "can flip",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "in the air",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "I",
+       "occ": 2,
+       "role": "S",
+       "level": 2
+      },
+      {
+       "q": "trust",
+       "role": "V",
+       "level": 2
+      },
+      {
+       "q": "my club members",
+       "role": "O",
+       "level": 2
+      }
+     ],
+     "brackets": [
+      {
+       "q": "because I trust my club members",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the captain of the club",
+       "label": "동격구",
+       "gloss": "= Jina"
+      }
+     ],
+     "points": [
+      {
+       "q": "because I trust my club members",
+       "label": "이유 부사절",
+       "explanation": "because 뒤에는 「주어+동사」가 와서 '~ 때문에'라는 뜻을 나타낸다. 뒤에 명사(구)가 오면 because of를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Jina, the captain of the club, said,",
+       "ko": "그 동아리의 회장인 지나는 말했습니다,"
+      },
+      {
+       "en": "\"I can flip in the air",
+       "ko": "\"나는 공중에서 돌 수 있어요"
+      },
+      {
+       "en": "because I trust my club members.",
+       "ko": "동아리 멤버들을 믿기 때문에."
+      }
+     ]
+    },
+    {
+     "translation": "관중들이 응원하고 소리치는 것을 볼 때, 나는 자랑스럽습니다.",
+     "contextNote": "지나가 동아리 활동에서 느끼는 보람을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "see the crowd cheering and screaming"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "see",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the crowd",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "cheering and screaming",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "I",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "feel",
+       "role": "V"
+      },
+      {
+       "q": "proud",
+       "role": "C"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When I see the crowd cheering and screaming",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "When I see the crowd cheering and screaming",
+       "label": "시간 부사절",
+       "gloss": "When: '~할 때'"
+      }
+     ],
+     "points": [
+      {
+       "q": "see the crowd cheering and screaming",
+       "label": "지각동사 보어",
+       "star": true,
+       "explanation": "see 같은 지각동사는 「지각동사+목적어+동사원형/-ing」로 써서 '~가 …하는 것을 보다'라는 뜻을 나타낸다. 관중이 직접 응원하는 것이므로 능동의 -ing를 쓰고, 동작이 진행 중임을 나타낸다. cheering과 screaming은 and로 이어져 같은 형태이다."
+      },
+      {
+       "q": "feel proud",
+       "label": "연결동사 보어",
+       "explanation": "feel은 뒤에 형용사 보어를 받아 '~하게 느끼다'라는 뜻을 나타낸다. 보어 자리이므로 부사 proudly를 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When I see the crowd",
+       "ko": "관중들을 볼 때"
+      },
+      {
+       "en": "cheering and screaming,",
+       "ko": "응원하고 소리치는 것을"
+      },
+      {
+       "en": "I feel proud.",
+       "ko": "나는 자랑스럽습니다."
+      }
+     ]
+    },
+    {
+     "translation": "Fly High는 나의 중학교 생활 중 최고의 부분입니다!\"",
+     "contextNote": "동아리에 대한 지나의 애정을 드러내며 말을 맺는다.",
+     "roles": [
+      {
+       "q": "Fly High",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "the best part of my middle school life",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the best part",
+       "label": "최상급",
+       "gloss": "good - better - best"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Fly High is the best part",
+       "ko": "Fly High는 최고의 부분입니다"
+      },
+      {
+       "en": "of my middle school life!\"",
+       "ko": "나의 중학교 생활 중!\""
+      }
+     ]
+    },
+    {
+     "translation": "다음 주 학교 축제에서 Fly High가 공연하는 것을 볼 수 있습니다.",
+     "contextNote": "다가올 공연을 알린다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "watch Fly High doing"
+      }
+     ],
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "can watch",
+       "role": "V"
+      },
+      {
+       "q": "Fly High",
+       "role": "O"
+      },
+      {
+       "q": "doing their performance",
+       "role": "C"
+      },
+      {
+       "q": "at the school festival",
+       "role": "M"
+      },
+      {
+       "q": "next week",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "watch Fly High doing their performance",
+       "label": "지각동사 보어",
+       "star": true,
+       "explanation": "watch는 지각동사로 「watch+목적어+동사원형/-ing」로 쓴다. Fly High가 직접 공연하는 것이므로 능동의 doing을 쓰며, do를 써도 맞다. to do는 쓸 수 없다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You can watch Fly High",
+       "ko": "Fly High를 볼 수 있습니다"
+      },
+      {
+       "en": "doing their performance",
+       "ko": "공연하는 것을"
+      },
+      {
+       "en": "at the school festival",
+       "ko": "학교 축제에서"
+      },
+      {
+       "en": "next week.",
+       "ko": "다음 주."
+      }
+     ]
+    },
+    {
+     "translation": "와서 그들의 에너지를 느껴 보라!",
+     "contextNote": "읽는 이에게 공연을 보러 오라고 권하며 기사를 맺는다.",
+     "roles": [
+      {
+       "q": "Come",
+       "role": "V"
+      },
+      {
+       "q": "feel",
+       "role": "V"
+      },
+      {
+       "q": "their energy",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "Come and feel",
+       "label": "동사 병렬",
+       "explanation": "주어 없이 동사원형으로 시작하는 명령문이다. Come과 feel이 and로 이어져 있으므로 둘 다 동사원형으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Come and feel",
+       "ko": "와서 느껴 보라"
+      },
+      {
+       "en": "their energy!",
+       "ko": "그들의 에너지를!"
+      }
+     ]
+    }
+   ]
+  },
+  "d2106925-e044-4958-be99-befa591cfea7": {
+   "titleEn": "A Survey on Students' Spending",
+   "topicEn": "A survey of 100 students shows how they spend and save their money.",
+   "topicKo": "학생 100명을 대상으로 한 설문 조사는 학생들이 돈을 어떻게 쓰고 저축하는지 보여 준다.",
+   "sentences": [
+    {
+     "translation": "당신은 저축하는 사람인가요 아니면 소비하는 사람인가요?",
+     "contextNote": "기사의 제목으로, 물음을 던져 소비 습관 이야기로 이끈다.",
+     "roles": [
+      {
+       "q": "Are",
+       "role": "V"
+      },
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "a Saver or a Spender",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Are You",
+       "ko": "당신은 ~인가요?"
+      },
+      {
+       "en": "a Saver or a Spender?",
+       "ko": "저축하는 사람 아니면 소비하는 사람"
+      }
+     ]
+    },
+    {
+     "translation": "당신은 당신의 돈으로 무엇을 하나요?",
+     "contextNote": "읽는 이에게 돈을 어떻게 쓰는지 묻는다.",
+     "roles": [
+      {
+       "q": "What",
+       "role": "O"
+      },
+      {
+       "q": "do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "do",
+       "occ": 2,
+       "role": "V"
+      },
+      {
+       "q": "with your money",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "What do you do",
+       "ko": "당신은 무엇을 하나요?"
+      },
+      {
+       "en": "with your money?",
+       "ko": "당신의 돈으로"
+      }
+     ]
+    },
+    {
+     "translation": "그것을 저축하나요 아니면 소비하나요?",
+     "contextNote": "앞의 물음을 저축과 소비 둘로 나누어 다시 묻는다.",
+     "roles": [
+      {
+       "q": "Do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "save",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      },
+      {
+       "q": "spend",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "occ": 2,
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= your money"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Do you save it",
+       "ko": "그것을 저축하나요"
+      },
+      {
+       "en": "or spend it?",
+       "ko": "아니면 소비하나요?"
+      }
+     ]
+    },
+    {
+     "translation": "우리는 우리 학교 학생 100명에게 다음의 질문을 했습니다.",
+     "contextNote": "설문 조사를 어떻게 했는지 밝힌다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      },
+      {
+       "q": "the following questions",
+       "role": "O"
+      },
+      {
+       "q": "to 100 students from our school",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We asked the following questions",
+       "ko": "우리는 다음의 질문을 했습니다"
+      },
+      {
+       "en": "to 100 students from our school.",
+       "ko": "우리 학교 학생 100명에게."
+      }
+     ]
+    },
+    {
+     "translation": "그 결과를 살펴보자.",
+     "contextNote": "이어지는 설문 결과로 이끈다.",
+     "roles": [
+      {
+       "q": "look at",
+       "role": "V"
+      },
+      {
+       "q": "the results",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Let's look at",
+       "ko": "살펴보자"
+      },
+      {
+       "en": "the results.",
+       "ko": "그 결과를."
+      }
+     ]
+    },
+    {
+     "translation": "• 당신은 지출 계획을 가지고 있나요?",
+     "contextNote": "설문의 첫 번째 질문이다.",
+     "roles": [
+      {
+       "q": "Do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "have",
+       "role": "V"
+      },
+      {
+       "q": "a spending plan",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "• Do you have",
+       "ko": "• 당신은 가지고 있나요?"
+      },
+      {
+       "en": "a spending plan?",
+       "ko": "지출 계획을"
+      }
+     ]
+    },
+    {
+     "translation": "• 당신은 무엇에 가장 많은 돈을 소비하나요?",
+     "contextNote": "설문의 두 번째 질문이다.",
+     "roles": [
+      {
+       "q": "do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "spend",
+       "role": "V"
+      },
+      {
+       "q": "the most money",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the most money",
+       "label": "최상급",
+       "gloss": "much - more - most"
+      }
+     ],
+     "points": [
+      {
+       "q": "What do you spend the most money on",
+       "label": "필수 전치사",
+       "explanation": "「spend+돈+on+대상」은 '~에 돈을 쓰다'라는 뜻이다. on의 목적어인 의문사 What이 문장 앞으로 나가고 전치사 on은 문장 끝에 남았다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "• What do you spend",
+       "ko": "• 당신은 무엇에 소비하나요?"
+      },
+      {
+       "en": "the most money on?",
+       "ko": "가장 많은 돈을"
+      }
+     ]
+    },
+    {
+     "translation": "• 당신은 돈을 저축하나요?",
+     "contextNote": "설문의 세 번째 질문이다.",
+     "roles": [
+      {
+       "q": "Do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "save",
+       "role": "V"
+      },
+      {
+       "q": "money",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "• Do you save",
+       "ko": "• 당신은 저축하나요?"
+      },
+      {
+       "en": "money?",
+       "ko": "돈을"
+      }
+     ]
+    },
+    {
+     "translation": "놀랍게도, 그 설문 조사는 100명의 학생들 중 오직 15명만이 지출 계획을 가지고 있다는 것을 보여 주었습니다.",
+     "contextNote": "첫 번째 질문의 결과를 말한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "Surprisingly",
+       "role": "M"
+      },
+      {
+       "q": "the survey",
+       "role": "S"
+      },
+      {
+       "q": "showed",
+       "role": "V"
+      },
+      {
+       "q": "that only 15 out of 100 students had a spending plan",
+       "role": "O"
+      },
+      {
+       "q": "only 15 out of 100 students",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "had",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "a spending plan",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that only 15 out of 100 students had a spending plan",
+       "kind": "nominal"
+      }
+     ],
+     "notes": [
+      {
+       "q": "Surprisingly",
+       "label": "문장 부사",
+       "gloss": "'놀랍게도' — 문장 전체를 꾸밈"
+      }
+     ],
+     "points": [
+      {
+       "q": "that only 15 out of 100 students had a spending plan",
+       "label": "that 명사절",
+       "star": true,
+       "explanation": "접속사 that이 이끄는 절이 동사 showed의 목적어로 쓰여 '~라는 것을'이라는 뜻을 나타낸다. 주절이 과거 showed이므로 that절의 동사도 과거 had로 맞추었다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Surprisingly,",
+       "ko": "놀랍게도,"
+      },
+      {
+       "en": "the survey showed",
+       "ko": "그 설문 조사는 보여 주었습니다"
+      },
+      {
+       "en": "that only 15 out of 100 students",
+       "ko": "100명의 학생들 중 오직 15명만이"
+      },
+      {
+       "en": "had a spending plan.",
+       "ko": "지출 계획을 가지고 있다는 것을."
+      }
+     ]
+    },
+    {
+     "translation": "그 설문 조사는 또한 그 학생들이 무엇에 가장 많은 돈을 소비하는지 보여 주었습니다.",
+     "contextNote": "두 번째 질문의 결과로 넘어간다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "what the students spent the most money on"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The survey",
+       "role": "S"
+      },
+      {
+       "q": "also",
+       "role": "M"
+      },
+      {
+       "q": "showed",
+       "role": "V"
+      },
+      {
+       "q": "what the students spent the most money on",
+       "role": "O"
+      },
+      {
+       "q": "the students",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "spent",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the most money",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "what the students spent the most money on",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "what the students spent the most money on",
+       "label": "간접의문문 어순",
+       "star": true,
+       "explanation": "의문문이 문장의 목적어로 들어가면 「의문사+주어+동사」 어순으로 쓴다. 그래서 what did the students spend가 아니라 what the students spent가 된다. 끝의 on은 '~에 돈을 쓰다'의 spend ~ on에서 남은 전치사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The survey also showed",
+       "ko": "그 설문 조사는 또한 보여 주었습니다"
+      },
+      {
+       "en": "what the students spent",
+       "ko": "그 학생들이 무엇에 소비하는지"
+      },
+      {
+       "en": "the most money on.",
+       "ko": "가장 많은 돈을."
+      }
+     ]
+    },
+    {
+     "translation": "음식이 가장 많은 수의 학생들의 선택을 받았습니다.",
+     "contextNote": "학생들이 돈을 가장 많이 쓰는 대상을 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "was chosen by"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Food",
+       "role": "S"
+      },
+      {
+       "q": "was chosen",
+       "role": "V"
+      },
+      {
+       "q": "by the largest number of students",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the largest number of students",
+       "label": "최상급",
+       "gloss": "'가장 많은 수의 학생들'"
+      }
+     ],
+     "points": [
+      {
+       "q": "was chosen by",
+       "label": "수동태",
+       "star": true,
+       "explanation": "음식은 학생들에게 선택되는 대상이므로 수동태 「be동사+과거분사」를 쓴다. choose의 과거분사는 chosen이고, 행위를 한 사람은 by 뒤에 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Food was chosen",
+       "ko": "음식이 선택을 받았습니다"
+      },
+      {
+       "en": "by the largest number of students.",
+       "ko": "가장 많은 수의 학생들의."
+      }
+     ]
+    },
+    {
+     "translation": "교통이 음식의 뒤를 이었습니다.",
+     "contextNote": "두 번째로 돈을 많이 쓰는 대상을 말한다.",
+     "roles": [
+      {
+       "q": "Transportation",
+       "role": "S"
+      },
+      {
+       "q": "followed",
+       "role": "V"
+      },
+      {
+       "q": "food",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Transportation followed",
+       "ko": "교통이 뒤를 이었습니다"
+      },
+      {
+       "en": "food.",
+       "ko": "음식의."
+      }
+     ]
+    },
+    {
+     "translation": "또한, 3학년 학생의 80%는 돈을 저축했지만, 1학년 학생의 겨우 30%만이 돈을 저축했습니다.",
+     "contextNote": "세 번째 질문의 결과로, 학년에 따른 차이를 보여 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "80 percent of 3rd-year students"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Also",
+       "role": "M"
+      },
+      {
+       "q": "80 percent of 3rd-year students",
+       "role": "S"
+      },
+      {
+       "q": "saved",
+       "role": "V"
+      },
+      {
+       "q": "money",
+       "role": "O"
+      },
+      {
+       "q": "only 30 percent of 1st-year students",
+       "role": "S"
+      },
+      {
+       "q": "saved",
+       "occ": 2,
+       "role": "V"
+      },
+      {
+       "q": "money",
+       "occ": 2,
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but only 30 percent of 1st-year students saved money",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "points": [
+      {
+       "q": "80 percent of 3rd-year students",
+       "label": "부분 표현",
+       "star": true,
+       "explanation": "「퍼센트+of+명사」가 주어이면 동사의 수는 of 뒤의 명사에 맞춘다. 여기서는 students가 복수이므로 복수 취급한다. 과거 시제 saved는 단수·복수의 모양이 같지만, be동사를 쓴다면 was가 아니라 were를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Also, 80 percent of 3rd-year students",
+       "ko": "또한, 3학년 학생의 80%는"
+      },
+      {
+       "en": "saved money,",
+       "ko": "돈을 저축했지만,"
+      },
+      {
+       "en": "but only 30 percent of 1st-year students",
+       "ko": "1학년 학생의 겨우 30%만이"
+      },
+      {
+       "en": "saved money.",
+       "ko": "돈을 저축했습니다."
+      }
+     ]
+    }
+   ]
+  },
+  "1cb540f5-608e-4b36-9a15-76cabb5d9486": {
+   "titleEn": "Advice for Wise Spending",
+   "topicEn": "Planning your spending is very important, and every student will get a money diary.",
+   "topicKo": "소비를 계획하는 것은 매우 중요하며, 모든 학생들은 용돈 기입장을 받게 될 것이다.",
+   "sentences": [
+    {
+     "translation": "돈은 나무에서 자라지 않습니다.",
+     "contextNote": "돈이 저절로 생기지 않는다는 뜻의 속담으로 조언을 시작한다.",
+     "roles": [
+      {
+       "q": "Money",
+       "role": "S"
+      },
+      {
+       "q": "doesn't grow",
+       "role": "V"
+      },
+      {
+       "q": "on trees",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Money doesn't grow",
+       "ko": "돈은 자라지 않습니다"
+      },
+      {
+       "en": "on trees.",
+       "ko": "나무에서."
+      }
+     ]
+    },
+    {
+     "translation": "여러분의 소비를 계획하는 것은 매우 중요합니다!",
+     "contextNote": "이 글에서 말하려는 조언의 중심 문장이다.",
+     "tags": [
+      "주제문",
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "Planning your spending is"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Planning your spending",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "very important",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "Planning your spending",
+       "label": "동명사 주어",
+       "star": true,
+       "explanation": "동명사구가 주어로 쓰여 '~을 계획하는 것은'이라는 뜻을 나타낸다. 동명사 주어는 단수로 취급하므로 동사는 is를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Planning your spending",
+       "ko": "여러분의 소비를 계획하는 것은"
+      },
+      {
+       "en": "is very important!",
+       "ko": "매우 중요합니다!"
+      }
+     ]
+    },
+    {
+     "translation": "모든 사람은 좋은 지출 습관이 필요하지요.",
+     "contextNote": "앞의 조언을 모든 사람에게 넓혀 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "Everyone needs"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Everyone",
+       "role": "S"
+      },
+      {
+       "q": "needs",
+       "role": "V"
+      },
+      {
+       "q": "good spending habits",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "Everyone needs",
+       "label": "each/every",
+       "star": true,
+       "explanation": "everyone은 '모든 사람'이라는 뜻이지만 단수로 취급한다. 그래서 현재 시제 동사는 need가 아니라 needs를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Everyone needs",
+       "ko": "모든 사람은 필요하지요"
+      },
+      {
+       "en": "good spending habits.",
+       "ko": "좋은 지출 습관이."
+      }
+     ]
+    },
+    {
+     "translation": "다음 주에, 모든 학생들은 용돈 기입장을 받게 될 것입니다.",
+     "contextNote": "습관을 기르는 데 쓸 용돈 기입장을 알린다.",
+     "roles": [
+      {
+       "q": "Next week",
+       "role": "M"
+      },
+      {
+       "q": "every student",
+       "role": "S"
+      },
+      {
+       "q": "will get",
+       "role": "V"
+      },
+      {
+       "q": "a money diary",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "every student",
+       "label": "each/every",
+       "gloss": "every+단수 명사, 단수 취급"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Next week,",
+       "ko": "다음 주에,"
+      },
+      {
+       "en": "every student will get",
+       "ko": "모든 학생들은 받게 될 것입니다"
+      },
+      {
+       "en": "a money diary.",
+       "ko": "용돈 기입장을."
+      }
+     ]
+    }
+   ]
+  },
+  "befb0f76-fa40-49ff-995e-dbfeeac821b9": {
+   "titleEn": "Carebot, a New Friend in the Nurse's Office",
+   "topicEn": "Carebot, a new AI healthcare robot, checks students' health and gives them advice in the school nurse's office.",
+   "topicKo": "새로운 인공 지능 건강 관리 로봇 Carebot은 보건실에서 학생들의 건강을 확인하고 조언을 해 준다.",
+   "sentences": [
+    {
+     "translation": "와서 학교 보건실에서 우리의 새로운 인공 지능 건강 관리 로봇인 Carebot을 만나 보라.",
+     "contextNote": "기사의 소재인 Carebot을 소개한다.",
+     "roles": [
+      {
+       "q": "Come",
+       "role": "V"
+      },
+      {
+       "q": "meet",
+       "role": "V"
+      },
+      {
+       "q": "Carebot, our new AI healthcare robot",
+       "role": "O"
+      },
+      {
+       "q": "in the school nurse's office",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "our new AI healthcare robot",
+       "label": "동격구",
+       "gloss": "= Carebot"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Come and meet Carebot,",
+       "ko": "와서 Carebot을 만나 보라"
+      },
+      {
+       "en": "our new AI healthcare robot,",
+       "ko": "우리의 새로운 인공 지능 건강 관리 로봇인"
+      },
+      {
+       "en": "in the school nurse's office.",
+       "ko": "학교 보건실에서."
+      }
+     ]
+    },
+    {
+     "translation": "Carebot이 무엇을 할 수 있을까요?",
+     "contextNote": "물음을 던져 Carebot이 하는 일로 이끈다.",
+     "roles": [
+      {
+       "q": "What",
+       "role": "O"
+      },
+      {
+       "q": "can",
+       "role": "V"
+      },
+      {
+       "q": "Carebot",
+       "role": "S"
+      },
+      {
+       "q": "do",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "What can Carebot",
+       "ko": "무엇을 Carebot이"
+      },
+      {
+       "en": "do?",
+       "ko": "할 수 있을까요?"
+      }
+     ]
+    },
+    {
+     "translation": "그것은 학생들의 건강 상태를 확인하고 그들에게 조언을 해 줄 수 있습니다.",
+     "contextNote": "앞의 물음에 답한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "can check the students' health condition and give"
+      }
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "can check",
+       "role": "V"
+      },
+      {
+       "q": "the students' health condition",
+       "role": "O"
+      },
+      {
+       "q": "give",
+       "role": "V"
+      },
+      {
+       "q": "them",
+       "role": "IO"
+      },
+      {
+       "q": "advice",
+       "role": "DO"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "gloss": "= Carebot"
+      }
+     ],
+     "points": [
+      {
+       "q": "can check the students' health condition and give",
+       "label": "조동사 공유 병렬",
+       "star": true,
+       "explanation": "check와 give가 and로 이어져 조동사 can을 함께 쓰고 있다. 그래서 give도 동사원형이다."
+      },
+      {
+       "q": "give them advice",
+       "label": "4형식",
+       "explanation": "「give+사람+사물」은 '~에게 …을 주다'라는 뜻이다. 「give advice to them」으로 바꾸어 쓸 수 있다. advice는 셀 수 없는 명사이므로 복수형으로 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It can check",
+       "ko": "그것은 확인할 수 있고"
+      },
+      {
+       "en": "the students' health condition",
+       "ko": "학생들의 건강 상태를"
+      },
+      {
+       "en": "and give them advice.",
+       "ko": "그들에게 조언을 해 줄 수 있습니다."
+      }
+     ]
+    },
+    {
+     "translation": "우리의 보건 선생님인 강 선생님은 말씀하십니다, \"Carebot은 모두를 건강하고 안전하게 하고자 열심히 일하고 있습니다.",
+     "contextNote": "보건 선생님의 말을 옮기며 Carebot의 역할을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "keep everyone healthy and safe"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Our school nurse, Ms. Kang",
+       "role": "S"
+      },
+      {
+       "q": "says",
+       "role": "V"
+      },
+      {
+       "q": "Carebot is working hard to keep everyone healthy and safe",
+       "role": "O"
+      },
+      {
+       "q": "Carebot",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "is working",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "hard",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "to keep everyone healthy and safe",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "notes": [
+      {
+       "q": "Ms. Kang",
+       "label": "동격구",
+       "gloss": "= Our school nurse"
+      }
+     ],
+     "points": [
+      {
+       "q": "keep everyone healthy and safe",
+       "label": "목적격보어 형용사",
+       "star": true,
+       "explanation": "「keep+목적어+형용사」는 '~을 …한 상태로 유지하다'라는 뜻이다. 목적격보어 자리에는 부사를 쓰지 않으므로 형용사 healthy와 safe를 쓴다. to keep 전체는 '~하기 위해'라는 목적을 나타낸다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Our school nurse, Ms. Kang, says,",
+       "ko": "우리의 보건 선생님인 강 선생님은 말씀하십니다,"
+      },
+      {
+       "en": "\"Carebot is working hard",
+       "ko": "\"Carebot은 열심히 일하고 있습니다"
+      },
+      {
+       "en": "to keep everyone healthy and safe.",
+       "ko": "모두를 건강하고 안전하게 하고자."
+      }
+     ]
+    },
+    {
+     "translation": "그러니, 만약 여러분이 Carebot을 본다면, 수줍어하지 말고 인사해 주세요.\"",
+     "contextNote": "보건 선생님이 학생들에게 건네는 부탁으로 기사를 맺는다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "if you see Carebot"
+      }
+     ],
+     "roles": [
+      {
+       "q": "you",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "see",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "Carebot",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "don't be",
+       "role": "V"
+      },
+      {
+       "q": "shy",
+       "role": "C"
+      },
+      {
+       "q": "say",
+       "role": "V"
+      },
+      {
+       "q": "hello",
+       "role": "O"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "if you see Carebot",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "if you see Carebot",
+       "label": "시간·조건절 현재",
+       "star": true,
+       "explanation": "if가 이끄는 조건 부사절에서는 앞으로의 일도 현재 시제로 쓴다. 그래서 will see가 아니라 see를 쓴다."
+      },
+      {
+       "q": "don't be shy and say hello",
+       "label": "동사 병렬",
+       "explanation": "부정 명령문 「Don't+동사원형」과 명령문이 and로 이어져 있다. be와 say 모두 동사원형으로 쓴다. shy는 be동사의 보어이므로 형용사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "So, if you see Carebot,",
+       "ko": "그러니, 만약 여러분이 Carebot을 본다면,"
+      },
+      {
+       "en": "don't be shy",
+       "ko": "수줍어하지 말고"
+      },
+      {
+       "en": "and say hello.\"",
+       "ko": "인사해 주세요.\""
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

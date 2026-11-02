@@ -1,0 +1,1361 @@
+{
+ "passages": {
+  "33c74065-2a02-45b2-842c-b25a3c8dc2ff": {
+   "titleEn": "Artists Who Painted Themselves",
+   "topicEn": "Some artists painted self-portraits, and this text asks why they painted themselves.",
+   "topicKo": "몇몇 화가들은 자화상을 그렸는데, 이 글은 그들이 왜 자신을 그렸는지 묻는다.",
+   "sentences": [
+    {
+     "translation": "당신이 가장 좋아하는 화가는 누구인가?",
+     "contextNote": "읽는 이에게 질문을 던지며 화가 이야기를 시작한다.",
+     "roles": [
+      {
+       "q": "Who",
+       "role": "C"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "your favorite artist",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Who is",
+       "ko": "누구인가"
+      },
+      {
+       "en": "your favorite artist?",
+       "ko": "당신이 가장 좋아하는 화가는?"
+      }
+     ]
+    },
+    {
+     "translation": "그녀나 그는 어떻게 생겼는가?",
+     "contextNote": "화가의 생김새를 물어 자화상이라는 화제로 이어 간다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "What",
+       "role": "O"
+      },
+      {
+       "q": "does",
+       "role": "V"
+      },
+      {
+       "q": "she or he",
+       "role": "S"
+      },
+      {
+       "q": "look",
+       "role": "V"
+      }
+     ],
+     "points": [
+      {
+       "q": "What does she or he look like",
+       "label": "어순",
+       "star": true,
+       "explanation": "'look like ~'는 '~처럼 생기다'라는 뜻으로, What은 전치사 like의 목적어이다. 의문문이므로 「의문사+does+주어+동사원형」 어순을 쓰고, 생김새를 묻는 말이라 How가 아니라 What을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "What does she or he",
+       "ko": "그녀나 그는 어떻게"
+      },
+      {
+       "en": "look like?",
+       "ko": "생겼는가?"
+      }
+     ]
+    },
+    {
+     "translation": "몇몇 화가들은 자화상을 그렸다.",
+     "contextNote": "글의 화제인 자화상을 꺼낸다.",
+     "roles": [
+      {
+       "q": "Some artists",
+       "role": "S"
+      },
+      {
+       "q": "painted",
+       "role": "V"
+      },
+      {
+       "q": "self-portraits",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Some artists painted",
+       "ko": "몇몇 화가들은 그렸다"
+      },
+      {
+       "en": "self-portraits.",
+       "ko": "자화상을."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 왜 그들 자신을 그렸을까?",
+     "contextNote": "글 전체가 답할 질문을 던진다.",
+     "tags": [
+      "주제문"
+     ],
+     "roles": [
+      {
+       "q": "Why",
+       "role": "M"
+      },
+      {
+       "q": "did",
+       "role": "V"
+      },
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "paint",
+       "role": "V"
+      },
+      {
+       "q": "themselves",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "themselves",
+       "label": "재귀대명사",
+       "star": true,
+       "explanation": "주어 they와 목적어가 같은 사람이므로 them이 아니라 재귀대명사 themselves를 쓴다. 뒤에 나오는 himself, herself도 같은 이유로 쓴 말이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Why did they paint",
+       "ko": "그들은 왜 그렸을까"
+      },
+      {
+       "en": "themselves?",
+       "ko": "그들 자신을?"
+      }
+     ]
+    },
+    {
+     "translation": "알아보자.",
+     "contextNote": "다음 글에서 두 화가의 이야기로 넘어간다.",
+     "roles": [
+      {
+       "q": "find out",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Let's",
+       "ko": "~하자"
+      },
+      {
+       "en": "find out.",
+       "ko": "알아보"
+      }
+     ]
+    }
+   ]
+  },
+  "4f1b4739-9db5-4550-8caa-7f090f2ae2b8": {
+   "titleEn": "Van Gogh: Painting Himself Instead of Models",
+   "topicEn": "Van Gogh had no money for models, so he painted himself and left 36 self-portraits.",
+   "topicKo": "반 고흐는 모델을 쓸 돈이 없어서 자신을 그렸고 36점의 자화상을 남겼다.",
+   "sentences": [
+    {
+     "translation": "빈센트 반 고흐는 네덜란드의 화가였다.",
+     "contextNote": "첫 번째 화가 반 고흐를 소개한다.",
+     "roles": [
+      {
+       "q": "Vincent van Gogh",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a Dutch artist",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Vincent van Gogh was",
+       "ko": "빈센트 반 고흐는 ~였다"
+      },
+      {
+       "en": "a Dutch artist.",
+       "ko": "네덜란드의 화가."
+      }
+     ]
+    },
+    {
+     "translation": "그는 그의 일생 동안 유명하지 않았다.",
+     "contextNote": "살아 있을 때 유명하지 않았다는 점을 말한다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "famous",
+       "role": "C"
+      },
+      {
+       "q": "in his lifetime",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "in his lifetime",
+       "label": "전명구",
+       "gloss": "'그의 일생 동안'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He was not famous",
+       "ko": "그는 유명하지 않았다"
+      },
+      {
+       "en": "in his lifetime.",
+       "ko": "그의 일생 동안."
+      }
+     ]
+    },
+    {
+     "translation": "그가 33살이었을 때, 그는 파리로 이주했다.",
+     "contextNote": "파리로 옮겨 간 시기를 말한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "he",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "was",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "33",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "he",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "moved",
+       "role": "V"
+      },
+      {
+       "q": "to Paris",
+       "role": "M"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When he was 33",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "When he was 33",
+       "label": "시간 부사절",
+       "star": true,
+       "explanation": "접속사 when은 '~할 때'라는 뜻으로, 뒤에 주어와 동사가 온다. when절이 문장 앞에 오면 절 끝에 쉼표를 찍고, 주절 뒤로 보내면 쉼표 없이 He moved to Paris when he was 33.로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When he was 33,",
+       "ko": "그가 33살이었을 때,"
+      },
+      {
+       "en": "he moved to Paris.",
+       "ko": "그는 파리로 이주했다."
+      }
+     ]
+    },
+    {
+     "translation": "그는 사람들을 그리고 싶었지만, 모델들은 너무 비쌌다.",
+     "contextNote": "자화상을 그리게 된 까닭(모델 값)이 나온다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "wanted",
+       "role": "V"
+      },
+      {
+       "q": "to paint people",
+       "role": "O"
+      },
+      {
+       "q": "models",
+       "role": "S"
+      },
+      {
+       "q": "were",
+       "role": "V"
+      },
+      {
+       "q": "too expensive",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but models were too expensive",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "points": [
+      {
+       "q": "wanted to paint",
+       "label": "to부정사",
+       "explanation": "want는 to부정사를 목적어로 받아 '~하고 싶어 하다'라는 뜻이 된다. to paint people이 wanted의 목적어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He wanted to paint people,",
+       "ko": "그는 사람들을 그리고 싶었지만,"
+      },
+      {
+       "en": "but models were too expensive.",
+       "ko": "모델들은 너무 비쌌다."
+      }
+     ]
+    },
+    {
+     "translation": "그는 생각했다. \"나는 모델을 쓸 돈이 없어.",
+     "contextNote": "반 고흐의 처지를 그의 생각으로 보여 준다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "thought",
+       "role": "V"
+      },
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "don't have",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "money",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "notes": [
+      {
+       "q": "for a model",
+       "label": "전명구",
+       "gloss": "money를 꾸밈, '모델을 쓸'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He thought,",
+       "ko": "그는 생각했다."
+      },
+      {
+       "en": "\"I don't have money",
+       "ko": "\"나는 돈이 없어"
+      },
+      {
+       "en": "for a model.",
+       "ko": "모델을 쓸."
+      }
+     ]
+    },
+    {
+     "translation": "내가 무엇을 할 수 있을까?\"",
+     "contextNote": "앞 문장에 이어지는 반 고흐의 생각이다.",
+     "roles": [
+      {
+       "q": "What",
+       "role": "O"
+      },
+      {
+       "q": "can",
+       "role": "V"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "do",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "What can I",
+       "ko": "내가 무엇을 ~수 있을까"
+      },
+      {
+       "en": "do?\"",
+       "ko": "할?\""
+      }
+     ]
+    },
+    {
+     "translation": "그래서, 반 고흐는 그 자신을 그리기 시작했다.",
+     "contextNote": "돈이 없다는 까닭의 결과로 자화상을 그리기 시작한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "himself"
+      }
+     ],
+     "roles": [
+      {
+       "q": "So",
+       "role": "M"
+      },
+      {
+       "q": "Van Gogh",
+       "role": "S"
+      },
+      {
+       "q": "started",
+       "role": "V"
+      },
+      {
+       "q": "to paint himself",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "started to paint",
+       "label": "to부정사",
+       "explanation": "start는 to부정사와 동명사를 모두 목적어로 받는다. started painting himself로 써도 뜻이 같다."
+      },
+      {
+       "q": "himself",
+       "label": "재귀대명사",
+       "star": true,
+       "explanation": "그리는 사람과 그려지는 사람이 모두 반 고흐이므로 him이 아니라 재귀대명사 himself를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "So, Van Gogh started",
+       "ko": "그래서, 반 고흐는 시작했다"
+      },
+      {
+       "en": "to paint himself.",
+       "ko": "그 자신을 그리기."
+      }
+     ]
+    },
+    {
+     "translation": "그는 36점의 자화상을 그렸다.",
+     "contextNote": "그린 자화상의 수를 말한다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "painted",
+       "role": "V"
+      },
+      {
+       "q": "36 self-portraits",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He painted",
+       "ko": "그는 그렸다"
+      },
+      {
+       "en": "36 self-portraits.",
+       "ko": "36점의 자화상을."
+      }
+     ]
+    },
+    {
+     "translation": "그것들은 모두 다르다.",
+     "contextNote": "자화상마다 다르다는 점을 말하며 그림 비교로 넘어간다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "all",
+       "role": "M"
+      },
+      {
+       "q": "different",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "They",
+       "label": "대명사 선행사",
+       "gloss": "= 36 self-portraits"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They are",
+       "ko": "그것들은 ~하다"
+      },
+      {
+       "en": "all different.",
+       "ko": "모두 다르"
+      }
+     ]
+    },
+    {
+     "translation": "이 두 그림을 보라.",
+     "contextNote": "읽는 이에게 실제 그림을 비교해 보게 한다.",
+     "roles": [
+      {
+       "q": "Look at",
+       "role": "V"
+      },
+      {
+       "q": "these two paintings",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Look at",
+       "ko": "보라"
+      },
+      {
+       "en": "these two paintings.",
+       "ko": "이 두 그림을."
+      }
+     ]
+    },
+    {
+     "translation": "한 그림이 다른 그림보다 더 밝다.",
+     "contextNote": "두 그림의 차이를 비교급으로 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "brighter than"
+      }
+     ],
+     "roles": [
+      {
+       "q": "One",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "brighter",
+       "role": "C"
+      },
+      {
+       "q": "than the other",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "brighter than",
+       "label": "비교급",
+       "star": true,
+       "explanation": "두 대상을 견줄 때는 「형용사/부사의 비교급+than」으로 '~보다 더 …한'이라고 쓴다. bright처럼 짧은 낱말은 -er을 붙여 brighter가 된다."
+      },
+      {
+       "q": "the other",
+       "label": "another/other",
+       "explanation": "둘 가운데 하나는 one, 나머지 하나는 the other로 쓴다. 그림이 두 점이므로 another가 아니라 the other이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "One is brighter",
+       "ko": "한 그림이 더 밝다"
+      },
+      {
+       "en": "than the other.",
+       "ko": "다른 그림보다."
+      }
+     ]
+    },
+    {
+     "translation": "당신은 어느 것이 마음에 드는가?",
+     "contextNote": "읽는 이의 생각을 물으며 반 고흐 이야기를 맺는다.",
+     "roles": [
+      {
+       "q": "Which one",
+       "role": "O"
+      },
+      {
+       "q": "do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "like",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Which one",
+       "ko": "어느 것이"
+      },
+      {
+       "en": "do you like?",
+       "ko": "당신은 마음에 드는가?"
+      }
+     ]
+    }
+   ]
+  },
+  "1f550cf9-5ca7-4e75-a2d2-8a50e5830c19": {
+   "titleEn": "Kahlo: Stronger Than Anyone",
+   "topicEn": "After illness and a terrible accident, Frida Kahlo painted 55 self-portraits to show her strength.",
+   "topicKo": "병과 끔찍한 사고를 겪은 뒤, 프리다 칼로는 55점의 자화상을 그리며 자신의 강인함을 보여 주었다.",
+   "sentences": [
+    {
+     "translation": "프리다 칼로는 멕시코의 화가였다.",
+     "contextNote": "두 번째 화가 칼로를 소개한다.",
+     "roles": [
+      {
+       "q": "Frida Kahlo",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a Mexican artist",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Frida Kahlo was",
+       "ko": "프리다 칼로는 ~였다"
+      },
+      {
+       "en": "a Mexican artist.",
+       "ko": "멕시코의 화가."
+      }
+     ]
+    },
+    {
+     "translation": "그녀가 여섯 살 때, 그녀는 매우 아팠다.",
+     "contextNote": "어린 시절의 병을 말한다.",
+     "roles": [
+      {
+       "q": "she",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "was",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "six years old",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "she",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "occ": 2,
+       "role": "V"
+      },
+      {
+       "q": "very sick",
+       "role": "C"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When she was six years old",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "When she was six years old",
+       "label": "시간 부사절",
+       "explanation": "when절(~할 때)이 문장 앞에 와서 쉼표로 주절과 나뉜다. 주절은 she was very sick이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When she was six years old,",
+       "ko": "그녀가 여섯 살 때,"
+      },
+      {
+       "en": "she was very sick.",
+       "ko": "그녀는 매우 아팠다."
+      }
+     ]
+    },
+    {
+     "translation": "그녀의 오른쪽 다리가 그녀의 왼쪽 다리보다 더 약해졌다.",
+     "contextNote": "병 때문에 생긴 몸의 변화를 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "weaker than"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Her right leg",
+       "role": "S"
+      },
+      {
+       "q": "became",
+       "role": "V"
+      },
+      {
+       "q": "weaker",
+       "role": "C"
+      },
+      {
+       "q": "than her left leg",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "weaker than",
+       "label": "비교급",
+       "star": true,
+       "explanation": "weak의 비교급 weaker 뒤에 than을 써서 두 다리를 견준다. became은 '~하게 되었다'는 뜻의 연결동사라 뒤에 형용사가 보어로 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Her right leg became weaker",
+       "ko": "그녀의 오른쪽 다리가 더 약해졌다"
+      },
+      {
+       "en": "than her left leg.",
+       "ko": "그녀의 왼쪽 다리보다."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 그녀는 생각했다. \"나는 나아질 거야.",
+     "contextNote": "병에도 꺾이지 않는 칼로의 마음이 드러난다.",
+     "roles": [
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "thought",
+       "role": "V"
+      },
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "will get",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "well",
+       "role": "C",
+       "level": 1
+      }
+     ],
+     "points": [
+      {
+       "q": "will get well",
+       "label": "연결동사 보어",
+       "explanation": "get well은 '(병이) 낫다'는 뜻이다. 여기서 well은 부사가 아니라 '건강한'이라는 형용사로, get의 보어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But she thought,",
+       "ko": "하지만 그녀는 생각했다."
+      },
+      {
+       "en": "\"I will get well.",
+       "ko": "\"나는 나아질 거야."
+      }
+     ]
+    },
+    {
+     "translation": "나는 나처럼 아픈 사람들을 도울 거야.\"",
+     "contextNote": "자신의 병을 다른 사람을 돕겠다는 다짐으로 잇는다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "will help",
+       "role": "V"
+      },
+      {
+       "q": "sick people like me",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "like me",
+       "label": "전명구",
+       "gloss": "like: '~처럼'(전치사), people을 꾸밈"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I will help",
+       "ko": "나는 도울 거야"
+      },
+      {
+       "en": "sick people like me.\"",
+       "ko": "나처럼 아픈 사람들을.\""
+      }
+     ]
+    },
+    {
+     "translation": "그녀가 열여덟 살이었을 때, 그녀는 끔찍한 버스 사고를 당했다.",
+     "contextNote": "칼로의 삶을 바꾼 사고를 말한다.",
+     "roles": [
+      {
+       "q": "she",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "was",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "18",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "she",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "occ": 2,
+       "role": "V"
+      },
+      {
+       "q": "in a terrible bus accident",
+       "role": "A"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When she was 18",
+       "kind": "adverbial"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When she was 18,",
+       "ko": "그녀가 열여덟 살이었을 때,"
+      },
+      {
+       "en": "she was in a terrible bus accident.",
+       "ko": "그녀는 끔찍한 버스 사고를 당했다."
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 오랫동안 병원에 머물렀다.",
+     "contextNote": "사고 뒤의 긴 입원 생활을 말한다.",
+     "roles": [
+      {
+       "q": "She",
+       "role": "S"
+      },
+      {
+       "q": "stayed",
+       "role": "V"
+      },
+      {
+       "q": "in the hospital",
+       "role": "A"
+      },
+      {
+       "q": "for a long time",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "She stayed in the hospital",
+       "ko": "그녀는 병원에 머물렀다"
+      },
+      {
+       "en": "for a long time.",
+       "ko": "오랫동안."
+      }
+     ]
+    },
+    {
+     "translation": "칼로는 그녀 자신에게 말했다. \"나는 약해 보여.",
+     "contextNote": "겉모습은 약해 보인다는 점을 인정한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "look weak"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Kahlo",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "to herself",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "look",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "weak",
+       "role": "C",
+       "level": 1
+      }
+     ],
+     "points": [
+      {
+       "q": "to herself",
+       "label": "재귀대명사",
+       "explanation": "말하는 사람과 듣는 사람이 모두 칼로이므로 재귀대명사 herself를 쓴다. say to oneself는 '혼잣말하다, 스스로에게 말하다'라는 뜻이다."
+      },
+      {
+       "q": "look weak",
+       "label": "연결동사 보어",
+       "star": true,
+       "explanation": "look은 '~해 보이다'라는 뜻의 연결동사로, 뒤에 부사(weakly)가 아니라 형용사 weak를 보어로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Kahlo said to herself,",
+       "ko": "칼로는 그녀 자신에게 말했다."
+      },
+      {
+       "en": "\"I look weak.",
+       "ko": "\"나는 약해 보여."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 나는 누구보다 더 강해.\"",
+     "contextNote": "약해 보이는 겉모습과 강한 속마음을 대비한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "am",
+       "role": "V"
+      },
+      {
+       "q": "stronger",
+       "role": "C"
+      },
+      {
+       "q": "than anyone",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "stronger than anyone",
+       "label": "비교급",
+       "star": true,
+       "explanation": "strong의 비교급 stronger 뒤에 than anyone을 써서 '누구보다 더 강한'이라는 뜻을 나타낸다. 비교급 앞에는 more를 함께 쓰지 않는다(more stronger ×)."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But I am stronger",
+       "ko": "하지만 나는 더 강해"
+      },
+      {
+       "en": "than anyone.\"",
+       "ko": "누구보다.\""
+      }
+     ]
+    },
+    {
+     "translation": "그래서, 칼로는 그녀 자신을 그리기 시작했다.",
+     "contextNote": "강한 자신을 보여 주려고 자화상을 그리기 시작한다.",
+     "roles": [
+      {
+       "q": "So",
+       "role": "M"
+      },
+      {
+       "q": "Kahlo",
+       "role": "S"
+      },
+      {
+       "q": "started",
+       "role": "V"
+      },
+      {
+       "q": "to paint herself",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "herself",
+       "label": "재귀대명사",
+       "explanation": "주어 Kahlo와 그리는 대상이 같은 사람이므로 her가 아니라 herself를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "So, Kahlo started",
+       "ko": "그래서, 칼로는 시작했다"
+      },
+      {
+       "en": "to paint herself.",
+       "ko": "그녀 자신을 그리기."
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 그녀의 일생 동안 55점의 자화상을 그렸다.",
+     "contextNote": "그린 자화상의 수를 말한다.",
+     "roles": [
+      {
+       "q": "She",
+       "role": "S"
+      },
+      {
+       "q": "painted",
+       "role": "V"
+      },
+      {
+       "q": "55 self-portraits",
+       "role": "O"
+      },
+      {
+       "q": "in her lifetime",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "She painted 55 self-portraits",
+       "ko": "그녀는 55점의 자화상을 그렸다"
+      },
+      {
+       "en": "in her lifetime.",
+       "ko": "그녀의 일생 동안."
+      }
+     ]
+    },
+    {
+     "translation": "그녀의 그림들을 보라.",
+     "contextNote": "읽는 이에게 실제 그림을 보게 한다.",
+     "roles": [
+      {
+       "q": "Look at",
+       "role": "V"
+      },
+      {
+       "q": "her paintings",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Look at",
+       "ko": "보라"
+      },
+      {
+       "en": "her paintings.",
+       "ko": "그녀의 그림들을."
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 강해 보이는가?",
+     "contextNote": "앞의 「나는 약해 보여」와 짝을 이루는 질문으로 칼로 이야기를 맺는다.",
+     "roles": [
+      {
+       "q": "Does",
+       "role": "V"
+      },
+      {
+       "q": "she",
+       "role": "S"
+      },
+      {
+       "q": "look",
+       "role": "V"
+      },
+      {
+       "q": "strong",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "look strong",
+       "label": "연결동사 보어",
+       "explanation": "일반동사 의문문이라 Does가 앞에 오고 동사는 원형 look을 쓴다. look 뒤에는 형용사 strong이 보어로 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Does she look",
+       "ko": "그녀는 ~해 보이는가"
+      },
+      {
+       "en": "strong?",
+       "ko": "강해?"
+      }
+     ]
+    }
+   ]
+  },
+  "2a26cb81-acc7-4ffc-ac67-98cfd7044031": {
+   "titleEn": "What Van Gogh and Kahlo Share",
+   "topicEn": "Van Gogh and Kahlo painted themselves for different reasons, but both touch many people's hearts.",
+   "topicKo": "반 고흐와 칼로는 다른 이유로 자신을 그렸지만, 둘의 그림은 모두 많은 사람들의 마음을 감동시킨다.",
+   "sentences": [
+    {
+     "translation": "반 고흐와 칼로는 다른 이유로 그들 자신을 그렸다.",
+     "contextNote": "두 화가의 차이(그린 이유)를 정리한다.",
+     "roles": [
+      {
+       "q": "Van Gogh and Kahlo",
+       "role": "S"
+      },
+      {
+       "q": "painted",
+       "role": "V"
+      },
+      {
+       "q": "themselves",
+       "role": "O"
+      },
+      {
+       "q": "for different reasons",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "themselves",
+       "label": "재귀대명사",
+       "explanation": "주어가 Van Gogh and Kahlo 두 사람이므로 복수 재귀대명사 themselves를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Van Gogh and Kahlo painted themselves",
+       "ko": "반 고흐와 칼로는 그들 자신을 그렸다"
+      },
+      {
+       "en": "for different reasons.",
+       "ko": "다른 이유로."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 그들의 그림은 한 가지 공통점이 있다.",
+     "contextNote": "차이에서 공통점으로 말을 돌린다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "their paintings",
+       "role": "S"
+      },
+      {
+       "q": "have",
+       "role": "V"
+      },
+      {
+       "q": "one thing",
+       "role": "O"
+      },
+      {
+       "q": "in common",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "have one thing in common",
+       "label": "3형식",
+       "star": true,
+       "explanation": "have ~ in common은 '~을 공통으로 가지다'라는 표현이다. one thing이 목적어이고 in common(공통으로)은 그 뒤에서 뜻을 더한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But their paintings have one thing",
+       "ko": "하지만 그들의 그림은 한 가지가 있다"
+      },
+      {
+       "en": "in common.",
+       "ko": "공통으로."
+      }
+     ]
+    },
+    {
+     "translation": "그것들은 많은 사람들의 마음을 감동시킨다.",
+     "contextNote": "앞 문장이 말한 공통점을 밝히며 글을 맺는다.",
+     "tags": [
+      "주제문"
+     ],
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "touch",
+       "role": "V"
+      },
+      {
+       "q": "the hearts of many people",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "They",
+       "label": "대명사 선행사",
+       "gloss": "= their paintings"
+      },
+      {
+       "q": "of many people",
+       "label": "전명구",
+       "gloss": "hearts를 꾸밈"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They touch the hearts",
+       "ko": "그것들은 마음을 감동시킨다"
+      },
+      {
+       "en": "of many people.",
+       "ko": "많은 사람들의."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

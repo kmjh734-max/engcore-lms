@@ -1,0 +1,344 @@
+{
+ "passages": {
+  "6fadbda2-2588-4528-9c37-917ce389d8d4": {
+   "titleEn": "Venice, a City on the Water",
+   "topicEn": "Monica introduces Venice, a beautiful city on the water famous for its canals and historic buildings.",
+   "topicKo": "Monica는 운하와 역사적인 건물들로 유명한 물 위의 아름다운 도시 베네치아를 소개한다.",
+   "sentences": [
+    {
+     "translation": "안녕, 친구들!",
+     "contextNote": "Monica가 세계의 친구들에게 건네는 첫인사이다."
+    },
+    {
+     "translation": "내 이름은 Monica이고, 나는 베네치아에서 살고 있어.",
+     "contextNote": "글쓴이가 자신의 이름과 사는 곳을 밝힌다.",
+     "roles": [{"q": "My name", "role": "S"}, {"q": "is", "role": "V"}, {"q": "Monica", "role": "C"}, {"q": "I", "role": "S"}, {"q": "live", "role": "V"}, {"q": "in Venice", "role": "A"}],
+     "notes": [{"q": "and I live in Venice", "label": "등위절"}],
+     "chunks": [{"en": "My name is Monica,", "ko": "내 이름은 Monica이고,"}, {"en": "and I live", "ko": "나는 살고 있어"}, {"en": "in Venice.", "ko": "베네치아에서."}]
+    },
+    {
+     "translation": "베네치아에 대해 들어 본 적 있니?",
+     "contextNote": "물음을 던져 베네치아 이야기로 들어간다.",
+     "roles": [{"q": "Have", "role": "V"}, {"q": "you", "role": "S"}, {"q": "heard of", "role": "V"}, {"q": "Venice", "role": "O"}],
+     "points": [{"q": "Have you heard of", "label": "현재완료", "explanation": "「Have+주어+과거분사 ~?」는 '~해 본 적 있니?'라고 경험을 묻는 현재완료 의문문이다. hear의 과거분사는 heard이고, hear of는 '~에 대해 듣다'라는 뜻이다."}],
+     "chunks": [{"en": "Have you heard of", "ko": "들어 본 적 있니?"}, {"en": "Venice?", "ko": "베네치아에 대해"}]
+    },
+    {
+     "translation": "그것은 이탈리아의 물 위에 있는 아름다운 도시야.",
+     "contextNote": "베네치아가 어떤 곳인지 설명한다.",
+     "roles": [{"q": "It", "role": "S"}, {"q": "is", "role": "V"}, {"q": "a beautiful city on the water in Italy", "role": "C"}],
+     "notes": [{"q": "It", "label": "대명사 선행사", "gloss": "= Venice"}],
+     "chunks": [{"en": "It is a beautiful city", "ko": "그것은 아름다운 도시야"}, {"en": "on the water", "ko": "물 위에 있는"}, {"en": "in Italy.", "ko": "이탈리아의."}]
+    },
+    {
+     "translation": "베네치아는 운하와 역사적인 건물들로 유명해.",
+     "contextNote": "베네치아가 유명한 까닭을 말한다.",
+     "roles": [{"q": "Venice", "role": "S"}, {"q": "is", "role": "V"}, {"q": "famous", "role": "C"}, {"q": "for its canals and historic buildings", "role": "M"}],
+     "notes": [{"q": "famous for", "label": "필수 전치사", "gloss": "be famous for: '~로 유명하다'"}],
+     "chunks": [{"en": "Venice is famous", "ko": "베네치아는 유명해"}, {"en": "for its canals and historic buildings.", "ko": "운하와 역사적인 건물들로."}]
+    },
+    {
+     "translation": "많은 여행객들이 매년 그것들을 보러 와.",
+     "contextNote": "앞에서 말한 운하와 건물들을 보러 여행객이 온다는 내용이다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "Many tourists", "role": "S"}, {"q": "come", "role": "V"}, {"q": "to see them", "role": "M"}, {"q": "every year", "role": "M"}],
+     "notes": [{"q": "them", "label": "대명사 선행사", "gloss": "= its canals and historic buildings"}],
+     "points": [{"q": "to see them", "label": "부사적 용법", "star": true, "explanation": "to부정사가 '~하기 위해'라는 목적을 나타내어 동사 come을 꾸민다. 그래서 '그것들을 보기 위해 온다'로 해석한다."}],
+     "chunks": [{"en": "Many tourists come", "ko": "많은 여행객들이 와"}, {"en": "to see them", "ko": "그것들을 보러"}, {"en": "every year.", "ko": "매년."}]
+    }
+   ]
+  },
+  "1999eaf2-3185-485b-a427-4a49a188c309": {
+   "titleEn": "Venice in Danger",
+   "topicEn": "As the Earth gets warmer, the water in Venice rises, so Monica's city needs help.",
+   "topicKo": "지구가 더워질수록 베네치아의 수위가 높아져서 Monica의 도시는 도움이 필요하다.",
+   "sentences": [
+    {
+     "translation": "그런데 지금, 우리는 큰 문제를 겪고 있어.",
+     "contextNote": "But으로 앞의 아름다운 모습과 대비하며 문제를 꺼낸다.",
+     "roles": [{"q": "now", "role": "M"}, {"q": "we", "role": "S"}, {"q": "have", "role": "V"}, {"q": "a big problem", "role": "O"}],
+     "chunks": [{"en": "But now,", "ko": "그런데 지금,"}, {"en": "we have a big problem.", "ko": "우리는 큰 문제를 겪고 있어."}]
+    },
+    {
+     "translation": "지난주에, 거리가 침수됐어.",
+     "contextNote": "문제의 구체적인 모습으로 지난주의 침수를 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "were flooded"}],
+     "roles": [{"q": "Last week", "role": "M"}, {"q": "the streets", "role": "S"}, {"q": "were flooded", "role": "V"}],
+     "points": [{"q": "were flooded", "label": "수동태", "star": true, "explanation": "거리는 물에 잠기게 되는 대상이므로 수동태 「be동사+과거분사」를 쓴다. 주어가 복수이고 Last week가 있어 지난 일이므로 be동사는 were이다."}],
+     "chunks": [{"en": "Last week,", "ko": "지난주에,"}, {"en": "the streets were flooded.", "ko": "거리가 침수됐어."}]
+    },
+    {
+     "translation": "나는 학교에 갈 수 없었고, 우리 부모님의 빵집은 문을 닫아야 했어.",
+     "contextNote": "침수 때문에 겪은 불편을 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "couldn't go", "role": "V"}, {"q": "to school", "role": "M"}, {"q": "my parents' bakery", "role": "S"}, {"q": "had to close", "role": "V"}],
+     "notes": [{"q": "and my parents' bakery had to close", "label": "등위절"}, {"q": "my parents' bakery", "label": "소유격", "gloss": "-s로 끝나는 복수명사의 소유격은 '만 붙임"}],
+     "points": [{"q": "had to close", "label": "조동사 의미", "explanation": "had to는 have to의 과거형으로 '~해야 했다'라는 뜻이다. must에는 과거형이 없으므로 과거의 의무는 had to로 나타내고, 뒤에는 동사원형이 온다."}],
+     "chunks": [{"en": "I couldn't go to school,", "ko": "나는 학교에 갈 수 없었고,"}, {"en": "and my parents' bakery", "ko": "우리 부모님의 빵집은"}, {"en": "had to close.", "ko": "문을 닫아야 했어."}]
+    },
+    {
+     "translation": "나는 줄곧 긴 장화를 신어야 했어.",
+     "contextNote": "물이 차 있어 생긴 일상의 불편을 하나 더 든다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "had to wear", "role": "V"}, {"q": "tall rain boots", "role": "O"}, {"q": "all the time", "role": "M"}],
+     "chunks": [{"en": "I had to wear", "ko": "나는 신어야 했어"}, {"en": "tall rain boots", "ko": "긴 장화를"}, {"en": "all the time.", "ko": "줄곧."}]
+    },
+    {
+     "translation": "나는 정말 걱정이야.",
+     "contextNote": "상황을 보는 Monica의 마음을 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "really", "role": "M"}, {"q": "worried", "role": "C"}],
+     "points": [{"q": "worried", "label": "감정분사", "explanation": "사람이 걱정을 느끼는 것이므로 과거분사형 형용사 worried를 쓴다. 걱정을 끼치는 대상을 말할 때는 worrying을 쓴다."}],
+     "chunks": [{"en": "I'm really", "ko": "나는 정말"}, {"en": "worried.", "ko": "걱정이야."}]
+    },
+    {
+     "translation": "지구가 더 더워질수록 베네치아의 수위는 더 상승해.",
+     "contextNote": "베네치아 침수의 원인을 지구 온난화와 연결하는 이 부분의 중심 문장이다.",
+     "tags": ["주제문", "어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "The warmer the Earth gets, the higher the water in Venice rises"}],
+     "roles": [{"q": "The warmer", "role": "C", "level": 1}, {"q": "the Earth", "role": "S", "level": 1}, {"q": "gets", "role": "V", "level": 1}, {"q": "the higher", "role": "M"}, {"q": "the water in Venice", "role": "S"}, {"q": "rises", "role": "V"}],
+     "brackets": [{"q": "The warmer the Earth gets", "kind": "adverbial"}],
+     "points": [{"q": "The warmer the Earth gets, the higher the water in Venice rises", "label": "the 비교급, the 비교급", "star": true, "rewrite": "As the Earth gets warmer, the water in Venice rises higher.", "explanation": "「The+비교급+주어+동사 ~, the+비교급+주어+동사 …」는 '~할수록 더 …하다'라는 뜻이다. warmer는 동사 gets의 보어로 쓰인 형용사이고, higher는 동사 rises를 꾸미는 부사인데, 둘 다 the와 함께 절 앞으로 나왔다."}],
+     "chunks": [{"en": "The warmer the Earth gets,", "ko": "지구가 더 더워질수록"}, {"en": "the higher the water in Venice rises.", "ko": "베네치아의 수위는 더 상승해."}]
+    },
+    {
+     "translation": "베네치아는 곧 물에 잠길 수도 있어.",
+     "contextNote": "수위가 계속 오르면 벌어질 일을 내다본다.",
+     "roles": [{"q": "Venice", "role": "S"}, {"q": "could be", "role": "V"}, {"q": "underwater", "role": "C"}, {"q": "soon", "role": "M"}],
+     "notes": [{"q": "could be", "label": "조동사 의미", "gloss": "could: '~일 수도 있다'(가능성)"}],
+     "chunks": [{"en": "Venice could be", "ko": "베네치아는 ~일 수도 있어"}, {"en": "underwater soon.", "ko": "곧 물에 잠긴 상태."}]
+    },
+    {
+     "translation": "나의 도시는 너희들의 도움이 필요해!",
+     "contextNote": "세계의 친구들에게 도움을 청하며 글을 맺는다.",
+     "roles": [{"q": "My city", "role": "S"}, {"q": "needs", "role": "V"}, {"q": "your help", "role": "O"}],
+     "chunks": [{"en": "My city needs", "ko": "나의 도시는 필요해"}, {"en": "your help!", "ko": "너희들의 도움이!"}]
+    }
+   ]
+  },
+  "345bf1bf-219e-4381-80ce-6aa6d7f33374": {
+   "titleEn": "Eating Less Meat for the Earth",
+   "topicEn": "Timothy is trying to eat less meat because eating meat makes the Earth hotter.",
+   "topicKo": "고기를 먹는 것이 지구를 더 뜨겁게 만들기 때문에 Timothy는 고기를 덜 먹으려고 노력하고 있다.",
+   "sentences": [
+    {
+     "translation": "안녕, Monica!",
+     "contextNote": "Monica의 글에 Timothy가 답하는 첫인사이다."
+    },
+    {
+     "translation": "나는 미국의 Timothy야.",
+     "contextNote": "글쓴이가 자신을 소개한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "Timothy from the United States", "role": "C"}],
+     "chunks": [{"en": "I'm Timothy", "ko": "나는 Timothy야"}, {"en": "from the United States.", "ko": "미국의."}]
+    },
+    {
+     "translation": "우리 가족은 3년 전에 베네치아를 방문했고 우리는 그곳을 아주 좋아했어!",
+     "contextNote": "베네치아에 가 본 경험을 말해 소식에 마음을 쓰는 까닭을 보여 준다.",
+     "roles": [{"q": "My family", "role": "S"}, {"q": "visited", "role": "V"}, {"q": "Venice", "role": "O"}, {"q": "three years ago", "role": "M"}, {"q": "we", "role": "S"}, {"q": "loved", "role": "V"}, {"q": "it", "role": "O"}],
+     "notes": [{"q": "and we loved it", "label": "등위절"}, {"q": "it", "label": "대명사 선행사", "gloss": "= Venice"}],
+     "points": [{"q": "visited Venice three years ago", "label": "시간 부사 시제", "explanation": "three years ago처럼 분명한 과거를 나타내는 말이 있으면 과거 시제를 쓴다. 현재완료 have visited는 함께 쓰지 않는다."}],
+     "chunks": [{"en": "My family visited Venice", "ko": "우리 가족은 베네치아를 방문했고"}, {"en": "three years ago", "ko": "3년 전에"}, {"en": "and we loved it!", "ko": "우리는 그곳을 아주 좋아했어!"}]
+    },
+    {
+     "translation": "나는 네 소식을 듣고 놀랐고 슬퍼.",
+     "contextNote": "Monica의 소식을 들은 Timothy의 마음을 말한다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "I", "role": "S"}, {"q": "am", "role": "V"}, {"q": "surprised and sad", "role": "C"}, {"q": "to hear your news", "role": "M"}],
+     "points": [{"q": "to hear your news", "label": "부사적 용법", "star": true, "explanation": "to부정사가 surprised, sad 같은 감정을 나타내는 말 뒤에 와서 그 감정의 원인을 나타낸다. '~해서, ~하고'로 해석한다."}],
+     "chunks": [{"en": "I am surprised and sad", "ko": "나는 놀랐고 슬퍼"}, {"en": "to hear your news.", "ko": "네 소식을 듣고."}]
+    },
+    {
+     "translation": "나는 너희 도시와 지구를 돕기 위해 내 역할을 하고 싶어.",
+     "contextNote": "자신도 행동하겠다는 뜻을 밝힌다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "want", "role": "V"}, {"q": "to do my part to help your city and the Earth", "role": "O"}],
+     "points": [
+      {"q": "want to do", "label": "to부정사", "explanation": "want는 to부정사를 목적어로 받아 '~하고 싶다'는 뜻을 나타낸다."},
+      {"q": "to help your city and the Earth", "label": "부사적 용법", "explanation": "to help는 '~을 돕기 위해'라는 목적을 나타낸다. 앞의 to do는 want의 목적어이므로 쓰임이 다르다."}
+     ],
+     "chunks": [{"en": "I want to do my part", "ko": "나는 내 역할을 하고 싶어"}, {"en": "to help your city and the Earth.", "ko": "너희 도시와 지구를 돕기 위해."}]
+    },
+    {
+     "translation": "나는 최근에 재미있는 것을 알게 됐어.",
+     "contextNote": "다음 문장에 나올 고기와 온난화의 관계를 끌어들인다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "something interesting"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "recently", "role": "M"}, {"q": "found out", "role": "V"}, {"q": "something interesting", "role": "O"}],
+     "points": [{"q": "something interesting", "label": "명사 수식 형용사", "star": true, "explanation": "-thing으로 끝나는 대명사는 형용사가 뒤에서 꾸민다. 그래서 interesting something이 아니라 something interesting으로 쓴다."}],
+     "chunks": [{"en": "I recently found out", "ko": "나는 최근에 알게 됐어"}, {"en": "something interesting.", "ko": "재미있는 것을."}]
+    },
+    {
+     "translation": "우리가 더 많은 고기를 먹을수록 우리의 행성은 더 뜨거워져.",
+     "contextNote": "Timothy의 글에서 핵심이 되는 사실로, 고기 소비와 지구 온난화의 관계를 밝힌다.",
+     "tags": ["주제문", "어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "The more meat we eat, the hotter our planet gets"}],
+     "roles": [{"q": "The more meat", "role": "O", "level": 1}, {"q": "we", "role": "S", "level": 1}, {"q": "eat", "role": "V", "level": 1}, {"q": "the hotter", "role": "C"}, {"q": "our planet", "role": "S"}, {"q": "gets", "role": "V"}],
+     "brackets": [{"q": "The more meat we eat", "kind": "adverbial"}],
+     "points": [{"q": "The more meat we eat, the hotter our planet gets", "label": "the 비교급, the 비교급", "star": true, "rewrite": "As we eat more meat, our planet gets hotter.", "explanation": "「The+비교급+주어+동사 ~, the+비교급+주어+동사 …」는 '~할수록 더 …하다'라는 뜻이다. more는 명사 meat를 꾸미므로 The more meat처럼 명사까지 함께 앞으로 나온다. hotter는 gets의 보어로 쓰인 형용사이다."}],
+     "chunks": [{"en": "The more meat we eat,", "ko": "우리가 더 많은 고기를 먹을수록"}, {"en": "the hotter our planet gets.", "ko": "우리의 행성은 더 뜨거워져."}]
+    },
+    {
+     "translation": "이것은 동물 농장을 만들기 위해 많은 나무가 베어지기 때문이야.",
+     "contextNote": "앞 문장의 까닭을 설명한다. This는 앞 문장 내용을 가리킨다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "are cut down"}],
+     "roles": [{"q": "This", "role": "S"}, {"q": "is", "role": "V"}, {"q": "because lots of trees are cut down to make animal farms", "role": "C"}, {"q": "lots of trees", "role": "S", "level": 1}, {"q": "are cut down", "role": "V", "level": 1}, {"q": "to make animal farms", "role": "M", "level": 1}],
+     "points": [
+      {"q": "because lots of trees are cut down to make animal farms", "label": "이유 부사절", "explanation": "This is because ~는 '이것은 ~ 때문이다'라는 뜻으로, because 뒤에 앞 문장의 이유가 온다."},
+      {"q": "are cut down", "label": "구동사 수동", "star": true, "explanation": "cut down은 '베다'라는 뜻의 구동사이다. 나무는 베어지는 대상이므로 「be동사+과거분사」로 쓰며, cut의 과거분사는 cut이다. down을 빠뜨리지 않는다. 주어의 중심이 복수 trees이므로 be동사는 are이다."},
+      {"q": "to make animal farms", "label": "부사적 용법", "explanation": "to부정사가 '~을 만들기 위해'라는 목적을 나타낸다."}
+     ],
+     "chunks": [{"en": "This is because", "ko": "이것은 ~ 때문이야"}, {"en": "lots of trees are cut down", "ko": "많은 나무가 베어지기"}, {"en": "to make animal farms.", "ko": "동물 농장을 만들기 위해."}]
+    },
+    {
+     "translation": "이것은 온실가스를 증가시켜.",
+     "contextNote": "나무가 베어져서 생기는 결과를 말한다. This는 앞 문장 내용을 가리킨다.",
+     "roles": [{"q": "This", "role": "S"}, {"q": "increases", "role": "V"}, {"q": "greenhouse gases", "role": "O"}],
+     "notes": [{"q": "This", "label": "대명사 선행사", "gloss": "= 많은 나무가 베어지는 것"}],
+     "chunks": [{"en": "This increases", "ko": "이것은 증가시켜"}, {"en": "greenhouse gases.", "ko": "온실가스를."}]
+    },
+    {
+     "translation": "또한, 소는 많은 가스를 배출해.",
+     "contextNote": "고기가 온난화를 부르는 또 다른 까닭을 Also로 덧붙인다.",
+     "roles": [{"q": "Also", "role": "M"}, {"q": "cows", "role": "S"}, {"q": "pass", "role": "V"}, {"q": "a lot of gas", "role": "O"}],
+     "chunks": [{"en": "Also,", "ko": "또한,"}, {"en": "cows pass a lot of gas.", "ko": "소는 많은 가스를 배출해."}]
+    },
+    {
+     "translation": "고약한 냄새가 나!",
+     "contextNote": "소의 가스에 대한 글쓴이의 짧은 반응이다."
+    },
+    {
+     "translation": "그런데 이것이 최악인 부분은 아니야.",
+     "contextNote": "냄새보다 더 나쁜 문제가 있음을 예고한다.",
+     "roles": [{"q": "this", "role": "S"}, {"q": "is not", "role": "V"}, {"q": "the worst part", "role": "C"}],
+     "notes": [{"q": "the worst part", "label": "최상급", "gloss": "bad - worse - worst"}],
+     "chunks": [{"en": "But this is not", "ko": "그런데 이것이 ~은 아니야"}, {"en": "the worst part.", "ko": "최악인 부분."}]
+    },
+    {
+     "translation": "소에게서 나온 가스는 또한 온실가스에 추가돼.",
+     "contextNote": "앞 문장에서 예고한 더 나쁜 문제를 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "The gas from cows also adds"}],
+     "roles": [{"q": "The gas from cows", "role": "S"}, {"q": "also", "role": "M"}, {"q": "adds", "role": "V"}, {"q": "to greenhouse gases", "role": "A"}],
+     "points": [{"q": "The gas from cows also adds", "label": "먼 주어 수일치", "star": true, "explanation": "주어의 중심은 단수인 The gas이므로 동사는 adds를 쓴다. from cows는 앞의 gas를 꾸미는 말이므로 복수 cows에 수를 맞추지 않는다."}],
+     "chunks": [{"en": "The gas from cows", "ko": "소에게서 나온 가스는"}, {"en": "also adds", "ko": "또한 추가돼"}, {"en": "to greenhouse gases.", "ko": "온실가스에."}]
+    },
+    {
+     "translation": "온실가스는 지구를 더 뜨겁게 만들어.",
+     "contextNote": "고기 소비가 지구를 뜨겁게 하는 과정의 마지막 단계이다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "make the Earth hotter"}],
+     "roles": [{"q": "Greenhouse gases", "role": "S"}, {"q": "make", "role": "V"}, {"q": "the Earth", "role": "O"}, {"q": "hotter", "role": "C"}],
+     "points": [{"q": "make the Earth hotter", "label": "목적격보어 형용사", "star": true, "explanation": "「make+목적어+형용사」는 '~을 …하게 만들다'라는 뜻이다. 목적격보어 자리에는 부사를 쓰지 않으므로 형용사 hot의 비교급 hotter를 쓴다."}],
+     "chunks": [{"en": "Greenhouse gases make the Earth", "ko": "온실가스는 지구를 만들어"}, {"en": "hotter.", "ko": "더 뜨겁게."}]
+    },
+    {
+     "translation": "그래서, 나는 지구 온난화를 늦추기 위해서 고기를 덜 먹으려고 노력하고 있어.",
+     "contextNote": "앞에서 밝힌 사실에 따라 Timothy가 실천하는 일을 말한다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m trying", "role": "V"}, {"q": "to eat less meat", "role": "O"}, {"q": "to slow down global warming", "role": "M"}],
+     "notes": [{"q": "less meat", "label": "비교급", "gloss": "little - less - least: '더 적은'"}],
+     "points": [
+      {"q": "trying to eat", "label": "try 보충어", "explanation": "「try+to부정사」는 '~하려고 노력하다'라는 뜻이다. 「try+동명사」는 '시험 삼아 ~해 보다'라는 뜻이므로 구별한다."},
+      {"q": "to slow down global warming", "label": "부사적 용법", "star": true, "explanation": "to부정사가 '~하기 위해'라는 목적을 나타낸다. 앞의 to eat은 trying의 목적어이고, 이 to slow down은 수식어이다."}
+     ],
+     "chunks": [{"en": "So, I'm trying", "ko": "그래서, 나는 노력하고 있어"}, {"en": "to eat less meat", "ko": "고기를 덜 먹으려고"}, {"en": "to slow down global warming.", "ko": "지구 온난화를 늦추기 위해서."}]
+    },
+    {
+     "translation": "나의 식습관을 바꾸는 것은 쉽지 않지만, 나는 최선을 다하고 있어.",
+     "contextNote": "실천이 어렵지만 계속하겠다는 다짐으로 글을 맺는다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "It isn't easy to change my eating habits"}],
+     "roles": [{"q": "It", "role": "S"}, {"q": "isn't", "role": "V"}, {"q": "easy", "role": "C"}, {"q": "to change my eating habits", "role": "S"}, {"q": "I", "role": "S"}, {"q": "'m doing", "role": "V"}, {"q": "my best", "role": "O"}],
+     "notes": [{"q": "but I'm doing my best", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "points": [{"q": "It isn't easy to change my eating habits", "label": "가주어+to부정사", "star": true, "rewrite": "To change my eating habits isn't easy.", "explanation": "It은 형식상의 주어(가주어)로 해석하지 않고, 진짜 주어는 뒤의 to change my eating habits이다. 긴 to부정사 주어를 뒤로 보내고 그 자리에 It을 쓴 문장이다."}],
+     "chunks": [{"en": "It isn't easy", "ko": "쉽지 않지만"}, {"en": "to change my eating habits,", "ko": "나의 식습관을 바꾸는 것은"}, {"en": "but I'm doing my best.", "ko": "나는 최선을 다하고 있어."}]
+    }
+   ]
+  },
+  "985b0315-827c-406a-9901-2d7e6aa630bc": {
+   "titleEn": "The 3R Campaign for Venice",
+   "topicEn": "Suin and her friends started the 3R campaign to help Venice.",
+   "topicKo": "수인이와 친구들은 베네치아를 돕기 위해 3R 캠페인을 시작했다.",
+   "sentences": [
+    {
+     "translation": "안녕, 나는 한국의 수인이야.",
+     "contextNote": "세 번째 글쓴이가 자신을 소개한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "Suin from Korea", "role": "C"}],
+     "chunks": [{"en": "Hello,", "ko": "안녕,"}, {"en": "I'm Suin from Korea.", "ko": "나는 한국의 수인이야."}]
+    },
+    {
+     "translation": "매년 여름에 여기는 비가 많이 와.",
+     "contextNote": "한국의 여름 날씨를 말해 홍수 이야기로 이어 간다.",
+     "roles": [{"q": "Every summer", "role": "M"}, {"q": "it", "role": "S"}, {"q": "rains", "role": "V"}, {"q": "a lot", "role": "M"}, {"q": "here", "role": "M"}],
+     "notes": [{"q": "it", "label": "비인칭 주어 it", "gloss": "날씨를 나타냄, 해석하지 않음"}],
+     "chunks": [{"en": "Every summer,", "ko": "매년 여름에"}, {"en": "it rains a lot", "ko": "비가 많이 와"}, {"en": "here.", "ko": "여기는."}]
+    },
+    {
+     "translation": "때때로, 우리는 홍수를 겪고 그것들은 정말 무서워.",
+     "contextNote": "수인이도 홍수를 겪어 보았음을 말한다.",
+     "roles": [{"q": "Sometimes", "role": "M"}, {"q": "we", "role": "S"}, {"q": "have", "role": "V"}, {"q": "floods", "role": "O"}, {"q": "they", "role": "S"}, {"q": "are", "role": "V"}, {"q": "really", "role": "M"}, {"q": "scary", "role": "C"}],
+     "notes": [{"q": "they", "label": "대명사 선행사", "gloss": "= floods"}],
+     "chunks": [{"en": "Sometimes,", "ko": "때때로,"}, {"en": "we have floods", "ko": "우리는 홍수를 겪고"}, {"en": "and they are really scary.", "ko": "그것들은 정말 무서워."}]
+    },
+    {
+     "translation": "베네치아의 상황도 무서울 게 틀림없어.",
+     "contextNote": "자신의 경험에 비추어 베네치아의 상황을 헤아린다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "must be"}],
+     "roles": [{"q": "The situation in Venice", "role": "S"}, {"q": "must be", "role": "V"}, {"q": "scary", "role": "C"}, {"q": "too", "role": "M"}],
+     "points": [{"q": "must be", "label": "조동사 의미", "star": true, "explanation": "must는 여기서 '~임에 틀림없다'라는 강한 추측을 나타낸다. '~해야 한다'라는 의무의 뜻과 구별하며, 뒤에는 동사원형 be가 온다."}],
+     "chunks": [{"en": "The situation in Venice", "ko": "베네치아의 상황도"}, {"en": "must be scary, too.", "ko": "무서울 게 틀림없어."}]
+    },
+    {
+     "translation": "나는 베네치아에 가 본 적이 없지만, 그곳의 많은 아름다운 사진들을 본 적이 있어.",
+     "contextNote": "직접 가 보지는 못했지만 베네치아를 알고 있음을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "'ve never been to"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "'ve never been", "role": "V"}, {"q": "to Venice", "role": "A"}, {"q": "I", "occ": 2, "role": "S"}, {"q": "have seen", "role": "V"}, {"q": "many beautiful pictures of it", "role": "O"}],
+     "notes": [{"q": "but I have seen many beautiful pictures of it", "label": "등위절", "gloss": "but: 앞 내용과 반대"}, {"q": "it", "label": "대명사 선행사", "gloss": "= Venice"}],
+     "points": [{"q": "'ve never been to", "label": "현재완료", "star": true, "explanation": "「have been to+장소」는 '~에 가 본 적이 있다'라는 경험을 나타내고, never를 넣으면 '가 본 적이 없다'가 된다. have gone to는 '~에 가 버렸다'라는 뜻이므로 구별한다."}],
+     "chunks": [{"en": "I've never been to Venice,", "ko": "나는 베네치아에 가 본 적이 없지만,"}, {"en": "but I have seen", "ko": "본 적이 있어"}, {"en": "many beautiful pictures of it.", "ko": "그곳의 많은 아름다운 사진들을."}]
+    },
+    {
+     "translation": "나는 너희 도시의 홍수에 관해 친구들과 이야기했어.",
+     "contextNote": "베네치아 소식을 친구들과 나누었다고 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "talked", "role": "V"}, {"q": "to my friends", "role": "M"}, {"q": "about the floods in your city", "role": "M"}],
+     "chunks": [{"en": "I talked to my friends", "ko": "나는 친구들과 이야기했어"}, {"en": "about the floods in your city.", "ko": "너희 도시의 홍수에 관해."}]
+    },
+    {
+     "translation": "우리는 베네치아를 돕고 싶어서, 3R 캠페인을 시작했어.",
+     "contextNote": "수인이와 친구들이 시작한 실천을 소개한다.",
+     "roles": [{"q": "We", "role": "S"}, {"q": "wanted", "role": "V"}, {"q": "to help Venice", "role": "O"}, {"q": "we", "role": "S"}, {"q": "started", "role": "V"}, {"q": "the 3R campaign", "role": "O"}],
+     "notes": [{"q": "so we started the 3R campaign", "label": "등위절", "gloss": "so: '그래서'"}],
+     "chunks": [{"en": "We wanted to help Venice,", "ko": "우리는 베네치아를 돕고 싶어서,"}, {"en": "so we started the 3R campaign.", "ko": "3R 캠페인을 시작했어."}]
+    },
+    {
+     "translation": "3R은 '재활용하다', '재사용하다', 그리고 '줄이다'야.",
+     "contextNote": "3R이 무엇인지 풀이한다.",
+     "roles": [{"q": "The 3Rs", "role": "S"}, {"q": "are", "role": "V"}, {"q": "Recycle, Reuse, and Reduce", "role": "C"}],
+     "chunks": [{"en": "The 3Rs are", "ko": "3R은 ~야"}, {"en": "Recycle, Reuse, and Reduce.", "ko": "'재활용하다', '재사용하다', 그리고 '줄이다'."}]
+    },
+    {
+     "translation": "지금, 우리 학교에서 많은 학생들이 이 세 가지를 매일 하고 있어.",
+     "contextNote": "캠페인이 학교에 퍼져 있는 모습을 말한다.",
+     "roles": [{"q": "Now", "role": "M"}, {"q": "many students at my school", "role": "S"}, {"q": "are doing", "role": "V"}, {"q": "these three things", "role": "O"}, {"q": "every day", "role": "M"}],
+     "points": [{"q": "are doing", "label": "현재진행", "explanation": "「be동사+-ing」로 지금 하고 있는 일을 나타낸다. 주어의 중심이 복수 students이므로 be동사는 are이다."}],
+     "chunks": [{"en": "Now,", "ko": "지금,"}, {"en": "many students at my school", "ko": "우리 학교에서 많은 학생들이"}, {"en": "are doing these three things", "ko": "이 세 가지를 하고 있어"}, {"en": "every day.", "ko": "매일."}]
+    },
+    {
+     "translation": "베네치아를 위해 우리의 역할을 하는 것이 중요해.",
+     "contextNote": "캠페인을 하는 까닭을 밝히는 수인이 글의 중심 문장이다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "It is important to do our part"}],
+     "roles": [{"q": "It", "role": "S"}, {"q": "is", "role": "V"}, {"q": "important", "role": "C"}, {"q": "to do our part for Venice", "role": "S"}],
+     "points": [{"q": "It is important to do our part for Venice", "label": "가주어+to부정사", "star": true, "rewrite": "To do our part for Venice is important.", "explanation": "It은 가주어로 해석하지 않고, 진짜 주어는 뒤의 to do our part for Venice이다. 그래서 '베네치아를 위해 우리의 역할을 하는 것이'로 해석한다."}],
+     "chunks": [{"en": "It is important", "ko": "중요해"}, {"en": "to do our part for Venice.", "ko": "베네치아를 위해 우리의 역할을 하는 것이."}]
+    },
+    {
+     "translation": "함께, 우리는 변화를 만들 수 있어!",
+     "contextNote": "다 함께 행동하자는 뜻을 담아 글을 맺는다. make a difference는 '변화를 가져오다'라는 뜻이다.",
+     "roles": [{"q": "Together", "role": "M"}, {"q": "we", "role": "S"}, {"q": "can make", "role": "V"}, {"q": "a difference", "role": "O"}],
+     "chunks": [{"en": "Together,", "ko": "함께,"}, {"en": "we can make a difference!", "ko": "우리는 변화를 만들 수 있어!"}]
+    }
+   ]
+  }
+ }
+}

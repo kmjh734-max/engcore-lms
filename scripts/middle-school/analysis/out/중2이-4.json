@@ -1,0 +1,2086 @@
+{
+ "passages": {
+  "4c01ba48-5afe-43ed-9184-f01d834f15b6": {
+   "titleEn": "The Start of My London Trip",
+   "topicEn": "The writer met an old friend, Amelia, and she showed the writer many places in London.",
+   "topicKo": "글쓴이는 오랜 친구 Amelia를 만났고, 그녀는 글쓴이를 런던의 많은 곳에 데려가 주었다.",
+   "sentences": [
+    {
+     "translation": "런던으로 다녀온 나의 여행에 대해 너에게 어서 말해 주고 싶다.",
+     "contextNote": "여행 이야기를 들려주고 싶은 설렘으로 글을 연다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "can't wait",
+       "role": "V"
+      },
+      {
+       "q": "to tell you about my trip to London",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "can't wait to tell",
+       "label": "to부정사",
+       "star": true,
+       "explanation": "「can't wait to+동사원형」은 '어서 ~하고 싶다'는 뜻이다. wait 뒤에 to부정사를 쓰고 동명사를 쓰지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I can't wait to tell you",
+       "ko": "너에게 어서 말해 주고 싶다"
+      },
+      {
+       "en": "about my trip to London.",
+       "ko": "런던으로 다녀온 나의 여행에 대해."
+      }
+     ]
+    },
+    {
+     "translation": "비행은 인천에서부터 15시간이 걸렸다.",
+     "contextNote": "런던까지 가는 길을 말한다.",
+     "roles": [
+      {
+       "q": "The flight",
+       "role": "S"
+      },
+      {
+       "q": "took",
+       "role": "V"
+      },
+      {
+       "q": "15 hours",
+       "role": "O"
+      },
+      {
+       "q": "from Incheon",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "took",
+       "label": "동사",
+       "gloss": "take: '(시간이) 걸리다'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The flight took 15 hours",
+       "ko": "비행은 15시간이 걸렸다"
+      },
+      {
+       "en": "from Incheon.",
+       "ko": "인천에서부터."
+      }
+     ]
+    },
+    {
+     "translation": "내가 내 친구 Amelia를 공항에서 만났을 때, 나는 매우 신이 났다.",
+     "contextNote": "런던에 도착해 친구를 만난 기쁨을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "met",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "my friend Amelia",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "at the airport",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "I",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "so excited",
+       "role": "C"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When I met my friend Amelia at the airport",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "When I met my friend Amelia at the airport",
+       "label": "시간 부사절",
+       "gloss": "when: '~할 때'"
+      }
+     ],
+     "points": [
+      {
+       "q": "excited",
+       "label": "감정분사",
+       "explanation": "사람이 신이 나는 감정을 느끼는 것이므로 과거분사형 형용사 excited를 쓴다. 신나게 하는 대상을 말할 때는 exciting을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When I met my friend Amelia",
+       "ko": "내가 내 친구 Amelia를 만났을 때,"
+      },
+      {
+       "en": "at the airport,",
+       "ko": "공항에서"
+      },
+      {
+       "en": "I was so excited.",
+       "ko": "나는 매우 신이 났다."
+      }
+     ]
+    },
+    {
+     "translation": "내가 10살이었을 때부터 나는 그녀와 알고 지냈다.",
+     "contextNote": "Amelia와의 오랜 친구 사이를 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "have known"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "have known",
+       "role": "V"
+      },
+      {
+       "q": "her",
+       "role": "O"
+      },
+      {
+       "q": "since I was 10 years old",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "occ": 2,
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "was",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "10 years old",
+       "role": "C",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "since I was 10 years old",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "since I was 10 years old",
+       "label": "시간 부사절",
+       "gloss": "since: '~한 이후로'"
+      }
+     ],
+     "points": [
+      {
+       "q": "have known",
+       "label": "현재완료",
+       "star": true,
+       "explanation": "「have+과거분사」는 과거에 시작된 일이 지금까지 이어짐을 나타내는 현재완료(계속)이다. since절 안에는 과거 시제(was)를 쓰고, 주절에는 과거 시제 knew가 아니라 현재완료를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I have known her",
+       "ko": "나는 그녀와 알고 지냈다"
+      },
+      {
+       "en": "since I was 10 years old.",
+       "ko": "내가 10살이었을 때부터."
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 나를 런던의 많은 곳에 데려가 주었다.",
+     "contextNote": "앞으로 소개할 여행지들을 예고한다.",
+     "roles": [
+      {
+       "q": "She",
+       "role": "S"
+      },
+      {
+       "q": "took",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "O"
+      },
+      {
+       "q": "to many places in London",
+       "role": "A"
+      }
+     ],
+     "notes": [
+      {
+       "q": "She",
+       "label": "대명사 선행사",
+       "gloss": "= Amelia"
+      },
+      {
+       "q": "in London",
+       "label": "전명구",
+       "gloss": "many places를 꾸밈"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "She took me",
+       "ko": "그녀는 나를 데려가 주었다"
+      },
+      {
+       "en": "to many places in London.",
+       "ko": "런던의 많은 곳에."
+      }
+     ]
+    },
+    {
+     "translation": "나의 굉장한 여행에 나와 함께 가 보라!",
+     "contextNote": "읽는 이를 여행 이야기로 초대한다.",
+     "roles": [
+      {
+       "q": "Come",
+       "role": "V"
+      },
+      {
+       "q": "with me",
+       "role": "M"
+      },
+      {
+       "q": "on my amazing trip",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "amazing",
+       "label": "감정분사",
+       "explanation": "여행이 놀라움을 주는 것이므로 현재분사형 형용사 amazing을 쓴다. 사람이 놀라움을 느낄 때는 amazed를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Come with me",
+       "ko": "나와 함께 가 보라"
+      },
+      {
+       "en": "on my amazing trip!",
+       "ko": "나의 굉장한 여행에!"
+      }
+     ]
+    }
+   ]
+  },
+  "68e5f1c2-89ea-428a-b407-ff815ff6ed0c": {
+   "titleEn": "A Visit to Buckingham Palace",
+   "topicEn": "At Buckingham Palace, the writer saw the King's Guard, who stood still like statues.",
+   "topicKo": "버킹엄 궁전에서 글쓴이는 조각상처럼 가만히 서 있는 국왕 근위대를 보았다.",
+   "sentences": [
+    {
+     "translation": "우리는 유명한 빨간색 버스에 올라탔고 첫 번째 정류장은 버킹엄 궁전이었다.",
+     "contextNote": "여행의 첫 장소를 소개한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "got on",
+       "role": "V"
+      },
+      {
+       "q": "the famous red bus",
+       "role": "O"
+      },
+      {
+       "q": "the first stop",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "Buckingham Palace",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and the first stop was Buckingham Palace",
+       "label": "등위절"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We got on the famous red bus",
+       "ko": "우리는 유명한 빨간색 버스에 올라탔고"
+      },
+      {
+       "en": "and the first stop was Buckingham Palace.",
+       "ko": "첫 번째 정류장은 버킹엄 궁전이었다."
+      }
+     ]
+    },
+    {
+     "translation": "왕과 그의 가족이 그곳에 산다.",
+     "contextNote": "버킹엄 궁전이 어떤 곳인지 말한다.",
+     "roles": [
+      {
+       "q": "The King and his family",
+       "role": "S"
+      },
+      {
+       "q": "live",
+       "role": "V"
+      },
+      {
+       "q": "there",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The King and his family live",
+       "ko": "왕과 그의 가족이 산다"
+      },
+      {
+       "en": "there.",
+       "ko": "그곳에."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 국왕 근위대를 보았다.",
+     "contextNote": "궁전에서 본 것을 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "saw",
+       "role": "V"
+      },
+      {
+       "q": "the King's Guard",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We saw",
+       "ko": "우리는 보았다"
+      },
+      {
+       "en": "the King's Guard.",
+       "ko": "국왕 근위대를."
+      }
+     ]
+    },
+    {
+     "translation": "근위병들은 빨간색 재킷과 높은 검은색 모자를 쓰고 있었다.",
+     "contextNote": "근위병들의 옷차림을 묘사한다.",
+     "roles": [
+      {
+       "q": "The guards",
+       "role": "S"
+      },
+      {
+       "q": "were wearing",
+       "role": "V"
+      },
+      {
+       "q": "red jackets and tall black hats",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "were wearing",
+       "label": "과거진행",
+       "explanation": "「was/were+-ing」는 과거의 그때 진행 중이던 일을 나타낸다. 주어 The guards가 복수이므로 were를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The guards were wearing",
+       "ko": "근위병들은 쓰고 있었다"
+      },
+      {
+       "en": "red jackets and tall black hats.",
+       "ko": "빨간색 재킷과 높은 검은색 모자를."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 그들 근처에서 사진을 찍었지만, 그들은 웃거나 움직이지 않았다.",
+     "contextNote": "근위병들이 전혀 움직이지 않는 모습을 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "took",
+       "role": "V"
+      },
+      {
+       "q": "pictures",
+       "role": "O"
+      },
+      {
+       "q": "near them",
+       "role": "M"
+      },
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "didn't smile",
+       "role": "V"
+      },
+      {
+       "q": "move",
+       "role": "V"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but they didn't smile or move",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      },
+      {
+       "q": "them",
+       "label": "대명사 선행사",
+       "gloss": "= the guards"
+      }
+     ],
+     "points": [
+      {
+       "q": "didn't smile or move",
+       "label": "조동사 공유 병렬",
+       "explanation": "didn't에 동사 smile과 move가 or로 이어져 있다. 두 번째 동사도 didn't를 함께 받으므로 과거형 moved가 아니라 동사원형 move를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We took pictures near them,",
+       "ko": "우리는 그들 근처에서 사진을 찍었지만,"
+      },
+      {
+       "en": "but they didn't smile or move.",
+       "ko": "그들은 웃거나 움직이지 않았다."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 조각상들 같았다!",
+     "contextNote": "근위병들의 모습을 조각상에 빗대어 말한다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "were",
+       "role": "V"
+      },
+      {
+       "q": "like statues",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "like statues",
+       "label": "전명구",
+       "gloss": "like: '~ 같은'(전치사)"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They were",
+       "ko": "그들은 ~였다"
+      },
+      {
+       "en": "like statues!",
+       "ko": "조각상들 같은!"
+      }
+     ]
+    }
+   ]
+  },
+  "16db6e7f-5b7a-4b8b-8226-e2c66d9b8fab": {
+   "titleEn": "Exploring Camden Market",
+   "topicEn": "At Camden Market, the writer tried fish and chips and learned that the British call French fries chips.",
+   "topicKo": "캠던 마켓에서 글쓴이는 피시앤칩스를 먹어 보고 영국에서는 프렌치프라이를 칩스라고 부른다는 것을 알게 되었다.",
+   "sentences": [
+    {
+     "translation": "다음으로, 우리는 캠던 마켓에 갔다.",
+     "contextNote": "두 번째 장소로 옮겨 간다.",
+     "roles": [
+      {
+       "q": "Next",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "went",
+       "role": "V"
+      },
+      {
+       "q": "to Camden Market",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Next,",
+       "ko": "다음으로,"
+      },
+      {
+       "en": "we went to Camden Market.",
+       "ko": "우리는 캠던 마켓에 갔다."
+      }
+     ]
+    },
+    {
+     "translation": "이 시장은 세계 곳곳의 음식으로 알려져 있다.",
+     "contextNote": "캠던 마켓이 어떤 곳인지 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "is known for"
+      }
+     ],
+     "roles": [
+      {
+       "q": "This market",
+       "role": "S"
+      },
+      {
+       "q": "is known",
+       "role": "V"
+      },
+      {
+       "q": "for its food from around the world",
+       "role": "A"
+      }
+     ],
+     "notes": [
+      {
+       "q": "from around the world",
+       "label": "전명구",
+       "gloss": "food를 꾸밈"
+      }
+     ],
+     "points": [
+      {
+       "q": "is known for",
+       "label": "수동태",
+       "star": true,
+       "explanation": "「be known for」는 '~으로 알려져 있다'는 뜻의 수동태 표현이다. 전치사 by가 아니라 for를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "This market is known",
+       "ko": "이 시장은 알려져 있다"
+      },
+      {
+       "en": "for its food",
+       "ko": "음식으로"
+      },
+      {
+       "en": "from around the world.",
+       "ko": "세계 곳곳의."
+      }
+     ]
+    },
+    {
+     "translation": "Amelia는 나에게 피시앤칩스를 먹어 보라고 말했다.",
+     "contextNote": "Amelia가 권한 음식을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "to try"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Amelia",
+       "role": "S"
+      },
+      {
+       "q": "told",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "O"
+      },
+      {
+       "q": "to try the fish and chips",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "told me to try the fish and chips",
+       "label": "목적격보어 to부정사",
+       "star": true,
+       "explanation": "「tell+목적어+to부정사」는 '~에게 …하라고 말하다'라는 뜻이다. 목적격보어 자리에 동사원형 try가 아니라 to try를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Amelia told me",
+       "ko": "Amelia는 나에게 말했다"
+      },
+      {
+       "en": "to try the fish and chips.",
+       "ko": "피시앤칩스를 먹어 보라고."
+      }
+     ]
+    },
+    {
+     "translation": "나는 생각했다, \"이상하네!",
+     "contextNote": "피시앤칩스라는 이름을 듣고 든 생각을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "thought",
+       "role": "V"
+      },
+      {
+       "q": "\"How strange!",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "How strange",
+       "label": "어순",
+       "gloss": "감탄문: How + 형용사"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I thought,",
+       "ko": "나는 생각했다,"
+      },
+      {
+       "en": "\"How strange!",
+       "ko": "\"이상하네!"
+      }
+     ]
+    },
+    {
+     "translation": "나는 생선을 여러 번 먹어 봤어.",
+     "contextNote": "글쓴이의 경험을 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "have eaten"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "have eaten",
+       "role": "V"
+      },
+      {
+       "q": "fish",
+       "role": "O"
+      },
+      {
+       "q": "many times",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "have eaten",
+       "label": "현재완료",
+       "star": true,
+       "explanation": "「have+과거분사」가 지금까지의 경험을 나타낸다. many times(여러 번)와 함께 쓰여 '먹어 본 적이 있다'는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I have eaten fish",
+       "ko": "나는 생선을 먹어 봤어"
+      },
+      {
+       "en": "many times.",
+       "ko": "여러 번."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 나는 감자칩과 함께 먹어 본 적은 없어.",
+     "contextNote": "chips를 감자칩으로 잘못 알고 한 생각이다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "'ve never tried",
+       "role": "V"
+      },
+      {
+       "q": "it",
+       "role": "O"
+      },
+      {
+       "q": "with potato chips",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= fish"
+      }
+     ],
+     "points": [
+      {
+       "q": "'ve never tried",
+       "label": "현재완료",
+       "explanation": "「have never+과거분사」는 '~해 본 적이 없다'는 현재완료의 경험 부정이다. never는 have와 과거분사 사이에 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But I've never tried it",
+       "ko": "하지만 나는 먹어 본 적은 없어"
+      },
+      {
+       "en": "with potato chips.\"",
+       "ko": "감자칩과 함께."
+      }
+     ]
+    },
+    {
+     "translation": "그러나 음식이 나왔을 때, 나는 그들이 런던에서 프렌치프라이(감자튀김)를 '칩스'라고 부른다는 것을 알게 되었다!",
+     "contextNote": "오해가 풀리는 대목으로, 런던의 말 쓰임을 알게 된다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "the food",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "came out",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "found out",
+       "role": "V"
+      },
+      {
+       "q": "that they call French fries \"chips\" in London",
+       "role": "O"
+      },
+      {
+       "q": "they",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "call",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "French fries",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "\"chips\"",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "in London",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "when the food came out",
+       "kind": "adverbial"
+      },
+      {
+       "q": "that they call French fries \"chips\" in London",
+       "kind": "nominal"
+      }
+     ],
+     "notes": [
+      {
+       "q": "when the food came out",
+       "label": "시간 부사절",
+       "gloss": "when: '~할 때'"
+      }
+     ],
+     "points": [
+      {
+       "q": "that they call French fries \"chips\" in London",
+       "label": "that 명사절",
+       "explanation": "접속사 that이 이끄는 절이 found out의 목적어로 쓰여 '~라는 것을'이라는 뜻을 나타낸다."
+      },
+      {
+       "q": "call French fries \"chips\"",
+       "label": "5형식",
+       "star": true,
+       "explanation": "「call+목적어+목적격보어(명사)」는 '~을 …라고 부르다'라는 뜻이다. French fries와 chips는 같은 것을 가리킨다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But when the food came out,",
+       "ko": "그러나 음식이 나왔을 때,"
+      },
+      {
+       "en": "I found out",
+       "ko": "나는 알게 되었다"
+      },
+      {
+       "en": "that they call French fries \"chips\"",
+       "ko": "그들이 프렌치프라이(감자튀김)를 '칩스'라고 부른다는 것을"
+      },
+      {
+       "en": "in London!",
+       "ko": "런던에서!"
+      }
+     ]
+    },
+    {
+     "translation": "맛있는 영국 음식을 먹은 후, 우리는 시장을 돌아다녔다.",
+     "contextNote": "식사 뒤에 한 일을 말한다.",
+     "roles": [
+      {
+       "q": "After a yummy British meal",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "walked",
+       "role": "V"
+      },
+      {
+       "q": "around the market",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "After a yummy British meal",
+       "label": "전명구",
+       "gloss": "after + 명사구: '~ 후에'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "After a yummy British meal,",
+       "ko": "맛있는 영국 음식을 먹은 후,"
+      },
+      {
+       "en": "we walked around the market.",
+       "ko": "우리는 시장을 돌아다녔다."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 유명한 빨간색 공중전화 부스를 보았고 더 많은 사진을 찍었다.",
+     "contextNote": "시장에서 한 일을 이어서 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "saw",
+       "role": "V"
+      },
+      {
+       "q": "the famous red phone booth",
+       "role": "O"
+      },
+      {
+       "q": "took",
+       "role": "V"
+      },
+      {
+       "q": "more pictures",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "saw the famous red phone booth and took",
+       "label": "동사 병렬",
+       "explanation": "주어 We 하나에 동사 saw와 took이 and로 이어져 있다. 두 동사 모두 과거 시제로 맞추었다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We saw the famous red phone booth",
+       "ko": "우리는 유명한 빨간색 공중전화 부스를 보았고"
+      },
+      {
+       "en": "and took more pictures.",
+       "ko": "더 많은 사진을 찍었다."
+      }
+     ]
+    },
+    {
+     "translation": "그러고 나서 나는 엄마를 위해 예쁜 접시를 하나 샀다.",
+     "contextNote": "시장에서 산 물건을 말한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "Then",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "bought",
+       "role": "V"
+      },
+      {
+       "q": "a pretty plate",
+       "role": "O"
+      },
+      {
+       "q": "for my mom",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "bought a pretty plate for my mom",
+       "label": "3형식",
+       "explanation": "buy는 3형식으로 쓸 때 사람 앞에 전치사 for를 쓴다. 4형식으로 바꾸면 bought my mom a pretty plate가 된다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Then I bought a pretty plate",
+       "ko": "그러고 나서 나는 예쁜 접시를 하나 샀다"
+      },
+      {
+       "en": "for my mom.",
+       "ko": "엄마를 위해."
+      }
+     ]
+    },
+    {
+     "translation": "정말 재밌는 하루였다!",
+     "contextNote": "캠던 마켓에서 보낸 하루의 느낌으로 맺는다.",
+     "notes": [
+      {
+       "q": "What a fun day",
+       "label": "어순",
+       "gloss": "감탄문: What + a + 형용사 + 명사"
+      }
+     ]
+    }
+   ]
+  },
+  "24c9762e-adff-4f3f-a5ef-ab963a3847e1": {
+   "titleEn": "A Visit to King's Cross Station",
+   "topicEn": "The writer asked Amelia to go to King's Cross Station and enjoyed Platform 9¾ from the Harry Potter movies.",
+   "topicKo": "글쓴이는 Amelia에게 킹스 크로스 역에 데려가 달라고 부탁했고, '해리 포터' 영화의 9와 3/4 승강장을 즐겼다.",
+   "sentences": [
+    {
+     "translation": "런던은 비가 자주 온다.",
+     "contextNote": "런던의 날씨 이야기로 새 단락을 연다.",
+     "roles": [
+      {
+       "q": "London",
+       "role": "S"
+      },
+      {
+       "q": "often",
+       "role": "M"
+      },
+      {
+       "q": "has",
+       "role": "V"
+      },
+      {
+       "q": "rainy weather",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "often",
+       "label": "동사 수식 부사",
+       "gloss": "빈도부사: 일반동사 앞에 쓴다"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "London often has",
+       "ko": "런던은 자주 온다"
+      },
+      {
+       "en": "rainy weather.",
+       "ko": "비가."
+      }
+     ]
+    },
+    {
+     "translation": "오늘은 비가 조금 내렸지만, Amelia는 우산을 가지고 있지 않았다.",
+     "contextNote": "그날 겪은 일로 런던의 날씨를 보여 준다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "rained",
+       "role": "V"
+      },
+      {
+       "q": "a little",
+       "role": "M"
+      },
+      {
+       "q": "today",
+       "role": "M"
+      },
+      {
+       "q": "Amelia",
+       "role": "S"
+      },
+      {
+       "q": "didn't have",
+       "role": "V"
+      },
+      {
+       "q": "an umbrella",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "비인칭 주어 it",
+       "gloss": "날씨를 말함 — 해석하지 않는다"
+      },
+      {
+       "q": "but Amelia didn't have an umbrella",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It rained a little today,",
+       "ko": "오늘은 비가 조금 내렸지만,"
+      },
+      {
+       "en": "but Amelia didn't have an umbrella.",
+       "ko": "Amelia는 우산을 가지고 있지 않았다."
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 대부분의 런던 사람들이 폭우에만 우산을 사용한다고 말했다.",
+     "contextNote": "Amelia가 우산이 없던 까닭을 말한다.",
+     "roles": [
+      {
+       "q": "She",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "that most Londoners use umbrellas only for heavy rain",
+       "role": "O"
+      },
+      {
+       "q": "most Londoners",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "use",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "umbrellas",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "only for heavy rain",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "that most Londoners use umbrellas only for heavy rain",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "that most Londoners use umbrellas only for heavy rain",
+       "label": "that 명사절",
+       "explanation": "접속사 that이 이끄는 절이 동사 said의 목적어로 쓰여 '~라고'라는 뜻을 나타낸다. 런던 사람들의 습관을 말하는 것이므로 절 안에 현재 시제 use를 썼다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "She said",
+       "ko": "그녀는 말했다"
+      },
+      {
+       "en": "that most Londoners use umbrellas",
+       "ko": "대부분의 런던 사람들이 우산을 사용한다고"
+      },
+      {
+       "en": "only for heavy rain.",
+       "ko": "폭우에만."
+      }
+     ]
+    },
+    {
+     "translation": "나는 그 말을 듣고 놀랐다.",
+     "contextNote": "Amelia의 말에 대한 글쓴이의 반응이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "to hear"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "surprised",
+       "role": "C"
+      },
+      {
+       "q": "to hear that",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "surprised",
+       "label": "감정분사",
+       "gloss": "사람이 놀라움을 느낌"
+      }
+     ],
+     "points": [
+      {
+       "q": "to hear that",
+       "label": "부사적 용법",
+       "star": true,
+       "explanation": "to부정사가 감정 형용사 surprised 뒤에서 그 감정의 원인을 나타내 '~해서, ~하고'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I was surprised",
+       "ko": "나는 놀랐다"
+      },
+      {
+       "en": "to hear that.",
+       "ko": "그 말을 듣고."
+      }
+     ]
+    },
+    {
+     "translation": "나는 Amelia에게 나를 킹스 크로스 역으로 데려가 달라고 부탁했다.",
+     "contextNote": "다음 장소로 가게 된 까닭을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "to take"
+      }
+     ],
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      },
+      {
+       "q": "Amelia",
+       "role": "O"
+      },
+      {
+       "q": "to take me to King's Cross Station",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "asked Amelia to take me to King's Cross Station",
+       "label": "목적격보어 to부정사",
+       "star": true,
+       "explanation": "「ask+목적어+to부정사」는 '~에게 …해 달라고 부탁하다'라는 뜻이다. tell과 같은 형태로, 목적격보어 자리에 to부정사를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I asked Amelia",
+       "ko": "나는 Amelia에게 부탁했다"
+      },
+      {
+       "en": "to take me",
+       "ko": "나를 데려가 달라고"
+      },
+      {
+       "en": "to King's Cross Station.",
+       "ko": "킹스 크로스 역으로."
+      }
+     ]
+    },
+    {
+     "translation": "나는 '해리 포터' 영화 때문에 이 기차역을 보고 싶었다.",
+     "contextNote": "킹스 크로스 역에 가고 싶었던 까닭을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "wanted",
+       "role": "V"
+      },
+      {
+       "q": "to see this train station",
+       "role": "O"
+      },
+      {
+       "q": "because of the Harry Potter movies",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "because of the Harry Potter movies",
+       "label": "부사적 어구",
+       "gloss": "because of + 명사: '~ 때문에'"
+      }
+     ],
+     "points": [
+      {
+       "q": "wanted to see",
+       "label": "to부정사",
+       "explanation": "want는 to부정사를 목적어로 받아 '~하고 싶다'는 뜻을 나타낸다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I wanted to see this train station",
+       "ko": "나는 이 기차역을 보고 싶었다"
+      },
+      {
+       "en": "because of the Harry Potter movies.",
+       "ko": "'해리 포터' 영화 때문에."
+      }
+     ]
+    },
+    {
+     "translation": "그것들은 이 역에서 촬영되었다.",
+     "contextNote": "영화와 역의 관계를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "were filmed"
+      }
+     ],
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "were filmed",
+       "role": "V"
+      },
+      {
+       "q": "at this station",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "They",
+       "label": "대명사 선행사",
+       "gloss": "= the Harry Potter movies"
+      }
+     ],
+     "points": [
+      {
+       "q": "were filmed",
+       "label": "수동태",
+       "star": true,
+       "explanation": "영화는 촬영되는 대상이므로 「be동사+과거분사」의 수동태로 쓴다. 주어가 복수이고 과거의 일이므로 were filmed이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They were filmed",
+       "ko": "그것들은 촬영되었다"
+      },
+      {
+       "en": "at this station.",
+       "ko": "이 역에서."
+      }
+     ]
+    },
+    {
+     "translation": "보라!",
+     "contextNote": "읽는 이의 눈길을 사진으로 끈다."
+    },
+    {
+     "translation": "우리는 9와 3/4 승강장을 찾았다!",
+     "contextNote": "영화에 나오는 승강장을 찾은 기쁨을 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "found",
+       "role": "V"
+      },
+      {
+       "q": "Platform 9¾",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We found",
+       "ko": "우리는 찾았다"
+      },
+      {
+       "en": "Platform 9¾!",
+       "ko": "9와 3/4 승강장을!"
+      }
+     ]
+    },
+    {
+     "translation": "Amelia와 나는 우리가 영화 속에 나오는 척했다.",
+     "contextNote": "승강장에서 한 놀이를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "we were in the movies"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Amelia and I",
+       "role": "S"
+      },
+      {
+       "q": "pretended",
+       "role": "V"
+      },
+      {
+       "q": "we were in the movies",
+       "role": "O"
+      },
+      {
+       "q": "we",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "were",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "in the movies",
+       "role": "A",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "we were in the movies",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "we were in the movies",
+       "label": "접속사 that 생략",
+       "star": true,
+       "explanation": "pretended 뒤에 목적어절을 이끄는 접속사 that이 생략되었다. 주절의 동사 pretended가 과거이므로 절 안의 동사도 과거 were로 맞춘다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Amelia and I pretended",
+       "ko": "Amelia와 나는 척했다"
+      },
+      {
+       "en": "we were in the movies.",
+       "ko": "우리가 영화 속에 나오는."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 많은 셀카를 찍었다.",
+     "contextNote": "승강장에서 한 일을 이어서 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "took",
+       "role": "V"
+      },
+      {
+       "q": "lots of selfies",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "lots of",
+       "label": "수량사",
+       "gloss": "'많은' — 셀 수 있는 명사와 셀 수 없는 명사 모두 앞에 쓴다"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We took",
+       "ko": "우리는 찍었다"
+      },
+      {
+       "en": "lots of selfies.",
+       "ko": "많은 셀카를."
+      }
+     ]
+    },
+    {
+     "translation": "너는 호그와트로 가는 비밀 통로를 찾을 수 있니?",
+     "contextNote": "읽는 이에게 물으며 단락을 맺는다.",
+     "roles": [
+      {
+       "q": "Can",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "find",
+       "role": "V"
+      },
+      {
+       "q": "the secret way to Hogwarts",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "to Hogwarts",
+       "label": "전명구",
+       "gloss": "the secret way를 꾸밈"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Can you find",
+       "ko": "너는 찾을 수 있니?"
+      },
+      {
+       "en": "the secret way to Hogwarts?",
+       "ko": "호그와트로 가는 비밀 통로를"
+      }
+     ]
+    }
+   ]
+  },
+  "dee05fac-83d5-4a59-bb63-da7dfee0a669": {
+   "titleEn": "Ending the Day on the Tube",
+   "topicEn": "The writer learned that the subway is called the tube in London and that red is a special color there.",
+   "topicKo": "글쓴이는 런던에서 지하철을 튜브라고 부르며 빨간색이 그곳의 특별한 색이라는 것을 알게 되었다.",
+   "sentences": [
+    {
+     "translation": "집에 갈 시간이 되었다.",
+     "contextNote": "여행의 마무리로 넘어간다.",
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "time to go home",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "비인칭 주어 it",
+       "gloss": "시간을 말함 — 해석하지 않는다"
+      }
+     ],
+     "points": [
+      {
+       "q": "to go home",
+       "label": "형용사적 용법",
+       "star": true,
+       "explanation": "to부정사가 앞의 명사 time을 꾸며 '집에 갈 시간'이라는 뜻을 나타낸다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was time",
+       "ko": "시간이 되었다"
+      },
+      {
+       "en": "to go home.",
+       "ko": "집에 갈."
+      }
+     ]
+    },
+    {
+     "translation": "Amelia는 \"튜브를 타자.\"라고 말했다.",
+     "contextNote": "튜브라는 낯선 말이 나오는 대목이다.",
+     "roles": [
+      {
+       "q": "Amelia",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"Let's take the tube.",
+       "role": "O"
+      },
+      {
+       "q": "take",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the tube",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Amelia said,",
+       "ko": "Amelia는 말했다"
+      },
+      {
+       "en": "\"Let's take the tube.\"",
+       "ko": "\"튜브를 타자.\""
+      }
+     ]
+    },
+    {
+     "translation": "나는 \"튜브가 뭐야?\"라고 물었다.",
+     "contextNote": "낯선 말의 뜻을 묻는다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      },
+      {
+       "q": "\"What's the tube?",
+       "role": "O"
+      },
+      {
+       "q": "What",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "'s",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the tube",
+       "role": "S",
+       "level": 1
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I asked,",
+       "ko": "나는 물었다"
+      },
+      {
+       "en": "\"What's the tube?\"",
+       "ko": "\"튜브가 뭐야?\""
+      }
+     ]
+    },
+    {
+     "translation": "그녀는 나에게 말했다, \"런던에서는, 지하철을 튜브라고 불러.",
+     "contextNote": "튜브의 뜻을 알려 준다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "call the subway the tube"
+      }
+     ],
+     "roles": [
+      {
+       "q": "She",
+       "role": "S"
+      },
+      {
+       "q": "told",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "IO"
+      },
+      {
+       "q": "\"In London, we call the subway the tube.",
+       "role": "DO"
+      },
+      {
+       "q": "In London",
+       "role": "M",
+       "level": 1
+      },
+      {
+       "q": "we",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "call",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the subway",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "the tube",
+       "role": "C",
+       "level": 1
+      }
+     ],
+     "points": [
+      {
+       "q": "call the subway the tube",
+       "label": "5형식",
+       "star": true,
+       "explanation": "「call+목적어+목적격보어(명사)」는 '~을 …라고 부르다'라는 뜻이다. 목적어 the subway와 목적격보어 the tube는 같은 것을 가리킨다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "She told me,",
+       "ko": "그녀는 나에게 말했다,"
+      },
+      {
+       "en": "\"In London,",
+       "ko": "\"런던에서는,"
+      },
+      {
+       "en": "we call the subway the tube.",
+       "ko": "지하철을 튜브라고 불러."
+      }
+     ]
+    },
+    {
+     "translation": "그것은 지하철 터널들이 관[통]처럼 원형이기 때문이야.",
+     "contextNote": "튜브라고 부르는 까닭을 말한다.",
+     "roles": [
+      {
+       "q": "That",
+       "role": "S"
+      },
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "because the subway tunnels are round like a tube",
+       "role": "C"
+      },
+      {
+       "q": "the subway tunnels",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "are",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "round",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "like a tube",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "because the subway tunnels are round like a tube",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "That",
+       "label": "대명사 선행사",
+       "gloss": "= 지하철을 튜브라고 부르는 것"
+      }
+     ],
+     "points": [
+      {
+       "q": "because the subway tunnels are round like a tube",
+       "label": "이유 부사절",
+       "explanation": "「That's because+주어+동사」는 '그것은 ~이기 때문이다'라는 뜻으로 앞 내용의 까닭을 말한다. because 뒤에는 주어와 동사를 갖춘 절이 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "That's because",
+       "ko": "그것은 ~때문이야"
+      },
+      {
+       "en": "the subway tunnels are round",
+       "ko": "지하철 터널들이 원형이기"
+      },
+      {
+       "en": "like a tube.\"",
+       "ko": "관[통]처럼."
+      }
+     ]
+    },
+    {
+     "translation": "튜브에서, Amelia가 내게 물었다, \"빨간색은 런던의 특별한 색이야.",
+     "contextNote": "글의 마지막 화제인 빨간색을 꺼낸다.",
+     "roles": [
+      {
+       "q": "On the tube",
+       "role": "M"
+      },
+      {
+       "q": "Amelia",
+       "role": "S"
+      },
+      {
+       "q": "asked",
+       "role": "V"
+      },
+      {
+       "q": "me",
+       "role": "IO"
+      },
+      {
+       "q": "\"Red is a special color in London.",
+       "role": "DO"
+      },
+      {
+       "q": "Red",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "is",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "a special color",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "in London",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "chunks": [
+      {
+       "en": "On the tube,",
+       "ko": "튜브에서,"
+      },
+      {
+       "en": "Amelia asked me,",
+       "ko": "Amelia가 내게 물었다,"
+      },
+      {
+       "en": "\"Red is a special color",
+       "ko": "\"빨간색은 특별한 색이야"
+      },
+      {
+       "en": "in London.",
+       "ko": "런던의."
+      }
+     ]
+    },
+    {
+     "translation": "너는 빨간 것들을 많이 봤니?",
+     "contextNote": "Amelia의 질문이 이어진다.",
+     "roles": [
+      {
+       "q": "Did",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "see",
+       "role": "V"
+      },
+      {
+       "q": "many red things",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Did you see",
+       "ko": "너는 봤니?"
+      },
+      {
+       "en": "many red things?\"",
+       "ko": "빨간 것들을 많이"
+      }
+     ]
+    },
+    {
+     "translation": "나는 확실히 그랬다!",
+     "contextNote": "Amelia의 질문에 대한 글쓴이의 대답이다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "certainly",
+       "role": "M"
+      },
+      {
+       "q": "did",
+       "role": "V"
+      }
+     ],
+     "points": [
+      {
+       "q": "did",
+       "label": "대동사",
+       "star": true,
+       "explanation": "did는 앞 문장의 saw many red things를 대신하는 대동사이다. 같은 말을 되풀이하지 않으려고 쓰며, 앞 문장이 과거이므로 did로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I certainly",
+       "ko": "나는 확실히"
+      },
+      {
+       "en": "did!",
+       "ko": "그랬다!"
+      }
+     ]
+    },
+    {
+     "translation": "너는 내 사진에서 빨간 것들을 몇 개나 발견할 수 있니?",
+     "contextNote": "읽는 이에게 물으며 글 전체를 맺는다.",
+     "roles": [
+      {
+       "q": "How many red things",
+       "role": "O"
+      },
+      {
+       "q": "can",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "spot",
+       "role": "V"
+      },
+      {
+       "q": "in my photos",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "How many red things",
+       "label": "어순",
+       "gloss": "How many + 복수명사 + 조동사 + 주어 + 동사"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "How many red things",
+       "ko": "빨간 것들을 몇 개나"
+      },
+      {
+       "en": "can you spot",
+       "ko": "너는 발견할 수 있니?"
+      },
+      {
+       "en": "in my photos?",
+       "ko": "내 사진에서"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

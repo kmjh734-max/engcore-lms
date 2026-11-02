@@ -1,0 +1,289 @@
+{
+ "passages": {
+  "6706306f-f1df-4bcf-827f-82374a5fc16b": {
+   "titleEn": "Director Jim Brown and Happy Days",
+   "topicEn": "Director Jim Brown introduces his movie Happy Days and the many people working hard to create it.",
+   "topicKo": "감독 Jim Brown이 영화 'Happy Days'와 이 영화를 만들기 위해 열심히 일하는 많은 사람들을 소개한다.",
+   "sentences": [
+    {
+     "translation": "안녕하세요, 나는 'Happy Days'의 감독 Jim Brown이에요.",
+     "contextNote": "감독이 자기를 소개하며 글을 연다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "Jim Brown, the director of Happy Days", "role": "C"}],
+     "notes": [{"q": "the director of Happy Days", "label": "동격구", "gloss": "= Jim Brown"}],
+     "chunks": [{"en": "Hi,", "ko": "안녕하세요,"}, {"en": "I'm Jim Brown,", "ko": "나는 Jim Brown이에요,"}, {"en": "the director of Happy Days.", "ko": "'Happy Days'의 감독인."}]
+    },
+    {
+     "translation": "이것은 Tom과 그의 개 Max의 우정에 관한 영화예요.",
+     "contextNote": "영화의 내용을 간단히 소개한다.",
+     "roles": [{"q": "It", "role": "S"}, {"q": "'s", "role": "V"}, {"q": "a movie about the friendship between Tom and his dog Max", "role": "C"}],
+     "notes": [{"q": "It", "label": "대명사 선행사", "gloss": "= Happy Days"}, {"q": "about the friendship", "label": "전명구", "gloss": "movie를 꾸밈, '우정에 관한'"}, {"q": "between Tom and his dog Max", "label": "전명구", "gloss": "between A and B: 'A와 B 사이의'"}],
+     "chunks": [{"en": "It's a movie", "ko": "이것은 영화예요"}, {"en": "about the friendship", "ko": "우정에 관한"}, {"en": "between Tom and his dog Max.", "ko": "Tom과 그의 개 Max의."}]
+    },
+    {
+     "translation": "많은 사람들이 이 영화를 만들기 위해 열심히 일하고 있어요.",
+     "contextNote": "영화 뒤에서 일하는 사람들로 화제를 옮긴다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to create this movie"}],
+     "roles": [{"q": "A lot of people", "role": "S"}, {"q": "are working", "role": "V"}, {"q": "hard", "role": "M"}, {"q": "to create this movie", "role": "M"}],
+     "points": [
+      {"q": "to create this movie", "label": "부사적 용법", "star": true, "explanation": "to부정사가 '~하기 위해'라는 뜻으로 동작의 목적을 나타낸다. 명사 자리가 아니라 동사 are working을 꾸미는 부사 역할이며, in order to로 바꿔 쓸 수 있다.", "rewrite": "→ in order to create this movie"},
+      {"q": "are working", "label": "현재진행", "explanation": "「be동사+동사-ing」로 지금 하고 있는 일을 나타낸다. 주어의 중심이 복수 people이므로 are를 쓴다."}
+     ],
+     "chunks": [{"en": "A lot of people are working hard", "ko": "많은 사람들이 열심히 일하고 있어요"}, {"en": "to create this movie.", "ko": "이 영화를 만들기 위해."}]
+    },
+    {
+     "translation": "그들 중 몇 명을 만나 보고 싶나요?",
+     "contextNote": "읽는 이에게 물으며 뒤에 나올 사람들의 소개로 이어 준다.",
+     "roles": [{"q": "Do", "role": "V"}, {"q": "you", "role": "S"}, {"q": "want", "role": "V"}, {"q": "to meet some of them", "role": "O"}],
+     "notes": [{"q": "them", "label": "대명사 선행사", "gloss": "= a lot of people"}],
+     "points": [{"q": "to meet some of them", "label": "명사적 용법 to부정사", "star": true, "explanation": "want의 목적어로 쓰인 to부정사로 '~하는 것을'이라는 뜻이다. 앞 문장의 to create(~하기 위해)는 부사적 용법이어서 쓰임이 다르다."}],
+     "chunks": [{"en": "Do you want", "ko": "원하나요"}, {"en": "to meet some of them?", "ko": "그들 중 몇 명을 만나 보기를?"}]
+    }
+   ]
+  },
+  "97fd85e4-83f8-488a-85f7-2d80373628db": {
+   "titleEn": "Anna, the Location Manager",
+   "topicEn": "Anna finds perfect places for shooting, and she loves her difficult job.",
+   "topicKo": "Anna는 촬영에 완벽한 장소를 찾는 일을 하며, 쉽지 않은 자기 일을 정말 좋아한다.",
+   "sentences": [
+    {
+     "translation": "나는 Anna이고, 내가 이 아름다운 해변을 찾아냈어요.",
+     "contextNote": "Anna가 자기를 소개하고 자기가 찾은 촬영지를 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "Anna", "role": "C"}, {"q": "I", "occ": 2, "role": "S"}, {"q": "found", "role": "V"}, {"q": "this beautiful beach", "role": "O"}],
+     "notes": [{"q": "and I found this beautiful beach", "label": "등위절", "gloss": "and로 이은 두 번째 절"}],
+     "points": [{"q": "found", "label": "현재·과거", "explanation": "find의 과거형은 불규칙하게 변하는 found이다."}],
+     "chunks": [{"en": "I'm Anna,", "ko": "나는 Anna이고,"}, {"en": "and I found this beautiful beach.", "ko": "내가 이 아름다운 해변을 찾아냈어요."}]
+    },
+    {
+     "translation": "나는 야외 촬영 관리자이고, 내 일은 촬영을 위한 완벽한 장소를 찾는 거예요.",
+     "contextNote": "야외 촬영 관리자가 하는 일을 설명한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to find perfect places for shooting"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "a location manager", "role": "C"}, {"q": "my job", "role": "S"}, {"q": "is", "role": "V"}, {"q": "to find perfect places for shooting", "role": "C"}],
+     "notes": [{"q": "for shooting", "label": "전치사+동명사", "gloss": "전치사 for 뒤 동명사, '촬영을 위한'"}],
+     "points": [{"q": "to find perfect places for shooting", "label": "명사적 용법 to부정사", "star": true, "explanation": "to부정사가 be동사 뒤에서 주어 my job을 설명하는 보어로 쓰여 '~하는 것'이라는 뜻을 나타낸다. '~하기 위해'로 해석하지 않도록 주의한다."}],
+     "chunks": [{"en": "I'm a location manager,", "ko": "나는 야외 촬영 관리자이고,"}, {"en": "and my job is", "ko": "내 일은"}, {"en": "to find perfect places", "ko": "완벽한 장소를 찾는 거예요"}, {"en": "for shooting.", "ko": "촬영을 위한."}]
+    },
+    {
+     "translation": "물론, 이 일은 쉽지 않지만, 나는 내 일을 정말 좋아해요.",
+     "contextNote": "일의 어려움과 그래도 일을 좋아하는 마음을 대비한다.",
+     "roles": [{"q": "Of course", "role": "M"}, {"q": "it", "role": "S"}, {"q": "is", "role": "V"}, {"q": "easy", "role": "C"}, {"q": "I", "role": "S"}, {"q": "love", "role": "V"}, {"q": "my job", "role": "O"}],
+     "notes": [{"q": "it", "label": "대명사 선행사", "gloss": "= 장소를 찾는 일"}, {"q": "but I love my job", "label": "등위절", "gloss": "but: 앞 내용과 반대"}],
+     "chunks": [{"en": "Of course,", "ko": "물론,"}, {"en": "it is not easy,", "ko": "이 일은 쉽지 않지만,"}, {"en": "but I love my job.", "ko": "나는 내 일을 정말 좋아해요."}]
+    },
+    {
+     "translation": "나는 여행하는 것을 좋아하고 도전을 즐겨요.",
+     "contextNote": "일을 좋아하는 이유를 자기 성격으로 설명한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to travel"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "like", "role": "V"}, {"q": "to travel", "role": "O"}, {"q": "enjoy", "role": "V"}, {"q": "challenges", "role": "O"}],
+     "points": [
+      {"q": "to travel", "label": "명사적 용법 to부정사", "star": true, "explanation": "like의 목적어로 to부정사가 쓰여 '여행하는 것을'이라는 뜻을 나타낸다. like는 to부정사와 동명사를 모두 목적어로 쓸 수 있어 to travel을 traveling으로 바꿔도 된다."},
+      {"q": "like to travel and enjoy challenges", "label": "동사 병렬", "explanation": "주어 I 하나에 동사 like와 enjoy가 and로 이어져 있다. 주어가 I이므로 두 동사 모두 -s 없이 쓴다."}
+     ],
+     "chunks": [{"en": "I like to travel", "ko": "나는 여행하는 것을 좋아하고"}, {"en": "and enjoy challenges.", "ko": "도전을 즐겨요."}]
+    }
+   ]
+  },
+  "09678537-8c9c-4f70-8fea-ec9fc08b8b02": {
+   "titleEn": "Peter, the Director of Photography",
+   "topicEn": "Peter is in charge of all the cameras and uses drones to capture happy moments.",
+   "topicKo": "Peter는 모든 카메라를 담당하며 행복한 순간을 포착하기 위해 드론을 사용한다.",
+   "sentences": [
+    {
+     "translation": "나는 이 영화의 촬영감독인 Peter예요.",
+     "contextNote": "두 번째 스태프 Peter의 자기소개.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "Peter, the director of photography for this movie", "role": "C"}],
+     "notes": [{"q": "the director of photography for this movie", "label": "동격구", "gloss": "= Peter"}],
+     "chunks": [{"en": "I'm Peter,", "ko": "나는 Peter예요,"}, {"en": "the director of photography for this movie.", "ko": "이 영화의 촬영감독인."}]
+    },
+    {
+     "translation": "나는 모든 카메라를 담당하고 있어요.",
+     "contextNote": "촬영감독이 맡는 일을 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "in charge of all the cameras", "role": "C"}],
+     "notes": [{"q": "in charge of", "label": "필수 전치사", "gloss": "be in charge of: '~을 담당하다'"}],
+     "chunks": [{"en": "I'm in charge of", "ko": "나는 담당하고 있어요"}, {"en": "all the cameras.", "ko": "모든 카메라를."}]
+    },
+    {
+     "translation": "오늘, Tom과 Max는 해변에서 공을 가지고 함께 놀 예정이에요.",
+     "contextNote": "오늘 찍을 장면을 설명한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "are going to play"}],
+     "roles": [{"q": "Today", "role": "M"}, {"q": "Tom and Max", "role": "S"}, {"q": "are going to play", "role": "V"}, {"q": "together", "role": "M"}, {"q": "with a ball", "role": "M"}, {"q": "on the beach", "role": "M"}],
+     "points": [{"q": "are going to play", "label": "조동사 의미", "star": true, "explanation": "「be going to+동사원형」은 '~할 예정이다, ~할 것이다'라는 뜻으로 앞으로의 일을 나타낸다. 주어 Tom and Max가 복수이므로 be동사는 are를 쓴다."}],
+     "chunks": [{"en": "Today,", "ko": "오늘,"}, {"en": "Tom and Max are going to play together", "ko": "Tom과 Max는 함께 놀 예정이에요"}, {"en": "with a ball", "ko": "공을 가지고"}, {"en": "on the beach.", "ko": "해변에서."}]
+    },
+    {
+     "translation": "그들의 행복한 순간을 포착하기 위해, 나는 드론을 사용할 거예요.",
+     "contextNote": "장면을 찍는 방법과 그 목적을 말한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "To capture their happy moments"}],
+     "roles": [{"q": "To capture their happy moments", "role": "M"}, {"q": "I", "role": "S"}, {"q": "'m going to use", "role": "V"}, {"q": "drones", "role": "O"}],
+     "points": [
+      {"q": "To capture their happy moments", "label": "부사적 용법", "star": true, "explanation": "to부정사가 문장 맨 앞에서 '~하기 위해'라는 목적을 나타낸다. 쉼표 뒤에 진짜 주어 I가 있으므로 이 to부정사는 주어가 아니라 부사 역할이다."},
+      {"q": "'m going to use", "label": "조동사 의미", "explanation": "「be going to+동사원형」으로 앞으로 할 일을 나타낸다. 주어 I에 맞춰 be동사 am(축약 'm)을 쓴다."}
+     ],
+     "chunks": [{"en": "To capture their happy moments,", "ko": "그들의 행복한 순간을 포착하기 위해,"}, {"en": "I'm going to use drones.", "ko": "나는 드론을 사용할 거예요."}]
+    }
+   ]
+  },
+  "61047659-2c6c-4901-9580-b5873dbdd6f6": {
+   "titleEn": "Jennifer, the Animal Wrangler",
+   "topicEn": "Jennifer, an animal wrangler, trained Max and uses hand signals to calm him.",
+   "topicKo": "동물 조련사 Jennifer는 Max를 훈련시켰고 그를 진정시키기 위해 수신호를 사용한다.",
+   "sentences": [
+    {
+     "translation": "나는 Jennifer예요.",
+     "contextNote": "세 번째 스태프 Jennifer의 자기소개.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "Jennifer", "role": "C"}],
+     "chunks": [{"en": "I'm", "ko": "나는"}, {"en": "Jennifer.", "ko": "Jennifer예요."}]
+    },
+    {
+     "translation": "나는 Max를 오랫동안 훈련하고 돌봤어요.",
+     "contextNote": "개 배우 Max와 함께해 온 일을 말한다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "trained", "role": "V"}, {"q": "took care of", "role": "V"}, {"q": "Max", "role": "O"}, {"q": "for a long time", "role": "M"}],
+     "points": [{"q": "trained and took care of", "label": "동사 병렬", "star": true, "explanation": "주어 I 하나에 동사 trained와 took care of가 and로 이어져 있고, Max는 두 동사의 공통 목적어이다. take care of(~을 돌보다)의 과거형은 took care of이다."}],
+     "chunks": [{"en": "I trained and took care of Max", "ko": "나는 Max를 훈련하고 돌봤어요"}, {"en": "for a long time.", "ko": "오랫동안."}]
+    },
+    {
+     "translation": "Max는 훌륭한 배우이지만, 주변에 사람들이 많을 때 가끔 너무 흥분해요.",
+     "contextNote": "Max의 장점과 촬영 때 생기는 어려움을 대비한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "gets too excited"}],
+     "roles": [{"q": "Max", "role": "S"}, {"q": "is", "role": "V"}, {"q": "a great actor", "role": "C"}, {"q": "he", "role": "S"}, {"q": "sometimes", "role": "M"}, {"q": "gets", "role": "V"}, {"q": "too excited", "role": "C"}, {"q": "when a lot of people are around", "role": "M"}, {"q": "a lot of people", "role": "S", "level": 1}, {"q": "are", "role": "V", "level": 1}, {"q": "around", "role": "A", "level": 1}],
+     "brackets": [{"q": "when a lot of people are around", "kind": "adverbial"}],
+     "notes": [{"q": "but he sometimes gets too excited when a lot of people are around", "label": "등위절", "gloss": "but: 앞 내용과 반대"}, {"q": "sometimes", "label": "동사 수식 부사", "gloss": "빈도부사: 일반동사 앞"}],
+     "points": [
+      {"q": "gets too excited", "label": "연결동사 보어", "star": true, "explanation": "get은 '~해지다'라는 뜻의 연결동사로, 뒤에 형용사 보어 excited(흥분한)가 온다. 사람이 흥분을 느끼는 것이므로 exciting이 아니라 excited를 쓴다."},
+      {"q": "when a lot of people are around", "label": "시간 부사절", "explanation": "접속사 when은 '~할 때'라는 뜻으로 뒤에 주어와 동사를 갖춘 절이 온다. 절의 주어 a lot of people이 복수이므로 are를 쓴다."}
+     ],
+     "chunks": [{"en": "Max is a great actor,", "ko": "Max는 훌륭한 배우이지만,"}, {"en": "but he sometimes gets too excited", "ko": "가끔 너무 흥분해요"}, {"en": "when a lot of people are around.", "ko": "주변에 사람들이 많을 때."}]
+    },
+    {
+     "translation": "그래서, 나는 그를 진정시키기 위해 수신호를 사용해요.",
+     "contextNote": "앞 문장의 어려움을 해결하는 방법을 말한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to calm him"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "use", "role": "V"}, {"q": "hand signals", "role": "O"}, {"q": "to calm him", "role": "M"}],
+     "points": [{"q": "to calm him", "label": "부사적 용법", "star": true, "explanation": "to부정사가 '~하기 위해'라는 목적을 나타낸다. 수신호를 사용하는 목적이 그를 진정시키는 것이다. 여기서 calm은 '진정시키다'라는 뜻의 동사이고, him은 Max를 가리킨다.", "rewrite": "→ in order to calm him"}],
+     "chunks": [{"en": "So, I use hand signals", "ko": "그래서, 나는 수신호를 사용해요"}, {"en": "to calm him.", "ko": "그를 진정시키기 위해."}]
+    },
+    {
+     "translation": "나는 누구일까요?",
+     "contextNote": "읽는 이에게 물어 다음 문장의 직업 이름으로 이어 준다.",
+     "roles": [{"q": "Who", "role": "C"}, {"q": "am", "role": "V"}, {"q": "I", "role": "S"}],
+     "points": [{"q": "Who am I", "label": "어순", "explanation": "be동사가 있는 의문사 의문문은 「의문사+be동사+주어 ~?」의 어순이다. 주어 I에 맞춰 be동사 am을 쓴다."}],
+     "chunks": [{"en": "Who", "ko": "누구일까요?"}, {"en": "am I?", "ko": "나는"}]
+    },
+    {
+     "translation": "나는 동물 조련사예요.",
+     "contextNote": "앞의 질문에 답하며 직업을 밝힌다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "an animal wrangler", "role": "C"}],
+     "chunks": [{"en": "I'm", "ko": "나는"}, {"en": "an animal wrangler.", "ko": "동물 조련사예요."}]
+    }
+   ]
+  },
+  "b40e4898-93b6-415b-af85-c549c0c5cee5": {
+   "titleEn": "Emma, the Film Editor",
+   "topicEn": "After the shooting is over, Emma edits scenes to create a better story, and she reads a lot to build her skills.",
+   "topicKo": "Emma는 촬영이 끝난 뒤 더 좋은 이야기를 만들기 위해 장면을 편집하며, 스토리텔링 기술을 위해 책을 많이 읽는다.",
+   "sentences": [
+    {
+     "translation": "내 이름은 Emma이고, 나는 영화 편집자예요.",
+     "contextNote": "네 번째 스태프 Emma의 자기소개.",
+     "roles": [{"q": "My name", "role": "S"}, {"q": "is", "role": "V"}, {"q": "Emma", "role": "C"}, {"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "a film editor", "role": "C"}],
+     "notes": [{"q": "and I'm a film editor", "label": "등위절", "gloss": "and로 이은 두 번째 절"}],
+     "chunks": [{"en": "My name is Emma,", "ko": "내 이름은 Emma이고,"}, {"en": "and I'm a film editor.", "ko": "나는 영화 편집자예요."}]
+    },
+    {
+     "translation": "내 일은 촬영이 끝나고 나서 시작돼요.",
+     "contextNote": "편집자의 일이 시작되는 때를 말한다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "My work", "role": "S"}, {"q": "begins", "role": "V"}, {"q": "after the shooting is over", "role": "M"}, {"q": "the shooting", "role": "S", "level": 1}, {"q": "is", "role": "V", "level": 1}, {"q": "over", "role": "C", "level": 1}],
+     "brackets": [{"q": "after the shooting is over", "kind": "adverbial"}],
+     "points": [{"q": "after the shooting is over", "label": "시간 부사절", "star": true, "explanation": "after는 '~한 후에'라는 뜻의 접속사로, 뒤에 주어 the shooting과 동사 is를 갖춘 절이 온다. over는 '끝난'이라는 뜻의 보어이다."}],
+     "chunks": [{"en": "My work begins", "ko": "내 일은 시작돼요"}, {"en": "after the shooting is over.", "ko": "촬영이 끝나고 나서."}]
+    },
+    {
+     "translation": "더 좋은 이야기를 만들기 위해서, 나는 장면의 순서를 바꾸거나 장면 중 일부를 삭제할 수도 있어요.",
+     "contextNote": "편집자가 구체적으로 하는 일과 그 목적을 말한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "To create a better story"}],
+     "roles": [{"q": "To create a better story", "role": "M"}, {"q": "I", "role": "S"}, {"q": "can change", "role": "V"}, {"q": "the order of scenes", "role": "O"}, {"q": "delete", "role": "V"}, {"q": "some of them", "role": "O"}],
+     "notes": [{"q": "them", "label": "대명사 선행사", "gloss": "= scenes"}],
+     "points": [
+      {"q": "To create a better story", "label": "부사적 용법", "star": true, "explanation": "to부정사가 문장 맨 앞에서 '~하기 위해'라는 목적을 나타낸다. 쉼표 뒤에 진짜 주어 I가 있으므로 부사 역할이다."},
+      {"q": "can change the order of scenes or delete", "label": "조동사 공유 병렬", "explanation": "change와 delete가 or로 이어져 조동사 can을 함께 쓴다. can 뒤이므로 delete도 동사원형이다."}
+     ],
+     "chunks": [{"en": "To create a better story,", "ko": "더 좋은 이야기를 만들기 위해서,"}, {"en": "I can change the order of scenes", "ko": "나는 장면의 순서를 바꾸거나"}, {"en": "or delete some of them.", "ko": "장면 중 일부를 삭제할 수도 있어요."}]
+    },
+    {
+     "translation": "내 직업상 스토리텔링 기술이 중요해서 나는 책을 많이 읽어요.",
+     "contextNote": "편집자에게 필요한 능력과 그것을 기르는 방법을 말한다.",
+     "roles": [{"q": "Storytelling skills", "role": "S"}, {"q": "are", "role": "V"}, {"q": "important", "role": "C"}, {"q": "for my job", "role": "M"}, {"q": "I", "role": "S"}, {"q": "read", "role": "V"}, {"q": "a lot", "role": "M"}],
+     "notes": [{"q": "so I read a lot", "label": "등위절", "gloss": "so: '그래서'(결과)"}],
+     "points": [{"q": "are", "label": "동사", "explanation": "주어의 중심이 복수 명사 skills이므로 be동사 are를 쓴다."}],
+     "chunks": [{"en": "Storytelling skills are important", "ko": "스토리텔링 기술이 중요해서"}, {"en": "for my job,", "ko": "내 직업상,"}, {"en": "so I read a lot.", "ko": "나는 책을 많이 읽어요."}]
+    }
+   ]
+  },
+  "9450f00a-4f57-4767-97f8-4073df7b4e79": {
+   "titleEn": "Chris, the Foley Artist",
+   "topicEn": "Chris, a Foley artist, creates sound effects in his studio with everyday things like rice and a plastic container.",
+   "topicKo": "폴리 아티스트 Chris는 작업실에서 쌀과 플라스틱 통 같은 물건으로 음향 효과를 만든다.",
+   "sentences": [
+    {
+     "translation": "나는 Chris이고, 폴리 아티스트예요.",
+     "contextNote": "마지막 스태프 Chris의 자기소개.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "'m", "role": "V"}, {"q": "Chris", "role": "C"}, {"q": "I", "occ": 2, "role": "S"}, {"q": "'m", "occ": 2, "role": "V"}, {"q": "a Foley artist", "role": "C"}],
+     "notes": [{"q": "and I'm a Foley artist", "label": "등위절", "gloss": "and로 이은 두 번째 절"}],
+     "chunks": [{"en": "I'm Chris,", "ko": "나는 Chris이고,"}, {"en": "and I'm a Foley artist.", "ko": "폴리 아티스트예요."}]
+    },
+    {
+     "translation": "나는 야외 촬영장에서 녹음하는 게 쉽지 않을 때 내 작업실에서 음향 효과를 만들어요.",
+     "contextNote": "폴리 아티스트가 하는 일과 그 일이 필요한 때를 설명한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "recording on location is"}],
+     "roles": [{"q": "I", "role": "S"}, {"q": "create", "role": "V"}, {"q": "sound effects", "role": "O"}, {"q": "in my studio", "role": "M"}, {"q": "when recording on location is not easy", "role": "M"}, {"q": "recording on location", "role": "S", "level": 1}, {"q": "is", "role": "V", "level": 1}, {"q": "easy", "role": "C", "level": 1}],
+     "brackets": [{"q": "when recording on location is not easy", "kind": "adverbial"}],
+     "points": [
+      {"q": "recording on location", "label": "동명사 주어", "star": true, "explanation": "동명사구 recording on location(야외 촬영장에서 녹음하는 것)이 when절의 주어이다. 동명사 주어는 단수로 취급하므로 동사는 is를 쓴다."},
+      {"q": "when recording on location is not easy", "label": "시간 부사절", "explanation": "접속사 when은 '~할 때'라는 뜻이다. 뒤에 주어와 동사를 갖춘 절이 와서 음향 효과를 만드는 때를 나타낸다."}
+     ],
+     "chunks": [{"en": "I create sound effects", "ko": "나는 음향 효과를 만들어요"}, {"en": "in my studio", "ko": "내 작업실에서"}, {"en": "when recording on location is not easy.", "ko": "야외 촬영장에서 녹음하는 게 쉽지 않을 때."}]
+    },
+    {
+     "translation": "잘 들어 보라.",
+     "contextNote": "읽는 이가 소리에 집중하게 한다.",
+     "roles": [{"q": "Listen", "role": "V"}, {"q": "carefully", "role": "M"}],
+     "notes": [{"q": "carefully", "label": "동사 수식 부사", "gloss": "동사 Listen을 꾸밈"}],
+     "points": [{"q": "Listen", "label": "동사", "explanation": "주어 없이 동사원형으로 시작하는 명령문이다."}],
+     "chunks": [{"en": "Listen", "ko": "들어 보라"}, {"en": "carefully.", "ko": "잘."}]
+    },
+    {
+     "translation": "파도 소리가 들리나요?",
+     "contextNote": "읽는 이에게 물어 음향 효과의 예로 이어 준다.",
+     "roles": [{"q": "Do", "role": "V"}, {"q": "you", "role": "S"}, {"q": "hear", "role": "V"}, {"q": "the sound of waves", "role": "O"}],
+     "chunks": [{"en": "Do you hear", "ko": "들리나요?"}, {"en": "the sound of waves?", "ko": "파도 소리가"}]
+    },
+    {
+     "translation": "나는 쌀과 플라스틱 통으로 그 소리를 만들었어요.",
+     "contextNote": "파도 소리의 놀라운 재료를 밝힌다.",
+     "roles": [{"q": "I", "role": "S"}, {"q": "made", "role": "V"}, {"q": "that sound", "role": "O"}, {"q": "with rice and a plastic container", "role": "M"}],
+     "notes": [{"q": "with rice and a plastic container", "label": "전명구", "gloss": "with: '~으로'(도구·재료)"}],
+     "points": [{"q": "made", "label": "현재·과거", "explanation": "make의 과거형은 불규칙하게 변하는 made이다."}],
+     "chunks": [{"en": "I made that sound", "ko": "나는 그 소리를 만들었어요"}, {"en": "with rice and a plastic container.", "ko": "쌀과 플라스틱 통으로."}]
+    },
+    {
+     "translation": "진짜처럼 들리지 않나요?",
+     "contextNote": "읽는 이의 동의를 구하며 글을 맺는다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "sound real"}],
+     "roles": [{"q": "Doesn't", "role": "V"}, {"q": "it", "role": "S"}, {"q": "sound", "role": "V"}, {"q": "real", "role": "C"}],
+     "points": [{"q": "sound real", "label": "연결동사 보어", "star": true, "explanation": "sound는 '~하게 들리다'라는 뜻의 연결동사로, 뒤에 부사 really가 아니라 형용사 보어 real을 쓴다. Doesn't 뒤이므로 sound는 동사원형이다."}],
+     "chunks": [{"en": "Doesn't it sound", "ko": "들리지 않나요?"}, {"en": "real?", "ko": "진짜처럼"}]
+    }
+   ]
+  }
+ }
+}

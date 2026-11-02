@@ -1,0 +1,1145 @@
+{
+ "passages": {
+  "e1bce613-eb5c-4c7f-8a88-71ef4ad693dd": {
+   "titleEn": "Reena's Village in Assam",
+   "topicEn": "Reena lives in a small village in Assam near a big forest with many animals.",
+   "topicKo": "Reena는 동물이 많은 큰 숲 근처, 인도 아삼의 작은 마을에 산다.",
+   "sentences": [
+    {
+     "translation": "내 이름은 Reena야.",
+     "contextNote": "글쓴이 Reena가 자기를 소개한다.",
+     "roles": [
+      {
+       "q": "My name",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "Reena",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "My name",
+       "ko": "내 이름은"
+      },
+      {
+       "en": "is Reena.",
+       "ko": "Reena야."
+      }
+     ]
+    },
+    {
+     "translation": "나는 인도 아삼(Assam)에 있는 작은 마을에 살아.",
+     "contextNote": "이야기의 배경인 마을을 소개한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "live",
+       "role": "V"
+      },
+      {
+       "q": "in a small village in Assam, India",
+       "role": "A"
+      }
+     ],
+     "notes": [
+      {
+       "q": "in Assam, India",
+       "label": "전명구",
+       "gloss": "a small village를 꾸밈"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I live",
+       "ko": "나는 살아"
+      },
+      {
+       "en": "in a small village",
+       "ko": "작은 마을에"
+      },
+      {
+       "en": "in Assam, India.",
+       "ko": "인도 아삼(Assam)에 있는."
+      }
+     ]
+    },
+    {
+     "translation": "우리 마을 근처에는 큰 숲이 있어.",
+     "contextNote": "코끼리들이 사는 숲을 소개한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "There is"
+      }
+     ],
+     "roles": [
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "a big forest",
+       "role": "S"
+      },
+      {
+       "q": "near my village",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "There is",
+       "label": "there be 수일치",
+       "star": true,
+       "explanation": "There be 문장에서 There는 주어가 아니고, be동사 뒤의 말이 진짜 주어이다. 주어 a big forest가 단수이므로 is를 쓴다. 뜻은 '~이 있다'이며 There를 '거기에'로 해석하지 않는다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There is a big forest",
+       "ko": "큰 숲이 있어"
+      },
+      {
+       "en": "near my village.",
+       "ko": "우리 마을 근처에는."
+      }
+     ]
+    },
+    {
+     "translation": "그 숲에는 많은 동물이 있어.",
+     "contextNote": "숲에 사는 동물을 말하며 코끼리 이야기를 준비한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "There are"
+      }
+     ],
+     "roles": [
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "many animals",
+       "role": "S"
+      },
+      {
+       "q": "in the forest",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "There are",
+       "label": "there be 수일치",
+       "star": true,
+       "explanation": "be동사 뒤의 진짜 주어 many animals가 복수이므로 are를 쓴다. 앞 문장의 There is와 비교해 뒤에 오는 명사의 수에 맞추는 것이 핵심이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There are many animals",
+       "ko": "많은 동물이 있어"
+      },
+      {
+       "en": "in the forest.",
+       "ko": "그 숲에는."
+      }
+     ]
+    }
+   ]
+  },
+  "afafabb2-8507-4a7f-af57-eac238ac94f3": {
+   "titleEn": "The Elephants Come to the Village",
+   "topicEn": "Hungry elephants came to the village and ate the food on the farms.",
+   "topicKo": "숲에서 먹이를 찾지 못한 코끼리들이 마을에 와서 농장의 음식을 먹었다.",
+   "sentences": [
+    {
+     "translation": "어느 날 아침, 코끼리 세 마리가 우리 마을에 왔어.",
+     "contextNote": "문제가 시작된 사건을 과거시제로 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "came"
+      }
+     ],
+     "roles": [
+      {
+       "q": "One morning",
+       "role": "M"
+      },
+      {
+       "q": "three elephants",
+       "role": "S"
+      },
+      {
+       "q": "came",
+       "role": "V"
+      },
+      {
+       "q": "to my village",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "came",
+       "label": "시간 부사 시제",
+       "star": true,
+       "explanation": "One morning은 과거의 어느 때를 나타내므로 동사도 과거형을 쓴다. come은 불규칙 동사로 come-came으로 변한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "One morning,",
+       "ko": "어느 날 아침,"
+      },
+      {
+       "en": "three elephants came",
+       "ko": "코끼리 세 마리가 왔어"
+      },
+      {
+       "en": "to my village.",
+       "ko": "우리 마을에."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 숲에서 음식을 찾을 수 없었어.",
+     "contextNote": "코끼리들이 마을에 온 이유를 말한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "could not find",
+       "role": "V"
+      },
+      {
+       "q": "food",
+       "role": "O"
+      },
+      {
+       "q": "in the forest",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "could not find",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "could는 can의 과거형으로, could not은 '~할 수 없었다'라는 뜻이다. 조동사의 부정은 조동사 뒤에 not을 붙이고, 그 뒤에 동사원형을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They could not find food",
+       "ko": "그들은 음식을 찾을 수 없었어"
+      },
+      {
+       "en": "in the forest.",
+       "ko": "숲에서."
+      }
+     ]
+    },
+    {
+     "translation": "그래서 그들은 우리의 농장에 있는 과일과 채소를 먹었어.",
+     "contextNote": "먹이를 찾지 못한 결과로 생긴 피해를 말한다.",
+     "roles": [
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "ate",
+       "role": "V"
+      },
+      {
+       "q": "the fruit and vegetables on our farms",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "on our farms",
+       "label": "전명구",
+       "gloss": "the fruit and vegetables를 꾸밈"
+      }
+     ],
+     "points": [
+      {
+       "q": "ate",
+       "label": "동사",
+       "star": true,
+       "explanation": "eat는 불규칙 동사로 과거형이 ate이다(eated ×). 과거형은 주어의 인칭·수와 상관없이 같은 형태이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "So they ate",
+       "ko": "그래서 그들은 먹었어"
+      },
+      {
+       "en": "the fruit and vegetables",
+       "ko": "과일과 채소를"
+      },
+      {
+       "en": "on our farms.",
+       "ko": "우리의 농장에 있는."
+      }
+     ]
+    },
+    {
+     "translation": "매일, 더 많은 코끼리들이 와서 우리의 음식을 먹었어.",
+     "contextNote": "피해가 날마다 더 커졌음을 말한다.",
+     "roles": [
+      {
+       "q": "Every day",
+       "role": "M"
+      },
+      {
+       "q": "more elephants",
+       "role": "S"
+      },
+      {
+       "q": "came",
+       "role": "V"
+      },
+      {
+       "q": "ate",
+       "role": "V"
+      },
+      {
+       "q": "our food",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "came and ate",
+       "label": "동사 병렬",
+       "star": true,
+       "explanation": "주어 more elephants 하나에 동사 came과 ate가 and로 이어졌다. and로 이은 두 동사는 시제를 같게 쓰므로 둘 다 과거형이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Every day,",
+       "ko": "매일,"
+      },
+      {
+       "en": "more elephants came",
+       "ko": "더 많은 코끼리들이 와서"
+      },
+      {
+       "en": "and ate our food.",
+       "ko": "우리의 음식을 먹었어."
+      }
+     ]
+    },
+    {
+     "translation": "나의 아버지는 모두에게 \"우리는 코끼리들을 저지해야만 해요.\"라고 말씀하셨어.",
+     "contextNote": "마을 사람들이 코끼리를 막기로 하는 계기가 되는 말이다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "have to stop"
+      }
+     ],
+     "roles": [
+      {
+       "q": "My father",
+       "role": "S"
+      },
+      {
+       "q": "told",
+       "role": "V"
+      },
+      {
+       "q": "everyone",
+       "role": "O"
+      },
+      {
+       "q": "We have to stop the elephants.",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "told",
+       "label": "동사",
+       "explanation": "tell은 불규칙 동사로 과거형이 told이다."
+      },
+      {
+       "q": "have to stop",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "have to는 '~해야 한다'라는 뜻으로 must와 비슷하며, 뒤에는 동사원형을 쓴다. 주어가 3인칭 단수이면 has to로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "My father told everyone,",
+       "ko": "나의 아버지는 모두에게 말씀하셨어,"
+      },
+      {
+       "en": "\"We have to stop",
+       "ko": "\"우리는 저지해야만 해요"
+      },
+      {
+       "en": "the elephants.\"",
+       "ko": "코끼리들을.\""
+      }
+     ]
+    }
+   ]
+  },
+  "7b7cc713-b80d-4c1c-a906-6354c4118bb2": {
+   "titleEn": "Failed Attempts to Stop the Elephants",
+   "topicEn": "The villagers tried noise and fire, but the elephants always came back.",
+   "topicKo": "마을 사람들은 큰 소리와 불을 써 보았지만, 코끼리들은 항상 돌아왔다.",
+   "sentences": [
+    {
+     "translation": "우리는 많은 것을 시도해 봤어.",
+     "contextNote": "뒤에 나올 시도들을 한마디로 묶어 미리 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "tried",
+       "role": "V"
+      },
+      {
+       "q": "many things",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "tried",
+       "label": "동사",
+       "star": true,
+       "explanation": "「자음+y」로 끝나는 동사는 y를 i로 바꾸고 -ed를 붙여 과거형을 만든다(try-tried)."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We tried",
+       "ko": "우리는 시도해 봤어"
+      },
+      {
+       "en": "many things.",
+       "ko": "많은 것을."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 큰 소리를 냈어.",
+     "contextNote": "첫 번째 시도를 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "made",
+       "role": "V"
+      },
+      {
+       "q": "loud noises",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "made",
+       "label": "동사",
+       "explanation": "make는 불규칙 동사로 과거형이 made이다. make a noise는 '소리를 내다'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We made",
+       "ko": "우리는 냈어"
+      },
+      {
+       "en": "loud noises.",
+       "ko": "큰 소리를."
+      }
+     ]
+    },
+    {
+     "translation": "그러나 코끼리들은 무서워하지 않았어.",
+     "contextNote": "첫 번째 시도가 실패했음을 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "were not"
+      }
+     ],
+     "roles": [
+      {
+       "q": "the elephants",
+       "role": "S"
+      },
+      {
+       "q": "were not",
+       "role": "V"
+      },
+      {
+       "q": "scared",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "were not",
+       "label": "2형식",
+       "star": true,
+       "explanation": "be동사 과거형의 부정문은 was/were 뒤에 not을 붙인다. 주어 the elephants가 복수이므로 were not(= weren't)을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But the elephants",
+       "ko": "그러나 코끼리들은"
+      },
+      {
+       "en": "were not scared.",
+       "ko": "무서워하지 않았어."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 불을 사용했어.",
+     "contextNote": "두 번째 시도를 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "used",
+       "role": "V"
+      },
+      {
+       "q": "fire",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "used",
+       "label": "동사",
+       "explanation": "-e로 끝나는 규칙 동사는 -d만 붙여 과거형을 만든다(use-used)."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We used",
+       "ko": "우리는 사용했어"
+      },
+      {
+       "en": "fire.",
+       "ko": "불을."
+      }
+     ]
+    },
+    {
+     "translation": "그러나 그것은 우리에게 위험했어.",
+     "contextNote": "두 번째 시도의 문제점을 말한다.",
+     "roles": [
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "dangerous",
+       "role": "C"
+      },
+      {
+       "q": "for us",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "it",
+       "label": "대명사 선행사",
+       "gloss": "= fire"
+      }
+     ],
+     "points": [
+      {
+       "q": "was",
+       "label": "2형식",
+       "explanation": "주어 it이 단수이고 과거의 일이므로 be동사 was를 쓴다. 형용사 dangerous가 주격보어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But it was dangerous",
+       "ko": "그러나 그것은 위험했어"
+      },
+      {
+       "en": "for us.",
+       "ko": "우리에게."
+      }
+     ]
+    },
+    {
+     "translation": "코끼리들은 항상 돌아왔어.",
+     "contextNote": "어떤 시도도 소용없었다고 정리한다.",
+     "roles": [
+      {
+       "q": "The elephants",
+       "role": "S"
+      },
+      {
+       "q": "always",
+       "role": "M"
+      },
+      {
+       "q": "came back",
+       "role": "V"
+      }
+     ],
+     "points": [
+      {
+       "q": "always came back",
+       "label": "동사 수식 부사",
+       "explanation": "빈도부사 always는 일반동사 앞에 온다. came back은 come back(돌아오다)의 과거형이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The elephants",
+       "ko": "코끼리들은"
+      },
+      {
+       "en": "always came back.",
+       "ko": "항상 돌아왔어."
+      }
+     ]
+    }
+   ]
+  },
+  "64629873-24b0-4492-8fc9-6837c55b5c65": {
+   "titleEn": "Planting Food for the Elephants",
+   "topicEn": "Reena's words led the villagers to plant food for the hungry elephants near the forest.",
+   "topicKo": "Reena의 말을 계기로 마을 사람들은 배고픈 코끼리들을 위해 숲 근처에 먹이를 심었다.",
+   "sentences": [
+    {
+     "translation": "어느 날, 나는 \"코끼리들을 다치게 하지 마세요!",
+     "contextNote": "이야기의 전환점: Reena가 코끼리를 해치지 말자고 호소한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "One day",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Don't hurt the elephants!",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "Don't hurt",
+       "label": "동사",
+       "star": true,
+       "explanation": "부정 명령문은 「Don't+동사원형」으로 '~하지 마라'는 뜻이다. 주어 You 없이 동사원형으로 시작한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "One day,",
+       "ko": "어느 날,"
+      },
+      {
+       "en": "I said,",
+       "ko": "나는 말했어,"
+      },
+      {
+       "en": "\"Don't hurt the elephants!",
+       "ko": "\"코끼리들을 다치게 하지 마세요!"
+      }
+     ]
+    },
+    {
+     "translation": "그들은 그저 배가 고픈 거예요.\"라고 말했어.",
+     "contextNote": "해치지 말아야 하는 이유: 코끼리들은 나쁜 게 아니라 배가 고플 뿐이다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "'re",
+       "role": "V"
+      },
+      {
+       "q": "just",
+       "role": "M"
+      },
+      {
+       "q": "hungry",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "They",
+       "label": "대명사 선행사",
+       "gloss": "= the elephants"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They're just",
+       "ko": "그들은 그저"
+      },
+      {
+       "en": "hungry.\"",
+       "ko": "배가 고픈 거예요.\"라고 말했어."
+      }
+     ]
+    },
+    {
+     "translation": "나의 아버지는 \"네 말이 맞아.",
+     "contextNote": "아버지가 Reena의 말을 받아들인다.",
+     "roles": [
+      {
+       "q": "My father",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "You're right.",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "My father said,",
+       "ko": "나의 아버지는 말씀하셨어,"
+      },
+      {
+       "en": "\"You're right.",
+       "ko": "\"네 말이 맞아."
+      }
+     ]
+    },
+    {
+     "translation": "우리는 그들을 위한 음식을 좀 심을 수 있어.\"라고 말씀하셨어.",
+     "contextNote": "막는 대신 먹이를 심어 주자는 해결책이 나온다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "can plant"
+      }
+     ],
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "can plant",
+       "role": "V"
+      },
+      {
+       "q": "some food for them",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "for them",
+       "label": "전명구",
+       "gloss": "some food를 꾸밈, them = the elephants"
+      }
+     ],
+     "points": [
+      {
+       "q": "can plant",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "can은 '~할 수 있다'라는 뜻의 조동사로, 뒤에 동사원형 plant를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We can plant",
+       "ko": "우리는 심을 수 있어"
+      },
+      {
+       "en": "some food",
+       "ko": "음식을 좀"
+      },
+      {
+       "en": "for them.\"",
+       "ko": "그들을 위한.\"라고 말씀하셨어."
+      }
+     ]
+    },
+    {
+     "translation": "우리 마을의 사람들은 숲 근처에 벼와 바나나를 심었어.",
+     "contextNote": "해결책을 실제로 행동에 옮긴다.",
+     "roles": [
+      {
+       "q": "The people in my village",
+       "role": "S"
+      },
+      {
+       "q": "planted",
+       "role": "V"
+      },
+      {
+       "q": "rice and bananas",
+       "role": "O"
+      },
+      {
+       "q": "near the forest",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "in my village",
+       "label": "전명구",
+       "gloss": "The people을 꾸밈"
+      }
+     ],
+     "points": [
+      {
+       "q": "planted",
+       "label": "동사",
+       "explanation": "규칙 동사의 과거형은 동사원형에 -ed를 붙여 만든다(plant-planted). 앞 문장의 can plant와 달리 실제로 한 일을 과거시제로 말한다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The people in my village",
+       "ko": "우리 마을의 사람들은"
+      },
+      {
+       "en": "planted rice and bananas",
+       "ko": "벼와 바나나를 심었어"
+      },
+      {
+       "en": "near the forest.",
+       "ko": "숲 근처에."
+      }
+     ]
+    },
+    {
+     "translation": "그것들은 빨리 자랐어.",
+     "contextNote": "심은 작물이 잘 자랐음을 말한다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "grew",
+       "role": "V"
+      },
+      {
+       "q": "quickly",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "They",
+       "label": "대명사 선행사",
+       "gloss": "= rice and bananas"
+      }
+     ],
+     "points": [
+      {
+       "q": "grew",
+       "label": "동사",
+       "star": true,
+       "explanation": "grow는 불규칙 동사로 과거형이 grew이다. quickly는 동사 grew를 꾸미는 부사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They grew",
+       "ko": "그것들은 자랐어"
+      },
+      {
+       "en": "quickly.",
+       "ko": "빨리."
+      }
+     ]
+    },
+    {
+     "translation": "코끼리들은 우리의 선물을 아주 좋아했어.",
+     "contextNote": "심어 준 작물을 '선물'이라 부르며 해결책이 통했음을 말한다.",
+     "tags": [
+      "어휘 추론"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어휘 추론",
+       "q": "our presents"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The elephants",
+       "role": "S"
+      },
+      {
+       "q": "loved",
+       "role": "V"
+      },
+      {
+       "q": "our presents",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The elephants loved",
+       "ko": "코끼리들은 아주 좋아했어"
+      },
+      {
+       "en": "our presents.",
+       "ko": "우리의 선물을."
+      }
+     ]
+    }
+   ]
+  },
+  "7f078dca-ae1f-4a36-b5a5-5af825e2683e": {
+   "titleEn": "Living Together in Peace",
+   "topicEn": "The elephants stopped coming to the village, and elephants and people can be good neighbors.",
+   "topicKo": "코끼리들은 더 이상 마을에 오지 않고, 코끼리와 사람은 좋은 이웃이 될 수 있다.",
+   "sentences": [
+    {
+     "translation": "이제, 코끼리들은 더 이상 우리 마을에 오지 않아.",
+     "contextNote": "과거 이야기를 끝내고 현재의 결과를 말한다.",
+     "tags": [
+      "서술형 대비"
+     ],
+     "roles": [
+      {
+       "q": "Now",
+       "role": "M"
+      },
+      {
+       "q": "the elephants",
+       "role": "S"
+      },
+      {
+       "q": "don't come",
+       "role": "V"
+      },
+      {
+       "q": "to our village",
+       "role": "M"
+      },
+      {
+       "q": "anymore",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "don't come",
+       "label": "시간 부사 시제",
+       "star": true,
+       "explanation": "Now(이제)는 지금의 일을 나타내므로 현재시제를 쓴다. 앞 글의 과거 동사 came과 구별한다. not ~ anymore는 '더 이상 ~않다'라는 뜻이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Now,",
+       "ko": "이제,"
+      },
+      {
+       "en": "the elephants don't come",
+       "ko": "코끼리들은 오지 않아"
+      },
+      {
+       "en": "to our village",
+       "ko": "우리 마을에"
+      },
+      {
+       "en": "anymore.",
+       "ko": "더 이상."
+      }
+     ]
+    },
+    {
+     "translation": "그들은 행복해.",
+     "contextNote": "코끼리들의 달라진 상태를 말한다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "happy",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They",
+       "ko": "그들은"
+      },
+      {
+       "en": "are happy.",
+       "ko": "행복해."
+      }
+     ]
+    },
+    {
+     "translation": "우리도 행복해.",
+     "contextNote": "마을 사람들도 함께 행복해졌음을 말한다.",
+     "roles": [
+      {
+       "q": "We",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "happy",
+       "role": "C"
+      },
+      {
+       "q": "too",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "We are happy,",
+       "ko": "우리는 행복해,"
+      },
+      {
+       "en": "too.",
+       "ko": "또한."
+      }
+     ]
+    },
+    {
+     "translation": "코끼리와 사람은 좋은 이웃이 될 수 있어.",
+     "contextNote": "과 제목 Living Together와 이어지는 글의 주제 문장이다.",
+     "tags": [
+      "주제문",
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "can be"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Elephants and people",
+       "role": "S"
+      },
+      {
+       "q": "can be",
+       "role": "V"
+      },
+      {
+       "q": "good neighbors",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "Elephants and people",
+       "label": "병렬구조",
+       "gloss": "and로 이은 두 주어"
+      }
+     ],
+     "points": [
+      {
+       "q": "can be",
+       "label": "조동사 의미",
+       "star": true,
+       "explanation": "조동사 can 뒤에는 동사원형을 쓰므로 be동사의 원형 be가 온다(can are ×). 뒤의 good neighbors가 주격보어이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Elephants and people",
+       "ko": "코끼리와 사람은"
+      },
+      {
+       "en": "can be good neighbors.",
+       "ko": "좋은 이웃이 될 수 있어."
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

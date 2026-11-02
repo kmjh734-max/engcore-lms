@@ -1,0 +1,2296 @@
+{
+ "passages": {
+  "cf006a71-bf6d-4af9-a25f-ee47a0ac3d7c": {
+   "titleEn": "A Puzzle for Three Children",
+   "topicEn": "Parents give their three children, who have grown apart, a puzzle to solve together.",
+   "topicKo": "부모님이 사이가 멀어진 세 아이에게 함께 풀 수수께끼를 낸다.",
+   "sentences": [
+    {
+     "translation": "옛날에 세 아이가 있는 사랑스러운 가족이 있었다.",
+     "contextNote": "이야기의 주인공인 가족을 소개한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "There once was"
+      }
+     ],
+     "roles": [
+      {
+       "q": "once",
+       "role": "M"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "a lovely family with three children",
+       "role": "S"
+      }
+     ],
+     "notes": [
+      {
+       "q": "with three children",
+       "label": "전명구",
+       "gloss": "family를 꾸밈, '세 아이가 있는'"
+      }
+     ],
+     "points": [
+      {
+       "q": "There once was",
+       "label": "there be 수일치",
+       "star": true,
+       "explanation": "「There+be동사」는 '~이 있다'는 뜻이고, 뒤에 오는 말이 실제 주어이다. 실제 주어 a lovely family가 단수이고 과거의 일이므로 was를 쓴다. lovely는 -ly로 끝나지만 '사랑스러운'이라는 뜻의 형용사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "There once was a lovely family",
+       "ko": "옛날에 사랑스러운 가족이 있었다"
+      },
+      {
+       "en": "with three children.",
+       "ko": "세 아이가 있는."
+      }
+     ]
+    },
+    {
+     "translation": "아이들은 매우 가까웠다.",
+     "contextNote": "어렸을 때 아이들의 사이를 말한다.",
+     "roles": [
+      {
+       "q": "The children",
+       "role": "S"
+      },
+      {
+       "q": "were",
+       "role": "V"
+      },
+      {
+       "q": "very close",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The children were",
+       "ko": "아이들은 ~였다"
+      },
+      {
+       "en": "very close.",
+       "ko": "매우 가까운."
+      }
+     ]
+    },
+    {
+     "translation": "하지만 나이가 들면서, 그들은 서서히 사이가 멀어졌다.",
+     "contextNote": "앞 문장과 달리 아이들의 사이가 멀어졌다는 문제를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "as they got older"
+      }
+     ],
+     "roles": [
+      {
+       "q": "they",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "got",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "older",
+       "role": "C",
+       "level": 1
+      },
+      {
+       "q": "they",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "slowly",
+       "role": "M"
+      },
+      {
+       "q": "grew",
+       "role": "V"
+      },
+      {
+       "q": "apart",
+       "role": "A"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "as they got older",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "as they got older",
+       "label": "비례 부사절",
+       "star": true,
+       "explanation": "접속사 as가 변화를 나타내는 말과 함께 쓰여 '~함에 따라, ~하면서'라는 뜻을 나타낸다. 절 안의 got older는 '나이가 더 들다'이며, get 뒤에 보어로 비교급 형용사가 왔다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But as they got older,",
+       "ko": "하지만 나이가 들면서,"
+      },
+      {
+       "en": "they slowly grew apart.",
+       "ko": "그들은 서서히 사이가 멀어졌다."
+      }
+     ]
+    },
+    {
+     "translation": "어느 날, 부모님이 아이들을 함께 불렀다.",
+     "contextNote": "이야기가 시작되는 사건이다.",
+     "roles": [
+      {
+       "q": "One day",
+       "role": "M"
+      },
+      {
+       "q": "the parents",
+       "role": "S"
+      },
+      {
+       "q": "called",
+       "role": "V"
+      },
+      {
+       "q": "the children",
+       "role": "O"
+      },
+      {
+       "q": "together",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "One day,",
+       "ko": "어느 날,"
+      },
+      {
+       "en": "the parents called the children",
+       "ko": "부모님이 아이들을 불렀다"
+      },
+      {
+       "en": "together.",
+       "ko": "함께."
+      }
+     ]
+    },
+    {
+     "translation": "\"너희는 이 방을 기억하니?",
+     "contextNote": "아버지가 함께 놀던 방을 떠올리게 한다.",
+     "roles": [
+      {
+       "q": "Do",
+       "role": "V"
+      },
+      {
+       "q": "you",
+       "role": "S"
+      },
+      {
+       "q": "remember",
+       "role": "V"
+      },
+      {
+       "q": "this room",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Do you remember",
+       "ko": "\"너희는 기억하니?"
+      },
+      {
+       "en": "this room?",
+       "ko": "이 방을"
+      }
+     ]
+    },
+    {
+     "translation": "너희가 여기서 놀곤 했잖니.",
+     "contextNote": "어린 시절 함께 놀던 때를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "used to play"
+      }
+     ],
+     "roles": [
+      {
+       "q": "You",
+       "role": "S"
+      },
+      {
+       "q": "used to play",
+       "role": "V"
+      },
+      {
+       "q": "here",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "used to play",
+       "label": "used to",
+       "star": true,
+       "explanation": "「used to+동사원형」은 '(과거에) ~하곤 했다'라는 뜻으로, 지금은 하지 않는 과거의 습관을 나타낸다. to 뒤에는 동사원형을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "You used to play",
+       "ko": "너희가 놀곤 했잖니"
+      },
+      {
+       "en": "here.",
+       "ko": "여기서."
+      }
+     ]
+    },
+    {
+     "translation": "이곳은 항상 행복으로 가득 찼었지.\"라고 아버지가 말했다.",
+     "contextNote": "지금과 달리 행복했던 과거를 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "was always filled with"
+      }
+     ],
+     "roles": [
+      {
+       "q": "It was always filled with happiness,\"",
+       "role": "O"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "the father",
+       "role": "S"
+      }
+     ],
+     "points": [
+      {
+       "q": "was always filled with",
+       "label": "수동태",
+       "star": true,
+       "explanation": "방은 채워지는 대상이므로 「be동사+과거분사」의 수동태를 쓴다. 「be filled with」는 '~으로 가득 차다'라는 뜻으로, by가 아니라 with를 쓴다. 빈도부사 always는 be동사 뒤에 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It was always filled",
+       "ko": "이곳은 항상 가득 찼었지"
+      },
+      {
+       "en": "with happiness,\"",
+       "ko": "행복으로\"라고"
+      },
+      {
+       "en": "said the father.",
+       "ko": "아버지가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "어머니가 이어 말했다, \"하지만 이제, 너희는 서로 대화조차 하지 않는구나.",
+     "contextNote": "지금 아이들의 문제를 짚는다.",
+     "roles": [
+      {
+       "q": "The mother",
+       "role": "S"
+      },
+      {
+       "q": "continued",
+       "role": "V"
+      },
+      {
+       "q": "\"But now, you don't even talk to each other.",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The mother continued,",
+       "ko": "어머니가 이어 말했다,"
+      },
+      {
+       "en": "\"But now,",
+       "ko": "\"하지만 이제,"
+      },
+      {
+       "en": "you don't even talk",
+       "ko": "너희는 대화조차 하지 않는구나"
+      },
+      {
+       "en": "to each other.",
+       "ko": "서로."
+      }
+     ]
+    },
+    {
+     "translation": "그래서 우리는 너희를 위한 수수께끼 하나를 만들었단다.",
+     "contextNote": "부모님이 수수께끼를 낸 까닭이다.",
+     "roles": [
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "made",
+       "role": "V"
+      },
+      {
+       "q": "a puzzle",
+       "role": "O"
+      },
+      {
+       "q": "for you",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "So, we made a puzzle",
+       "ko": "그래서 우리는 수수께끼 하나를 만들었단다"
+      },
+      {
+       "en": "for you.",
+       "ko": "너희를 위한."
+      }
+     ]
+    },
+    {
+     "translation": "여기 은화 세 개가 있어.",
+     "contextNote": "수수께끼를 풀 재료를 건넨다.",
+     "roles": [
+      {
+       "q": "Here",
+       "role": "M"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "three silver coins",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Here are",
+       "ko": "여기 있어"
+      },
+      {
+       "en": "three silver coins.",
+       "ko": "은화 세 개가."
+      }
+     ]
+    },
+    {
+     "translation": "시장에 가서 이 방을 완전히 채울 무언가를 사라.",
+     "contextNote": "수수께끼의 내용이다. 은화 세 개로 방을 완전히 채워야 한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "to fill this room completely"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Go",
+       "role": "V"
+      },
+      {
+       "q": "to the market",
+       "role": "A"
+      },
+      {
+       "q": "buy",
+       "role": "V"
+      },
+      {
+       "q": "something to fill this room completely",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "to fill this room completely",
+       "label": "형용사적 용법",
+       "star": true,
+       "explanation": "to부정사가 앞의 대명사 something을 꾸며 '이 방을 완전히 채울 무언가'라는 뜻을 나타낸다. 명령문의 동사 Go와 buy는 and로 이어져 있으므로 둘 다 동사원형으로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Go to the market",
+       "ko": "시장에 가서"
+      },
+      {
+       "en": "and buy something",
+       "ko": "무언가를 사라"
+      },
+      {
+       "en": "to fill this room completely.",
+       "ko": "이 방을 완전히 채울."
+      }
+     ]
+    },
+    {
+     "translation": "만약 너희가 성공한다면, 너희는 큰 보상을 받을 거야.\"",
+     "contextNote": "수수께끼를 풀면 받을 보상을 말한다. 이 보상이 글 끝에서 다시 나온다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "If you succeed"
+      }
+     ],
+     "roles": [
+      {
+       "q": "you",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "succeed",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "you",
+       "occ": 2,
+       "role": "S"
+      },
+      {
+       "q": "will get",
+       "role": "V"
+      },
+      {
+       "q": "a big reward",
+       "role": "O"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "If you succeed",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "If you succeed",
+       "label": "시간·조건절 현재",
+       "star": true,
+       "explanation": "if는 '만약 ~하면'이라는 뜻의 접속사이다. 조건 부사절에서는 미래의 일도 현재시제로 쓰므로, 주절은 will get이지만 if절은 will succeed가 아니라 succeed이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "If you succeed,",
+       "ko": "만약 너희가 성공한다면,"
+      },
+      {
+       "en": "you will get a big reward.\"",
+       "ko": "너희는 큰 보상을 받을 거야.\""
+      }
+     ]
+    }
+   ]
+  },
+  "0af6cdd6-3b2e-4971-8b0f-44d645404f92": {
+   "titleEn": "Patrick Acts Alone",
+   "topicEn": "Patrick spends one coin on feathers on his own, but they barely cover the floor.",
+   "topicKo": "Patrick이 혼자서 은화 한 개로 깃털을 사 오지만, 깃털은 간신히 바닥을 덮을 뿐이다.",
+   "sentences": [
+    {
+     "translation": "첫째인 Ethan이 \"우리는 최선을 다할게요.\"라고 말했다.",
+     "contextNote": "첫째 Ethan이 수수께끼에 답한다.",
+     "roles": [
+      {
+       "q": "Ethan, the eldest child",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"We will do our best.",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the eldest child",
+       "label": "동격구",
+       "gloss": "= Ethan"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Ethan, the eldest child,",
+       "ko": "첫째인 Ethan이"
+      },
+      {
+       "en": "said,",
+       "ko": "말했다,"
+      },
+      {
+       "en": "\"We will do our best.\"",
+       "ko": "\"우리는 최선을 다할게요.\"라고"
+      }
+     ]
+    },
+    {
+     "translation": "가족의 막내인 Annie는 혼란스러웠다.",
+     "contextNote": "막내 Annie는 수수께끼를 이해하지 못한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "puzzled"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The youngest of the family, Annie",
+       "role": "S"
+      },
+      {
+       "q": "was",
+       "role": "V"
+      },
+      {
+       "q": "puzzled",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "Annie",
+       "label": "동격구",
+       "gloss": "= The youngest of the family"
+      }
+     ],
+     "points": [
+      {
+       "q": "puzzled",
+       "label": "감정분사",
+       "star": true,
+       "explanation": "사람이 혼란을 느끼는 것이므로 과거분사형 형용사 puzzled를 쓴다. 혼란스럽게 만드는 대상을 말할 때는 puzzling을 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The youngest of the family, Annie,",
+       "ko": "가족의 막내인 Annie는"
+      },
+      {
+       "en": "was puzzled.",
+       "ko": "혼란스러웠다."
+      }
+     ]
+    },
+    {
+     "translation": "\"은화 세 개는 이 방을 채우기에 충분하지 않아요!",
+     "contextNote": "Annie가 혼란스러운 까닭을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "enough to fill this room"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Three silver coins",
+       "role": "S"
+      },
+      {
+       "q": "aren't",
+       "role": "V"
+      },
+      {
+       "q": "enough to fill this room",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "enough to fill this room",
+       "label": "enough to 구문",
+       "star": true,
+       "explanation": "「enough+to부정사」는 '~하기에 충분한'이라는 뜻이다. 여기서 to fill은 enough를 꾸며 무엇을 하기에 충분한지 말해 준다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Three silver coins aren't enough",
+       "ko": "\"은화 세 개는 충분하지 않아요"
+      },
+      {
+       "en": "to fill this room!\"",
+       "ko": "이 방을 채우기에!"
+      }
+     ]
+    },
+    {
+     "translation": "아버지가 대답했다, \"만약 너희가 함께 한다면, 그것을 알아낼 수 있어.",
+     "contextNote": "아버지가 함께 힘을 모으라고 일러 준다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "If you work together"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The father",
+       "role": "S"
+      },
+      {
+       "q": "replied",
+       "role": "V"
+      },
+      {
+       "q": "\"If you work together, you can figure it out.",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "If you work together",
+       "label": "조건 부사절",
+       "star": true,
+       "explanation": "if는 '만약 ~하면'이라는 뜻의 접속사로, 뒤에 주어와 동사가 있는 절이 온다. 조건 부사절이 문장 앞에 오면 절 끝에 쉼표를 쓴다."
+      },
+      {
+       "q": "figure it out",
+       "label": "어순",
+       "explanation": "figure out은 '알아내다'라는 뜻이다. 「동사+부사」의 목적어가 it 같은 대명사이면 반드시 동사와 부사 사이에 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The father replied,",
+       "ko": "아버지가 대답했다,"
+      },
+      {
+       "en": "\"If you work together,",
+       "ko": "\"만약 너희가 함께 한다면,"
+      },
+      {
+       "en": "you can figure it out.",
+       "ko": "그것을 알아낼 수 있어."
+      }
+     ]
+    },
+    {
+     "translation": "세 명이 한 명보다 더 낫단다.",
+     "contextNote": "협동의 힘을 강조하는 말로, 글의 교훈과 이어진다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "better than"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Three heads",
+       "role": "S"
+      },
+      {
+       "q": "are",
+       "role": "V"
+      },
+      {
+       "q": "better than one",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "one",
+       "label": "one/ones",
+       "gloss": "= one head"
+      }
+     ],
+     "points": [
+      {
+       "q": "better than",
+       "label": "비교급",
+       "explanation": "「비교급+than」은 '~보다 더 …한'이라는 뜻이다. better는 good의 비교급으로, -er을 붙이지 않는 불규칙 변화이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Three heads are better",
+       "ko": "세 명이 더 낫단다"
+      },
+      {
+       "en": "than one.\"",
+       "ko": "한 명보다."
+      }
+     ]
+    },
+    {
+     "translation": "둘째인 Patrick이 \"난 답을 알아!\"라고 소리쳤다.",
+     "contextNote": "둘째 Patrick이 답을 안다고 나선다.",
+     "roles": [
+      {
+       "q": "Patrick, the middle child",
+       "role": "S"
+      },
+      {
+       "q": "shouted",
+       "role": "V"
+      },
+      {
+       "q": "\"I know the answer!",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "the middle child",
+       "label": "동격구",
+       "gloss": "= Patrick"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Patrick, the middle child,",
+       "ko": "둘째인 Patrick이"
+      },
+      {
+       "en": "shouted,",
+       "ko": "소리쳤다,"
+      },
+      {
+       "en": "\"I know the answer!\"",
+       "ko": "\"난 답을 알아!\"라고"
+      }
+     ]
+    },
+    {
+     "translation": "그는 은화 한 개를 쥐고 문밖으로 달려 나갔다.",
+     "contextNote": "Patrick이 다른 아이들과 의논하지 않고 혼자 움직인다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "grabbed",
+       "role": "V"
+      },
+      {
+       "q": "a silver coin",
+       "role": "O"
+      },
+      {
+       "q": "ran",
+       "role": "V"
+      },
+      {
+       "q": "out the door",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "grabbed a silver coin and ran",
+       "label": "동사 병렬",
+       "explanation": "주어 He 하나에 동사 grabbed와 ran이 and로 이어져 있다. 두 동사 모두 과거 시제로 맞추었다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He grabbed a silver coin",
+       "ko": "그는 은화 한 개를 쥐고"
+      },
+      {
+       "en": "and ran out the door.",
+       "ko": "문밖으로 달려 나갔다."
+      }
+     ]
+    },
+    {
+     "translation": "Patrick은 시장에서 두 자루의 깃털을 산 후 돌아왔다.",
+     "contextNote": "Patrick이 고른 답은 깃털이다.",
+     "roles": [
+      {
+       "q": "Patrick",
+       "role": "S"
+      },
+      {
+       "q": "returned",
+       "role": "V"
+      },
+      {
+       "q": "he",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "bought",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "two bags of feathers",
+       "role": "O",
+       "level": 1
+      },
+      {
+       "q": "from the market",
+       "role": "M",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "after he bought two bags of feathers from the market",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "after he bought two bags of feathers from the market",
+       "label": "시간 부사절",
+       "explanation": "after는 여기서 '~한 후에'라는 뜻의 접속사로, 뒤에 주어와 동사가 있는 절이 온다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Patrick returned",
+       "ko": "Patrick은 돌아왔다"
+      },
+      {
+       "en": "after he bought two bags of feathers",
+       "ko": "두 자루의 깃털을 산 후"
+      },
+      {
+       "en": "from the market.",
+       "ko": "시장에서."
+      }
+     ]
+    },
+    {
+     "translation": "그는 깃털로 방을 채우기 시작했지만, 깃털은 간신히 바닥을 덮었다.",
+     "contextNote": "Patrick의 답이 틀렸다는 것을 보여 준다.",
+     "roles": [
+      {
+       "q": "He",
+       "role": "S"
+      },
+      {
+       "q": "began",
+       "role": "V"
+      },
+      {
+       "q": "to fill the room with feathers",
+       "role": "O"
+      },
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "barely",
+       "role": "M"
+      },
+      {
+       "q": "covered",
+       "role": "V"
+      },
+      {
+       "q": "the floor",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but they barely covered the floor",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      },
+      {
+       "q": "they",
+       "label": "대명사 선행사",
+       "gloss": "= feathers"
+      }
+     ],
+     "points": [
+      {
+       "q": "to fill the room with feathers",
+       "label": "명사적 용법 to부정사",
+       "explanation": "to부정사구가 동사 began의 목적어로 쓰여 '~하는 것을'이라는 뜻을 나타낸다. fill A with B는 'A를 B로 채우다'이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "He began to fill the room",
+       "ko": "그는 방을 채우기 시작했지만"
+      },
+      {
+       "en": "with feathers,",
+       "ko": "깃털로,"
+      },
+      {
+       "en": "but they barely covered the floor.",
+       "ko": "깃털은 간신히 바닥을 덮었다."
+      }
+     ]
+    },
+    {
+     "translation": "Ethan이 Patrick에게 말했다, \"왜 너 혼자서 행동했니?",
+     "contextNote": "Ethan이 Patrick의 단독 행동을 나무란다.",
+     "roles": [
+      {
+       "q": "Ethan",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "to Patrick",
+       "role": "M"
+      },
+      {
+       "q": "\"Why did you act on your own?",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Ethan said to Patrick,",
+       "ko": "Ethan이 Patrick에게 말했다,"
+      },
+      {
+       "en": "\"Why did you act",
+       "ko": "\"왜 너 행동했니?"
+      },
+      {
+       "en": "on your own?\"",
+       "ko": "혼자서"
+      }
+     ]
+    },
+    {
+     "translation": "Patrick이 그의 머리를 떨구었다.",
+     "contextNote": "Patrick이 잘못을 깨닫고 미안해한다.",
+     "roles": [
+      {
+       "q": "Patrick",
+       "role": "S"
+      },
+      {
+       "q": "dropped",
+       "role": "V"
+      },
+      {
+       "q": "his head",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Patrick dropped",
+       "ko": "Patrick이 떨구었다"
+      },
+      {
+       "en": "his head.",
+       "ko": "그의 머리를."
+      }
+     ]
+    },
+    {
+     "translation": "\"미안해.",
+     "contextNote": "Patrick의 사과이다."
+    },
+    {
+     "translation": "나는 답을 안다고 생각했어.",
+     "contextNote": "혼자 행동한 까닭을 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "thought",
+       "role": "V"
+      },
+      {
+       "q": "I knew the answer",
+       "role": "O"
+      },
+      {
+       "q": "I",
+       "occ": 2,
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "knew",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "the answer",
+       "role": "O",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "I knew the answer",
+       "kind": "nominal"
+      }
+     ],
+     "points": [
+      {
+       "q": "I knew the answer",
+       "label": "접속사 that 생략",
+       "star": true,
+       "explanation": "thought 뒤에 목적어절을 이끄는 접속사 that이 생략되었다. 주절이 과거(thought)이므로 목적어절의 동사도 과거 knew로 맞춘다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I thought",
+       "ko": "나는 생각했어"
+      },
+      {
+       "en": "I knew the answer.\"",
+       "ko": "답을 안다고."
+      }
+     ]
+    },
+    {
+     "translation": "Annie가 한숨을 쉬었다.",
+     "contextNote": "상황이 어려워졌음을 보여 준다.",
+     "roles": [
+      {
+       "q": "Annie",
+       "role": "S"
+      },
+      {
+       "q": "sighed",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Annie",
+       "ko": "Annie가"
+      },
+      {
+       "en": "sighed.",
+       "ko": "한숨을 쉬었다."
+      }
+     ]
+    },
+    {
+     "translation": "\"이제 우리에게는 동전 두 개만이 남았어.\"",
+     "contextNote": "기회가 줄어들었음을 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "two coins left"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Now",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S"
+      },
+      {
+       "q": "only",
+       "role": "M"
+      },
+      {
+       "q": "have",
+       "role": "V"
+      },
+      {
+       "q": "two coins",
+       "role": "O"
+      },
+      {
+       "q": "left",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "left",
+       "label": "목적격보어 과거분사",
+       "star": true,
+       "explanation": "「have+목적어+left」는 '~이 남아 있다'라는 뜻이다. 동전은 남겨진 것이므로 과거분사 left가 목적어 two coins를 설명하는 보어로 쓰였다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Now we only have",
+       "ko": "\"이제 우리에게는 ~만이"
+      },
+      {
+       "en": "two coins left.\"",
+       "ko": "동전 두 개 남았어.\""
+      }
+     ]
+    }
+   ]
+  },
+  "7cee35b1-4b78-4a91-956c-babda28249ed": {
+   "titleEn": "Thinking Together at the Market",
+   "topicEn": "The children try straw together but it is not enough, so they begin to think differently.",
+   "topicKo": "아이들이 함께 짚을 시도하지만 충분하지 않아서, 다르게 생각하기 시작한다.",
+   "sentences": [
+    {
+     "translation": "아이들은 함께 시장에 갔다.",
+     "contextNote": "이번에는 혼자가 아니라 함께 움직인다.",
+     "roles": [
+      {
+       "q": "The children",
+       "role": "S"
+      },
+      {
+       "q": "went",
+       "role": "V"
+      },
+      {
+       "q": "to the market",
+       "role": "A"
+      },
+      {
+       "q": "together",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The children went",
+       "ko": "아이들은 갔다"
+      },
+      {
+       "en": "to the market",
+       "ko": "시장에"
+      },
+      {
+       "en": "together.",
+       "ko": "함께."
+      }
+     ]
+    },
+    {
+     "translation": "Patrick은 또 다른 아이디어가 있었다.",
+     "contextNote": "Patrick이 새 생각을 꺼낸다.",
+     "roles": [
+      {
+       "q": "Patrick",
+       "role": "S"
+      },
+      {
+       "q": "had",
+       "role": "V"
+      },
+      {
+       "q": "another idea",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Patrick had",
+       "ko": "Patrick은 있었다"
+      },
+      {
+       "en": "another idea.",
+       "ko": "또 다른 아이디어가."
+      }
+     ]
+    },
+    {
+     "translation": "\"짚은 어때?",
+     "contextNote": "「How about ~?」으로 의견을 내놓는다."
+    },
+    {
+     "translation": "그것은 깃털보다 더 싸지만, 더 많은 공간을 차지해.",
+     "contextNote": "짚을 고른 까닭을 깃털과 비교해 말한다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "cheaper than"
+      }
+     ],
+     "roles": [
+      {
+       "q": "It",
+       "role": "S"
+      },
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "cheaper than feathers",
+       "role": "C"
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "takes up",
+       "role": "V"
+      },
+      {
+       "q": "more space",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "It",
+       "label": "대명사 선행사",
+       "gloss": "= straw"
+      },
+      {
+       "q": "but it takes up more space",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "points": [
+      {
+       "q": "cheaper than",
+       "label": "비교급",
+       "star": true,
+       "explanation": "「비교급+than」은 '~보다 더 …한'이라는 뜻이다. cheap에 -er을 붙여 cheaper로 쓴다. more space의 more는 much의 비교급으로 '더 많은'이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "It's cheaper than feathers,",
+       "ko": "그것은 깃털보다 더 싸지만,"
+      },
+      {
+       "en": "but it takes up more space.\"",
+       "ko": "더 많은 공간을 차지해."
+      }
+     ]
+    },
+    {
+     "translation": "Ethan이 \"좋은 생각이야!",
+     "contextNote": "Ethan이 Patrick의 생각에 찬성한다.",
+     "roles": [
+      {
+       "q": "Ethan",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"Great idea!",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Ethan said,",
+       "ko": "Ethan이 말했다,"
+      },
+      {
+       "en": "\"Great idea!",
+       "ko": "\"좋은 생각이야!"
+      }
+     ]
+    },
+    {
+     "translation": "하지만 지금은 동전 한 개만 사용하자.\"라고 말했다.",
+     "contextNote": "실패할 때를 대비해 동전을 아끼자고 제안한다.",
+     "roles": [
+      {
+       "q": "only",
+       "role": "M"
+      },
+      {
+       "q": "use",
+       "role": "V"
+      },
+      {
+       "q": "one coin",
+       "role": "O"
+      },
+      {
+       "q": "for now",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "But let's only use one coin",
+       "ko": "하지만 동전 한 개만 사용하자"
+      },
+      {
+       "en": "for now.\"",
+       "ko": "지금은.\"라고 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "\"좋은 생각이다!",
+     "contextNote": "Annie가 Ethan의 생각에 찬성한다."
+    },
+    {
+     "translation": "그런 식으로, 우리는 신중을 기할 수 있어.\"라고 Annie가 말했다.",
+     "contextNote": "동전을 아끼면 좋은 점을 말한다.",
+     "roles": [
+      {
+       "q": "That way, we can play it safe,\"",
+       "role": "O"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Annie",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "That way,",
+       "ko": "그런 식으로,"
+      },
+      {
+       "en": "we can play it safe,\"",
+       "ko": "우리는 신중을 기할 수 있어\"라고"
+      },
+      {
+       "en": "said Annie.",
+       "ko": "Annie가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "Ethan이 이어 말했다, \"만약 짚이 답이 아니라면, 우리는 마지막 동전으로 한 번 더 기회를 갖게 될 거야.\"",
+     "contextNote": "한 개를 남겨 두는 까닭을 말한다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "If straw is not the answer"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Ethan",
+       "role": "S"
+      },
+      {
+       "q": "continued",
+       "role": "V"
+      },
+      {
+       "q": "\"If straw is not the answer, we will have one more chance with the last coin.\"",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "If straw is not the answer",
+       "label": "시간·조건절 현재",
+       "star": true,
+       "explanation": "if는 '만약 ~하면'이라는 뜻의 접속사이다. 조건 부사절에서는 미래의 일도 현재시제로 쓰므로, 뒤의 절은 will have이지만 if절은 is를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Ethan continued,",
+       "ko": "Ethan이 이어 말했다,"
+      },
+      {
+       "en": "\"If straw is not the answer,",
+       "ko": "\"만약 짚이 답이 아니라면,"
+      },
+      {
+       "en": "we will have one more chance",
+       "ko": "우리는 한 번 더 기회를 갖게 될 거야"
+      },
+      {
+       "en": "with the last coin.\"",
+       "ko": "마지막 동전으로.\""
+      }
+     ]
+    },
+    {
+     "translation": "그들은 여섯 단의 짚을 가지고 집으로 돌아왔다.",
+     "contextNote": "동전 한 개로 산 짚을 가져온다.",
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "returned",
+       "role": "V"
+      },
+      {
+       "q": "home",
+       "role": "A"
+      },
+      {
+       "q": "with six bundles of straw",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They returned home",
+       "ko": "그들은 집으로 돌아왔다"
+      },
+      {
+       "en": "with six bundles of straw.",
+       "ko": "여섯 단의 짚을 가지고."
+      }
+     ]
+    },
+    {
+     "translation": "짚은 그들의 무릎까지 왔지만, 그것은 충분하지 않았다.",
+     "contextNote": "짚도 답이 아니었음을 보여 준다.",
+     "roles": [
+      {
+       "q": "The straw",
+       "role": "S"
+      },
+      {
+       "q": "came up",
+       "role": "V"
+      },
+      {
+       "q": "to their knees",
+       "role": "A"
+      },
+      {
+       "q": "it",
+       "role": "S"
+      },
+      {
+       "q": "wasn't",
+       "role": "V"
+      },
+      {
+       "q": "enough",
+       "role": "C"
+      }
+     ],
+     "notes": [
+      {
+       "q": "but it wasn't enough",
+       "label": "등위절",
+       "gloss": "but: 앞 내용과 반대"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The straw came up",
+       "ko": "짚은 왔지만"
+      },
+      {
+       "en": "to their knees,",
+       "ko": "그들의 무릎까지,"
+      },
+      {
+       "en": "but it wasn't enough.",
+       "ko": "그것은 충분하지 않았다."
+      }
+     ]
+    },
+    {
+     "translation": "Ethan이 \"우리는 다르게 생각할 필요가 있어.",
+     "contextNote": "물건이 아닌 다른 쪽으로 생각을 돌리기 시작한다.",
+     "roles": [
+      {
+       "q": "Ethan",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"We need to think differently.",
+       "role": "O"
+      }
+     ],
+     "points": [
+      {
+       "q": "to think differently",
+       "label": "명사적 용법 to부정사",
+       "explanation": "to부정사구가 동사 need의 목적어로 쓰여 '~하는 것을'이라는 뜻을 나타낸다. 「need to+동사원형」은 '~할 필요가 있다'로 해석한다. differently는 동사 think를 꾸미는 부사이다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Ethan said,",
+       "ko": "Ethan이 말했다,"
+      },
+      {
+       "en": "\"We need to think differently.",
+       "ko": "\"우리는 다르게 생각할 필요가 있어."
+      }
+     ]
+    },
+    {
+     "translation": "물은 어때?\"라고 말했다.",
+     "contextNote": "Ethan이 물을 제안한다."
+    },
+    {
+     "translation": "Patrick이 말했다, \"물은 방에서 새어 버릴 거야.",
+     "contextNote": "물이 답이 될 수 없는 까닭을 말한다.",
+     "roles": [
+      {
+       "q": "Patrick",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"The water would just leak out of the room.",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Patrick said,",
+       "ko": "Patrick이 말했다,"
+      },
+      {
+       "en": "\"The water would just leak",
+       "ko": "\"물은 새어 버릴 거야"
+      },
+      {
+       "en": "out of the room.",
+       "ko": "방에서."
+      }
+     ]
+    },
+    {
+     "translation": "아마도 결국 답은 뭔가 물질적인 게 아니야.",
+     "contextNote": "답이 물건이 아닐 수 있다는 결정적인 실마리이다.",
+     "tags": [
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "something physical"
+      }
+     ],
+     "roles": [
+      {
+       "q": "Perhaps",
+       "role": "M"
+      },
+      {
+       "q": "the answer",
+       "role": "S"
+      },
+      {
+       "q": "isn't",
+       "role": "V"
+      },
+      {
+       "q": "something physical",
+       "role": "C"
+      },
+      {
+       "q": "after all",
+       "role": "M"
+      }
+     ],
+     "points": [
+      {
+       "q": "something physical",
+       "label": "명사 수식 형용사",
+       "star": true,
+       "explanation": "something처럼 -thing으로 끝나는 대명사는 형용사가 뒤에서 꾸민다. 그래서 physical something이 아니라 something physical로 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Perhaps the answer",
+       "ko": "아마도 답은"
+      },
+      {
+       "en": "isn't something physical",
+       "ko": "뭔가 물질적인 게 아니야"
+      },
+      {
+       "en": "after all.\"",
+       "ko": "결국."
+      }
+     ]
+    },
+    {
+     "translation": "Annie가 소리쳤다, \"바로 그거야!",
+     "contextNote": "Patrick의 말에서 Annie가 답을 떠올린다.",
+     "roles": [
+      {
+       "q": "Annie",
+       "role": "S"
+      },
+      {
+       "q": "yelled",
+       "role": "V"
+      },
+      {
+       "q": "\"That's it!",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Annie yelled,",
+       "ko": "Annie가 소리쳤다,"
+      },
+      {
+       "en": "\"That's it!",
+       "ko": "\"바로 그거야!"
+      }
+     ]
+    },
+    {
+     "translation": "나 답을 알아.",
+     "contextNote": "Annie가 답을 찾았다고 말한다.",
+     "roles": [
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "know",
+       "role": "V"
+      },
+      {
+       "q": "the answer",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "I know",
+       "ko": "나 알아"
+      },
+      {
+       "en": "the answer.",
+       "ko": "답을."
+      }
+     ]
+    },
+    {
+     "translation": "다시 시장에 가자.\"",
+     "contextNote": "마지막 동전을 쓰러 시장으로 다시 간다.",
+     "roles": [
+      {
+       "q": "go",
+       "role": "V"
+      },
+      {
+       "q": "to the market",
+       "role": "A"
+      },
+      {
+       "q": "again",
+       "role": "M"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Let's go to the market",
+       "ko": "시장에 가자"
+      },
+      {
+       "en": "again.\"",
+       "ko": "다시.\""
+      }
+     ]
+    }
+   ]
+  },
+  "ac5561c4-fc03-44c6-b11f-61c484adb456": {
+   "titleEn": "The Greatest Reward",
+   "topicEn": "A candle fills the room with light, and the children realize their family is the greatest reward.",
+   "topicKo": "양초가 방을 빛으로 가득 채우고, 아이들은 가족이 가장 훌륭한 보상임을 깨닫는다.",
+   "sentences": [
+    {
+     "translation": "그들이 집에 돌아왔을 때, Annie는 그녀의 가방에서 양초 한 개를 꺼냈다.",
+     "contextNote": "Annie가 고른 답은 양초이다.",
+     "roles": [
+      {
+       "q": "they",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "got back",
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "home",
+       "role": "A",
+       "level": 1
+      },
+      {
+       "q": "Annie",
+       "role": "S"
+      },
+      {
+       "q": "took",
+       "role": "V"
+      },
+      {
+       "q": "a candle",
+       "role": "O"
+      },
+      {
+       "q": "out of her bag",
+       "role": "A"
+      }
+     ],
+     "brackets": [
+      {
+       "q": "When they got back home",
+       "kind": "adverbial"
+      }
+     ],
+     "points": [
+      {
+       "q": "When they got back home",
+       "label": "시간 부사절",
+       "explanation": "when은 '~할 때'라는 뜻의 접속사로, 뒤에 주어와 동사가 있는 절이 온다. 부사절이 문장 앞에 오면 절 끝에 쉼표를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "When they got back home,",
+       "ko": "그들이 집에 돌아왔을 때,"
+      },
+      {
+       "en": "Annie took a candle",
+       "ko": "Annie는 양초 한 개를 꺼냈다"
+      },
+      {
+       "en": "out of her bag.",
+       "ko": "그녀의 가방에서."
+      }
+     ]
+    },
+    {
+     "translation": "양초는 Patrick에 의해 켜졌고, 방 전체가 빛으로 가득 찼다.",
+     "contextNote": "수수께끼의 답이 빛이었음을 보여 주는 대목이다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "was lit by"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The candle",
+       "role": "S"
+      },
+      {
+       "q": "was lit",
+       "role": "V"
+      },
+      {
+       "q": "by Patrick",
+       "role": "M"
+      },
+      {
+       "q": "the entire room",
+       "role": "S"
+      },
+      {
+       "q": "was filled",
+       "role": "V"
+      },
+      {
+       "q": "with light",
+       "role": "M"
+      }
+     ],
+     "notes": [
+      {
+       "q": "and the entire room was filled with light",
+       "label": "등위절",
+       "gloss": "and로 이은 두 번째 절"
+      }
+     ],
+     "points": [
+      {
+       "q": "was lit by",
+       "label": "수동태",
+       "star": true,
+       "explanation": "양초는 켜지는 대상이므로 「be동사+과거분사」의 수동태를 쓰고, 동작을 한 사람은 「by+행위자」로 나타낸다. light의 과거분사는 lit이다.",
+       "rewrite": "Patrick lit the candle."
+      },
+      {
+       "q": "was filled with",
+       "label": "수동태",
+       "explanation": "「be filled with」는 '~으로 가득 차다'라는 뜻으로, by가 아니라 with를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The candle was lit",
+       "ko": "양초는 켜졌고"
+      },
+      {
+       "en": "by Patrick,",
+       "ko": "Patrick에 의해,"
+      },
+      {
+       "en": "and the entire room was filled",
+       "ko": "방 전체가 가득 찼다"
+      },
+      {
+       "en": "with light.",
+       "ko": "빛으로."
+      }
+     ]
+    },
+    {
+     "translation": "어머니가 \"너희가 수수께끼를 풀었구나!\"라고 신이 나서 소리쳤다.",
+     "contextNote": "아이들이 수수께끼를 풀었음을 확인해 준다.",
+     "roles": [
+      {
+       "q": "The mother",
+       "role": "S"
+      },
+      {
+       "q": "yelled",
+       "role": "V"
+      },
+      {
+       "q": "excitedly",
+       "role": "M"
+      },
+      {
+       "q": "\"You solved the puzzle!",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The mother yelled excitedly,",
+       "ko": "어머니가 신이 나서 소리쳤다,"
+      },
+      {
+       "en": "\"You solved the puzzle!\"",
+       "ko": "\"너희가 수수께끼를 풀었구나!\"라고"
+      }
+     ]
+    },
+    {
+     "translation": "이제, 그들은 벽에 있는 그림들을 볼 수 있었다.",
+     "contextNote": "빛 덕분에 벽의 그림이 보인다. 어린 시절 이야기로 이어진다.",
+     "roles": [
+      {
+       "q": "Now",
+       "role": "M"
+      },
+      {
+       "q": "they",
+       "role": "S"
+      },
+      {
+       "q": "could see",
+       "role": "V"
+      },
+      {
+       "q": "drawings on the wall",
+       "role": "O"
+      }
+     ],
+     "notes": [
+      {
+       "q": "on the wall",
+       "label": "전명구",
+       "gloss": "drawings를 꾸밈, '벽에 있는'"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Now,",
+       "ko": "이제,"
+      },
+      {
+       "en": "they could see drawings",
+       "ko": "그들은 그림들을 볼 수 있었다"
+      },
+      {
+       "en": "on the wall.",
+       "ko": "벽에 있는."
+      }
+     ]
+    },
+    {
+     "translation": "\"봐!",
+     "contextNote": "Annie가 벽의 그림을 가리키며 외친다."
+    },
+    {
+     "translation": "저건 우리야!",
+     "contextNote": "그림 속 사람들이 자기들임을 알아차린다.",
+     "roles": [
+      {
+       "q": "That",
+       "role": "S"
+      },
+      {
+       "q": "'s",
+       "role": "V"
+      },
+      {
+       "q": "us",
+       "role": "C"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "That's",
+       "ko": "저건 ~야"
+      },
+      {
+       "en": "us!",
+       "ko": "우리!"
+      }
+     ]
+    },
+    {
+     "translation": "우리 가족.\"이라고 Annie가 말했다.",
+     "contextNote": "그림이 가족을 그린 것임을 말한다.",
+     "roles": [
+      {
+       "q": "Our family,\"",
+       "role": "O"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "Annie",
+       "role": "S"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Our family,\"",
+       "ko": "우리 가족\"이라고"
+      },
+      {
+       "en": "said Annie.",
+       "ko": "Annie가 말했다."
+      }
+     ]
+    },
+    {
+     "translation": "Patrick이 말했다, \"나는 이 그림들을 기억해.",
+     "contextNote": "Patrick이 어린 시절을 떠올린다.",
+     "roles": [
+      {
+       "q": "Patrick",
+       "role": "S"
+      },
+      {
+       "q": "said",
+       "role": "V"
+      },
+      {
+       "q": "\"I remember these drawings.",
+       "role": "O"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Patrick said,",
+       "ko": "Patrick이 말했다,"
+      },
+      {
+       "en": "\"I remember these drawings.",
+       "ko": "\"나는 이 그림들을 기억해."
+      }
+     ]
+    },
+    {
+     "translation": "그것들은 우리가 어렸을 때 우리에 의해 그려졌어.",
+     "contextNote": "그림이 사이좋던 어린 시절에 함께 그린 것임을 밝힌다.",
+     "tags": [
+      "어법 빈출",
+      "서술형 대비"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "were drawn by"
+      }
+     ],
+     "roles": [
+      {
+       "q": "They",
+       "role": "S"
+      },
+      {
+       "q": "were drawn",
+       "role": "V"
+      },
+      {
+       "q": "by us",
+       "role": "M"
+      },
+      {
+       "q": "we",
+       "role": "S",
+       "level": 1
+      },
+      {
+       "q": "were",
+       "occ": 2,
+       "role": "V",
+       "level": 1
+      },
+      {
+       "q": "little",
+       "role": "C",
+       "level": 1
+      }
+     ],
+     "brackets": [
+      {
+       "q": "when we were little",
+       "kind": "adverbial"
+      }
+     ],
+     "notes": [
+      {
+       "q": "They",
+       "label": "대명사 선행사",
+       "gloss": "= these drawings"
+      },
+      {
+       "q": "when we were little",
+       "label": "시간 부사절",
+       "gloss": "'~할 때'"
+      }
+     ],
+     "points": [
+      {
+       "q": "were drawn by",
+       "label": "수동태",
+       "star": true,
+       "explanation": "그림은 그려지는 대상이므로 「be동사+과거분사」의 수동태를 쓰고, 동작을 한 사람은 「by+행위자」로 나타낸다. 주어 They가 복수이고 과거의 일이므로 were를 쓰며, draw의 과거분사는 drawn이다.",
+       "rewrite": "We drew them when we were little."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "They were drawn",
+       "ko": "그것들은 그려졌어"
+      },
+      {
+       "en": "by us",
+       "ko": "우리에 의해"
+      },
+      {
+       "en": "when we were little.\"",
+       "ko": "우리가 어렸을 때."
+      }
+     ]
+    },
+    {
+     "translation": "Ethan이 부모님 쪽으로 몸을 돌렸다.",
+     "contextNote": "Ethan이 깨달은 것을 말하려 한다.",
+     "roles": [
+      {
+       "q": "Ethan",
+       "role": "S"
+      },
+      {
+       "q": "turned",
+       "role": "V"
+      },
+      {
+       "q": "to his parents",
+       "role": "A"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "Ethan turned",
+       "ko": "Ethan이 몸을 돌렸다"
+      },
+      {
+       "en": "to his parents.",
+       "ko": "부모님 쪽으로."
+      }
+     ]
+    },
+    {
+     "translation": "\"이제 알겠어요.",
+     "contextNote": "수수께끼의 진짜 뜻을 깨달았음을 말한다.",
+     "roles": [
+      {
+       "q": "Now",
+       "role": "M"
+      },
+      {
+       "q": "I",
+       "role": "S"
+      },
+      {
+       "q": "understand",
+       "role": "V"
+      }
+     ],
+     "chunks": [
+      {
+       "en": "\"Now",
+       "ko": "\"이제"
+      },
+      {
+       "en": "I understand.",
+       "ko": "알겠어요."
+      }
+     ]
+    },
+    {
+     "translation": "세상에서 가장 훌륭한 보상은 우리 가족이군요.\"",
+     "contextNote": "앞에 나온 큰 보상의 답으로, 이 이야기의 교훈이다.",
+     "tags": [
+      "주제문",
+      "어법 빈출"
+     ],
+     "tagSpans": [
+      {
+       "tag": "어법 빈출",
+       "q": "The greatest reward in the world"
+      }
+     ],
+     "roles": [
+      {
+       "q": "The greatest reward in the world",
+       "role": "S"
+      },
+      {
+       "q": "is",
+       "role": "V"
+      },
+      {
+       "q": "my family",
+       "role": "C"
+      }
+     ],
+     "points": [
+      {
+       "q": "The greatest reward in the world",
+       "label": "최상급 표현",
+       "star": true,
+       "explanation": "최상급은 「the+형용사-est」로 '가장 ~한'이라는 뜻이고, in the world가 그 범위를 나타낸다. 주어의 중심 낱말 reward가 단수이므로 동사는 is를 쓴다."
+      }
+     ],
+     "chunks": [
+      {
+       "en": "The greatest reward in the world",
+       "ko": "세상에서 가장 훌륭한 보상은"
+      },
+      {
+       "en": "is my family.\"",
+       "ko": "우리 가족이군요.\""
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

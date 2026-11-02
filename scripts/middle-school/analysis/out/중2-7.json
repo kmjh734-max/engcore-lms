@@ -1,0 +1,251 @@
+{
+ "passages": {
+  "6e44a93c-d842-4191-b95b-ce6afea17358": {
+   "titleEn": "The Fallas Festival in Valencia",
+   "topicEn": "People in Valencia celebrate spring with the Fallas festival and burn giant statues to welcome a new start.",
+   "topicKo": "발렌시아 사람들은 파야스 축제로 봄을 축하하며, 거대한 조각상을 태워 새로운 시작을 맞이한다.",
+   "sentences": [
+    {
+     "translation": "발렌시아 사람들은 파야스 축제로 봄의 시작을 축하한다.",
+     "contextNote": "첫 번째 축제를 소개한다.",
+     "roles": [{"q": "People in Valencia", "role": "S"}, {"q": "celebrate", "role": "V"}, {"q": "the coming of spring", "role": "O"}, {"q": "with the Fallas festival", "role": "M"}],
+     "chunks": [{"en": "People in Valencia celebrate", "ko": "발렌시아 사람들은 축하한다"}, {"en": "the coming of spring", "ko": "봄의 시작을"}, {"en": "with the Fallas festival.", "ko": "파야스 축제로."}]
+    },
+    {
+     "translation": "이 축제는 3월 15일부터 19일까지 열린다.",
+     "contextNote": "축제가 열리는 때를 말한다.",
+     "roles": [{"q": "This festival", "role": "S"}, {"q": "takes place", "role": "V"}, {"q": "from March 15 to 19", "role": "M"}],
+     "notes": [{"q": "from March 15 to 19", "label": "from A to B", "gloss": "'A부터 B까지'"}],
+     "points": [{"q": "takes place", "label": "1형식", "explanation": "take place는 '열리다, 일어나다'라는 뜻의 자동사 표현이다. 목적어가 없고, 수동태로 쓰지 않는다."}],
+     "chunks": [{"en": "This festival takes place", "ko": "이 축제는 열린다"}, {"en": "from March 15 to 19.", "ko": "3월 15일부터 19일까지."}]
+    },
+    {
+     "translation": "축제 기간 동안 사람들은 퍼레이드와 불꽃놀이를 즐긴다.",
+     "contextNote": "축제에서 즐기는 것을 말한다.",
+     "roles": [{"q": "During the festival", "role": "M"}, {"q": "people", "role": "S"}, {"q": "enjoy", "role": "V"}, {"q": "parades and fireworks", "role": "O"}],
+     "points": [{"q": "During", "label": "접속사·전치사 대비", "explanation": "during은 전치사이므로 뒤에 명사(구)가 온다. 뒤에 주어와 동사가 오는 절이 이어지면 접속사 while을 쓴다."}],
+     "chunks": [{"en": "During the festival,", "ko": "축제 기간 동안"}, {"en": "people enjoy parades and fireworks.", "ko": "사람들은 퍼레이드와 불꽃놀이를 즐긴다."}]
+    },
+    {
+     "translation": "축제의 주인공은 거대한 나무 조각상인 파야들이다.",
+     "contextNote": "축제의 중심인 파야가 무엇인지 설명한다.",
+     "roles": [{"q": "The stars of the festival", "role": "S"}, {"q": "are", "role": "V"}, {"q": "fallas, giant wooden statues", "role": "C"}],
+     "notes": [{"q": "giant wooden statues", "label": "동격구", "gloss": "= fallas"}],
+     "chunks": [{"en": "The stars of the festival", "ko": "축제의 주인공은"}, {"en": "are fallas,", "ko": "파야들이다,"}, {"en": "giant wooden statues.", "ko": "거대한 나무 조각상인."}]
+    },
+    {
+     "translation": "도시 곳곳에서 수백 개의 파야들을 볼 수 있다.",
+     "contextNote": "파야가 그만큼 많다는 점을 말한다.",
+     "roles": [{"q": "You", "role": "S"}, {"q": "can find", "role": "V"}, {"q": "hundreds of them", "role": "O"}, {"q": "all over the city", "role": "M"}],
+     "notes": [{"q": "them", "label": "대명사 선행사", "gloss": "= fallas"}],
+     "chunks": [{"en": "You can find", "ko": "볼 수 있다"}, {"en": "hundreds of them", "ko": "수백 개의 파야들을"}, {"en": "all over the city.", "ko": "도시 곳곳에서."}]
+    },
+    {
+     "translation": "놀랍게도, 축제의 마지막 날에는 이 파야들이 불태워진다.",
+     "contextNote": "축제의 놀라운 마지막 장면을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "are burned"}],
+     "roles": [{"q": "Surprisingly", "role": "M"}, {"q": "the fallas", "role": "S"}, {"q": "are burned", "role": "V"}, {"q": "on the last day of the festival", "role": "M"}],
+     "notes": [{"q": "Surprisingly", "label": "문장 부사", "gloss": "문장 전체를 꾸밈"}],
+     "points": [{"q": "are burned", "label": "수동태", "star": true, "explanation": "파야는 태우는 것이 아니라 태워지는 대상이므로 be + 과거분사의 수동태로 쓴다. 주어 the fallas가 복수이므로 be동사는 are이다."}],
+     "chunks": [{"en": "Surprisingly,", "ko": "놀랍게도,"}, {"en": "the fallas are burned", "ko": "이 파야들이 불태워진다"}, {"en": "on the last day of the festival.", "ko": "축제의 마지막 날에는."}]
+    },
+    {
+     "translation": "그것들을 태우는 것은 오래된 것들과 작별하고 새로운 시작을 맞이하는 것을 상징한다.",
+     "contextNote": "파야를 태우는 까닭을 밝힌다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "symbolizes"}],
+     "roles": [{"q": "Burning them", "role": "S"}, {"q": "symbolizes", "role": "V"}, {"q": "saying goodbye to old things and hello to a new start", "role": "O"}],
+     "points": [
+      {"q": "Burning them", "label": "동명사 주어", "star": true, "explanation": "동명사구 Burning them이 문장의 주어이다. 동명사 주어는 단수 취급하므로, 바로 앞의 them에 끌리지 않고 동사에 -s를 붙여 symbolizes로 쓴다."},
+      {"q": "saying goodbye to old things and hello to a new start", "label": "동명사구", "explanation": "symbolizes의 목적어로 동명사구가 왔다. saying은 goodbye to old things와 hello to a new start를 함께 받으며, and 뒤에 saying이 되풀이되지 않았다."}
+     ],
+     "chunks": [{"en": "Burning them symbolizes", "ko": "그것들을 태우는 것은 상징한다"}, {"en": "saying goodbye to old things", "ko": "오래된 것들과 작별하고"}, {"en": "and hello to a new start.", "ko": "새로운 시작을 맞이하는 것을."}]
+    }
+   ]
+  },
+  "610ca4d8-833c-436d-8c64-f3c614e5c122": {
+   "titleEn": "The Midsummer Festival in Sweden",
+   "topicEn": "Swedes welcome summer with the Midsummer festival and enjoy it all night because the sun hardly sets.",
+   "topicKo": "스웨덴 사람들은 한여름 축제로 여름을 맞이하며, 해가 거의 지지 않아 밤새도록 축제를 즐긴다.",
+   "sentences": [
+    {
+     "translation": "스웨덴의 겨울은 길고 어두워서 그곳 사람들은 여름을 특히 환영한다.",
+     "contextNote": "여름을 반기는 이유를 말하며 축제로 이어 간다.",
+     "roles": [{"q": "Winter in Sweden", "role": "S"}, {"q": "is", "role": "V"}, {"q": "long and dark", "role": "C"}, {"q": "the people there", "role": "S"}, {"q": "especially", "role": "M"}, {"q": "welcome", "role": "V"}, {"q": "summer", "role": "O"}],
+     "notes": [{"q": "long and dark", "label": "형용사 병렬", "gloss": "보어 둘"}, {"q": "so the people there especially welcome summer", "label": "등위절", "gloss": "so: 그래서"}],
+     "chunks": [{"en": "Winter in Sweden is long and dark,", "ko": "스웨덴의 겨울은 길고 어두워서"}, {"en": "so the people there", "ko": "그곳 사람들은"}, {"en": "especially welcome summer.", "ko": "여름을 특히 환영한다."}]
+    },
+    {
+     "translation": "일 년 중 낮이 가장 긴 날을 기념하기 위해 그들은 특별한 축제를 연다.",
+     "contextNote": "축제를 여는 목적을 말한다.",
+     "roles": [{"q": "To celebrate the longest day of the year", "role": "M"}, {"q": "they", "role": "S"}, {"q": "have", "role": "V"}, {"q": "a special festival", "role": "O"}],
+     "points": [{"q": "To celebrate", "label": "부사적 용법", "star": true, "explanation": "문장 앞의 to부정사가 '~하기 위해'라는 목적을 나타내는 부사적 용법이다. 문장의 주어는 they이고, 동사는 have이다."}],
+     "chunks": [{"en": "To celebrate the longest day of the year,", "ko": "일 년 중 낮이 가장 긴 날을 기념하기 위해"}, {"en": "they have a special festival.", "ko": "그들은 특별한 축제를 연다."}]
+    },
+    {
+     "translation": "이 축제를 한여름 축제라고 부른다.",
+     "contextNote": "축제의 이름을 알려 준다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "call it the Midsummer festival"}],
+     "roles": [{"q": "They", "role": "S"}, {"q": "call", "role": "V"}, {"q": "it", "role": "O"}, {"q": "the Midsummer festival", "role": "C"}],
+     "points": [{"q": "call it the Midsummer festival", "label": "5형식", "star": true, "explanation": "call + 목적어 + 명사는 '~을 …라고 부르다'라는 뜻의 5형식이다. 목적어 it과 목적격보어 the Midsummer festival이 같은 것을 가리키며, 우리말의 '~라고'에 해당하는 말을 영어로 따로 쓰지 않는다."}],
+     "chunks": [{"en": "They call it", "ko": "이 축제를 부른다"}, {"en": "the Midsummer festival.", "ko": "한여름 축제라고."}]
+    },
+    {
+     "translation": "축제는 6월 19일과 25일 사이의 금요일 저녁에 시작하여 일요일에 끝난다.",
+     "contextNote": "축제가 열리는 때를 말한다.",
+     "roles": [{"q": "The festival", "role": "S"}, {"q": "starts", "role": "V"}, {"q": "on the Friday evening between June 19 and 25", "role": "M"}, {"q": "ends", "role": "V"}, {"q": "on the Sunday", "role": "M"}],
+     "points": [{"q": "starts on the Friday evening between June 19 and 25 and ends", "label": "동사 병렬", "explanation": "주어 The festival 하나에 동사 starts와 ends가 and로 이어졌다. 주어가 단수이므로 두 동사 모두 -s를 붙인다."}],
+     "chunks": [{"en": "The festival starts", "ko": "축제는 시작하여"}, {"en": "on the Friday evening between June 19 and 25", "ko": "6월 19일과 25일 사이의 금요일 저녁에"}, {"en": "and ends on the Sunday.", "ko": "일요일에 끝난다."}]
+    },
+    {
+     "translation": "축제 기간 동안 사람들은 꽃과 초록색 잎으로 장대를 장식하고 그 주위를 돌며 전통 춤을 즐긴다.",
+     "contextNote": "축제에서 하는 일을 말한다.",
+     "roles": [{"q": "During the festival", "role": "M"}, {"q": "people", "role": "S"}, {"q": "decorate", "role": "V"}, {"q": "a tall pole", "role": "O"}, {"q": "with flowers and green leaves", "role": "M"}, {"q": "enjoy", "role": "V"}, {"q": "traditional dances", "role": "O"}, {"q": "around it", "role": "M"}],
+     "points": [{"q": "decorate a tall pole with flowers and green leaves and enjoy", "label": "동사 병렬", "explanation": "주어 people 하나에 동사 decorate와 enjoy가 and로 이어졌다. 주어가 복수이므로 두 동사 모두 원형 그대로이다. around it의 it은 a tall pole을 가리킨다."}],
+     "chunks": [{"en": "During the festival,", "ko": "축제 기간 동안"}, {"en": "people decorate a tall pole", "ko": "사람들은 장대를 장식하고"}, {"en": "with flowers and green leaves", "ko": "꽃과 초록색 잎으로"}, {"en": "and enjoy traditional dances", "ko": "전통 춤을 즐긴다"}, {"en": "around it.", "ko": "그 주위를 돌며."}]
+    },
+    {
+     "translation": "스웨덴에서 매년 이맘때면 해가 거의 지지 않기 때문에 사람들은 밤새도록 축제를 즐길 수 있다.",
+     "contextNote": "밤새 축제를 즐길 수 있는 까닭을 말한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "Because"}],
+     "roles": [{"q": "the sun", "role": "S", "level": 1}, {"q": "hardly", "role": "M", "level": 1}, {"q": "sets", "role": "V", "level": 1}, {"q": "at this time of year", "role": "M", "level": 1}, {"q": "in Sweden", "role": "M", "level": 1}, {"q": "people", "role": "S"}, {"q": "can enjoy", "role": "V"}, {"q": "the festival", "role": "O"}, {"q": "all night long", "role": "M"}],
+     "brackets": [{"q": "Because the sun hardly sets at this time of year in Sweden", "kind": "adverbial"}],
+     "points": [
+      {"q": "Because the sun hardly sets at this time of year in Sweden", "label": "이유 부사절", "star": true, "explanation": "접속사 because 뒤에는 주어와 동사가 있는 절이 온다. 명사(구)가 오면 because of를 쓴다."},
+      {"q": "hardly", "label": "혼동 부사", "explanation": "hardly는 '거의 ~않다'라는 부정의 뜻을 가진 부사로, '열심히'라는 뜻의 hard와 다르다. 이미 부정의 뜻이 있으므로 not과 함께 쓰지 않는다."}
+     ],
+     "chunks": [{"en": "Because the sun hardly sets", "ko": "해가 거의 지지 않기 때문에"}, {"en": "at this time of year in Sweden,", "ko": "스웨덴에서 매년 이맘때면,"}, {"en": "people can enjoy the festival", "ko": "사람들은 축제를 즐길 수 있다"}, {"en": "all night long.", "ko": "밤새도록."}]
+    }
+   ]
+  },
+  "0898de3a-22c8-4c50-a5d1-6cfb7d8f8ca8": {
+   "titleEn": "The Day of the Dead in Mexico",
+   "topicEn": "Mexicans believe the dead come home once a year, so they welcome them with a festival called the Day of the Dead.",
+   "topicKo": "멕시코 사람들은 죽은 이들이 일 년에 한 번 집에 돌아온다고 믿어, 망자의 날이라는 축제로 그들을 맞이한다.",
+   "sentences": [
+    {
+     "translation": "많은 멕시코 사람들은 일 년에 한 번 죽은 사람들이 가족과 친구들을 만나기 위해 집으로 돌아온다고 믿는다.",
+     "contextNote": "축제의 바탕이 되는 믿음을 말한다.",
+     "roles": [{"q": "Many Mexicans", "role": "S"}, {"q": "believe", "role": "V"}, {"q": "once a year", "role": "M", "level": 1}, {"q": "dead people", "role": "S", "level": 1}, {"q": "come back", "role": "V", "level": 1}, {"q": "home", "role": "A", "level": 1}, {"q": "to meet their family and friends", "role": "M", "level": 1}],
+     "brackets": [{"q": "that once a year dead people come back home to meet their family and friends", "kind": "nominal"}],
+     "points": [
+      {"q": "that once a year dead people come back home to meet their family and friends", "label": "that 명사절", "star": true, "explanation": "that절이 believe의 목적어 역할을 한다. that 뒤에 완전한 절이 오며, '~라고 믿는다'로 해석한다."},
+      {"q": "to meet", "label": "부사적 용법", "explanation": "to부정사가 '~하기 위해'라는 목적을 나타내는 부사적 용법이다. 집으로 돌아오는 이유를 설명한다."}
+     ],
+     "chunks": [{"en": "Many Mexicans believe", "ko": "많은 멕시코 사람들은 믿는다"}, {"en": "that once a year dead people come back home", "ko": "일 년에 한 번 죽은 사람들이 집으로 돌아온다고"}, {"en": "to meet their family and friends.", "ko": "가족과 친구들을 만나기 위해."}]
+    },
+    {
+     "translation": "이날을 망자의 날이라고 부른다.",
+     "contextNote": "그날의 이름을 알려 준다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "call this day the Day of the Dead"}],
+     "roles": [{"q": "They", "role": "S"}, {"q": "call", "role": "V"}, {"q": "this day", "role": "O"}, {"q": "the Day of the Dead", "role": "C"}],
+     "points": [{"q": "call this day the Day of the Dead", "label": "5형식", "star": true, "explanation": "call + 목적어 + 명사는 '~을 …라고 부르다'라는 뜻의 5형식이다. 목적어 this day와 목적격보어 the Day of the Dead가 같은 것을 가리킨다."}],
+     "chunks": [{"en": "They call this day", "ko": "이날을 부른다"}, {"en": "the Day of the Dead.", "ko": "망자의 날이라고."}]
+    },
+    {
+     "translation": "죽은 이들을 맞이하기 위해, 멕시코 사람들은 11월 1일과 2일에 축제를 연다.",
+     "contextNote": "축제의 목적과 때를 말한다.",
+     "roles": [{"q": "To welcome dead people", "role": "M"}, {"q": "Mexicans", "role": "S"}, {"q": "hold", "role": "V"}, {"q": "a festival", "role": "O"}, {"q": "on November 1 and 2", "role": "M"}],
+     "points": [{"q": "To welcome", "label": "부사적 용법", "explanation": "문장 앞의 to부정사가 '~하기 위해'라는 목적을 나타낸다. 문장의 주어는 Mexicans이고, 동사는 hold이다."}],
+     "chunks": [{"en": "To welcome dead people,", "ko": "죽은 이들을 맞이하기 위해,"}, {"en": "Mexicans hold a festival", "ko": "멕시코 사람들은 축제를 연다"}, {"en": "on November 1 and 2.", "ko": "11월 1일과 2일에."}]
+    },
+    {
+     "translation": "그들은 고인을 기억하는 것이 중요하다고 믿는다.",
+     "contextNote": "축제를 여는 까닭인 그들의 생각을 말한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "to remember"}],
+     "roles": [{"q": "They", "role": "S"}, {"q": "believe", "role": "V"}, {"q": "it", "role": "S", "level": 1}, {"q": "is", "role": "V", "level": 1}, {"q": "important", "role": "C", "level": 1}, {"q": "to remember dead people", "role": "S", "level": 1}],
+     "brackets": [{"q": "it is important to remember dead people", "kind": "nominal"}],
+     "points": [
+      {"q": "it is important to remember dead people", "label": "가주어+to부정사", "star": true, "rewrite": "They believe to remember dead people is important.", "explanation": "it은 형식상의 주어인 가주어이고, 뜻으로 보는 진짜 주어(진주어)는 to remember dead people이다. it은 '그것'으로 해석하지 않는다. 주어가 길어 뒤로 옮기고 그 자리에 it을 썼다."},
+      {"q": "believe it", "label": "접속사 that 생략", "explanation": "believe 뒤의 목적어절을 이끄는 접속사 that이 생략되었다."}
+     ],
+     "chunks": [{"en": "They believe", "ko": "그들은 믿는다"}, {"en": "it is important", "ko": "중요하다고"}, {"en": "to remember dead people.", "ko": "고인을 기억하는 것이."}]
+    },
+    {
+     "translation": "그래서 사람들은 집에 제단을 차리고, 묘지에서 큰 파티를 연다.",
+     "contextNote": "그 믿음에 따라 하는 일을 말한다.",
+     "roles": [{"q": "people", "role": "S"}, {"q": "set up", "role": "V"}, {"q": "altars", "role": "O"}, {"q": "in their homes", "role": "M"}, {"q": "have", "role": "V"}, {"q": "big parties", "role": "O"}, {"q": "in cemeteries", "role": "M"}],
+     "points": [{"q": "set up altars in their homes and have", "label": "동사 병렬", "explanation": "주어 people 하나에 동사 set up과 have가 and로 이어졌다. 주어가 복수인 현재 시제이므로 두 동사 모두 원형 그대로이다."}],
+     "chunks": [{"en": "So, people set up altars", "ko": "그래서 사람들은 제단을 차리고"}, {"en": "in their homes", "ko": "집에"}, {"en": "and have big parties", "ko": "큰 파티를 연다"}, {"en": "in cemeteries.", "ko": "묘지에서."}]
+    },
+    {
+     "translation": "일부 지역에서는 사람들이 해골처럼 분장하고 대규모 퍼레이드를 벌인다.",
+     "contextNote": "지역에 따라 다른 축제 모습을 덧붙인다.",
+     "roles": [{"q": "In some areas", "role": "M"}, {"q": "people", "role": "S"}, {"q": "dress up", "role": "V"}, {"q": "like skeletons", "role": "M"}, {"q": "hold", "role": "V"}, {"q": "big parades", "role": "O"}],
+     "notes": [{"q": "like skeletons", "label": "전명구", "gloss": "like: '~처럼'(전치사)"}],
+     "chunks": [{"en": "In some areas,", "ko": "일부 지역에서는"}, {"en": "people dress up like skeletons", "ko": "사람들이 해골처럼 분장하고"}, {"en": "and hold big parades.", "ko": "대규모 퍼레이드를 벌인다."}]
+    }
+   ]
+  },
+  "7e57db2a-dd9c-4bb0-81c9-39ccf8234893": {
+   "titleEn": "The Fur Rondy Festival in Alaska",
+   "topicEn": "At Alaska's Fur Rondy festival, visitors enjoy winter sports, games, and fun events like the Running of the Reindeer.",
+   "topicKo": "알래스카의 퍼 론디 축제에서 방문객들은 겨울 스포츠와 게임, 순록 경주 같은 재미있는 행사를 즐긴다.",
+   "sentences": [
+    {
+     "translation": "2월 말, 알래스카 사람들은 세계에서 가장 큰 겨울 축제 중 하나인 퍼 론디 축제를 연다.",
+     "contextNote": "마지막 축제를 소개한다.",
+     "tags": ["어법 빈출"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "one of the biggest winter festivals"}],
+     "roles": [{"q": "At the end of February", "role": "M"}, {"q": "people in Alaska", "role": "S"}, {"q": "hold", "role": "V"}, {"q": "the Fur Rondy festival, one of the biggest winter festivals in the world", "role": "O"}],
+     "points": [{"q": "one of the biggest winter festivals", "label": "one of 최상급", "star": true, "explanation": "'가장 ~한 것들 중 하나'는 one of the + 최상급 + 복수명사로 쓴다. 그래서 festivals로 쓴다. 이 어구는 앞의 the Fur Rondy festival이 어떤 축제인지 덧붙여 설명한다."}],
+     "chunks": [{"en": "At the end of February,", "ko": "2월 말,"}, {"en": "people in Alaska hold the Fur Rondy festival,", "ko": "알래스카 사람들은 퍼 론디 축제를 연다,"}, {"en": "one of the biggest winter festivals", "ko": "가장 큰 겨울 축제 중 하나인"}, {"en": "in the world.", "ko": "세계에서."}]
+    },
+    {
+     "translation": "이 축제 기간 동안 방문객들은 다양한 겨울 스포츠와 알래스카 전통 게임을 즐길 수 있다.",
+     "contextNote": "축제에서 즐길 수 있는 것을 말한다.",
+     "roles": [{"q": "During this festival", "role": "M"}, {"q": "visitors", "role": "S"}, {"q": "can enjoy", "role": "V"}, {"q": "various winter sports and Alaskan traditional games", "role": "O"}],
+     "notes": [{"q": "various winter sports and Alaskan traditional games", "label": "명사구 병렬", "gloss": "enjoy의 목적어 둘"}],
+     "chunks": [{"en": "During this festival,", "ko": "이 축제 기간 동안"}, {"en": "visitors can enjoy", "ko": "방문객들은 즐길 수 있다"}, {"en": "various winter sports and Alaskan traditional games.", "ko": "다양한 겨울 스포츠와 알래스카 전통 게임을."}]
+    },
+    {
+     "translation": "또한, 순록 경주 같은 많은 특별한 행사도 즐길 수 있다.",
+     "contextNote": "다음 문장에서 설명할 순록 경주를 꺼낸다.",
+     "roles": [{"q": "They", "role": "S"}, {"q": "can also enjoy", "role": "V"}, {"q": "many special events such as the Running of the Reindeer", "role": "O"}],
+     "notes": [{"q": "such as the Running of the Reindeer", "label": "전명구", "gloss": "such as: '~와 같은'"}],
+     "chunks": [{"en": "They can also enjoy", "ko": "또한 즐길 수 있다"}, {"en": "many special events", "ko": "많은 특별한 행사도"}, {"en": "such as the Running of the Reindeer.", "ko": "순록 경주 같은."}]
+    },
+    {
+     "translation": "이 경주에 참가하는 사람들은 재미있는 복장을 입고 순록보다 더 빨리 달리려고 애쓴다.",
+     "contextNote": "순록 경주의 모습을 설명한다.",
+     "tags": ["어법 빈출", "서술형 대비"],
+     "tagSpans": [{"tag": "어법 빈출", "q": "who participate in this race"}],
+     "roles": [{"q": "People who participate in this race", "role": "S"}, {"q": "participate", "role": "V", "level": 1}, {"q": "in this race", "role": "A", "level": 1}, {"q": "wear", "role": "V"}, {"q": "fun costumes", "role": "O"}, {"q": "try", "role": "V"}, {"q": "to run faster than reindeer", "role": "O"}],
+     "points": [
+      {"q": "who participate in this race", "label": "주격 관계대명사", "star": true, "explanation": "who는 선행사 People을 꾸미는 절을 이끌고 절 안에서 주어 역할을 한다. 동사 participate는 선행사 People에 맞춰 복수형으로 쓰고, 문장 전체의 동사는 wear와 try이다."},
+      {"q": "wear fun costumes and try", "label": "동사 병렬", "explanation": "주어 People 하나에 동사 wear와 try가 and로 이어졌다. 주어가 복수이므로 두 동사 모두 원형 그대로이다."},
+      {"q": "faster than reindeer", "label": "비교급", "explanation": "비교급 + than은 '~보다 더 …한(하게)'라는 뜻이다. fast는 여기서 동사 run을 꾸미는 부사이다."}
+     ],
+     "chunks": [{"en": "People who participate in this race", "ko": "이 경주에 참가하는 사람들은"}, {"en": "wear fun costumes", "ko": "재미있는 복장을 입고"}, {"en": "and try to run", "ko": "달리려고 애쓴다"}, {"en": "faster than reindeer.", "ko": "순록보다 더 빨리."}]
+    },
+    {
+     "translation": "과연 그럴 수 있을까?",
+     "contextNote": "순록보다 빨리 달리는 것이 가능한지 묻는다. do so는 앞의 run faster than reindeer를 받는다.",
+     "tags": ["서술형 대비"],
+     "roles": [{"q": "Is", "role": "V"}, {"q": "it", "role": "S"}, {"q": "possible", "role": "C"}, {"q": "to do so", "role": "S"}],
+     "points": [{"q": "Is it possible to do so", "label": "가주어+to부정사", "star": true, "explanation": "it은 가주어이고 진주어는 to do so이다. 가주어 문장의 의문문은 be동사를 it 앞으로 옮겨 만든다. it은 '그것'으로 해석하지 않는다."}],
+     "chunks": [{"en": "Is it possible", "ko": "가능할까?"}, {"en": "to do so?", "ko": "그렇게 하는 것이"}]
+    },
+    {
+     "translation": "그럴 거 같지는 않지만, 그것은 중요하지 않다.",
+     "contextNote": "앞 질문에 답하며, 이기는 것보다 즐기는 것이 중요함을 말한다.",
+     "roles": [{"q": "it", "role": "S"}, {"q": "doesn't matter", "role": "V"}],
+     "points": [{"q": "doesn't matter", "label": "1형식", "explanation": "matter는 여기서 '중요하다'라는 뜻의 자동사로, 목적어 없이 쓴다. 주어 it이 3인칭 단수이므로 does not(= doesn't)을 쓰고 뒤의 동사는 원형으로 쓴다."}],
+     "chunks": [{"en": "Not really,", "ko": "그럴 거 같지는 않지만,"}, {"en": "but it doesn't matter.", "ko": "그것은 중요하지 않다."}]
+    },
+    {
+     "translation": "모두가 그저 즐기고 있을 뿐이다!",
+     "contextNote": "축제의 핵심인 즐거움을 말하며 글을 맺는다.",
+     "roles": [{"q": "Everyone", "role": "S"}, {"q": "is just having", "role": "V"}, {"q": "fun", "role": "O"}],
+     "points": [{"q": "is just having", "label": "현재진행", "explanation": "be + -ing의 현재진행형으로, 지금 하고 있는 일을 나타낸다. Everyone은 뜻은 여럿이어도 단수 취급하므로 is를 쓴다."}],
+     "chunks": [{"en": "Everyone is just having", "ko": "모두가 그저 즐기고 있을"}, {"en": "fun!", "ko": "뿐이다!"}]
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,59 @@
+"use client";
+
+// 임시(커밋 안 함): 학교별 묶음의 표지·목차·과 간지를 뽑는 화면. scripts/middle-school/shot-book.mjs 전용, 끝나면 지운다.
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { ContentsSheet, CoverSheet, DividerSheet, type BookPart } from "@/components/lesson-materials/test-book/TestBookSheets";
+import { DEFAULT_INTEGRATED_COVER } from "@/lib/lesson-materials/integrated";
+import { EMPTY_BOOK_COVER_SPEC, suggestedExam } from "@/lib/lesson-materials/book-cover";
+import { MsPrintFrame } from "@/components/middle-school/MsSheets";
+
+type Data = {
+  school: string;
+  grade: string;
+  publisher: string;
+  range: string;
+  material: string;
+  title: string;
+  academy: string;
+  parts: BookPart[];
+  pages: Record<string, number>;
+  total: number;
+  dividers: Array<{ part: BookPart; items: Array<{ id: string; index: number; title: string; source: string | null; page?: number }> }>;
+};
+
+function Inner() {
+  const d = JSON.parse(useSearchParams().get("d") ?? "{}") as Data;
+  if (!d.parts) return null;
+  const s = suggestedExam();
+  const spec = {
+    ...EMPTY_BOOK_COVER_SPEC,
+    school: d.school,
+    grade: d.grade,
+    year: String(new Date().getFullYear()),
+    semester: s.semester,
+    exam: s.exam,
+    material: d.material,
+    textbook: "영어",
+    publisher: d.publisher,
+    range: d.range,
+    brand: d.academy,
+  };
+  return (
+    <MsPrintFrame design="b" academyName={d.academy}>
+      <CoverSheet cover={{ ...DEFAULT_INTEGRATED_COVER, academy: d.academy, title: d.material, exam: spec }} range={d.range} logoSrc={null} />
+      <ContentsSheet parts={d.parts} pages={d.pages} total={d.total} title={d.title} range={d.range} />
+      {d.dividers.map((x) => (
+        <DividerSheet key={x.part.id} part={x.part} items={x.items} title={d.title} />
+      ))}
+    </MsPrintFrame>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <Inner />
+    </Suspense>
+  );
+}
