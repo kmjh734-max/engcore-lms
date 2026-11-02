@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { resolveDocumentProjectIds } from "@/lib/lesson-materials/document-page";
 import { LessonPackVocabExam } from "@/components/lesson-materials/LessonPackVocabExam";
+import { lessonPackLegacyPick, lessonPackSavedExam } from "@/lib/lesson-materials/vocab-exam-saved";
 import { loadBundleExtraProjects } from "@/lib/lesson-materials/load-material-payloads";
 import { getAcademyBrandingForCurrentUser } from "@/lib/tenant/academy-branding";
 import Link from "next/link";
@@ -30,7 +31,7 @@ export default async function TeacherLessonPackVocabExamPage({
   const branding = await getAcademyBrandingForCurrentUser();
   const { data: doc } = await supabase
     .from("lesson_material_documents")
-    .select("name")
+    .select("id, name, created_at, payload")
     .eq("id", params.doc?.trim() ?? "")
     .maybeSingle();
 
@@ -38,6 +39,9 @@ export default async function TeacherLessonPackVocabExamPage({
     <LessonPackVocabExam
       role="teacher"
       docName={(doc as { name?: string } | null)?.name || "수업용 자료"}
+      docId={(doc as { id?: string } | null)?.id ?? null}
+      savedExam={lessonPackSavedExam(doc)}
+      legacyPick={lessonPackLegacyPick(doc)}
       projects={projects}
       logoSrc={branding.logoUrl}
       academyName={branding.name || ""}

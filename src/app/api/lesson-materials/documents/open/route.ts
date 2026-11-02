@@ -4,6 +4,7 @@ import {
   getLessonMaterialDocumentName,
   getWorkbookDocument,
   renameLessonMaterialDocument,
+  saveLessonPackVocabExam,
 } from "@/lib/lesson-materials/document-actions";
 import type { LessonMaterialDocumentKind } from "@/lib/lesson-materials/documents";
 
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
       projectIds?: string[];
       name?: string | null;
       sourceQuery?: string | null;
+      saved?: unknown;
     };
     const role = body.role === "admin" ? "admin" : "teacher";
     if (body.op === "create") {
@@ -50,6 +52,9 @@ export async function POST(request: Request) {
       return NextResponse.json(
         await renameLessonMaterialDocument(role, { id: String(body.id ?? ""), name: String(body.name ?? "") })
       );
+    }
+    if (body.op === "saveVocabExam") {
+      return NextResponse.json(await saveLessonPackVocabExam(role, { id: String(body.id ?? ""), saved: body.saved }));
     }
     return NextResponse.json({ ok: false, message: "알 수 없는 요청입니다." });
   } catch (e) {

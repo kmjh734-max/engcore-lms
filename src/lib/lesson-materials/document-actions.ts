@@ -132,6 +132,40 @@ export async function renameLessonMaterialDocument(
   return { ok: true, name };
 }
 
+/**
+ * 수업용 자료 「단어 시험지」를 인쇄·PDF로 뽑은 그대로 파일에 남긴다(선생님 2026-11-02 「한번 만들면 고정해야지」).
+ * 다시 열면 이것을 그대로 보여 준다 — 코드가 바뀌어도 인쇄한 시험지와 정답지가 달라지지 않는다.
+ */
+export async function saveLessonPackVocabExam(
+  role: Role,
+  input: { id: string; saved: unknown }
+): Promise<{ ok: true } | Fail> {
+  const { profile, error } = await requireRole(role);
+  if (error) return { ok: false, message: error };
+  const saved = input.saved as { exam?: { total?: unknown; sections?: unknown } } | null;
+  if (!saved || !Array.isArray(saved.exam?.sections) || typeof saved.exam?.total !== "number") {
+    return { ok: false, message: "시험지 내용이 올바르지 않습니다." };
+  }
+  if (JSON.stringify(saved).length > 400_000) return { ok: false, message: "시험지가 너무 큽니다." };
+  const supabase = await createClient();
+  const { data: cur } = await supabase
+    .from("lesson_material_documents")
+    .select("payload")
+    .eq("id", input.id)
+    .eq("kind", "lesson_pack")
+    .eq("academy_id", profile!.academy_id!)
+    .maybeSingle();
+  if (!cur) return { ok: false, message: "파일을 찾을 수 없습니다." };
+  const prev = (cur.payload as Record<string, unknown> | null) ?? {};
+  const { error: upErr } = await supabase
+    .from("lesson_material_documents")
+    .update({ payload: { ...prev, vocabExamSaved: { ...saved, savedAt: new Date().toISOString() } } })
+    .eq("id", input.id)
+    .eq("academy_id", profile!.academy_id!);
+  if (upErr) return { ok: false, message: upErr.message };
+  return { ok: true };
+}
+
 /** 파일을 휴지통으로 보낸다. 목록에서 여러 개를 골라 한 번에 보낼 수 있다. */
 export async function trashLessonMaterialDocuments(
   role: Role,

@@ -28,6 +28,8 @@ import { VocabExamControls, VocabExamRangeControls } from "@/components/lesson-m
 import { vocabExamCaps } from "@/components/lesson-materials/test-book/useVocabExamCaps";
 import { MaterialDesignPicker } from "@/components/lesson-materials/MaterialDesignPicker";
 import { useMaterialDesign } from "@/lib/lesson-materials/material-design";
+import { postJson } from "@/lib/lesson-materials/post-json";
+import type { SavedVocabExam } from "@/lib/lesson-materials/vocab-exam-saved";
 
 /**
  * 수업용 자료 파일에서 단어 시험지만 뽑아 찍는다(선생님 2026-10-27: 이름 바꾸기 옆 「단어 시험지」, 워크북처럼
@@ -60,6 +62,9 @@ export function LessonPackVocabExam({
   closeBase = null,
   source = null,
   sourceSub = null,
+  docId = null,
+  savedExam = null,
+  legacyPick = false,
 }: {
   role: "admin" | "teacher";
   docName: string;
@@ -81,6 +86,11 @@ export function LessonPackVocabExam({
   /** 시험지 오른쪽 위에 찍는 출처(중학교: 「중1 동아(윤정미) 1과」)와 그 아래 줄(과 제목) */
   source?: string | null;
   sourceSub?: string | null;
+  /** 수업용 자료 파일: 인쇄·PDF로 뽑은 시험지를 여기에 남겨 다시 열면 그대로 보여 준다(선생님 2026-11-02) */
+  docId?: string | null;
+  savedExam?: SavedVocabExam | null;
+  /** 2026-11-02 전에 만든 파일 — 예전 뽑기로 그때 인쇄한 것과 같은 단어 */
+  legacyPick?: boolean;
 }) {
   const base = closeBase ?? (role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials");
   const [md, chooseMd] = useMaterialDesign();
@@ -91,17 +101,22 @@ export function LessonPackVocabExam({
   const wordCount = useMemo(() => allVocabRows(ready, () => 0).length, [ready]);
 
   // 출제 범위는 파일마다 달라 기억하지 않는다(비우면 전체)
-  const [rangeFrom, setRangeFrom] = useState(0);
-  const [rangeTo, setRangeTo] = useState(0);
+  const [rangeFrom, setRangeFrom] = useState(savedExam?.rangeFrom ?? 0);
+  const [rangeTo, setRangeTo] = useState(savedExam?.rangeTo ?? 0);
+  /** 파일에 남긴 시험지(인쇄·PDF 때 저장)와, 그것을 그대로 보여 주는 중인지 */
+  const [saved, setSaved] = useState<SavedVocabExam | null>(savedExam);
+  const [pinned, setPinned] = useState(!!savedExam);
   const range = useMemo(() => vocabExamRange(rangeFrom, rangeTo, wordCount), [rangeFrom, rangeTo, wordCount]);
   const caps = useMemo(() => vocabExamCaps(projects, range), [projects, range]);
 
   // 유형별 문항 수 · 정답지 · 번호순 · 단어장 — 이 브라우저에 기억한다
-  const [counts, setCounts] = useState<VocabExamOptions>(DEFAULT_VOCAB_EXAM);
-  const [answers, setAnswers] = useState(true);
-  const [inOrder, setInOrder] = useState(false);
-  const [wordList, setWordList] = useState(false);
+  const [counts, setCounts] = useState<VocabExamOptions>(savedExam?.counts ?? DEFAULT_VOCAB_EXAM);
+  const [answers, setAnswers] = useState(savedExam?.answers ?? true);
+  const [inOrder, setInOrder] = useState(savedExam?.inOrder ?? false);
+  const [wordList, setWordList] = useState(savedExam?.wordList ?? false);
   useEffect(() => {
+    // 저장된 시험지가 있으면 그때 설정 그대로(이 브라우저 기억보다 먼저)
+    if (savedExam) return;
     try {
       const raw = window.localStorage.getItem(OPTIONS_KEY);
       if (!raw) return;
@@ -113,7 +128,7 @@ export function LessonPackVocabExam({
     } catch {
       /* 저장소를 못 쓰면 기본 */
     }
-  }, []);
+  }, [savedExam]);
   const settings = { vocabExam: counts, answers, inOrder, wordList };
   const remember = (patch: Partial<typeof settings>) => {
     try {
@@ -123,6 +138,7 @@ export function LessonPackVocabExam({
     }
   };
   const chooseCounts = (v: VocabExamOptions) => {
+    setPinned(false);
     setCounts(v);
     remember({ vocabExam: v });
   };
@@ -131,6 +147,7 @@ export function LessonPackVocabExam({
     remember({ answers: on });
   };
   const chooseInOrder = (on: boolean) => {
+    setPinned(false);
     setInOrder(on);
     remember({ inOrder: on });
   };
@@ -140,9 +157,9 @@ export function LessonPackVocabExam({
   };
 
   // 「새로 섞기」 — 같은 단어에서 다른 문항·보기 차례로
-  const [round, setRound] = useState(0);
+  const [round, setRound] = useState(savedExam?.round ?? 0);
   /** 시험지·단어장 제목(비우면 「단어 시험」/「전체 단어장」) — 파일마다 달라 기억하지 않는다 */
-  const [sheetTitle, setSheetTitle] = useState("");
+  const [sheetTitle, setSheetTitle] = useState(savedExam?.title ?? "");
   const examTitle = sheetTitle.trim() || "단어 시험";
   const listTitle = sheetTitle.trim() || "전체 단어장";
   const titleField = (
@@ -164,14 +181,36 @@ export function LessonPackVocabExam({
       ) : null}
     </label>
   );
-  const exam = useMemo(
+  const built = useMemo(
     () =>
       buildVocabExam(
         ready.map((p) => ({ passage: projects.indexOf(p) + 1, vocab: p.material.vocab })),
-        { ...counts, seed: `lesson-pack|vocab|${round}`, range, inOrder }
+        { ...counts, seed: `lesson-pack|vocab|${round}`, range, inOrder, shareWords: legacyPick }
       ),
-    [ready, projects, counts, round, range, inOrder]
+    [ready, projects, counts, round, range, inOrder, legacyPick]
   );
+  const exam = pinned && saved ? saved.exam : built;
+
+  /** 인쇄·PDF로 뽑을 때 지금 시험지를 파일에 남긴다 — 다음에 열면 이것이 그대로 나온다 */
+  const [saveNote, setSaveNote] = useState<string | null>(null);
+  async function keepExam() {
+    if (!docId || !exam.total) return;
+    if (pinned && saved && saved.title === sheetTitle && saved.answers === answers && saved.wordList === wordList) return;
+    const next: SavedVocabExam = { exam, counts, inOrder, rangeFrom, rangeTo, round, title: sheetTitle, answers, wordList };
+    const res = await postJson<{ ok: true } | { ok: false; message: string }>("/api/lesson-materials/documents/open", {
+      op: "saveVocabExam",
+      role,
+      id: docId,
+      saved: next,
+    }).catch(() => null);
+    if (res && res.ok) {
+      setSaved({ ...next, savedAt: new Date().toISOString() });
+      setPinned(true);
+      setSaveNote(null);
+    } else {
+      setSaveNote(`시험지를 파일에 저장하지 못했습니다${res && !res.ok ? `: ${res.message}` : ""}. 다시 열면 달라질 수 있어요.`);
+    }
+  }
   /** 유형마다 고른 수보다 단어가 모자라 덜 나온 것 */
   const short = exam.sections.filter((s) => {
     const want = counts.counts[s.kind] ?? 0;
@@ -239,6 +278,38 @@ export function LessonPackVocabExam({
             </>
           ) : (
           <>
+          {docId ? (
+            pinned && saved ? (
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] leading-snug text-emerald-900">
+                <b>저장된 시험지</b>
+                {saved.savedAt ? ` · ${new Date(saved.savedAt).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })} 인쇄` : ""}
+                <span className="block text-[11px] text-emerald-800/80">
+                  인쇄했던 시험지·정답지 그대로 나옵니다. 문항 수·범위를 바꾸거나 새로 섞으면 새 시험지가 됩니다.
+                </span>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] leading-snug text-slate-600">
+                인쇄하거나 PDF로 저장하면 이 시험지가 파일에 저장되어, 다시 열어도 같은 문제·정답이 나옵니다.
+                {saved ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCounts(saved.counts);
+                      setInOrder(saved.inOrder);
+                      setRangeFrom(saved.rangeFrom);
+                      setRangeTo(saved.rangeTo);
+                      setRound(saved.round);
+                      setSheetTitle(saved.title);
+                      setPinned(true);
+                    }}
+                    className="mt-1.5 block w-full rounded-md border border-emerald-300 bg-white py-1 text-[12px] font-bold text-emerald-800 hover:bg-emerald-50"
+                  >
+                    ← 저장된 시험지로 돌아가기
+                  </button>
+                ) : null}
+              </div>
+            )
+          ) : null}
           {titleField}
 
           <VocabExamRangeControls
@@ -247,6 +318,7 @@ export function LessonPackVocabExam({
             to={rangeTo}
             inOrder={inOrder}
             onRange={(from, to) => {
+              setPinned(false);
               setRangeFrom(from);
               setRangeTo(to);
             }}
@@ -266,7 +338,10 @@ export function LessonPackVocabExam({
           {inOrder ? null : (
             <button
               type="button"
-              onClick={() => setRound((r) => r + 1)}
+              onClick={() => {
+                setPinned(false);
+                setRound((r) => r + 1);
+              }}
               className="w-full rounded-lg border border-slate-300 bg-white py-1.5 text-[12px] font-bold text-slate-700 hover:bg-slate-50"
             >
               ↻ 새로 섞기
@@ -301,7 +376,10 @@ export function LessonPackVocabExam({
           <button
             type="button"
             disabled={listOnly ? !wordCount : !exam.total}
-            onClick={() => window.print()}
+            onClick={() => {
+              void keepExam();
+              window.print();
+            }}
             className="w-full rounded-xl bg-violet-600 py-3 text-sm font-bold text-white hover:bg-violet-700 disabled:opacity-50"
           >
             인쇄
@@ -309,17 +387,19 @@ export function LessonPackVocabExam({
           <button
             type="button"
             disabled={!!pdf.busy || (listOnly ? !wordCount : !exam.total)}
-            onClick={() =>
+            onClick={() => {
+              void keepExam();
               void pdf.save(
                 `${docName} ${sheetTitle.trim() || (listOnly ? "단어장" : "단어 시험지")}`,
                 collectPrintPages(document.getElementById("lesson-pack-print-root"), PDF_SELECTOR),
                 [docName]
-              )
-            }
+              );
+            }}
             className="w-full rounded-xl border border-violet-300 bg-white py-2.5 text-sm font-bold text-violet-800 hover:bg-violet-50 disabled:opacity-50"
           >
             ⤓ PDF로 저장
           </button>
+          {saveNote ? <p className="text-[11px] font-semibold text-rose-600">{saveNote}</p> : null}
           {pdf.status ? (
             <p className={`text-[11px] font-semibold ${pdf.busy ? "text-violet-700" : "text-rose-600"}`}>{pdf.status}</p>
           ) : null}
