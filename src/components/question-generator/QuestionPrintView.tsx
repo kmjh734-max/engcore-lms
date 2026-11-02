@@ -644,7 +644,12 @@ function QuestionBlock({
       !referenceAnswer &&
       !grammarFix &&
       extra ? (
-        <p className="qg-print-extra">{extra}</p>
+        q.question_type?.startsWith("ms_") ? (
+          // 중학교 문제 은행: 줄(보기 ⓐ~ⓔ, (A)~(C))과 밑줄을 살린다
+          <p className="qg-print-extra" style={{ whiteSpace: "pre-line" }}>{renderMarkedText(extra)}</p>
+        ) : (
+          <p className="qg-print-extra">{extra}</p>
+        )
       ) : null}
       {showChoices && (
         <ul className="qg-print-choices">
