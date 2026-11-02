@@ -42,6 +42,13 @@ function blanks(s: string): string {
   return s.replace(/<blank\/>/g, BLANK);
 }
 
+/** 보기 밑줄: 여는 표시가 빠지고 닫는 표시만 남은 보기(「To read</u> is …」)는 보기 첫머리부터 밑줄로 */
+function fixUnderline(s: string): string {
+  const open = (s.match(/<u>/g) ?? []).length;
+  const close = (s.match(/<\/u>/g) ?? []).length;
+  return close > open ? "<u>".repeat(close - open) + s : s;
+}
+
 /** 묶음 지문 열쇠(같은 글이면 같은 값) */
 function groupKey(lines: string[]): string {
   let h = 0;
@@ -61,9 +68,10 @@ export function msQuestionToPrintRow(q: MsQuestion): QuestionPrintRow {
     question_text: group ? q.body.map(blanks).join("\n") : "",
     passage_original: (group ?? q.body).map(blanks).join("\n\n"),
     passage_modified: null,
-    choices: q.choices.map((c) => ({ number: c.no, text: blanks(c.text).replace(/\n/g, " / ") })),
+    choices: q.choices.map((c) => ({ number: c.no, text: fixUnderline(blanks(c.text)).replace(/\n/g, " / ") })),
     correct_answer: correct,
-    explanation: q.explanation,
+    // 해설은 글자로만 찍힌다: 밑줄 표시는 뺀다
+    explanation: q.explanation.replace(/<\/?u>/g, ""),
     question_type: `ms_${q.kind}`,
     category: q.area,
     passage_id: group ? groupKey(group) : `q${q.id}`,

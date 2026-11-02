@@ -6,7 +6,9 @@ import { useMaterialDesign } from "@/lib/lesson-materials/material-design";
 import { MaterialDesignPicker } from "@/components/lesson-materials/MaterialDesignPicker";
 import {
   MS_WB_TYPES,
+  MS_DRAW_QUESTIONS,
   buildMsWorkbook,
+  drawMsQuestions,
   drawMsWorkbook,
   msWbCounts,
   type MsDrawLength,
@@ -17,13 +19,17 @@ import {
   MsAnalysisSheets,
   MsLessonSheets,
   MsPrintFrame,
+  MsWorkbookAnswerSheets,
   MsWorkbookSheets,
   msAnalyzed,
+  msSource,
   type MsAnalysisOptions,
   type MsLessonOptions,
 } from "./MsSheets";
 import { MsQuestionTab } from "./MsQuestionTab";
 import { MsFinalTab } from "./MsFinalTab";
+import { MsExamBlock } from "./MsExamViews";
+import { sortMsQuestions } from "@/lib/middle-school/exam-print";
 import { DESIGN_STYLES } from "@/lib/lesson-materials/analysis-design";
 
 const TABS = [
@@ -86,6 +92,10 @@ export function MiddleSchoolUnitWorkspace({
   const [length, setLength] = useState<MsDrawLength>("normal");
   /** 뽑은 테스트지(뽑을 때마다 새 seed) — null이면 워크북 전체 */
   const [drawSeed, setDrawSeed] = useState<string | null>(startTest ? unit.id : null);
+  /** 워크북·테스트지 제목(비우면 「워크북」/「테스트」) */
+  const [wbTitle, setWbTitle] = useState("");
+  /** 테스트지에 족보닷컴 대화문(의사소통)·문법(어법) 문제도 뽑아 넣는다(선생님 2026-11-02) */
+  const [testQ, setTestQ] = useState({ dialogue: true, grammar: true });
   /** 분석서: 모양 A·B·C(고등 분석서와 같다) · 전체 해석/직독직해 */
   const [analysis, setAnalysis] = useState<MsAnalysisOptions>({ style: "a", translation: "full" });
   const analyzed = msAnalyzed(unit).length;
@@ -98,6 +108,23 @@ export function MiddleSchoolUnitWorkspace({
         : buildMsWorkbook(unit, unit.workbook, types),
     [unit, types, length, drawSeed],
   );
+
+  const qPool = useMemo(
+    () => ({
+      dialogue: questions.filter((q) => q.area === "의사소통" && !q.review).length,
+      grammar: questions.filter((q) => q.area === "어법" && !q.review).length,
+    }),
+    [questions],
+  );
+  const testQuestions = useMemo(() => {
+    if (!drawSeed) return { dialogue: [], grammar: [] };
+    const n = MS_DRAW_QUESTIONS[length];
+    return {
+      dialogue: testQ.dialogue ? sortMsQuestions(drawMsQuestions(questions, "의사소통", n, drawSeed)) : [],
+      grammar: testQ.grammar ? sortMsQuestions(drawMsQuestions(questions, "어법", n, drawSeed)) : [],
+    };
+  }, [questions, drawSeed, length, testQ]);
+  const sheetTitle = wbTitle.trim() || (drawSeed ? "테스트" : "워크북");
 
   const toggleType = (k: MsWbTypeKey, on: boolean) =>
     setTypes((cur) =>
@@ -246,6 +273,20 @@ export function MiddleSchoolUnitWorkspace({
               </>
             ) : (
               <>
+                <label className="block">
+                  <span className="mb-1 block font-bold text-slate-800">시험지 제목</span>
+                  <input
+                    type="text"
+                    value={wbTitle}
+                    onChange={(e) => setWbTitle(e.target.value)}
+                    placeholder={drawSeed ? "테스트" : "워크북"}
+                    maxLength={40}
+                    className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-violet-500 focus:outline-none"
+                  />
+                  <span className="mt-1 block text-[11px] text-slate-400">
+                    출처: {msSource(unit)} · {unit.title}
+                  </span>
+                </label>
                 {(["본문", "대화문", "단어"] as MsWbGroup[]).map((g) => (
                   <div key={g}>
                     <div className="mb-1 font-bold text-slate-800">{g}</div>
@@ -304,6 +345,27 @@ export function MiddleSchoolUnitWorkspace({
                     {length === "short" ? 10 : length === "normal" ? 15 : 25}
                     개)을 무작위로 뽑습니다. 누를 때마다 새로 뽑힙니다.
                   </p>
+                  <div className="mb-2 space-y-0.5 rounded-md bg-white/70 px-2 py-1.5">
+                    {(
+                      [
+                        ["dialogue", "대화문 문제"],
+                        ["grammar", "문법 문제"],
+                      ] as const
+                    ).map(([k, label]) => (
+                      <label key={k} className={`flex items-center gap-2 py-0.5 text-[13px] ${qPool[k] ? "text-violet-900" : "text-slate-300"}`}>
+                        <input
+                          type="checkbox"
+                          disabled={!qPool[k]}
+                          checked={testQ[k] && qPool[k] > 0}
+                          onChange={(e) => setTestQ({ ...testQ, [k]: e.target.checked })}
+                        />
+                        <span className="flex-1">
+                          {label} {Math.min(MS_DRAW_QUESTIONS[length], qPool[k])}문항
+                        </span>
+                        <span className="text-[11px] text-slate-400">{qPool[k]}</span>
+                      </label>
+                    ))}
+                  </div>
                   <button
                     type="button"
                     onClick={() => setDrawSeed(`${Date.now()}`)}
@@ -345,12 +407,47 @@ export function MiddleSchoolUnitWorkspace({
                   </div>
                 )
               ) : (
-                <MsWorkbookSheets
-                  sheets={sheets}
-                  answers={answers}
-                  title={drawSeed ? "테스트" : "워크북"}
-                  measureKey={`${unit.id}-${design}-${types.join(",")}-${drawSeed ?? "all"}-${length}-${answers}`}
-                />
+                <>
+                  <MsWorkbookSheets
+                    sheets={sheets}
+                    answers={false}
+                    title={sheetTitle}
+                    measureKey={`${unit.id}-${design}-${types.join(",")}-${drawSeed ?? "all"}-${length}-${answers}`}
+                  />
+                  {(["dialogue", "grammar"] as const).map((k) => (
+                    <MsExamBlock
+                      key={k}
+                      unit={unit}
+                      questions={testQuestions[k]}
+                      mode="exam"
+                      design={design}
+                      academyName={academyName}
+                      base={base}
+                      title={`${msSource(unit)} ${sheetTitle} · ${k === "dialogue" ? "대화문 문제" : "문법 문제"}`}
+                    />
+                  ))}
+                  {answers && sheets.length ? (
+                    <MsWorkbookAnswerSheets
+                      sheets={sheets}
+                      title={`${sheetTitle} 정답`}
+                      measureKey={`${unit.id}-${design}-${types.join(",")}-${drawSeed ?? "all"}-${length}-ans`}
+                    />
+                  ) : null}
+                  {answers
+                    ? (["dialogue", "grammar"] as const).map((k) => (
+                        <MsExamBlock
+                          key={`a-${k}`}
+                          unit={unit}
+                          questions={testQuestions[k]}
+                          mode="answers"
+                          design={design}
+                          academyName={academyName}
+                          base={base}
+                          title={`${msSource(unit)} ${sheetTitle} · ${k === "dialogue" ? "대화문 문제" : "문법 문제"}`}
+                        />
+                      ))
+                    : null}
+                </>
               )}
             </MsPrintFrame>
           </div>

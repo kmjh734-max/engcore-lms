@@ -75,6 +75,8 @@ export async function MiddleSchoolVocabExamPage({ base, unitId }: { base: string
       projects={[vocabSetAsProject({ id: unit.id, title }, items)]}
       fromWordSet
       closeBase={base}
+      source={`${unit.grade} ${unit.publisher} ${unit.lessonNo}과`}
+      sourceSub={unit.title}
       logoSrc={branding.logoUrl}
       academyName={branding.name || ""}
     />

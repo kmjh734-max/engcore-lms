@@ -58,6 +58,8 @@ export function LessonPackVocabExam({
   editHref = null,
   examHref = null,
   closeBase = null,
+  source = null,
+  sourceSub = null,
 }: {
   role: "admin" | "teacher";
   docName: string;
@@ -76,6 +78,9 @@ export function LessonPackVocabExam({
   examHref?: string | null;
   /** 닫으면 돌아갈 곳(기본은 자료함) */
   closeBase?: string | null;
+  /** 시험지 오른쪽 위에 찍는 출처(중학교: 「중1 동아(윤정미) 1과」)와 그 아래 줄(과 제목) */
+  source?: string | null;
+  sourceSub?: string | null;
 }) {
   const base = closeBase ?? (role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials");
   const [md, chooseMd] = useMaterialDesign();
@@ -136,6 +141,29 @@ export function LessonPackVocabExam({
 
   // 「새로 섞기」 — 같은 단어에서 다른 문항·보기 차례로
   const [round, setRound] = useState(0);
+  /** 시험지·단어장 제목(비우면 「단어 시험」/「전체 단어장」) — 파일마다 달라 기억하지 않는다 */
+  const [sheetTitle, setSheetTitle] = useState("");
+  const examTitle = sheetTitle.trim() || "단어 시험";
+  const listTitle = sheetTitle.trim() || "전체 단어장";
+  const titleField = (
+    <label className="block">
+      <span className="mb-1 block text-xs font-bold text-slate-500">{listOnly ? "단어장 제목" : "시험지 제목"}</span>
+      <input
+        type="text"
+        value={sheetTitle}
+        onChange={(e) => setSheetTitle(e.target.value)}
+        placeholder={listOnly ? "전체 단어장" : "단어 시험"}
+        maxLength={40}
+        className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-violet-500 focus:outline-none"
+      />
+      {source ? (
+        <span className="mt-1 block text-[11px] text-slate-400">
+          출처: {source}
+          {sourceSub ? ` · ${sourceSub}` : ""}
+        </span>
+      ) : null}
+    </label>
+  );
   const exam = useMemo(
     () =>
       buildVocabExam(
@@ -187,6 +215,7 @@ export function LessonPackVocabExam({
         <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4 text-sm">
           {listOnly ? (
             <>
+              {titleField}
               {editHref ? (
                 <a
                   href={editHref}
@@ -210,6 +239,8 @@ export function LessonPackVocabExam({
             </>
           ) : (
           <>
+          {titleField}
+
           <VocabExamRangeControls
             wordCount={wordCount}
             from={rangeFrom}
@@ -280,7 +311,7 @@ export function LessonPackVocabExam({
             disabled={!!pdf.busy || (listOnly ? !wordCount : !exam.total)}
             onClick={() =>
               void pdf.save(
-                `${docName} ${listOnly ? "단어장" : "단어 시험지"}`,
+                `${docName} ${sheetTitle.trim() || (listOnly ? "단어장" : "단어 시험지")}`,
                 collectPrintPages(document.getElementById("lesson-pack-print-root"), PDF_SELECTOR),
                 [docName]
               )
@@ -322,12 +353,12 @@ export function LessonPackVocabExam({
                 style={partStyle({ id: "lesson", no: "", en: "VOCABULARY TEST", ko: "단어 시험", color: "#1d2a8f" })}
               >
                 {listOnly ? (
-                  <AllVocabSheets projects={ready} indexOf={indexOf} measureKey={mk} noPassage={fromWordSet} />
+                  <AllVocabSheets projects={ready} indexOf={indexOf} measureKey={mk} noPassage={fromWordSet} title={listTitle} />
                 ) : (
                   <>
                     {wordList ? <AllVocabSheets projects={ready} indexOf={indexOf} measureKey={mk} range={range} noPassage={fromWordSet} /> : null}
-                    <VocabExamSheets exam={exam} measureKey={mk} />
-                    {answers ? <VocabExamAnswerSheets exam={exam} measureKey={mk} /> : null}
+                    <VocabExamSheets exam={exam} measureKey={mk} title={examTitle} label={source || undefined} right={source ? sourceSub || undefined : undefined} />
+                    {answers ? <VocabExamAnswerSheets exam={exam} measureKey={mk} title={`정답 · ${examTitle}`} source={source || undefined} /> : null}
                   </>
                 )}
               </div>

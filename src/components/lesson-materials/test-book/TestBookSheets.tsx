@@ -913,10 +913,13 @@ export const AllVocabSheets = memo(function AllVocabSheets({
   measureKey,
   range = null,
   noPassage = false,
+  title = "전체 단어장",
 }: {
   projects: TestBookProjectInput[];
   indexOf: (id: string) => number;
   measureKey: string;
+  /** 쪽 제목(선생님이 넣은 이름) */
+  title?: string;
   /** 번호 범위만 싣는다(단어 시험지 화면의 출제 범위) — 번호는 전체 차례 그대로 */
   range?: { from: number; to: number } | null;
   /** 지문 번호 칸을 뺀다(자료함 「단어」 탭 단어장은 지문 정보가 없다) */
@@ -964,7 +967,7 @@ export const AllVocabSheets = memo(function AllVocabSheets({
       head={(page) => (
         <>
           <DocHead
-            title="전체 단어장"
+            title={title}
             sub={page > 0 ? "(이어서)" : range && rows.length < allRows.length ? `${range.from}~${range.to}번 · ${rows.length}단어` : noPassage ? `${rows.length}단어` : `지문 ${projects.length}개 · ${rows.length}단어`}
             label="ALL WORDS"
             right={noPassage ? "VOCABULARY" : "지문 번호는 계획표 차례"}
@@ -1975,7 +1978,20 @@ export const PassageDividerSheet = memo(function PassageDividerSheet({
 // ---------------------------------------------------------------- 단어 시험지
 
 /** 단어 시험지(지문을 합친 한 장 묶음). 쓰기는 두 단, 객관식은 보기 넷을 한 줄에. */
-export const VocabExamSheets = memo(function VocabExamSheets({ exam, title = "단어 시험", measureKey }: { exam: VocabExam; title?: string; measureKey: string }) {
+export const VocabExamSheets = memo(function VocabExamSheets({
+  exam,
+  title = "단어 시험",
+  measureKey,
+  label = "VOCABULARY TEST",
+  right,
+}: {
+  exam: VocabExam;
+  title?: string;
+  measureKey: string;
+  /** 오른쪽 위 굵은 줄(출처) */
+  label?: string;
+  right?: string;
+}) {
   if (!exam.total) return null;
   const blocks: Block[] = [{ key: "who", node: <Who total={exam.total} /> }];
   exam.sections.forEach((sec, si) => {
@@ -2040,12 +2056,23 @@ export const VocabExamSheets = memo(function VocabExamSheets({ exam, title = "�
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : `${exam.total}문항`} label="VOCABULARY TEST" />}
+      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : `${exam.total}문항`} label={label} right={right} />}
     />
   );
 });
 
-export const VocabExamAnswerSheets = memo(function VocabExamAnswerSheets({ exam, title = "정답 · 단어 시험", measureKey }: { exam: VocabExam; title?: string; measureKey: string }) {
+export const VocabExamAnswerSheets = memo(function VocabExamAnswerSheets({
+  exam,
+  title = "정답 · 단어 시험",
+  measureKey,
+  source,
+}: {
+  exam: VocabExam;
+  title?: string;
+  measureKey: string;
+  /** 출처(있으면 「정답만 싣습니다」 대신) */
+  source?: string;
+}) {
   if (!exam.total) return null;
   const blocks: Block[] = exam.sections.map((sec) => ({
     key: `va-${sec.kind}`,
@@ -2067,7 +2094,7 @@ export const VocabExamAnswerSheets = memo(function VocabExamAnswerSheets({ exam,
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right="정답만 싣습니다" />}
+      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right={source || "정답만 싣습니다"} />}
     />
   );
 });

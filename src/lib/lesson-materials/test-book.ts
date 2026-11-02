@@ -1843,6 +1843,8 @@ export type VocabExamBuildOptions = VocabExamOptions & {
   seed: string;
   range?: { from: number; to: number } | null;
   inOrder?: boolean;
+  /** 유형별 최대 수를 셀 때만: 영→한·한→영 단어 나누기를 하지 않는다 */
+  shareWords?: boolean;
 };
 
 export function buildVocabExam(
@@ -1906,13 +1908,25 @@ export function buildVocabExam(
   for (const k of VOCAB_EXAM_KINDS.map((x) => x.key)) want[k] = Math.min(opts.counts[k] ?? 0, cands[k].length);
   const kinds = VOCAB_EXAM_KINDS.map((x) => x.key).filter((k) => want[k]! > 0);
   if (!kinds.length) return { total: 0, sections: [] };
+  // 영→한과 한→영에는 같은 단어를 내지 않는다(한쪽 문제가 다른 쪽 답이 된다 — 선생님 2026-11-02).
+  // 동의어·반의어·파생어는 겹쳐도 된다. 철자(후보가 적다)를 먼저 잡고, 쪽에는 원래 유형 차례로 싣는다.
+  const EXCLUSIVE: VocabExamKind[] = ["spelling", "meaning"];
+  const used = new Set<number>();
+  const pickedBy: Partial<Record<VocabExamKind, Array<Omit<VocabExamItem, "no">>>> = {};
+  for (const k of [...kinds].sort((x, y) => Number(x !== "spelling") - Number(y !== "spelling"))) {
+    const exclusive = EXCLUSIVE.includes(k) && !opts.shareWords;
+    const free = exclusive ? cands[k].filter((it) => !used.has(it.wordNo)) : cands[k];
+    const n = Math.min(want[k] ?? 0, free.length);
+    const picked = opts.inOrder ? free.slice(0, n) : pickN(free, n, `${opts.seed}|vxk|${k}`);
+    if (exclusive) for (const it of picked) used.add(it.wordNo);
+    pickedBy[k] = picked;
+  }
   let no = 0;
   const sections: VocabExamSection[] = [];
   for (const k of kinds) {
-    const n = want[k] ?? 0;
-    if (!n) continue;
+    const picked = pickedBy[k] ?? [];
+    if (!picked.length) continue;
     const meta = VOCAB_EXAM_KINDS.find((x) => x.key === k)!;
-    const picked = opts.inOrder ? cands[k].slice(0, n) : pickN(cands[k], n, `${opts.seed}|vxk|${k}`);
     const items = picked.map((it) => ({ ...it, no: ++no }));
     sections.push({ kind: k, title: meta.label, hint: meta.hint, items });
   }

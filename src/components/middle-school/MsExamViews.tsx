@@ -60,6 +60,45 @@ export function MsExamBySource({
   );
 }
 
+/**
+ * 테스트지에 뽑아 넣은 대화문·문법 문제: 출처로 나누지 않고 한 묶음으로 1번부터 찍는다.
+ */
+export function MsExamBlock({
+  unit,
+  questions,
+  mode,
+  design,
+  academyName,
+  base,
+  title,
+}: {
+  unit: UnitHead;
+  questions: MsQuestion[];
+  mode: "exam" | "answers";
+  design: MaterialDesign;
+  academyName: string;
+  base: string;
+  /** 머리글 제목(「3월 2주 테스트 · 문법 문제」) */
+  title: string;
+}) {
+  if (!questions.length) return null;
+  const all = encodeQuestionIds(questions.map((q) => q.id));
+  return (
+    <QuestionPrintView
+      key={`${mode}-${title}-${questions.map((q) => q.id).join(".")}-${design}`}
+      jobId={`ms-${unit.id}-test-${title}-${mode}`}
+      backHref={`${base}/${unit.id}`}
+      printBaseHref={`${base}/${unit.id}/exam/${all}`}
+      mode={mode}
+      layout="bySet"
+      academyName={academyName}
+      embedded
+      design={design}
+      preloaded={msExamPreloaded(unit, questions, title)}
+    />
+  );
+}
+
 /** 인쇄 화면(새 탭): 문제지·해설지 전환 · 인쇄. 디자인은 자료 디자인(localStorage)을 그대로 쓴다. */
 export function MsExamPrintView({
   unit,

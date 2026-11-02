@@ -295,6 +295,20 @@ export type MsDrawLength = "short" | "normal" | "long";
 export const MS_DRAW_LIMITS: Record<MsDrawLength, number> = { short: 3, normal: 5, long: 8 };
 export const MS_DRAW_WORDS: Record<MsDrawLength, number> = { short: 10, normal: 15, long: 25 };
 
+/** 테스트지에 넣는 족보닷컴 문제 수(대화문·문법 각각) */
+export const MS_DRAW_QUESTIONS: Record<MsDrawLength, number> = { short: 5, normal: 10, long: 15 };
+
+/**
+ * 테스트지용 문제 뽑기: 그 과 문제 중 영역(의사소통·어법)이 맞고 숨기지 않은 것에서 무작위로 n개.
+ * 같은 seed면 같은 문제. 찍는 차례는 출처 차례 → 그 안 번호(같은 글을 받는 문항이 붙어 나온다).
+ */
+export function drawMsQuestions<Q extends { id: number; area: string; review: string }>(questions: Q[], area: string, n: number, seed: string): Q[] {
+  const pool = questions.filter((q) => q.area === area && !q.review);
+  if (pool.length <= n) return pool;
+  const keep = new Set(shuffle(pool.map((q) => q.id), seeded(`${seed}|q|${area}`)).slice(0, n));
+  return pool.filter((q) => keep.has(q.id));
+}
+
 export function drawMsWorkbook(unit: MsUnit, wb: MsWorkbook, types: MsWbTypeKey[], length: MsDrawLength, seed: string): MsWbSheet[] {
   const rand = seeded(seed);
   return buildMsWorkbook(unit, wb, types, {

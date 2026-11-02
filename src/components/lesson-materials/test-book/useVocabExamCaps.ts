@@ -30,7 +30,7 @@ export function vocabExamCaps(
   const all = Object.fromEntries(VOCAB_EXAM_KINDS.map((k) => [k.key, 9999])) as Record<VocabExamKind, number>;
   const exam = buildVocabExam(
     ready.map((p, i) => ({ passage: i + 1, vocab: p.material.vocab })),
-    { counts: all, seed: "caps", range }
+    { counts: all, seed: "caps", range, shareWords: true }
   );
   const perKind = Object.fromEntries(VOCAB_EXAM_KINDS.map((k) => [k.key, 0])) as Record<VocabExamKind, number>;
   for (const s of exam.sections) perKind[s.kind] = s.items.length;
