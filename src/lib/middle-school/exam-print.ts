@@ -24,7 +24,31 @@ const SOURCE_RANK: Array<[RegExp, number]> = [
   [/최상위/, 6],
   [/최다오답/, 7],
 ];
+/**
+ * 내신콘서트(선생님 2026-11-04 「거기 있는 모든 문제를 다 넣어」): 책 차례대로 — 어휘 → 대화 → 문법 → 본문 → 기타 지문 → 실전 모의고사.
+ * 문제 은행(변형문제 탭)에만 나오고 최종통합자료에는 넣지 않는다.
+ */
+// 출처 이름: 「내신콘서트 단어 · 연습 문제」 … 「내신콘서트 종합문제 · 실전 모의고사 Basic 1회」(선생님 2026-11-04 차례: 단어 대화문 문법 본문 종합문제)
+export const CONCERT_ORDER = [
+  "단어 · 연습 문제",
+  "단어 · 실전 문제",
+  "대화문 · 연습 문제",
+  "대화문 · 실전 문제",
+  "문법 · 연습 문제",
+  "문법 · 실전 문제",
+  "본문 · 연습 문제",
+  "본문 · 실전 문제",
+  "실전 모의고사 Basic",
+  "실전 모의고사 Intermediate",
+  "실전 모의고사 서술형",
+  "실전 모의고사 Advanced",
+];
+export const isConcertSource = (source: string) => /^내신콘서트/.test(source);
 export function msSourceRank(source: string): number {
+  if (isConcertSource(source)) {
+    const i = CONCERT_ORDER.findIndex((k) => source.includes(k));
+    return 8 + (i < 0 ? CONCERT_ORDER.length : i) / 100;
+  }
   for (const [re, r] of SOURCE_RANK) if (re.test(source)) return r;
   return 9;
 }

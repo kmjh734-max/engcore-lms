@@ -107,6 +107,79 @@ if (cmd === "dump") {
     }
     console.log("고침 적용");
   }
+} else if (cmd === "concert") {
+  /*
+   * 내신콘서트(선생님 2026-11-04 「거기 있는 모든 문제를 다 넣어」, 문제 은행에만): data/<학년>-<과>.concert.json
+   * [{ source: "내신콘서트 …", no?: 책 번호, area, stem, body?: string[], choices?: string[](2~5개, 있으면 객관식),
+   *    answer, explanation?, group?: { lead: "[20-22] 다음 글을 읽고, 물음에 답하시오.", lines: string[] }, review?: "숨길 사유" }]
+   * 과의 내신콘서트 문항을 모두 지우고 다시 넣는다.
+   */
+  // 나눠 입력한 파일(<키>.concert.json, <키>.concert.a.json, .b.json …)을 이름 차례로 합친다
+  const files = fs.readdirSync(DATA).filter((f) => f.startsWith(`${key}.concert`) && f.endsWith(".json")).sort();
+  if (!files.length) throw new Error(`data/${key}.concert*.json 없음`);
+  // 출처 이름에 갈래를 붙인다(선생님 2026-11-04 「단어 대화문 문법 본문 종합문제 이렇게, 순서가」):
+  // 「내신콘서트 Words 연습 문제 1」 → 「내신콘서트 단어 · Words 연습 문제 1」, 실전 모의고사는 「종합문제」, Extra Reading은 「본문」
+  // 문항이 몇 개 안 되는 꼭지는 묶는다(선생님 「2문제만 있는 건 하나로 묶어서」): 갈래마다 「연습 문제」·「실전 문제」 둘, 종합문제는 회차별.
+  //   Words 연습 1·2 → 단어 · 연습 문제 / Dialogues in Textbook·연습 → 대화문 · 연습 문제 / Grammar Quick Test·연습·요점 노트 → 문법 · 연습 문제
+  //   Reading 연습 1~4 → 본문 · 연습 문제 / Reading 실전·Extra Reading 실전 → 본문 · 실전 문제 / 실전 모의고사 X → 종합문제 · 실전 모의고사 X
+  const CATS = [[/^Words/, "단어"], [/^Dialogues/, "대화문"], [/^Grammar/, "문법"], [/^(Reading|Extra Reading)/, "본문"]];
+  const withCat = (src) => {
+    const rest = String(src ?? "").replace(/^내신콘서트\s+/, "");
+    if (/^(단어|대화문|문법|본문|종합문제) · /.test(rest)) return `내신콘서트 ${rest}`;
+    if (/^실전 모의고사/.test(rest)) return `내신콘서트 종합문제 · ${rest}`;
+    const cat = CATS.find(([re]) => re.test(rest))?.[1];
+    if (!cat) return `내신콘서트 ${rest}`;
+    return `내신콘서트 ${cat} · ${/실전 문제/.test(rest) ? "실전 문제" : "연습 문제"}`;
+  };
+  const items = files.flatMap((f) => JSON.parse(fs.readFileSync(path.join(DATA, f), "utf8"))).map((q) => ({ ...q, source: withCat(q.source) }));
+  console.log("파일", files.join(", "));
+  const nos = {};
+  let problems = 0;
+  const rows = items.map((q, i) => {
+    const tag = `  ${i} ${q.source} ${q.no ?? ""}`;
+    if (!/^내신콘서트 \S/.test(q.source ?? "")) { console.log(`${tag}: 출처는 「내신콘서트 …」`); problems++; }
+    if (!AREAS.includes(q.area)) { console.log(`${tag}: 영역 틀림 「${q.area}」`); problems++; }
+    const kind = q.choices ? "mc" : "sa";
+    const out = [];
+    if (!String(q.stem ?? "").trim()) out.push("발문 없음");
+    const texts = [...(q.body ?? []), ...(q.choices ?? []), ...(q.group?.lines ?? [])];
+    if (texts.some((l) => /\t/.test(l))) out.push("탭");
+    if (texts.some((l) => /[-㐀-䶿]/.test(l))) out.push("깨진 글자"); // 한글 기호 글꼴(PUA)·한자 확장 — 붙임표(-)는 정상
+    if (kind === "mc") {
+      const n = q.choices.length;
+      if (n < 2 || n > 5) out.push(`보기 ${n}개`);
+      const ans = String(q.answer).split(/\s*,\s*/);
+      if (!ans.every((a) => /^\d$/.test(a) && Number(a) >= 1 && Number(a) <= n)) out.push(`객관식 정답 꼴 「${q.answer}」`);
+    } else if (!String(q.answer ?? "").trim()) out.push("정답 없음");
+    // 정답 ↔ 해설: 해설이 ①~⑤를 들어 말하는데 정답 번호가 그 안에 없으면 밀린 것일 수 있다(선생님 2026-11-04 「정답·해설 일치 꼼꼼히」)
+    if (kind === "mc" && !q.review) {
+      const CIRC = "①②③④⑤";
+      const named = [...String(q.explanation ?? "")].filter((c) => CIRC.includes(c)).map((c) => CIRC.indexOf(c) + 1);
+      const ans = String(q.answer).split(/\s*,\s*/).map(Number);
+      const lead = String(q.explanation ?? "").trim()[0];
+      if (CIRC.includes(lead ?? "") && !ans.includes(CIRC.indexOf(lead) + 1) && named.length === 1) out.push(`해설 첫 번호 ${lead} ≠ 정답 ${q.answer}`);
+    }
+    if (out.length && !q.review) { console.log(`${tag}: ${out.join(", ")} | ${String(q.stem).slice(0, 40)}`); problems++; }
+    nos[q.source] = (nos[q.source] ?? 0) + 1;
+    return {
+      unit_id: unit.id, source: q.source, no: q.no ?? nos[q.source], area: q.area, kind, stem: q.stem,
+      group_lead: q.group?.lead ?? null, group_lines: q.group?.lines ?? null,
+      body: q.body ?? [], choices: (q.choices ?? []).map((text, n) => ({ no: n + 1, text })), answer: String(q.answer ?? ""),
+      explanation: q.explanation ?? "", point: "", needs_image: false, review: q.review ?? "",
+    };
+  });
+  // 한 꼭지 안에서 책 번호가 겹치면(소단원마다 1번부터 — Grammar 연습 문제 2) 그 꼭지는 차례대로 다시 번호를 매긴다(과·출처·번호는 하나뿐이어야)
+  for (const src of Object.keys(nos)) {
+    const mine = rows.filter((r) => r.source === src);
+    if (new Set(mine.map((r) => r.no)).size !== mine.length) mine.forEach((r, i) => (r.no = i + 1));
+  }
+  console.log(key, Object.fromEntries(Object.entries(nos).sort()), `합 ${rows.length} · 숨김 ${rows.filter((r) => r.review).length} · 문제 ${problems}`);
+  if (apply) {
+    if (problems) { console.log("문제가 있어 넣지 않음"); process.exit(1); }
+    die((await sb.from("ms_questions").delete().eq("unit_id", unit.id).like("source", "내신콘서트%")).error);
+    for (let i = 0; i < rows.length; i += 200) die((await sb.from("ms_questions").insert(rows.slice(i, i + 200))).error);
+    console.log("넣음");
+  }
 } else {
-  console.log("dump | study | patch");
+  console.log("dump | study | patch | concert");
 }

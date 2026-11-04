@@ -17,7 +17,7 @@ import {
   type MsWbSheet,
   type MsWbTypeKey,
 } from "@/lib/middle-school/workbook";
-import { sortMsQuestions, sortMsSources } from "@/lib/middle-school/exam-print";
+import { isConcertSource, sortMsQuestions, sortMsSources } from "@/lib/middle-school/exam-print";
 import { COVER_PRESETS, DEFAULT_INTEGRATED_COVER, type IntegratedCover } from "@/lib/lesson-materials/integrated";
 import { CoverForm } from "@/components/lesson-materials/book-cover/CoverForm";
 import { EMPTY_BOOK_COVER_SPEC, suggestedExam, type BookCoverSpec } from "@/lib/lesson-materials/book-cover";
@@ -124,7 +124,8 @@ export function MsFinalTab({
 }) {
   const answersOnly = printOnly === "answers";
   const analyzedCount = msAnalyzed(unit).length;
-  const sources = useMemo(() => sortMsSources(questions.filter((q) => !q.review).map((q) => q.source)), [questions]);
+  // 내신콘서트 문제는 문제 은행(변형문제 탭)에만 — 최종통합자료에는 넣지 않는다(선생님 2026-11-04)
+  const sources = useMemo(() => sortMsSources(questions.filter((q) => !q.review && !isConcertSource(q.source)).map((q) => q.source)), [questions]);
 
   // ---------------------------------------------------------------- 표지
   const [presetId, setPresetId] = useState(DEFAULT_INTEGRATED_COVER.presetId);
