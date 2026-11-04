@@ -19,6 +19,7 @@ import {
   type MsWbTypeKey,
 } from "@/lib/middle-school/workbook";
 import { MsPrintFrame, MsWorkbookAnswerSheets, MsWorkbookSheets, msSource } from "./MsSheets";
+import { MsPdfButton } from "./MsPdfButton";
 
 // 차시 계획(1차~4차)의 대화문 칸까지 기본으로 켠다. 단어 영→한·한→영은 단어 시험지로 따로 보니 기본은 끔(선생님 2026-11-04)
 const DEFAULT_TYPES: MsWbTypeKey[] = ["r_line", "r_en_blank", "r_grammar", "r_word_order", "r_writing", "d_line", "d_writing", "d_order"];
@@ -295,8 +296,11 @@ export function MsTestWorkbench({
             onClick={() => window.print()}
             className="w-full rounded-xl bg-violet-600 py-3 text-sm font-bold text-white hover:bg-violet-700 disabled:opacity-50"
           >
-            인쇄 · PDF 저장
+            인쇄
           </button>
+          <div className="mt-2">
+            <MsPdfButton fileName={`${source} ${sheetTitle}${roundsOn && printRound ? ` ${printRound}차` : ""}`} />
+          </div>
         </div>
       </aside>
 

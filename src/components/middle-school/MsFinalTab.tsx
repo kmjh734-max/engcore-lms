@@ -1,5 +1,6 @@
 "use client";
 
+import { MsPdfButton } from "./MsPdfButton";
 import { useEffect, useMemo, useState } from "react";
 import type { MsQuestion, MsUnit } from "@/lib/middle-school/queries";
 import type { MaterialDesign } from "@/lib/lesson-materials/material-design";
@@ -476,8 +477,9 @@ export function MsFinalTab({
         </Section>
 
         <button type="button" onClick={() => window.print()} className="w-full rounded-lg bg-slate-900 py-2 font-semibold text-white hover:bg-slate-800">
-          인쇄 · PDF 저장
+          인쇄
         </button>
+        <MsPdfButton fileName={answersOnly ? `${bookTitle}` : printOnly === "book" ? `${bookTitle} 본교재` : bookTitle} />
       </aside>
 
       <div className="min-w-0 flex-1 overflow-x-auto bg-slate-100 py-4 print:overflow-visible print:bg-white print:p-0">

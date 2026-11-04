@@ -104,6 +104,274 @@ export function shuffle<T>(arr: T[], rand: () => number): T[] {
 
 // ---------------------------------------------------------------- 유형별 문항
 
+/** 영어 비교용: 줄임말을 풀고(I'm = I am) 글자·숫자만 남긴다 — 양쪽에 똑같이 쓴다 */
+const enNorm = (s: string) =>
+  ` ${s
+    .replace(/[’‘]/g, "'")
+    .replace(/\b(can)'t\b/gi, "$1 not")
+    .replace(/\bwon't\b/gi, "will not")
+    .replace(/n't\b/gi, " not")
+    .replace(/'m\b/gi, " am")
+    .replace(/'re\b/gi, " are")
+    .replace(/'ll\b/gi, " will")
+    .replace(/'ve\b/gi, " have")
+    .replace(/\b(it|he|she|that|there|what|where|who|here)'s\b/gi, "$1 is")
+    .toLowerCase()
+    .replace(/[^a-z0-9']+/g, " ")
+    .trim()} `;
+
+/** 그 과 본문 줄(1~4줄 묶음)에서 이 영어를 품은 가장 짧은 묶음 */
+function windowWith(passages: { lines: { en: string; ko: string }[] }[], english: string): { en: string; ko: string } | null {
+  const want = enNorm(english);
+  if (want.trim().length < 3) return null;
+  for (let size = 1; size <= 4; size++) {
+    for (const p of passages) {
+      for (let a = 0; a + size <= p.lines.length; a++) {
+        const w = p.lines.slice(a, a + size);
+        if (enNorm(w.map((l) => l.en).join(" ")).includes(want)) return { en: w.map((l) => l.en).join(" "), ko: w.map((l) => l.ko).filter(Boolean).join(" ") };
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * 영작·순서 배열 정답을 본문 문장 전체로(선생님 2026-11-04 「워크북 영작 정답이 잘못돼 있다」).
+ * 족보닷컴 원본은 「Vincent van Gogh ____ ____.」처럼 문장 틀의 빈칸만 쓰게 해서 정답도 빈칸 몫(「was a Dutch artist」)만 있고,
+ * 틀이 깨진 문항은 조각(「started to paint himself / He painted / self-portraits」)이다. 우리 시험지는 우리말만 주고 문장 전체를 쓰게 하므로,
+ * 정답 조각이 차례대로 다 들어 있는 가장 짧은 본문 줄 묶음(1~6줄)을 찾아 그 영어 전체와 해석을 쓴다.
+ * 순서 배열 우리말 칸에 원본 머리글(「순서배열 연습」「Ann Jones, 방문객」)이 잘못 들어간 것도 이것으로 바로잡힌다. 못 찾으면 원본 그대로.
+ */
+export function msPassageSentence(
+  lines: { en: string; ko: string }[],
+  answer: string,
+  /** 문제에 보이는 낱말(순서 배열의 섞인 낱말·앞에 준 말) — 이것까지 다 들어 있는 문장 묶음을 고른다 */
+  mustWords: string[] = [],
+): { en: string; ko: string } | null {
+  const parts = answer
+    .split(/\s*\/\s*/)
+    .map((p) => enNorm(p).trim())
+    .filter(Boolean);
+  if (!parts.length) return null;
+  const must = [...new Set(mustWords.map((w) => enNorm(w).trim()).filter((w) => w.length > 1 && !w.includes(" ")))];
+  if (must.length) {
+    for (let size = 1; size <= 6; size++) {
+      for (let a = 0; a + size <= lines.length; a++) {
+        const win = lines.slice(a, a + size);
+        const text = enNorm(win.map((l) => l.en).join(" "));
+        const words = new Set(text.trim().split(" "));
+        if (!must.every((w) => words.has(w))) continue;
+        let pos = 0;
+        let ok = true;
+        for (const p of parts) {
+          const i = text.indexOf(` ${p} `, pos);
+          if (i < 0) {
+            ok = false;
+            break;
+          }
+          pos = i + p.length + 1;
+        }
+        if (ok) return { en: win.map((l) => l.en).join(" "), ko: win.map((l) => l.ko).filter(Boolean).join(" ") };
+      }
+    }
+  }
+  for (let size = 1; size <= 6; size++) {
+    for (let a = 0; a + size <= lines.length; a++) {
+      const win = lines.slice(a, a + size);
+      const text = enNorm(win.map((l) => l.en).join(" "));
+      let pos = 0;
+      let ok = true;
+      for (const p of parts) {
+        const i = text.indexOf(` ${p} `, pos);
+        if (i < 0) {
+          ok = false;
+          break;
+        }
+        pos = i + p.length + 1;
+      }
+      if (ok) return { en: win.map((l) => l.en).join(" "), ko: win.map((l) => l.ko).filter(Boolean).join(" ") };
+    }
+  }
+  // 앞에 원본 머리글 조각이 붙었거나(「Say No to Single-Use Plastic / I often …」) 원본 정답에 낱말이 하나 빠진(「made so excited」) 문항:
+  // 앞 조각부터 떼어 다시 찾고, 그래도 없으면 정답 낱말의 85% 이상이 들어 있는 가장 짧은 묶음
+  if (parts.length > 1) {
+    const rest = answer.split(/\s*\/\s*/).filter(Boolean).slice(1).join(" / ");
+    const again = msPassageSentence(lines, rest, mustWords);
+    if (again) return again;
+  }
+  const want = parts.join(" ").split(" ").filter(Boolean);
+  if (want.length >= 4) {
+    for (let size = 1; size <= 4; size++) {
+      for (let a = 0; a + size <= lines.length; a++) {
+        const win = lines.slice(a, a + size);
+        const words = new Set(enNorm(win.map((l) => l.en).join(" ")).trim().split(" "));
+        if (want.filter((w) => words.has(w)).length >= want.length * 0.85) return { en: win.map((l) => l.en).join(" "), ko: win.map((l) => l.ko).filter(Boolean).join(" ") };
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * 빈칸·동사 형태·어법 선택 정답 바로잡기(선생님 2026-11-04 「정답지가 잘못된 것이 있다」).
+ * 족보닷컴 원본을 읽을 때 앞 줄의 말(역할 이름 「janitor」「방문객」, 앞 문항 정답 「know / am」)이 정답 앞에 붙은 문항이 있다(32과 116문항).
+ * 빈칸 수보다 정답이 많으면 ① 문제에 이미 적힌 말을 빼고 ② 그래도 많으면 앞 조각부터 뗀다.
+ * 동사 형태처럼 괄호 수보다 정답이 모자란 문항은 답을 맞출 수 없으니 싣지 않는다(null).
+ */
+export function msBlankAnswer(set: string, q: string, answer: string): string | null {
+  if (set === "writing" || set === "word_order") return answer;
+  // 동사 형태: 괄호를 모두 빈칸으로 센다(떼기는 덜 떼는 쪽으로). 문항 빼기는 줄임말 풀이 괄호(「BRT (be right there)」)를 빼고 센 수로.
+  const holes =
+    set === "grammar_choice" ? (q.match(/\[[^\]]+\/[^\]]+\]/g) ?? []).length : set === "verb_form" ? (q.match(/\([^)]+\)/g) ?? []).length : (q.match(/_{3,}/g) ?? []).length;
+  const needed = set === "verb_form" ? holes - (q.match(/(?:^|[^A-Za-z])[A-Z]{2,}\s*\([^)]+\)/g) ?? []).length : holes;
+  let parts = answer.split(/\s*\/\s*/).filter(Boolean);
+  // 빈칸·괄호·[A / B]가 하나도 없는 문항은 원본 머리글(「Amy 드림」「Uncle Jay」)이 문항으로 잘못 들어간 것 — 싣지 않는다
+  if (!holes) return null;
+  if (!parts.length) return answer;
+  const size = (p: string) => (set === "en_blank" ? p.split(/\s+/).filter(Boolean).length : 1);
+  const total = (ps: string[]) => ps.reduce((n, p) => n + size(p), 0);
+  // 동사 형태: 괄호마다 그 동사의 꼴인 조각을 짝지어 본다(끼어든 말이 앞·가운데 어디에 있어도)
+  if (set === "verb_form" && parts.length > holes) {
+    const insides = (q.match(/\(([^)]+)\)/g) ?? []).map((m) => m.slice(1, -1));
+    // 끼어든 말은 대개 앞(앞 줄 머리글·앞 문항 정답)에 붙으므로 뒤에서부터 짝짓는다
+    const picked: string[] = [];
+    let j = parts.length - 1;
+    for (let h = insides.length - 1; h >= 0; h--) {
+      let k = j;
+      while (k >= 0 && !fitsVerb(parts[k], insides[h])) k--;
+      if (k < 0) break;
+      picked.unshift(parts[k]);
+      j = k - 1;
+    }
+    if (picked.length === insides.length) return picked.join(" / ");
+  }
+  if (total(parts) > holes) {
+    const outside = q.replace(/_{3,}/g, " ");
+    // 우리말 빈칸만: 영어는 「ice ___ … a new ice palace」처럼 정답 낱말이 문장에 또 나올 수 있다
+    const kept = parts.filter((p) => set !== "ko_blank" || !outside.includes(p));
+    if (kept.length && total(kept) >= holes) parts = kept;
+  }
+  while (parts.length > 1 && total(parts) > holes && total(parts.slice(1)) >= holes) parts = parts.slice(1);
+  if ((set === "verb_form" || set === "grammar_choice") && parts.length < needed) return null;
+  return parts.join(" / ");
+}
+
+const koNorm = (s: string) => s.replace(/_{3,}/g, "").replace(/[^가-힣a-zA-Z0-9]/g, "");
+function koBigrams(s: string): Map<string, number> {
+  const m = new Map<string, number>();
+  for (let i = 0; i + 1 < s.length; i++) m.set(s.slice(i, i + 2), (m.get(s.slice(i, i + 2)) ?? 0) + 1);
+  return m;
+}
+function koDice(a: string, b: string): number {
+  const A = koBigrams(a);
+  const B = koBigrams(b);
+  let inter = 0;
+  let n = 0;
+  for (const [k, v] of A) {
+    inter += Math.min(v, B.get(k) ?? 0);
+    n += v;
+  }
+  for (const v of B.values()) n += v;
+  return n ? (2 * inter) / n : 0;
+}
+
+/**
+ * 빈칸(우리말) 문항 위에 보여 줄 영어 문장(선생님 2026-11-04 정답지 점검): 원본을 읽을 때 영어 칸이 머리글(「Carlos Diaz, a janitor」「JAN 20」)로
+ * 밀린 문항이 있다(32과 50문항). 영어가 본문에 그대로 있으면 그대로, 아니면 그 과 모든 본문 줄(1~3줄 묶음)에서 우리말 글자가 가장 많이 겹치는 문장을 쓴다.
+ * 겹침이 너무 적으면(0.45 미만) 맞는 영어를 모르는 것이니 싣지 않는다(null).
+ */
+export function msKoBlankEnglish(passages: { lines: { en: string; ko: string }[] }[], en: string, q: string, answer = ""): string | null {
+  // 빈칸을 정답으로 채운 우리말로 비교한다(빈칸 자리 글자가 빠지면 짧은 줄이 더 높게 나온다)
+  const fill = answer.split(/\s*\/\s*/).filter(Boolean);
+  let k = 0;
+  const want = koNorm(q.replace(/_{3,}/g, () => fill[k++] ?? ""));
+  // 원래 영어가 본문 문장이고 그 해석이 이 우리말과 맞으면 그대로(본문 문장이어도 한 줄 밀린 문장일 수 있다 — 「민수: 나도. ___ 거야」 위에 보라의 문장)
+  const own = en.trim() ? windowWith(passages, en) : null;
+  if (own && koDice(want, koNorm(own.ko)) >= 0.5) return en;
+  let best = { s: 0, en: "" };
+  for (const p of passages) {
+    for (let a = 0; a < p.lines.length; a++) {
+      for (let size = 1; size <= 3 && a + size <= p.lines.length; size++) {
+        const w = p.lines.slice(a, a + size);
+        const s = koDice(want, koNorm(w.map((l) => l.ko).join("")));
+        if (s > best.s) best = { s, en: w.map((l) => l.en).join(" ") };
+      }
+    }
+  }
+  if (best.s < 0.45) return null;
+  // 원래 영어가 찾은 문장을 거의 다 품고 있으면(「Dear Nick, Congratulations! Frindle is …」) 원래 것을 쓴다 — 줄 나눔만 달랐던 것
+  const have = new Set(enNorm(en).trim().split(" "));
+  const found = enNorm(best.en).trim().split(" ");
+  if (en.trim() && found.filter((w) => have.has(w)).length >= found.length * 0.8) return en;
+  return best.en;
+}
+
+/** 불규칙 동사 꼴(동사 형태 정답 짝 맞추기용) */
+const IRREGULAR: Record<string, string[]> = {
+  be: ["am", "is", "are", "was", "were", "been", "being", "'m", "'s", "'re", "isn't", "aren't", "wasn't", "weren't"],
+  do: ["did", "does", "done", "don't", "doesn't", "didn't"],
+  have: ["has", "had", "having"],
+  begin: ["began", "begun"], see: ["saw", "seen"], say: ["said"], get: ["got", "gotten"], leave: ["left"], run: ["ran"], eat: ["ate", "eaten"],
+  make: ["made"], find: ["found"], tear: ["tore", "torn"], buy: ["bought"], think: ["thought"], go: ["went", "gone"], come: ["came"],
+  take: ["took", "taken"], give: ["gave", "given"], tell: ["told"], feel: ["felt"], fall: ["fell", "fallen"], throw: ["threw", "thrown"],
+  catch: ["caught"], know: ["knew", "known"], spend: ["spent"], send: ["sent"], bring: ["brought"], teach: ["taught"], win: ["won"],
+  write: ["wrote", "written"], hold: ["held"], stand: ["stood"], sit: ["sat"], meet: ["met"], lose: ["lost"], keep: ["kept"], sleep: ["slept"],
+  break: ["broke", "broken"], choose: ["chose", "chosen"], hear: ["heard"], pay: ["paid"], become: ["became"], grow: ["grew", "grown"],
+  draw: ["drew", "drawn"], fly: ["flew", "flown"], wear: ["wore", "worn"], speak: ["spoke", "spoken"], drive: ["drove", "driven"],
+  ride: ["rode", "ridden"], swim: ["swam"], sing: ["sang", "sung"], drink: ["drank", "drunk"], forget: ["forgot", "forgotten"],
+  shoot: ["shot"], lead: ["led"], feed: ["fed"], fight: ["fought"], build: ["built"], lend: ["lent"], hang: ["hung"], dig: ["dug"],
+  sell: ["sold"], understand: ["understood"], hide: ["hid", "hidden"], shake: ["shook"], wake: ["woke"], steal: ["stole"], blow: ["blew"],
+  can: ["could", "can't", "couldn't"], will: ["would", "won't"],
+};
+/** 정답 조각이 그 괄호(원형)의 꼴인지 */
+export function fitsVerb(part: string, inside: string): boolean {
+  const words = part.toLowerCase().replace(/[’]/g, "'").split(/\s+/);
+  const bases = inside
+    .toLowerCase()
+    .split(/[,\s]+/)
+    .filter((w) => w && w !== "not" && w !== "to");
+  return bases.some((b) => {
+    // confuse → confused, capture → to capture, use → used: 끝 두 글자를 뺀 앞부분(최소 3자)으로 맞춘다
+    const stem = b.length >= 5 ? b.slice(0, b.length - 2) : b;
+    return words.some((w) => w === b || w.startsWith(stem) || (IRREGULAR[b] ?? []).includes(w));
+  });
+}
+
+/** 정답을 문제에 넣은 영어 문장(빈칸·동사 형태·어법 선택) — 본문과 대조하는 데 쓴다 */
+function filledEnglish(set: string, q: string, answer: string): string {
+  const parts = answer.split(/\s*\/\s*/).filter(Boolean);
+  let k = 0;
+  if (set === "en_blank") {
+    const words = parts.join(" ").split(/\s+/);
+    return q.replace(/_{3,}/g, () => words[k++] ?? "");
+  }
+  if (set === "verb_form") return q.replace(/(?<![A-Z]{2}\s?)\(([^)]+)\)/g, (m) => (k < parts.length ? parts[k++] : m));
+  return q.replace(/\[\s*([^\]/]+?)\s*\/\s*([^\]]+?)\s*\]/g, (m) => (k < parts.length ? parts[k++] : m));
+}
+
+/**
+ * 어법 선택 정답을 본문으로 정한다(선생님 2026-11-04 정답지 점검): [A / B]마다 본문 문장이 되는 쪽을 고른다.
+ * 원본 정답이 「정답」 같은 글자이거나 앞 문항 정답이 붙은 문항도 바로잡힌다. 본문에서 못 찾으면 원본 정답(보기 중 하나일 때만).
+ */
+function grammarChoiceAnswer(passages: { lines: { en: string; ko: string }[] }[], q: string, answer: string): string | null {
+  const picks = [...q.matchAll(/\[\s*([^\]/]+?)\s*\/\s*([^\]]+?)\s*\]/g)].map((m) => [m[1].trim(), m[2].trim()] as const);
+  if (!picks.length) return null;
+  if (picks.length <= 8) {
+    for (let mask = 0; mask < 1 << picks.length; mask++) {
+      const choice = picks.map((p, i) => p[(mask >> i) & 1]);
+      let k = 0;
+      const filled = q.replace(/\[\s*([^\]/]+?)\s*\/\s*([^\]]+?)\s*\]/g, () => choice[k++]);
+      if (windowWith(passages, filled)) return choice.join(" / ");
+    }
+  }
+  const parts = answer.split(/\s*\/\s*/).filter(Boolean);
+  const ok = parts.length === picks.length && parts.every((p, i) => picks[i].some((o) => o.toLowerCase() === p.trim().toLowerCase()));
+  return ok ? parts.join(" / ") : null;
+}
+
+/** 원본 조건 칸에 머리글·교재 이름이 잘못 들어간 것(「동아(이병민)」「영작 연습」) */
+const JUNK_HINT = /동아\(|천재\(|연습$/;
+
 function readingItems(key: MsWbTypeKey, unit: MsUnit, wb: MsWorkbook, part: string): TestItem[] {
   if (key === "r_line") {
     const p = unit.passages.find((t) => t.part === part);
@@ -111,15 +379,40 @@ function readingItems(key: MsWbTypeKey, unit: MsUnit, wb: MsWorkbook, part: stri
   }
   const set = SET_OF[key];
   if (!set) return [];
-  const items = (wb.sets?.[set]?.items ?? []).filter((it) => it.part === part);
+  const plines = unit.passages.find((t) => t.part === part)?.lines ?? [];
+  const items = (wb.sets?.[set]?.items ?? [])
+    .filter((it) => it.part === part)
+    .map((it) => {
+      let answer = msBlankAnswer(set, it.q ?? "", it.answer ?? "");
+      if (set === "grammar_choice") answer = grammarChoiceAnswer(unit.passages, it.q ?? "", answer ?? it.answer ?? "");
+      if (answer === null) return null;
+      if (set === "ko_blank") {
+        const en = msKoBlankEnglish(unit.passages, it.en ?? "", it.q ?? "", answer);
+        return en === null ? null : { ...it, answer, en };
+      }
+      // 문제 아래 해석: 정답을 넣은 문장의 본문 해석과 다르면(한 줄 밀림) 본문 해석으로
+      if (set === "en_blank" || set === "verb_form" || set === "grammar_choice") {
+        const w = windowWith(unit.passages, filledEnglish(set, it.q ?? "", answer));
+        if (w?.ko && (!it.ko || koDice(koNorm(it.ko), koNorm(w.ko)) < 0.5)) return { ...it, answer, ko: w.ko };
+      }
+      return { ...it, answer };
+    })
+    .filter((it): it is MsWbItem => it !== null);
   return items.map((it, i) => {
     switch (key) {
       case "r_ko_blank":
         return { no: no(i), text: [it.en ?? ""], ko: it.q, answer: it.answer };
-      case "r_writing":
-        return { no: no(i), text: [], ko: it.ko, hint: it.hint ? `${it.hint} (순서대로)` : undefined, lines: 1, answer: it.answer };
+      case "r_writing": {
+        const full = msPassageSentence(plines, it.answer ?? "");
+        const hint = it.hint && !JUNK_HINT.test(it.hint) ? `${it.hint} (순서대로)` : undefined;
+        return { no: no(i), text: [], ko: full?.ko || it.ko, hint, lines: 1, answer: full?.en ?? it.answer };
+      }
+      case "r_word_order": {
+        // 문제(섞인 낱말 + 앞에 준 말)의 낱말이 다 들어 있는 문장 묶음으로 — 「I'm Hannah. (…)」처럼 두 문장에 걸친 문항
+        const full = msPassageSentence(plines, it.answer ?? "", (it.q ?? "").split(/[^A-Za-z0-9'’]+/));
+        return { no: no(i), text: [it.q ?? ""], ko: full?.ko || it.ko, lines: 1, answer: full?.en ?? it.answer };
+      }
       case "r_verb_form":
-      case "r_word_order":
         return { no: no(i), text: [it.q ?? ""], ko: it.ko, lines: 1, answer: it.answer };
       default:
         return { no: no(i), text: toSegs(it.q ?? ""), ko: it.ko, answer: it.answer };

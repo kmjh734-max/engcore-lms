@@ -10,7 +10,9 @@ for b in plan:
     for i, L in enumerate(b['lessons']):
         out.insert_pdf(f, from_page=2 + i, to_page=2 + i)
         out.insert_pdf(fitz.open(L['file']), from_page=L['from'] - 1, to_page=L['to'] - 1)
-    out.save(b['out'], garbage=3, deflate=True)
+    # 과마다 따로 찍은 PDF를 합치면 한글 글꼴이 겹쳐 실려 무겁다(5.9MB) — 글꼴을 다시 줄여 담는다(3.7MB, 글자 PDF 그대로)
+    out.subset_fonts()
+    out.save(b['out'], garbage=4, deflate=True, deflate_fonts=True, clean=True)
     # 쪽 번호 대조: 찍힌 번호가 실제 쪽과 같은지
     bad = []
     for i, p in enumerate(out):

@@ -90,6 +90,13 @@ for (const b of BOOKS) {
     const aDivider = an;
     const aFirst = an + 1;
     const aOffset = aFirst - (ansStart + 1);
+    // 쪽 머리 작은 글씨는 한 과 통합자료의 묶음 번호(「PART 06 · ANSWER KEY」)라 합본 과 간지(PART 07)와 어긋난다 → 「LESSON 7 · …」로
+    await page.evaluate((L) => {
+      document.querySelectorAll("#tb-print-root [data-toc]").forEach((w) => {
+        const v = w.style.getPropertyValue("--tb-part");
+        if (v) w.style.setProperty("--tb-part", v.replace(/PART \d+/, `LESSON ${L}`));
+      });
+    }, L);
     await page.evaluate(({ ansStart, pOffset, aOffset }) => {
       const st = document.createElement("style");
       st.textContent = ".ms-renum{font-size:0 !important}.ms-renum::after{content:attr(data-no);font-size:var(--ms-fs)}";
