@@ -20,8 +20,8 @@ import {
 } from "@/lib/middle-school/workbook";
 import { MsPrintFrame, MsWorkbookAnswerSheets, MsWorkbookSheets, msSource } from "./MsSheets";
 
-// 차시 계획(1차~4차)의 단어·대화문 칸까지 기본으로 켠다
-const DEFAULT_TYPES: MsWbTypeKey[] = ["r_line", "r_en_blank", "r_grammar", "r_word_order", "r_writing", "d_line", "d_writing", "d_order", "w_en_ko", "w_ko_en"];
+// 차시 계획(1차~4차)의 대화문 칸까지 기본으로 켠다. 단어 영→한·한→영은 단어 시험지로 따로 보니 기본은 끔(선생님 2026-11-04)
+const DEFAULT_TYPES: MsWbTypeKey[] = ["r_line", "r_en_blank", "r_grammar", "r_word_order", "r_writing", "d_line", "d_writing", "d_order"];
 const LENGTHS: { id: MsDrawLength; label: string }[] = [
   { id: "short", label: "짧게" },
   { id: "normal", label: "보통" },
