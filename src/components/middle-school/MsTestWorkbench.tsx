@@ -9,10 +9,8 @@ import { MaterialDesignPicker } from "@/components/lesson-materials/MaterialDesi
 import { OddPageStart, TestBookStudent } from "@/components/lesson-materials/test-book/TestBookSheets";
 import {
   MS_DRAW_LIMITS,
-  MS_DRAW_QUESTIONS,
   MS_DRAW_WORDS,
   MS_WB_TYPES,
-  drawMsQuestions,
   drawMsWorkbook,
   msWbCounts,
   type MsDrawLength,
@@ -20,9 +18,7 @@ import {
   type MsWbSheet,
   type MsWbTypeKey,
 } from "@/lib/middle-school/workbook";
-import { sortMsQuestions } from "@/lib/middle-school/exam-print";
 import { MsPrintFrame, MsWorkbookAnswerSheets, MsWorkbookSheets, msSource } from "./MsSheets";
-import { MsExamBlock } from "./MsExamViews";
 
 const DEFAULT_TYPES: MsWbTypeKey[] = ["r_line", "r_en_blank", "r_grammar", "r_word_order", "r_writing", "d_line", "w_en_ko"];
 const LENGTHS: { id: MsDrawLength; label: string }[] = [
@@ -35,14 +31,12 @@ const GROUPS: MsWbGroup[] = ["단어", "대화문", "본문"];
 
 /**
  * 중학교 테스트지 작업대(선생님 2026-11-04): 고등 단어 시험지·교재 화면처럼 왼쪽 설정 칸(따로 스크롤) + 오른쪽 쪽 미리보기.
- * 쪽 차례는 최종통합자료(학교별 교재)와 같다 — 단어 워크북 → 대화문 워크북 → 대화문 문제 → 문법 문제 → 본문 워크북 → 정답지.
+ * 쪽 차례는 최종통합자료(학교별 교재)와 같다 — 단어 → 대화문 → 본문 워크북 → 정답지(족보닷컴 문제는 넣지 않는다 — 선생님 2026-11-04).
  * 시험지 제목·학생 이름은 왼쪽 칸에서 넣는다(학생 이름은 「이름」 칸에 찍힌다).
  */
 export function MsTestWorkbench({
   unit,
-  questions,
   academyName,
-  base,
   closeHref = null,
   onClose,
 }: {
@@ -62,7 +56,6 @@ export function MsTestWorkbench({
   const [title, setTitle] = useState("");
   const [student, setStudent] = useState("");
   const [answers, setAnswers] = useState(true);
-  const [testQ, setTestQ] = useState({ dialogue: true, grammar: true });
   const [zoom, setZoom] = useState(70);
   /** 관리자 화면 틀(메뉴·머리줄) 위에 온전히 덮도록 body 에 바로 붙인다 */
   const [mounted, setMounted] = useState(false);
@@ -98,25 +91,9 @@ export function MsTestWorkbench({
     return out;
   }, [sheetsOf, types]);
 
-  const qPool = useMemo(
-    () => ({
-      dialogue: questions.filter((q) => q.area === "의사소통" && !q.review).length,
-      grammar: questions.filter((q) => q.area === "어법" && !q.review).length,
-    }),
-    [questions],
-  );
-  const testQuestions = useMemo(() => {
-    const n = MS_DRAW_QUESTIONS[length];
-    return {
-      dialogue: testQ.dialogue ? sortMsQuestions(drawMsQuestions(questions, "의사소통", n, seed)) : [],
-      grammar: testQ.grammar ? sortMsQuestions(drawMsQuestions(questions, "어법", n, seed)) : [],
-    };
-  }, [questions, length, seed, testQ]);
-
   const toggleType = (k: MsWbTypeKey, on: boolean) => setTypes((cur) => MS_WB_TYPES.map((t) => t.key).filter((x) => (x === k ? on : cur.includes(x))));
   const mk = `${unit.id}-${design}-${types.join(",")}-${seed}-${length}`;
-  const qTitle = (k: "dialogue" | "grammar") => `${source} ${sheetTitle} · ${k === "dialogue" ? "대화문 문제" : "문법 문제"}`;
-  const empty = !allSheets.length && !testQuestions.dialogue.length && !testQuestions.grammar.length;
+  const empty = !allSheets.length;
 
   const closeCls = "-ml-2 inline-block rounded-lg px-2 py-1 text-sm font-semibold text-slate-600 hover:bg-slate-100";
   const inputCls = "w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-violet-500 focus:outline-none";
@@ -170,7 +147,7 @@ export function MsTestWorkbench({
               ))}
             </div>
             <p className="mb-2 text-[11px] leading-relaxed text-violet-700">
-              고른 유형에서 지문마다 유형당 {MS_DRAW_LIMITS[length]}문항(단어는 {MS_DRAW_WORDS[length]}개), 대화문·문법 문제는 각 {MS_DRAW_QUESTIONS[length]}문항을 무작위로 뽑습니다.
+              고른 유형에서 지문마다 유형당 {MS_DRAW_LIMITS[length]}문항(단어는 {MS_DRAW_WORDS[length]}개)을 무작위로 뽑습니다.
             </p>
             <button type="button" onClick={() => setSeed(`${Date.now()}`)} className="w-full rounded-lg bg-violet-600 py-1.5 text-sm font-semibold text-white hover:bg-violet-700">
               ↻ 다시 뽑기
@@ -189,24 +166,6 @@ export function MsTestWorkbench({
               ))}
             </div>
           ))}
-
-          <div>
-            <div className="mb-1 text-xs font-bold text-slate-500">문제(족보닷컴)</div>
-            {(
-              [
-                ["dialogue", "대화문 문제"],
-                ["grammar", "문법 문제"],
-              ] as const
-            ).map(([k, label]) => (
-              <label key={k} className={`flex items-center gap-2 py-0.5 ${qPool[k] ? "" : "text-slate-300"}`}>
-                <input type="checkbox" disabled={!qPool[k]} checked={testQ[k] && qPool[k] > 0} onChange={(e) => setTestQ({ ...testQ, [k]: e.target.checked })} />
-                <span className="flex-1">
-                  {label} {Math.min(MS_DRAW_QUESTIONS[length], qPool[k])}문항
-                </span>
-                <span className="text-[11px] text-slate-400">{qPool[k]}</span>
-              </label>
-            ))}
-          </div>
 
           <label className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 px-3 py-2">
             <span className="text-xs font-bold text-slate-500">
@@ -261,14 +220,6 @@ export function MsTestWorkbench({
                     <MsWorkbookSheets sheets={t.sheets} answers={false} title={sheetTitle} measureKey={mk} />
                   </Fragment>
                 ))}
-                {(["dialogue", "grammar"] as const).map((k) =>
-                  testQuestions[k].length ? (
-                    <Fragment key={k}>
-                      <OddPageStart on={duplex} />
-                      <MsExamBlock unit={unit} questions={testQuestions[k]} mode="exam" design={design} academyName={academyName} base={base} title={qTitle(k)} />
-                    </Fragment>
-                  ) : null,
-                )}
                 {testsOf["본문"].map((t) => (
                   <Fragment key={t.key}>
                     <OddPageStart on={duplex} />
@@ -277,12 +228,6 @@ export function MsTestWorkbench({
                 ))}
                 {answers ? <OddPageStart on={duplex} /> : null}
                 {answers && allSheets.length ? <MsWorkbookAnswerSheets sheets={allSheets} title={`${sheetTitle} 정답`} measureKey={`${mk}-ans`} /> : null}
-                {answers ? (
-                  <>
-                    <MsExamBlock unit={unit} questions={testQuestions.dialogue} mode="answers" design={design} academyName={academyName} base={base} title={qTitle("dialogue")} />
-                    <MsExamBlock unit={unit} questions={testQuestions.grammar} mode="answers" design={design} academyName={academyName} base={base} title={qTitle("grammar")} />
-                  </>
-                ) : null}
               </MsPrintFrame>
             </TestBookStudent.Provider>
           </div>
