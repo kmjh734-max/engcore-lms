@@ -55,7 +55,7 @@ export function MsQuestionTab({
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
-      <aside className="no-print w-full shrink-0 space-y-4 rounded-xl border border-slate-200 bg-white p-4 text-sm print:hidden lg:sticky lg:top-4 lg:w-64">
+      <aside className="no-print w-full shrink-0 space-y-4 rounded-xl border border-slate-200 bg-white p-4 text-sm print:hidden lg:sticky lg:top-4 lg:w-64 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
         <MaterialDesignPicker value={design} onChange={setDesign} compact />
         <div>
           <div className="mb-1 font-bold text-slate-800">출처</div>

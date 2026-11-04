@@ -28,7 +28,18 @@ export async function MiddleSchoolHomePage({ base }: { base: string }) {
   );
 }
 
-export async function MiddleSchoolUnitPage({ base, unitId, test = false }: { base: string; unitId: string; test?: boolean }) {
+export async function MiddleSchoolUnitPage({
+  base,
+  unitId,
+  test = false,
+  book = null,
+}: {
+  base: string;
+  unitId: string;
+  test?: boolean;
+  /** 과 카드 「본교재 출력」·「정답지 출력」 */
+  book?: "book" | "answers" | null;
+}) {
   const profile = await getCurrentProfile();
   if (!profile?.academy_id || !(await isMiddleSchoolOpen(profile.academy_id))) notFound();
   const [unit, academyName] = await Promise.all([
@@ -45,7 +56,7 @@ export async function MiddleSchoolUnitPage({ base, unitId, test = false }: { bas
           {unit.grade} {unit.publisher} {unit.lessonNo}과 <span className="text-slate-500">· {unit.title}</span>
         </h1>
       </header>
-      <MiddleSchoolUnitWorkspace unit={unit} questions={questions} academyName={academyName ?? ""} base={base} startTest={test} />
+      <MiddleSchoolUnitWorkspace unit={unit} questions={questions} academyName={academyName ?? ""} base={base} startTest={test} startBook={book} />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import { PASSAGE_PREP_CONCURRENCY } from "@/lib/lesson-materials/test-book";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { postJson } from "@/lib/lesson-materials/post-json";
@@ -77,6 +77,8 @@ import {
   PlanSheets,
   TEST_BOOK_CSS,
   TestBookBrand,
+  TestBookStudent,
+  OddPageStart,
   TEST_BOOK_FONTS_HREF,
   TestSheets,
   TranslationBackSheets,
@@ -368,6 +370,10 @@ export function TestBookWorkbench({
   const [drawVocabOn, setDrawVocabOn] = useState(true);
   const [drawVocab, setDrawVocab] = useState<VocabExamOptions>(DEFAULT_VOCAB_EXAM);
   const [drawAnswers, setDrawAnswers] = useState(true);
+  /** 뽑은 테스트지: 시험지 제목·학생 이름(「이름」 칸), 양면 인쇄면 유형마다 새 종이(홀수 쪽) — 선생님 2026-11-04 */
+  const [drawSheetTitle, setDrawSheetTitle] = useState("");
+  const [drawStudent, setDrawStudent] = useState("");
+  const [drawDuplex, setDrawDuplex] = useState(true);
   /*
    * 뽑기 설정도 다음에 열 때 그대로(선생님 2026-10-22: 닫으면 설정한 대로 저장). 교재 설정과 달리 파일이 아닌
    * 이 브라우저에 둔다 — 뽑은 테스트지는 뽑을 때 그 설정째 파일로 저장된다. 불러온 뒤에만 쓴다(기본값으로 덮지 않게).
@@ -611,6 +617,17 @@ export function TestBookWorkbench({
       .map((p) => ({ project: p, sheet: buildTestSheet(p, draw.picks[p.id]!, { seed: draw.seed, blankMode, writing: drawWriting, lineMode: drawLineMode, level: drawLevel }) }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draw, blankMode, drawWriting, drawLineMode, drawLevel, edited]);
+  /** 양면 인쇄: 유형마다 한 묶음(지문 차례) — 유형 하나가 나눠 줄 종이 한 묶음 */
+  const drawByType = useMemo(() => {
+    const order: string[] = [];
+    for (const d of drawn) for (const sec of d.sheet.sections) if (!order.includes(sec.type)) order.push(sec.type);
+    return order.map((type) => ({
+      type,
+      items: drawn
+        .map((d) => ({ ...d, sheet: { ...d.sheet, sections: d.sheet.sections.filter((sec) => sec.type === type) } }))
+        .filter((d) => d.sheet.sections.length > 0),
+    }));
+  }, [drawn]);
 
   // ---------------------------------------------------------------- 교재 차례·목차
   const testsOn = options.tests && book.length > 0 && (options.allWordTest || options.wordTest || options.types.length > 0);
@@ -1116,6 +1133,35 @@ export function TestBookWorkbench({
                 <input type="checkbox" checked={drawAnswers} onChange={(e) => setDrawAnswers(e.target.checked)} />
                 정답지 함께
               </label>
+              <label className="flex items-start gap-2 text-xs font-semibold text-slate-700">
+                <input type="checkbox" className="mt-0.5" checked={drawDuplex} onChange={(e) => setDrawDuplex(e.target.checked)} />
+                <span>
+                  양면 인쇄 · 유형마다 새 종이
+                  <span className="block text-[10.5px] font-normal text-slate-400">유형별로 나눠 홀수 쪽에서 시작(나눠 줄 수 있게)</span>
+                </span>
+              </label>
+              <label className="block text-xs font-semibold text-slate-700">
+                시험지 제목
+                <input
+                  type="text"
+                  value={drawSheetTitle}
+                  onChange={(e) => setDrawSheetTitle(e.target.value)}
+                  placeholder="테스트"
+                  maxLength={40}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm font-normal focus:border-violet-500 focus:outline-none"
+                />
+              </label>
+              <label className="block text-xs font-semibold text-slate-700">
+                학생 이름
+                <input
+                  type="text"
+                  value={drawStudent}
+                  onChange={(e) => setDrawStudent(e.target.value)}
+                  placeholder="비우면 빈칸으로"
+                  maxLength={20}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm font-normal focus:border-violet-500 focus:outline-none"
+                />
+              </label>
               <Button type="button" className="w-full" disabled={drawBusy || !ready.some((p) => drawIds.has(p.id)) || !drawTypes.length} onClick={() => void runDraw()}>
                 {drawBusy ? "뽑는 중…" : draw ? "다시 뽑기" : "뽑기"}
               </Button>
@@ -1300,14 +1346,33 @@ export function TestBookWorkbench({
                 </>
               ) : drawn.length ? (
                 <>
-                  {drawVocabExam ? <VocabExamSheets exam={drawVocabExam} measureKey={measureKey} /> : null}
-                  {drawn.map((d) => (
-                    <TestSheets key={d.project.id} index={indexOf(d.project.id)} project={d.project} sheet={d.sheet} title="테스트" measureKey={measureKey} />
-                  ))}
+                  <TestBookStudent.Provider value={drawStudent.trim()}>
+                  {drawVocabExam ? <VocabExamSheets exam={drawVocabExam} measureKey={measureKey} title={drawSheetTitle.trim() || undefined} /> : null}
+                  {drawDuplex
+                    ? drawByType.map((g) => (
+                        <Fragment key={g.type}>
+                          <OddPageStart on />
+                          {g.items.map((d) => (
+                            <TestSheets
+                              key={`${d.project.id}-${g.type}`}
+                              index={indexOf(d.project.id)}
+                              project={d.project}
+                              sheet={d.sheet}
+                              title={drawSheetTitle.trim() || "테스트"}
+                              measureKey={measureKey}
+                            />
+                          ))}
+                        </Fragment>
+                      ))
+                    : drawn.map((d) => (
+                        <TestSheets key={d.project.id} index={indexOf(d.project.id)} project={d.project} sheet={d.sheet} title={drawSheetTitle.trim() || "테스트"} measureKey={measureKey} />
+                      ))}
+                  </TestBookStudent.Provider>
+                  {drawAnswers ? <OddPageStart on={drawDuplex} /> : null}
                   {drawAnswers && drawVocabExam ? <VocabExamAnswerSheets exam={drawVocabExam} measureKey={measureKey} /> : null}
                   {drawAnswers ? (
                     <AnswerSheets
-                      title="테스트 정답"
+                      title={`${drawSheetTitle.trim() || "테스트"} 정답`}
                       entries={drawn.map((d) => ({ index: indexOf(d.project.id), project: d.project, sheet: d.sheet }))}
                       measureKey={measureKey}
                     />

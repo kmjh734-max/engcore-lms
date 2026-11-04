@@ -54,6 +54,14 @@ export function MiddleSchoolHome({ units, base }: { units: MsUnitSummary[]; base
                 테스트지 출력
               </Link>
             </div>
+            <div className="mt-1.5 flex gap-1.5">
+              <Link href={`${base}/${u.id}?book=1`} className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-center text-xs font-semibold text-slate-700 hover:bg-slate-100">
+                본교재 출력
+              </Link>
+              <Link href={`${base}/${u.id}?book=answers`} className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-center text-xs font-semibold text-slate-700 hover:bg-slate-100">
+                정답지 출력
+              </Link>
+            </div>
           </div>
         ))}
       </div>

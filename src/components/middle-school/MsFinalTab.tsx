@@ -110,6 +110,7 @@ export function MsFinalTab({
   setDesign,
   academyName,
   base,
+  printOnly = null,
 }: {
   unit: MsUnit;
   questions: MsQuestion[];
@@ -117,7 +118,10 @@ export function MsFinalTab({
   setDesign: (d: MaterialDesign) => void;
   academyName: string;
   base: string;
+  /** 과 카드 「본교재 출력」(정답지 빼고) · 「정답지 출력」(표지 + 정답지만) — 선생님 2026-11-04 */
+  printOnly?: "book" | "answers" | null;
 }) {
+  const answersOnly = printOnly === "answers";
   const analyzedCount = msAnalyzed(unit).length;
   const sources = useMemo(() => sortMsSources(questions.filter((q) => !q.review).map((q) => q.source)), [questions]);
 
@@ -131,7 +135,7 @@ export function MsFinalTab({
       year: String(new Date().getFullYear()),
       semester: s.semester,
       exam: s.exam,
-      material: "최종통합자료",
+      material: answersOnly ? "최종통합자료 정답지" : "최종통합자료",
       textbook: "영어",
       publisher: unit.publisher,
       range: `${unit.lessonNo}과 ${unit.title}`,
@@ -147,7 +151,7 @@ export function MsFinalTab({
   const bookTitle = `${unit.grade} ${unit.lessonNo}과 ${spec.material || "최종통합자료"}`;
 
   // ---------------------------------------------------------------- 묶음 설정
-  const [toc, setToc] = useState(true);
+  const [toc, setToc] = useState(!answersOnly);
   const [dividers, setDividers] = useState(true);
   const [parts, setParts] = useState<Record<Exclude<PartId, "answers">, PartOpts>>({
     words: { on: unit.words.length > 0, workbook: false, questions: false },
@@ -157,7 +161,7 @@ export function MsFinalTab({
     exam: { on: true, workbook: false, questions: true },
   });
   const setPart = (k: Exclude<PartId, "answers">, patch: Partial<PartOpts>) => setParts((cur) => ({ ...cur, [k]: { ...cur[k], ...patch } }));
-  const [answersOn, setAnswersOn] = useState(true);
+  const [answersOn, setAnswersOn] = useState(printOnly !== "book");
   const [wordExamples, setWordExamples] = useState(true);
   const [dialogueTr, setDialogueTr] = useState<"show" | "hide">("show");
   const [readingTr, setReadingTr] = useState<"show" | "hide">("show");
@@ -481,7 +485,7 @@ export function MsFinalTab({
           <CoverSheet cover={cover} range={range} logoSrc={null} />
           {toc ? <ContentsSheet parts={bookParts} pages={tocPages} total={tocPages.__total ?? 0} title={bookTitle} range={range} /> : null}
 
-          {P.words.on ? (
+          {!answersOnly && P.words.on ? (
             <div data-toc="words" className="contents" style={partStyle(partOf("words"))}>
               {divider("words", itemsOf("words", [{ id: "list", title: "단어장" }]))}
               {P.words.body ? <MsWordSheets unit={unit} examples={wordExamples} measureKey={mk} /> : null}
@@ -490,7 +494,7 @@ export function MsFinalTab({
             </div>
           ) : null}
 
-          {P.dialogue.on ? (
+          {!answersOnly && P.dialogue.on ? (
             <div data-toc="dialogue" className="contents" style={partStyle(partOf("dialogue"))}>
               {divider("dialogue", itemsOf("dialogue", unit.dialogues.map((t) => ({ id: t.id, title: t.title ?? t.part }))))}
               {P.dialogue.body ? <MsDialogueSheets unit={unit} translation={dialogueTr} measureKey={mk} /> : null}
@@ -499,7 +503,7 @@ export function MsFinalTab({
             </div>
           ) : null}
 
-          {P.grammar.on ? (
+          {!answersOnly && P.grammar.on ? (
             <div data-toc="grammar" className="contents" style={partStyle(partOf("grammar"))}>
               {divider("grammar", itemsOf("grammar", unit.grammar.map((g, i) => ({ id: `g${i}`, title: g.title }))))}
               {P.grammar.body ? <MsGrammarSheets unit={unit} measureKey={mk} /> : null}
@@ -507,7 +511,7 @@ export function MsFinalTab({
             </div>
           ) : null}
 
-          {P.reading.on ? (
+          {!answersOnly && P.reading.on ? (
             <div data-toc="reading" className="contents" style={partStyle(partOf("reading"))}>
               {divider("reading", itemsOf("reading", unit.passages.map((t) => ({ id: t.id, title: `${t.part} ${t.title ?? ""}`.trim() }))))}
               {P.reading.body ? <MsReadingSheets unit={unit} translation={readingTr} measureKey={mk} /> : null}
@@ -516,7 +520,7 @@ export function MsFinalTab({
             </div>
           ) : null}
 
-          {P.exam.on ? (
+          {!answersOnly && P.exam.on ? (
             <div data-toc="exam" className="contents" style={partStyle(partOf("exam"))}>
               {divider("exam", itemsOf("exam", []))}
               {exam("exam", "exam")}

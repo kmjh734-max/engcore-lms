@@ -99,7 +99,8 @@ def parse_grammar(ls):
     i = 0
     while i < len(ls):
         line = ls[i].strip()
-        m = re.match(r"^│Pattern (\d)│$", line)
+        # 「│Pattern 1, 2│ 비교급, 최상급」처럼 두 패턴을 한 머리글로 묶은 과가 있다(중1 동아(윤) 5·7과, 중2 동아(이) 5과) — 첫 번호로 하나
+        m = re.match(r"^│Pattern (\d)(?:\s*,\s*\d)*│$", line)
         if m:
             title = ""
             j = i + 1

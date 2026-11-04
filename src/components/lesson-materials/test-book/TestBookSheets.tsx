@@ -57,6 +57,7 @@ export const TEST_BOOK_CSS = `
 .tb-dh .tb-k b{display:block;color:#15171c;font-size:9pt}
 .tb-who{display:grid;grid-template-columns:1.3fr 1fr .9fr;gap:5mm;font-size:8.5pt;color:#6a707c}
 .tb-who span{border-bottom:.6pt solid #c9cdd4;padding-bottom:1mm}
+.tb-who .tb-who-name{margin-left:3mm;color:#15171c;font-size:10pt;font-weight:700}
 .tb-tip{font-size:8pt;color:#6a707c}
 .tb-star{color:#e8492b;font-weight:900}
 /* 표를 줄마다 덩어리로 두려고 grid 줄을 쓴다 */
@@ -483,6 +484,55 @@ export function PagedSheet({
 
 /** 학원 로고·이름(바닥줄). 교재 화면이 넣어 준다. */
 export const TestBookBrand = createContext<{ logoSrc: string | null; academy: string }>({ logoSrc: null, academy: "" });
+/**
+ * 양면 인쇄에서 유형마다 새 종이로(선생님 2026-11-04 「한 번에 주면 해석 테스트지 지문 보고 빈칸 할 수도 있다」 — 중학교 테스트지·고등 테스트지 뽑기 공통):
+ * 앞에 쌓인 쪽 수가 홀수면 빈 쪽을 하나 끼워, 다음 테스트가 늘 홀수 쪽(종이 앞면)에서 시작하게 한다.
+ * 앞쪽 표지가 바뀌면 다시 센다(쪽 수는 그려진 뒤에야 안다).
+ */
+export function OddPageStart({ on }: { on: boolean }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [blank, setBlank] = useState(false);
+  useEffect(() => {
+    const root = document.getElementById("tb-print-root");
+    if (!on || !root) {
+      setBlank(false);
+      return;
+    }
+    const check = () => {
+      const me = ref.current;
+      if (!me) return;
+      const before = Array.from(root.querySelectorAll<HTMLElement>(".tb-sheet, .qg-print-page")).filter(
+        (el) => !el.closest(".tb-measure, .qg-print-measure") && (el.compareDocumentPosition(me) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0,
+      ).length;
+      const need = before % 2 === 1;
+      setBlank((cur) => (cur === need ? cur : need));
+    };
+    check();
+    let frame = 0;
+    const observer = new MutationObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(check);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [on]);
+  return (
+    <>
+      <span ref={ref} hidden />
+      {blank ? (
+        <div className="tb-sheet ms-blank-page">
+          <p className="pt-[120mm] text-center text-xs text-slate-300 print:hidden">양면 인쇄용 빈 쪽</p>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+/** 시험지 「이름」 칸에 미리 찍을 학생 이름(작업대 왼쪽 칸에서 넣는다 — 선생님 2026-11-04) */
+export const TestBookStudent = createContext<string>("");
 
 /** 쪽 바닥줄 — 변형문제 인쇄물처럼 왼쪽에 로고·학원명, 오른쪽에 교재 전체 쪽 번호 */
 function BookFoot({ children }: { children?: ReactNode }) {
@@ -558,10 +608,13 @@ export function DocHead({ title, sub, label, right }: { title: string; sub?: str
 }
 
 function Who({ total }: { total?: number }) {
+  const student = useContext(TestBookStudent);
   return (
     <div className="tb-b">
       <div className="tb-who">
-        <span>이름</span>
+        <span>
+          이름{student ? <b className="tb-who-name">{student}</b> : null}
+        </span>
         <span>날짜 &nbsp;&nbsp;&nbsp;월 &nbsp;&nbsp;&nbsp;일</span>
         <span>점수 {total ? <>&nbsp;&nbsp;&nbsp;&nbsp;/ {total}</> : null}</span>
       </div>

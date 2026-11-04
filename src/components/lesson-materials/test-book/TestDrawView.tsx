@@ -1,16 +1,18 @@
 "use client";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { downloadSheetsPdf, pdfFileName } from "@/lib/pdf/download-sheets-pdf";
 import type { TestBookProjectInput, TestSheet, VocabExam } from "@/lib/lesson-materials/test-book";
 import { useMaterialDesign } from "@/lib/lesson-materials/material-design";
 import {
   AnswerSheets,
+  OddPageStart,
   TEST_BOOK_CSS,
   TEST_BOOK_FONTS_HREF,
   TestBookBrand,
+  TestBookStudent,
   TestSheets,
   VocabExamAnswerSheets,
   VocabExamSheets,
@@ -47,13 +49,29 @@ export function TestDrawView({
 }) {
   const base = role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials";
   const [answers, setAnswers] = useState(true);
+  /** 시험지 제목·학생 이름(「이름」 칸) · 양면 인쇄면 유형마다 새 종이(홀수 쪽) — 선생님 2026-11-04 */
+  const [sheetTitle, setSheetTitle] = useState("");
+  const [student, setStudent] = useState("");
+  const [duplex, setDuplex] = useState(true);
+  const title = sheetTitle.trim() || "테스트";
   /** 디자인 — 모든 자료가 같이 쓰는 것(material-design.ts) */
   const [md] = useMaterialDesign();
   const [pdfBusy, setPdfBusy] = useState<string | null>(null);
   const brand = useMemo(() => ({ logoSrc: logoSrc || null, academy: academyName }), [logoSrc, academyName]);
-  const sheets = payload.sheets ?? [];
+  const sheets = useMemo(() => payload.sheets ?? [], [payload.sheets]);
   const asProject = (p: TestDrawPayload["sheets"][number]["project"]) =>
     ({ ...p, sentences: [], content: null, material: null }) as TestBookProjectInput;
+  /** 유형마다 한 묶음(지문 차례) — 나눠 줄 종이 한 묶음 */
+  const byType = useMemo(() => {
+    const order: string[] = [];
+    for (const s of sheets) for (const sec of s.sheet.sections) if (!order.includes(sec.type)) order.push(sec.type);
+    return order.map((type) => ({
+      type,
+      items: sheets
+        .map((s) => ({ ...s, sheet: { ...s.sheet, sections: s.sheet.sections.filter((sec) => sec.type === type) } }))
+        .filter((s) => s.sheet.sections.length > 0),
+    }));
+  }, [sheets]);
 
   // 바닥줄 쪽 번호(교재 화면과 같다)
   useEffect(() => {
@@ -101,7 +119,7 @@ export function TestDrawView({
 
   return (
     <div className="fixed inset-0 z-50 flex bg-slate-200 print:static print:z-auto print:block print:bg-white">
-      <aside className="flex w-[260px] shrink-0 flex-col gap-3 border-r border-slate-200 bg-white p-4 print:hidden">
+      <aside className="flex w-[260px] shrink-0 flex-col gap-3 overflow-y-auto border-r border-slate-200 bg-white p-4 print:hidden">
         {/* 뽑을 때 이미 파일로 저장됐다 */}
         <CloseSaveButton base={base} className="text-left text-xs font-semibold text-violet-700" />
         <h1 className="text-base font-bold text-slate-900">뽑은 테스트지</h1>
@@ -113,6 +131,35 @@ export function TestDrawView({
         <label className="flex items-center gap-2 text-xs font-semibold text-slate-700">
           <input type="checkbox" checked={answers} onChange={(e) => setAnswers(e.target.checked)} />
           정답지 함께
+        </label>
+        <label className="flex items-start gap-2 text-xs font-semibold text-slate-700">
+          <input type="checkbox" className="mt-0.5" checked={duplex} onChange={(e) => setDuplex(e.target.checked)} />
+          <span>
+            양면 인쇄 · 유형마다 새 종이
+            <span className="block text-[10.5px] font-normal text-slate-400">유형별로 나눠 홀수 쪽에서 시작(나눠 줄 수 있게)</span>
+          </span>
+        </label>
+        <label className="block text-xs font-semibold text-slate-700">
+          시험지 제목
+          <input
+            type="text"
+            value={sheetTitle}
+            onChange={(e) => setSheetTitle(e.target.value)}
+            placeholder="테스트"
+            maxLength={40}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm font-normal focus:border-violet-500 focus:outline-none"
+          />
+        </label>
+        <label className="block text-xs font-semibold text-slate-700">
+          학생 이름
+          <input
+            type="text"
+            value={student}
+            onChange={(e) => setStudent(e.target.value)}
+            placeholder="비우면 빈칸으로"
+            maxLength={20}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm font-normal focus:border-violet-500 focus:outline-none"
+          />
         </label>
         <div className="mt-auto space-y-2">
           <Button type="button" variant="secondary" className="w-full" disabled={!!pdfBusy} onClick={() => void savePdf()}>
@@ -129,14 +176,26 @@ export function TestDrawView({
         <div className="flex flex-col items-center p-6 print:block print:p-0">
           <TestBookBrand.Provider value={brand}>
             <div id="tb-print-root" className={`tb-theme-${md} relative flex flex-col gap-6 print:gap-0 [&_.tb-sheet]:shadow`}>
-              {payload.vocabExam ? <VocabExamSheets exam={payload.vocabExam} measureKey="saved" /> : null}
-              {sheets.map((s) => (
-                <TestSheets key={s.project.id} index={s.project.index} project={asProject(s.project)} sheet={s.sheet} title="테스트" measureKey="saved" />
-              ))}
+              <TestBookStudent.Provider value={student.trim()}>
+                {payload.vocabExam ? <VocabExamSheets exam={payload.vocabExam} measureKey="saved" title={sheetTitle.trim() || undefined} /> : null}
+                {duplex
+                  ? byType.map((g) => (
+                      <Fragment key={g.type}>
+                        <OddPageStart on />
+                        {g.items.map((s) => (
+                          <TestSheets key={`${s.project.id}-${g.type}`} index={s.project.index} project={asProject(s.project)} sheet={s.sheet} title={title} measureKey="saved" />
+                        ))}
+                      </Fragment>
+                    ))
+                  : sheets.map((s) => (
+                      <TestSheets key={s.project.id} index={s.project.index} project={asProject(s.project)} sheet={s.sheet} title={title} measureKey="saved" />
+                    ))}
+              </TestBookStudent.Provider>
+              {answers ? <OddPageStart on={duplex} /> : null}
               {answers && payload.vocabExam ? <VocabExamAnswerSheets exam={payload.vocabExam} measureKey="saved" /> : null}
               {answers && sheets.length ? (
                 <AnswerSheets
-                  title="테스트 정답"
+                  title={`${title} 정답`}
                   entries={sheets.map((s) => ({ index: s.project.index, project: asProject(s.project), sheet: s.sheet }))}
                   measureKey="saved"
                 />

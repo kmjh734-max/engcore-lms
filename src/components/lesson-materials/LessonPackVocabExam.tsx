@@ -19,6 +19,7 @@ import {
   TEST_BOOK_FONTS_HREF,
   AllVocabSheets,
   TestBookBrand,
+  TestBookStudent,
   allVocabRows,
   VocabExamAnswerSheets,
   VocabExamSheets,
@@ -162,7 +163,10 @@ export function LessonPackVocabExam({
   const [sheetTitle, setSheetTitle] = useState(savedExam?.title ?? "");
   const examTitle = sheetTitle.trim() || "단어 시험";
   const listTitle = sheetTitle.trim() || "전체 단어장";
+  /** 학생 이름: 시험지 「이름」 칸에 찍는다(저장하지 않는다 — 학생마다 바꿔 뽑는다) */
+  const [student, setStudent] = useState("");
   const titleField = (
+    <>
     <label className="block">
       <span className="mb-1 block text-xs font-bold text-slate-500">{listOnly ? "단어장 제목" : "시험지 제목"}</span>
       <input
@@ -180,6 +184,20 @@ export function LessonPackVocabExam({
         </span>
       ) : null}
     </label>
+    {listOnly ? null : (
+      <label className="block">
+        <span className="mb-1 block text-xs font-bold text-slate-500">학생 이름</span>
+        <input
+          type="text"
+          value={student}
+          onChange={(e) => setStudent(e.target.value)}
+          placeholder="비우면 빈칸으로"
+          maxLength={20}
+          className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-violet-500 focus:outline-none"
+        />
+      </label>
+    )}
+    </>
   );
   const built = useMemo(
     () =>
@@ -423,6 +441,7 @@ export function LessonPackVocabExam({
                 {ready.length ? "왼쪽에서 유형별 문항 수를 골라 주세요." : "단어 정리가 있는 지문이 없습니다. 수업용 자료를 먼저 열어 만들어 주세요."}
               </div>
             ) : null}
+            <TestBookStudent.Provider value={listOnly ? "" : student.trim()}>
             <TestBookBrand.Provider value={brand}>
               <link rel="stylesheet" href={TEST_BOOK_FONTS_HREF} />
               <style>{TEST_BOOK_CSS}</style>
@@ -443,6 +462,7 @@ export function LessonPackVocabExam({
                 )}
               </div>
             </TestBookBrand.Provider>
+            </TestBookStudent.Provider>
           </div>
         </div>
       </main>
