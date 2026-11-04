@@ -20,13 +20,37 @@ import {
 } from "@/lib/middle-school/workbook";
 import { MsPrintFrame, MsWorkbookAnswerSheets, MsWorkbookSheets, msSource } from "./MsSheets";
 
-const DEFAULT_TYPES: MsWbTypeKey[] = ["r_line", "r_en_blank", "r_grammar", "r_word_order", "r_writing", "d_line", "w_en_ko"];
+// 차시 계획(1차~4차)의 단어·대화문 칸까지 기본으로 켠다
+const DEFAULT_TYPES: MsWbTypeKey[] = ["r_line", "r_en_blank", "r_grammar", "r_word_order", "r_writing", "d_line", "d_writing", "d_order", "w_en_ko", "w_ko_en"];
 const LENGTHS: { id: MsDrawLength; label: string }[] = [
   { id: "short", label: "짧게" },
   { id: "normal", label: "보통" },
   { id: "long", label: "길게" },
 ];
 const GROUPS: MsWbGroup[] = ["단어", "대화문", "본문"];
+
+/**
+ * 차시(1차·2차…) 기본값(선생님 2026-11-04): 한 차시에 같이 나가는 시험지끼리 답이 보이면 안 된다.
+ * 같은 지문의 본문 유형은 서로 다 겹치므로(영어가 보이는 유형 ↔ 영어를 쓰는 유형, 우리말이 보이는 유형 ↔ 해석을 쓰는 유형)
+ * 차시마다 본문 유형을 하나씩 두고, 다른 글인 단어·대화문을 얹는다. 차시 수는 4차로 줄였다(선생님 결정:
+ * 빈칸(우리말)은 해석 쓰기와, 동사 형태·어색한 곳은 어법 선택과, 순서 배열은 영작과 같은 차시 — 이 짝은 겹침 안내만).
+ */
+const DEFAULT_ROUND: Record<MsWbTypeKey, number> = {
+  w_en_ko: 1,
+  d_line: 1,
+  r_line: 1,
+  r_ko_blank: 1,
+  w_ko_en: 2,
+  d_writing: 2,
+  r_en_blank: 2,
+  d_order: 3,
+  r_grammar: 3,
+  r_verb_form: 3,
+  r_context: 3,
+  r_word_order: 4,
+  r_writing: 4,
+};
+const ROUND_NOS = [1, 2, 3, 4, 5, 6];
 
 
 /**
@@ -62,6 +86,10 @@ export function MsTestWorkbench({
   useEffect(() => setMounted(true), []);
   /** 양면 인쇄: 테스트마다 홀수 쪽에서 시작 */
   const [duplex, setDuplex] = useState(true);
+  /** 차시로 나누기 · 유형별 차시 · 찍을 차시(0이면 전체) */
+  const [roundsOn, setRoundsOn] = useState(true);
+  const [roundOf, setRoundOf] = useState<Record<MsWbTypeKey, number>>(DEFAULT_ROUND);
+  const [printRound, setPrintRound] = useState(0);
 
   const sheetTitle = title.trim() || "테스트";
   const source = msSource(unit);
@@ -90,6 +118,21 @@ export function MsTestWorkbench({
     }
     return out;
   }, [sheetsOf, types]);
+
+  /** 차시마다 들어가는 테스트(단어 → 대화문 → 본문 차례) — 켠 유형이 있는 차시만, 번호는 1차부터 다시 */
+  const rounds = useMemo(() => {
+    const all = GROUPS.flatMap((g) => testsOf[g].map((t) => ({ ...t, group: g })));
+    const nos = [...new Set(all.map((t) => roundOf[t.key]))].sort((a, b) => a - b);
+    return nos.map((n, i) => ({ no: i + 1, tests: all.filter((t) => roundOf[t.key] === n) }));
+  }, [testsOf, roundOf]);
+  const labelOf = (k: MsWbTypeKey) => MS_WB_TYPES.find((x) => x.key === k)?.label ?? k;
+  /** 같은 차시에 같은 글(단어·대화문·본문)의 유형이 둘 이상이면 서로 답이 보일 수 있다 */
+  const clashes = rounds.flatMap((r) =>
+    GROUPS.map((g) => r.tests.filter((t) => t.group === g))
+      .filter((ts) => ts.length > 1)
+      .map((ts) => `${r.no}차 ${ts.map((t) => labelOf(t.key)).join("·")}`),
+  );
+  const shownRounds = printRound ? rounds.filter((r) => r.no === printRound) : rounds;
 
   const toggleType = (k: MsWbTypeKey, on: boolean) => setTypes((cur) => MS_WB_TYPES.map((t) => t.key).filter((x) => (x === k ? on : cur.includes(x))));
   const mk = `${unit.id}-${design}-${types.join(",")}-${seed}-${length}`;
@@ -161,11 +204,67 @@ export function MsTestWorkbench({
                 <label key={t.key} className={`flex items-center gap-2 py-0.5 ${counts[t.key] ? "" : "text-slate-300"}`} title={t.hint}>
                   <input type="checkbox" disabled={!counts[t.key]} checked={types.includes(t.key)} onChange={(e) => toggleType(t.key, e.target.checked)} />
                   <span className="flex-1">{t.label}</span>
-                  <span className="text-[11px] text-slate-400">{counts[t.key]}</span>
+                  {roundsOn && types.includes(t.key) ? (
+                    <select
+                      value={roundOf[t.key]}
+                      onChange={(e) => setRoundOf({ ...roundOf, [t.key]: Number(e.target.value) })}
+                      onClick={(e) => e.stopPropagation()}
+                      className="rounded border border-violet-200 bg-violet-50 px-1 py-0 text-[11px] font-semibold text-violet-700"
+                      title="몇 차 시험지에 넣을지"
+                    >
+                      {ROUND_NOS.map((n) => (
+                        <option key={n} value={n}>
+                          {n}차
+                        </option>
+                      ))}
+                    </select>
+                  ) : null}
+                  <span className="w-6 text-right text-[11px] text-slate-400">{counts[t.key]}</span>
                 </label>
               ))}
             </div>
           ))}
+
+          <div className="space-y-2 rounded-lg border border-slate-200 px-3 py-2">
+            <label className="flex items-center justify-between gap-2">
+              <span className="text-xs font-bold text-slate-500">
+                차시로 나누기
+                <span className="block text-[10.5px] font-normal text-slate-400">서로 답이 보이지 않게 1차·2차…로 나눠 따로 나눠 줍니다</span>
+              </span>
+              <input type="checkbox" checked={roundsOn} onChange={(e) => setRoundsOn(e.target.checked)} className="h-4 w-4 accent-violet-500" />
+            </label>
+            {roundsOn ? (
+              <>
+                <div className="flex flex-wrap gap-1">
+                  {[0, ...rounds.map((r) => r.no)].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => setPrintRound(n)}
+                      className={`rounded-md border px-2 py-0.5 text-[11px] font-semibold ${
+                        printRound === n ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-700"
+                      }`}
+                    >
+                      {n ? `${n}차만` : "전체"}
+                    </button>
+                  ))}
+                </div>
+                <ul className="space-y-0.5 text-[11px] text-slate-500">
+                  {rounds.map((r) => (
+                    <li key={r.no}>
+                      <b className="text-violet-700">{r.no}차</b> {r.tests.map((t) => (t.group === "본문" ? `본문 ${labelOf(t.key)}` : labelOf(t.key))).join(" · ")}
+                    </li>
+                  ))}
+                </ul>
+                {clashes.length ? (
+                  <p className="text-[10.5px] leading-snug text-amber-700">같은 차시에 같은 글의 유형이 함께 있어 서로 답이 보일 수 있어요: {clashes.join(" / ")}</p>
+                ) : null}
+                <button type="button" onClick={() => setRoundOf(DEFAULT_ROUND)} className="text-[11px] text-violet-700 underline">
+                  기본 차시로
+                </button>
+              </>
+            ) : null}
+          </div>
 
           <label className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 px-3 py-2">
             <span className="text-xs font-bold text-slate-500">
@@ -214,20 +313,37 @@ export function MsTestWorkbench({
             ) : null}
             <TestBookStudent.Provider value={student.trim()}>
               <MsPrintFrame design={design} academyName={academyName}>
-                {[...testsOf["단어"], ...testsOf["대화문"]].map((t) => (
-                  <Fragment key={t.key}>
-                    <OddPageStart on={duplex} />
-                    <MsWorkbookSheets sheets={t.sheets} answers={false} title={sheetTitle} measureKey={mk} />
-                  </Fragment>
-                ))}
-                {testsOf["본문"].map((t) => (
-                  <Fragment key={t.key}>
-                    <OddPageStart on={duplex} />
-                    <MsWorkbookSheets sheets={t.sheets} answers={false} title={sheetTitle} measureKey={mk} />
-                  </Fragment>
-                ))}
-                {answers ? <OddPageStart on={duplex} /> : null}
-                {answers && allSheets.length ? <MsWorkbookAnswerSheets sheets={allSheets} title={`${sheetTitle} 정답`} measureKey={`${mk}-ans`} /> : null}
+                {roundsOn ? (
+                  <>
+                    {shownRounds.map((r) =>
+                      r.tests.map((t) => (
+                        <Fragment key={`${r.no}-${t.key}`}>
+                          <OddPageStart on={duplex} />
+                          <MsWorkbookSheets sheets={t.sheets} answers={false} title={`${sheetTitle} ${r.no}차`} measureKey={mk} />
+                        </Fragment>
+                      )),
+                    )}
+                    {answers
+                      ? shownRounds.map((r) => (
+                          <Fragment key={`a-${r.no}`}>
+                            <OddPageStart on={duplex} />
+                            <MsWorkbookAnswerSheets sheets={r.tests.flatMap((t) => t.sheets)} title={`${sheetTitle} ${r.no}차 정답`} measureKey={`${mk}-ans`} />
+                          </Fragment>
+                        ))
+                      : null}
+                  </>
+                ) : (
+                  <>
+                    {[...testsOf["단어"], ...testsOf["대화문"], ...testsOf["본문"]].map((t) => (
+                      <Fragment key={t.key}>
+                        <OddPageStart on={duplex} />
+                        <MsWorkbookSheets sheets={t.sheets} answers={false} title={sheetTitle} measureKey={mk} />
+                      </Fragment>
+                    ))}
+                    {answers ? <OddPageStart on={duplex} /> : null}
+                    {answers && allSheets.length ? <MsWorkbookAnswerSheets sheets={allSheets} title={`${sheetTitle} 정답`} measureKey={`${mk}-ans`} /> : null}
+                  </>
+                )}
               </MsPrintFrame>
             </TestBookStudent.Provider>
           </div>
