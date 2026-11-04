@@ -145,6 +145,12 @@ export function MsTestWorkbench({
   return createPortal(
     <div className="fixed inset-0 z-[100] flex bg-slate-200 print:static print:z-auto print:block print:bg-white">
       <style>{"@media print{.ms-test-zoom{zoom:1 !important}}"}</style>
+      {/* 차시(「테스트 1차」)를 큰 제목으로, 지문 이름은 그 아래 작게 — 선생님 2026-11-04 */}
+      <style>
+        {
+          "#tb-print-root .ms-round .tb-dh h2{display:flex;flex-direction:column-reverse;align-items:flex-start;font-size:15pt;font-weight:800;color:#15171c}#tb-print-root .ms-round .tb-dh h2 small{margin:0 0 1mm;font-size:22pt;font-weight:900;letter-spacing:-.02em;color:var(--tb-accent,#15171c);line-height:1.1}"
+        }
+      </style>
       <aside className="flex w-[300px] shrink-0 flex-col border-r border-slate-200 bg-white print:hidden">
         <div className="space-y-1 border-b border-slate-100 px-4 py-3">
           {closeHref ? (
@@ -319,7 +325,9 @@ export function MsTestWorkbench({
                       r.tests.map((t) => (
                         <Fragment key={`${r.no}-${t.key}`}>
                           <OddPageStart on={duplex} />
-                          <MsWorkbookSheets sheets={t.sheets} answers={false} title={`${sheetTitle} ${r.no}차`} measureKey={mk} />
+                          <div className="ms-round contents">
+                            <MsWorkbookSheets sheets={t.sheets} answers={false} title={`${sheetTitle} ${r.no}차`} measureKey={mk} />
+                          </div>
                         </Fragment>
                       )),
                     )}
