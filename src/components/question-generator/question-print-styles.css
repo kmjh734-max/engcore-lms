@@ -85,6 +85,11 @@
   padding-top: 2.8mm;
 }
 
+/* 해설지 정답 번호는 굵게만, 색 없이(선생님 2026-11-04 「흑백으로 뽑으면 해상도만 떨어져」) — 모든 디자인에 */
+.qg-print-answer-head .qg-print-answer-mark {
+  color: #111;
+}
+
 /* ══════════ A · 교재 세리프 ══════════ */
 .qg-style.qg-style-a .qg-print-sheet {
   --qg-accent: #b23a3a;
