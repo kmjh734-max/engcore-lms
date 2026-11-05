@@ -4,6 +4,7 @@ import { getAcademyBrandingForCurrentUser } from "@/lib/tenant/academy-branding"
 import { loadHomeDashboard } from "@/lib/home/load-home";
 import { koreaDateLabel } from "@/lib/home/date-label";
 import { HomeDashboard } from "@/components/home/HomeDashboard";
+import { TutorialDialog } from "@/components/home/TutorialDialog";
 
 export default async function TeacherDashboardPage() {
   const profile = await getCurrentProfile();
@@ -18,12 +19,15 @@ export default async function TeacherDashboardPage() {
   ]);
 
   return (
-    <HomeDashboard
-      role="teacher"
-      title="강사 홈"
-      dateLabel={koreaDateLabel()}
-      academyName={branding.name}
-      data={data}
-    />
+    <>
+      <TutorialDialog role="teacher" />
+      <HomeDashboard
+        role="teacher"
+        title="강사 홈"
+        dateLabel={koreaDateLabel()}
+        academyName={branding.name}
+        data={data}
+      />
+    </>
   );
 }

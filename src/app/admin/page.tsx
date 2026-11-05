@@ -5,6 +5,7 @@ import { loadHomeDashboard } from "@/lib/home/load-home";
 import { koreaDateLabel } from "@/lib/home/date-label";
 import { HomeDashboard } from "@/components/home/HomeDashboard";
 import { GettingStarted } from "@/components/home/GettingStarted";
+import { TutorialDialog } from "@/components/home/TutorialDialog";
 
 export default async function AdminDashboardPage() {
   const profile = await getCurrentProfile();
@@ -20,6 +21,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <>
+    <TutorialDialog />
     <GettingStarted academyId={profile?.academy_id ?? null} />
     <HomeDashboard
       role="admin"
