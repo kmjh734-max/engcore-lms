@@ -32,7 +32,15 @@ export async function downloadSheetsPdf(
   try {
     if (typeof document !== "undefined" && document.fonts) await document.fonts.ready;
     const { renderPagesToPdf } = await import("@/lib/pdf/server-pdf");
-    const blob = await renderPagesToPdf(pages, opts.paper ?? A4, opts.onProgress);
+    // 반투명 효과를 불투명으로 바꿔 떠 보낸다(받은 PDF를 인쇄할 때 스풀링이 느리지 않게 — 2026-11-06)
+    const { flattenForPrint } = await import("@/lib/print/flatten-for-print");
+    const restoreFlat = flattenForPrint(document.body, { images: false });
+    let blob: Blob;
+    try {
+      blob = await renderPagesToPdf(pages, opts.paper ?? A4, opts.onProgress);
+    } finally {
+      restoreFlat();
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
