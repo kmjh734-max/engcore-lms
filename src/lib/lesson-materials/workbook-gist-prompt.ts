@@ -28,7 +28,12 @@ JSON만 출력한다.
 - 바꿔 쓰기: 지문의 어느 문장과도 연속 5낱말 이상 같아서는 안 된다. 핵심 명사(글감)는 그대로 써도 된다.
 - 지문에 없는 내용을 지어내지 않는다. 지문보다 넓히거나 좁히지 않는다.
 - ko(우리말 해석)는 영어를 자연스럽게 옮긴 것. 제목·주제는 명사형(「~의 중요성」「~하는 방법」), 요지는 「~다.」로 끝낸다. ~합니다 금지.
-- 영어에 정답 힌트·괄호 설명을 넣지 않는다.`;
+- 영어에 정답 힌트·괄호 설명을 넣지 않는다.
+- 낱말 수준(선생님 2026-11-06 「너무 어렵고 난해한 단어가 섞인다」): 고등학교 교과서·수능 필수 어휘 수준의 쉬운 낱말로 쓴다.
+  · 지문에 나온 낱말이나 그보다 쉬운 낱말을 쓴다. 지문보다 어려운 낱말로 바꿔 쓰지 않는다.
+  · 학술어·문어체·드문 낱말(예: ameliorate, efficacy, salient, proliferation, paradigm, ubiquitous, juxtapose, exacerbate, mitigate, intrinsic, multifaceted, pivotal, underscore, foster, facilitate, leverage)을 쓰지 않는다 — 같은 뜻의 쉬운 말(improve, effect, main, spread, everywhere, compare, worsen, reduce, basic, important, show, help, use)로 쓴다.
+  · 지문의 핵심 명사(글감)는 어려워도 그대로 쓸 수 있다. 그 밖의 낱말은 쉬운 말로.
+  · 관용구·비유·속어를 쓰지 않는다.`;
 
 export function buildWorkbookGistUserPrompt(input: {
   title?: string;
