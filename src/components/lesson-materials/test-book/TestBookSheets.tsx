@@ -401,7 +401,43 @@ export const TEST_BOOK_CSS = `
 
 // ---------------------------------------------------------------- 쪽 나누기
 
-export type Block = { key: string; node: ReactNode };
+export type Block = {
+  key: string;
+  node: ReactNode;
+  /** 쪽 끝에 다 안 들어가면 줄 사이에서 잘라 다음 쪽으로 이어 싣는다(뽑은 테스트지 — 선생님 2026-11-06 「워크북처럼 쭉 이어서」) */
+  split?: boolean;
+};
+
+/** 쪽에 싣는 조각: 덩어리 i 전체, 또는 from~to(px) 부분 */
+type Piece = { i: number; from?: number; to?: number };
+
+/** 덩어리 안에서 글줄을 가르지 않고 자를 수 있는 높이들(덩어리 위 끝 기준, 레이아웃 px) */
+function safeCuts(el: HTMLElement): number[] {
+  const box = el.getBoundingClientRect();
+  const ratio = box.height > 0 ? el.offsetHeight / box.height : 1;
+  // 글자 줄만 본다(문단·칸 상자는 여러 줄에 걸쳐 있어 넣으면 자를 곳이 없어진다). 빈칸·밑줄 칸 같은 인라인 상자는 글줄로 본다.
+  const rects: Array<{ t: number; b: number }> = [];
+  const add = (list: DOMRectList | DOMRect[]) => {
+    for (const r of Array.from(list)) if (r.height > 0 && r.width > 0) rects.push({ t: (r.top - box.top) * ratio, b: (r.bottom - box.top) * ratio });
+  };
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    if (!n.textContent?.trim()) continue;
+    range.selectNodeContents(n);
+    add(range.getClientRects());
+  }
+  el.querySelectorAll<HTMLElement>("img, svg, .tb-blank, .tb-pick, input, hr").forEach((x) => add(x.getClientRects()));
+  // 줄과 줄 사이 빈 틈의 한가운데에서 자른다(글자 아랫부분·윗부분이 넘어가 보이지 않게)
+  rects.sort((a, b) => a.t - b.t);
+  const cuts: number[] = [];
+  let bottom = -Infinity;
+  for (const r of rects) {
+    if (bottom > -Infinity && r.t > bottom + 1) cuts.push(Math.round((bottom + r.t) / 2));
+    bottom = Math.max(bottom, r.b);
+  }
+  return cuts;
+}
 
 /**
  * 덩어리를 재서 A4 쪽으로 나눈다. head는 쪽마다 위에 붙는다(첫 쪽과 나머지 쪽을 다르게 줄 수 있다).
@@ -420,7 +456,7 @@ export function PagedSheet({
 }) {
   const measureRef = useRef<HTMLDivElement>(null);
   // 재기 전에는 쪽을 그리지 않는다(긴 한 쪽을 먼저 그렸다 버리지 않게)
-  const [pages, setPages] = useState<number[][] | null>(null);
+  const [pages, setPages] = useState<Piece[][] | null>(null);
   const blockKeys = blocks.map((b) => b.key).join("|");
   /*
    * 서버에서는 그리지 않는다(2026-10-29 속도): 서버가 재기용 사본과 나누기 전 긴 한 쪽을 둘 다 그려 보내
@@ -429,32 +465,75 @@ export function PagedSheet({
    */
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+  // 글꼴이 늦게 받아지면(처음 열 때) 받은 뒤 다시 잰다 — 먼저 잰 높이로 나누면 쪽 끝이 넘친다
+  const [fontTick, setFontTick] = useState(0);
+  useEffect(() => {
+    if (typeof document === "undefined" || !document.fonts) return;
+    let alive = true;
+    const bump = () => alive && setFontTick((t) => t + 1);
+    void document.fonts.ready.then(bump);
+    document.fonts.addEventListener("loadingdone", bump);
+    return () => {
+      alive = false;
+      document.fonts.removeEventListener("loadingdone", bump);
+    };
+  }, []);
   useLayoutEffect(() => {
     const root = measureRef.current;
     if (!root) return;
     const firstHead = (root.querySelector("[data-tb-head='0']") as HTMLElement | null)?.offsetHeight ?? 0;
     const restHead = (root.querySelector("[data-tb-head='1']") as HTMLElement | null)?.offsetHeight ?? firstHead;
-    const heights = Array.from(root.querySelectorAll<HTMLElement>("[data-tb-block]")).map((el) => el.offsetHeight);
+    const els = Array.from(root.querySelectorAll<HTMLElement>("[data-tb-block]"));
+    const heights = els.map((el) => el.offsetHeight);
     // 최종통합자료처럼 미리보기 배율(zoom)이 걸린 곳에서도 맞게, 잰 쪽 높이에 대한 비율로 센다
     const ruler = (root.querySelector("[data-tb-ruler]") as HTMLElement | null)?.offsetHeight ?? 0;
-    const scale = ruler > 0 ? ruler / (100 * MM) : 1;
-    const inner = (PAGE_H_MM - PAD_Y_MM * 2 - FOOT_MM) * MM * scale;
-    const out: number[][] = [];
-    let cur: number[] = [];
+    // 재는 층이 안 보일 때(인쇄 화면 등)는 다시 나누지 않는다 — 높이가 0으로 재져 한 쪽에 몰린다
+    if (ruler === 0 || (heights.length > 0 && heights.every((h) => h === 0))) return;
+    const scale = ruler / (100 * MM);
+    // 잘라 싣는 쪽은 꽉 채우므로 2mm 여유를 둔다
+    const anySplit = blocks.some((b) => b.split);
+    const inner = (PAGE_H_MM - PAD_Y_MM * 2 - FOOT_MM - (anySplit ? 2 : 0)) * MM * scale;
+    const out: Piece[][] = [];
+    let cur: Piece[] = [];
     let used = firstHead;
+    const newPage = () => {
+      out.push(cur);
+      cur = [];
+      used = restHead;
+    };
     heights.forEach((h, i) => {
-      const room = inner - used;
-      if (cur.length > 0 && h > room) {
-        out.push(cur);
-        cur = [];
-        used = restHead;
+      const splittable = !!blocks[i]?.split;
+      const cuts = splittable ? safeCuts(els[i]!) : [];
+      let start = 0;
+      for (let guard = 0; guard < 50; guard++) {
+        const rest = h - start;
+        const room = inner - used;
+        if (rest <= room) {
+          cur.push(start ? { i, from: start } : { i });
+          used += rest;
+          return;
+        }
+        // 줄 사이에서 잘라 이 쪽에 앞부분을 싣는다(두 줄 이상 들어갈 때만)
+        const cut = cuts.filter((c) => c > start && c - start <= room && c < h - 4).pop();
+        if (cut !== undefined && cut - start >= 12 * MM * scale) {
+          cur.push({ i, from: start, to: cut });
+          newPage();
+          start = cut;
+          continue;
+        }
+        if (cur.length > 0) {
+          newPage();
+          continue;
+        }
+        // 빈 쪽에도 안 들어가고 자를 곳도 없으면 그대로 싣는다
+        cur.push(start ? { i, from: start } : { i });
+        used += rest;
+        return;
       }
-      cur.push(i);
-      used += h;
     });
     if (cur.length || out.length === 0) out.push(cur);
     setPages((prev) => (JSON.stringify(prev) === JSON.stringify(out) ? prev : out));
-  }, [blockKeys, measureKey, mounted]);
+  }, [blockKeys, measureKey, mounted, fontTick]);
   if (!mounted) return null;
   return (
     <>
@@ -473,7 +552,18 @@ export function PagedSheet({
       {(pages ?? []).map((idx, p, all) => (
         <div key={p} className="tb-sheet tb-part">
           {head(p)}
-          {idx.map((i) => (blocks[i] ? <Fragment key={blocks[i]!.key}>{blocks[i]!.node}</Fragment> : null))}
+          {idx.map(({ i, from, to }) => {
+            const b = blocks[i];
+            if (!b) return null;
+            if (!b.split) return <Fragment key={b.key}>{b.node}</Fragment>;
+            // 잴 때와 같은 감싸기(flow-root)로 그려야 높이가 잰 값과 같다
+            // 잘린 덩어리: 같은 덩어리를 그리고 보이는 칸만 남긴다
+            return (
+              <div key={`${b.key}@${from ?? 0}`} style={{ overflow: "hidden", height: to !== undefined ? `${to - (from ?? 0)}px` : undefined }}>
+                <div style={{ display: "flow-root", marginTop: from ? `${-from}px` : undefined }}>{b.node}</div>
+              </div>
+            );
+          })}
           <BookFoot>{foot ? foot(p, all.length) : null}</BookFoot>
         </div>
       ))}
@@ -1570,7 +1660,7 @@ export const FlowTestSheets = memo(function FlowTestSheets({
         </div>
       );
       // 지문 제목 줄이 쪽 끝에 홀로 남지 않게 첫 덩어리와 붙인다
-      return rows.map((r, j) => (j === 0 ? { key: r.key, node: <>{head}{r.node}</> } : r));
+      return rows.map((r, j) => ({ ...(j === 0 ? { key: r.key, node: <>{head}{r.node}</> } : r), split: true }));
     }),
   ];
   return (
