@@ -615,7 +615,10 @@ function blankCandidates(p: Ready): Array<Cand & { phrase: string }> {
   return out;
 }
 
-/** 교재 견본(열쇠가 book)은 지문 차례, 뽑기는 문장 차례를 섞는다 */
+/**
+ * 교재 견본(열쇠가 book)은 지문 차례, 뽑기는 차례를 섞는다 — 단어 영↔한만 쓴다.
+ * 해석 적기·통문장 영작은 뽑기도 지문 차례 그대로(선생님 2026-11-06: 테스트지에서 해석 순서가 섞인다).
+ */
 function arrange<T>(items: T[], seed: string): T[] {
   return seed.startsWith("book|") ? items : fisherYatesShuffle(items, createSeededRng(`${seed}|arrange`));
 }
@@ -633,7 +636,7 @@ function buildLine(p: Ready, seed: string, mode: LineMode = "full", max?: number
     type: "line",
     title: "해석 적기",
     hint: mode === "chunk" ? "끊어 읽는 덩어리마다 뜻 쓰기" : undefined,
-    items: arrange(all, seed).map(({ s, si }, i) => {
+    items: all.map(({ s, si }, i) => {
       const g = gloss?.[si];
       if (g?.length) {
         return { no: no(i), text: [], gloss: g.map((c) => c.en), answer: g.map((c) => c.ko).join(" / ") };
@@ -1022,7 +1025,7 @@ function buildWriting(p: Ready, seed: string, scope: WritingScope, up = false, m
     type: "writing",
     title: "통문장 영작",
     hint: "해석만 보고 영어로 쓰기",
-    items: arrange(all, seed).map(({ s }, i) => {
+    items: all.map(({ s }, i) => {
       const answer = answerSentence(s.english);
       return { no: no(i), text: [], ko: s.korean, hint: up ? undefined : `${words(answer)}단어`, lines: words(answer) > 16 ? 2 : 1, answer };
     }),

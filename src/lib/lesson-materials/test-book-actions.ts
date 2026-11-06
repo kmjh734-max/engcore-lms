@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { LESSON_VOCAB_FOLDER } from "@/lib/lesson-materials/load-library";
 import { defaultDocumentName, uniqueDocumentName } from "@/lib/lesson-materials/documents";
 import { createClient } from "@/lib/supabase/server";
+import { sortProjectIdsByPassageOrder } from "@/lib/lesson-materials/passage-order";
 import { persistVocabItems, type VocabItemSaveInput } from "@/lib/vocab/save-items";
 import { nextVocabSetOrderIndex } from "@/lib/vocab/reorder-sets";
 import { loadBundleExtraProjects } from "@/lib/lesson-materials/load-material-payloads";
@@ -640,13 +641,18 @@ export async function chargeTestDrawAction(
     .is("deleted_at", null)
     .like("name", `${base}%`);
   const name = uniqueDocumentName(base, (same ?? []).map((r) => r.name as string));
+  // 지문별 시험지는 폴더 차례로 저장한다(선생님 2026-11-06)
+  const drawIds = await sortProjectIdsByPassageOrder(supabase, (input.projectIds ?? []).map(String).filter(Boolean));
+  const drawRank = new Map(drawIds.map((id, i) => [id, i] as const));
+  const sheetRank = (x: unknown) => drawRank.get(String((x as { sheet?: { projectId?: unknown } } | null)?.sheet?.projectId ?? "")) ?? Number.MAX_SAFE_INTEGER;
+  const drawSheets = snap.sheets.map((x, i) => ({ x, i })).sort((a, b) => sheetRank(a.x) - sheetRank(b.x) || a.i - b.i).map((v) => v.x);
   const { data: doc } = await supabase
     .from("lesson_material_documents")
     .insert({
       kind: "test_draw",
       name,
-      project_ids: [...new Set((input.projectIds ?? []).map(String).filter(Boolean))],
-      payload: { version: 1, createdAt: new Date().toISOString(), sheets: snap.sheets, vocabExam: snap.vocabExam ?? null },
+      project_ids: drawIds,
+      payload: { version: 1, createdAt: new Date().toISOString(), sheets: drawSheets, vocabExam: snap.vocabExam ?? null },
       teacher_id: role === "teacher" ? profile!.id : null,
       created_by: profile!.id,
       academy_id: profile!.academy_id,
@@ -814,8 +820,10 @@ export async function loadDrawProjectsAction(
 ): Promise<{ ok: true; projects: TestBookProjectInput[] } | Fail> {
   const { error } = await requireLessonRole(role);
   if (error) return { ok: false, message: error };
-  const ids = [...new Set((input.projectIds ?? []).map((s) => String(s).trim()).filter(Boolean))].slice(0, 80);
-  if (!ids.length) return { ok: false, message: "선택된 지문이 없습니다." };
+  const picked = [...new Set((input.projectIds ?? []).map((s) => String(s).trim()).filter(Boolean))].slice(0, 80);
+  if (!picked.length) return { ok: false, message: "선택된 지문이 없습니다." };
   const supabase = await createClient();
+  // 테스트지도 지문은 폴더 차례로(선생님 2026-11-06)
+  const ids = await sortProjectIdsByPassageOrder(supabase, picked);
   return { ok: true, projects: await loadBundleExtraProjects(supabase, ids) };
 }

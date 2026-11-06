@@ -8,6 +8,7 @@ import {
 } from "@/lib/credits/lesson-credits";
 import { flushAiUsage, setAiUsage, withAiUsage } from "@/lib/ai-usage/context";
 import { createClient } from "@/lib/supabase/server";
+import { sortProjectIdsByPassageOrder } from "@/lib/lesson-materials/passage-order";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { patchLessonPack } from "@/lib/lesson-materials/patch-lesson-pack";
 import { generateWorkbookBlankFill } from "@/lib/lesson-materials/generate-workbook-blank";
@@ -209,7 +210,8 @@ export async function generateWorkbookAction(
   if (pErr) return { ok: false, message: pErr.message };
 
   const byId = new Map((projects ?? []).map((p) => [p.id, p] as const));
-  const ordered = ids.map((id) => byId.get(id)).filter(Boolean);
+  // 지문은 늘 폴더 차례로(선생님 2026-11-06: 교재·테스트지에서 지문 순서가 섞인다)
+  const ordered = (await sortProjectIdsByPassageOrder(supabase, ids)).map((id) => byId.get(id)).filter(Boolean);
   if (ordered.length === 0) {
     return { ok: false, message: "프로젝트를 찾을 수 없습니다." };
   }

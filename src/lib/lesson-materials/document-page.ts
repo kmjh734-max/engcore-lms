@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { LessonMaterialDocumentKind } from "@/lib/lesson-materials/documents";
+import { sortProjectIdsByPassageOrder } from "@/lib/lesson-materials/passage-order";
 
 function parseIds(raw: string | undefined): string[] {
   return (raw ?? "")
@@ -29,5 +30,8 @@ export async function resolveDocumentProjectIds(
     const ids = (data?.kind === kind ? (data.project_ids as string[] | null) : null) ?? [];
     if (ids.length > 0) return ids;
   }
-  return parseIds(params.ids);
+  // 새로 고른 지문(?ids=)은 폴더 차례로(선생님 2026-11-06: 교재·테스트지에서 지문 순서가 섞인다)
+  const ids = parseIds(params.ids);
+  if (ids.length < 2) return ids;
+  return sortProjectIdsByPassageOrder(await createClient(), ids);
 }

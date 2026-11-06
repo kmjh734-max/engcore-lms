@@ -10,6 +10,7 @@ import {
   type LessonMaterialDocumentRow,
 } from "@/lib/lesson-materials/documents";
 import { normalizeLessonBookOptions } from "@/lib/lesson-materials/lesson-book-options";
+import { sortProjectIdsByPassageOrder } from "@/lib/lesson-materials/passage-order";
 
 type Role = "admin" | "teacher";
 type Fail = { ok: false; message: string };
@@ -57,10 +58,12 @@ export async function createLessonMaterialDocument(
   const { profile, error } = await requireRole(role);
   if (error) return { ok: false, message: error };
   if (!KINDS.has(input.kind)) return { ok: false, message: "알 수 없는 자료 종류입니다." };
-  const projectIds = [...new Set((input.projectIds ?? []).map((id) => id.trim()).filter(Boolean))];
-  if (projectIds.length === 0) return { ok: false, message: "선택된 지문이 없습니다." };
+  const picked = [...new Set((input.projectIds ?? []).map((id) => id.trim()).filter(Boolean))];
+  if (picked.length === 0) return { ok: false, message: "선택된 지문이 없습니다." };
 
   const supabase = await createClient();
+  // 지문은 늘 폴더 차례로(선생님 2026-11-06: 교재·테스트지에서 지문 순서가 섞인다)
+  const projectIds = await sortProjectIdsByPassageOrder(supabase, picked);
   const base = cleanName(input.name) || defaultDocumentName(input.kind);
   const { data: same } = await supabase
     .from("lesson_material_documents")
@@ -298,7 +301,10 @@ export async function createIntegratedDocument(
     .is("deleted_at", null)
     .like("name", `${base.replace(/[%_\\]/g, (c) => `\\${c}`)}%`);
   const name = uniqueDocumentName(base, (same ?? []).map((row) => row.name as string));
-  const projectIds = [...new Set((input.projectIds ?? []).map((id) => String(id).trim()).filter(Boolean))];
+  const projectIds = await sortProjectIdsByPassageOrder(
+    supabase,
+    (input.projectIds ?? []).map((id) => String(id).trim()).filter(Boolean)
+  );
   const { data, error: insertError } = await supabase
     .from("lesson_material_documents")
     .insert({

@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
+import {
+  payloadPassageIds,
+  reorderPayloadByPassage,
+  sortProjectIdsByPassageOrder,
+} from "@/lib/lesson-materials/passage-order";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -27,9 +32,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, message: "저장할 워크북이 없습니다." });
     }
     const supabase = await createClient();
+    // 지문별 칸은 늘 폴더 차례로 저장한다(선생님 2026-11-06: 나중에 붙인 지문·누른 차례로 섞였다)
+    const { data: row } = await supabase
+      .from("lesson_material_documents")
+      .select("project_ids")
+      .eq("id", id)
+      .eq("kind", "workbook")
+      .maybeSingle();
+    const projectIds = await sortProjectIdsByPassageOrder(supabase, [
+      ...((row?.project_ids as string[] | null) ?? []),
+      ...payloadPassageIds(body.workbook),
+    ]);
+    const workbook = reorderPayloadByPassage(body.workbook, projectIds);
     const { data, error } = await supabase
       .from("lesson_material_documents")
-      .update({ payload: body.workbook, updated_at: new Date().toISOString() })
+      .update({ payload: workbook, ...(projectIds.length ? { project_ids: projectIds } : {}), updated_at: new Date().toISOString() })
       .eq("id", id)
       .eq("kind", "workbook")
       .eq("academy_id", profile.academy_id)
