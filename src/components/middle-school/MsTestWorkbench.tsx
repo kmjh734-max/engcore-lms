@@ -92,6 +92,49 @@ export function MsTestWorkbench({
   const [roundOf, setRoundOf] = useState<Record<MsWbTypeKey, number>>(DEFAULT_ROUND);
   const [printRound, setPrintRound] = useState(0);
 
+  /*
+   * 뽑은 테스트지를 과마다 이 컴퓨터에 남긴다(선생님 2026-11-06 「테스트지 정답을 출력하면 문제지랑 안 맞아」):
+   * 다시 뽑기·길이·유형·차시가 화면에만 있어서, 문제지를 뽑고 닫았다가 다시 열어 정답을 찍으면 기본값으로 다른 문항이 뽑혔다.
+   * 다시 열면 마지막에 쓴 설정 그대로 같은 문항이 나온다.
+   */
+  const storeKey = `engcore_ms_test_v1:${unit.id}`;
+  const [restored, setRestored] = useState(false);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storeKey);
+      if (raw) {
+        const s = JSON.parse(raw) as Partial<{ types: MsWbTypeKey[]; length: MsDrawLength; seed: string; title: string; duplex: boolean; roundsOn: boolean; roundOf: Record<MsWbTypeKey, number> }>;
+        if (Array.isArray(s.types)) setTypes(s.types.filter((t) => counts[t]));
+        if (s.length && LENGTHS.some((l) => l.id === s.length)) setLength(s.length);
+        if (typeof s.seed === "string" && s.seed) setSeed(s.seed);
+        if (typeof s.title === "string") setTitle(s.title);
+        if (typeof s.duplex === "boolean") setDuplex(s.duplex);
+        if (typeof s.roundsOn === "boolean") setRoundsOn(s.roundsOn);
+        if (s.roundOf && typeof s.roundOf === "object") setRoundOf({ ...DEFAULT_ROUND, ...s.roundOf });
+      }
+    } catch {
+      /* 저장된 것이 깨졌으면 기본값 */
+    }
+    setRestored(true);
+  }, [storeKey, counts]);
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      localStorage.setItem(storeKey, JSON.stringify({ types, length, seed, title, duplex, roundsOn, roundOf }));
+    } catch {
+      /* 저장 못 해도 화면은 그대로 */
+    }
+  }, [restored, storeKey, types, length, seed, title, duplex, roundsOn, roundOf]);
+  const resetSettings = () => {
+    setTypes(DEFAULT_TYPES.filter((t) => counts[t]));
+    setLength("normal");
+    setSeed(unit.id);
+    setTitle("");
+    setDuplex(true);
+    setRoundsOn(true);
+    setRoundOf(DEFAULT_ROUND);
+  };
+
   const sheetTitle = title.trim() || "테스트";
   const source = msSource(unit);
 
@@ -202,6 +245,12 @@ export function MsTestWorkbench({
             <button type="button" onClick={() => setSeed(`${Date.now()}`)} className="w-full rounded-lg bg-violet-600 py-1.5 text-sm font-semibold text-white hover:bg-violet-700">
               ↻ 다시 뽑기
             </button>
+            <p className="mt-2 text-[11px] leading-relaxed text-violet-700">
+              뽑은 문항·길이·유형·차시는 이 컴퓨터에 저장돼, 닫았다 다시 열어도 같은 테스트지와 정답지가 나옵니다.{" "}
+              <button type="button" onClick={resetSettings} className="font-semibold underline">
+                처음 설정으로
+              </button>
+            </p>
           </div>
 
           {GROUPS.map((g) => (
