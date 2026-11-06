@@ -177,6 +177,7 @@ const CORE_PROMPT = `${COMMON_HEADER}
 - from, to: 이 단계의 근거가 되는 문장 번호 범위(from ≤ to). 단계는 지문 순서대로 놓고, 앞 단계의 to보다 뒤 단계의 from이 커야 한다(범위가 겹치지 않게).
 [tf] 내용 일치 T/F 영어 문장 정확히 5개(각 12~25 words). 지문 문장을 그대로 베끼지 말고 내용 이해를 묻는다. {{TF_TRUE_COUNT}} 문항마다 먼저 evidence(근거 문장 번호)를 적고, F로 할 문장은 wrong에 지문과 어긋나는 점을 한국어로 적은 뒤 answer를 정한다. answer는 개수와 상관없이 지문에 비추어 판정한다 — 지문과 맞는 문장을 F로 두지 않는다. F를 만들려면 문장을 지문과 분명히 다르게 바꿔 쓴다(애매·추측·지문에 없는 내용 금지). T 문장도 지문에 그대로 근거가 있어야 한다(지문이 '~일 수 있다'고만 하면 단정하지 않는다).
 [keySentences] 서술형·영작에 나올 핵심 문장 번호 4개(주제문·핵심 주장·중요 구문이 있는 문장, 가능하면 8~35 words). 문장이 4개보다 적으면 모두.
+[낱말 수준 — titleEn·summary.en·flow.en·tf] 고등학교 교과서·수능 필수 어휘 수준의 쉬운 낱말로 쓴다(선생님 2026-11-06 「너무 어렵고 난해한 단어가 섞인다」). 지문에 나온 낱말이나 그보다 쉬운 낱말을 쓰고, 지문보다 어려운 말로 바꿔 쓰지 않는다. 학술어·문어체·드문 낱말(ameliorate, efficacy, salient, proliferation, paradigm, ubiquitous, juxtapose, exacerbate, mitigate, intrinsic, multifaceted, pivotal, underscore, foster, facilitate, leverage 등)과 관용구·비유는 쓰지 않는다. 지문의 핵심 명사(글감)는 어려워도 그대로 써도 된다.
 `;
 
 /**
