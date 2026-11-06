@@ -40,6 +40,7 @@ export const TEST_BOOK_FONTS_HREF =
 export const TEST_BOOK_CSS = `
 .tb-sheet{position:relative;box-sizing:border-box;width:210mm;height:${PAGE_H_MM}mm;padding:${PAD_Y_MM}mm ${PAD_X_MM}mm;background:#fff;color:#15171c;overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;font-size:9.5pt;line-height:1.5;word-break:keep-all;overflow-wrap:break-word;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:page;page-break-after:always}
 .tb-en{font-family:"Source Serif 4","Times New Roman",Georgia,serif}
+.tb-flow-psg{display:flex;align-items:baseline;justify-content:space-between;gap:3mm;margin:3.2mm 0 1.6mm;padding:0 0 .8mm;border-bottom:.8pt solid #15171c;font-size:10pt}.tb-flow-psg b{font-weight:800}.tb-flow-psg span{font-size:7.6pt;color:#6a707c;font-weight:600}
 .tb-measure{position:absolute;left:-10000px;top:0;visibility:hidden;pointer-events:none}
 .tb-measure .tb-sheet{height:auto;overflow:visible}
 .tb-foot{position:absolute;left:${PAD_X_MM}mm;right:${PAD_X_MM}mm;bottom:5.5mm;display:flex;align-items:center;gap:4mm;font-size:7.2pt;color:#8a909b;border-top:.4pt solid #e1e4e9;padding-top:1.4mm}
@@ -1535,6 +1536,53 @@ export const TestSheets = memo(function TestSheets({
           <span>{project.title}</span>
           <span>
             {page + 1} / {total}
+          </span>
+        </>
+      )}
+    />
+  );
+});
+
+/**
+ * 뽑은 테스트지를 지문마다 새 쪽으로 나누지 않고 쭉 이어 싣는다(선생님 2026-11-06 「페이지 분할이 심해 종이 낭비 —
+ * 정답지만 홀수 쪽, 나머지는 쫙 이어지게」). 지문이 바뀌는 곳에 지문 제목 줄을 넣고, 문항 번호는 지문마다 1부터(정답지와 같다).
+ */
+export const FlowTestSheets = memo(function FlowTestSheets({
+  entries,
+  title,
+  measureKey,
+}: {
+  entries: Array<{ index: number; project: TestBookProjectInput; sheet: TestSheet }>;
+  title: string;
+  measureKey: string;
+}) {
+  const total = entries.reduce((n, e) => n + sheetTotal(e.sheet), 0);
+  const sources = [...new Set(entries.map((e) => e.project.source?.trim()).filter(Boolean))];
+  const blocks: Block[] = [
+    { key: "who", node: <Who total={total} /> },
+    ...entries.flatMap((e, k) => {
+      const rows = e.sheet.sections.flatMap((sec, i) => sectionBlocks(sec, i + 1, `f${k}-${e.project.id}`));
+      if (!rows.length) return [];
+      const head = (
+        <div className="tb-flow-psg">
+          <b>{passageLabel(e.index, e.project)}</b>
+          {e.project.source?.trim() ? <span>{e.project.source.trim()}</span> : null}
+        </div>
+      );
+      // 지문 제목 줄이 쪽 끝에 홀로 남지 않게 첫 덩어리와 붙인다
+      return rows.map((r, j) => (j === 0 ? { key: r.key, node: <>{head}{r.node}</> } : r));
+    }),
+  ];
+  return (
+    <PagedSheet
+      blocks={blocks}
+      measureKey={measureKey}
+      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label={sources.length === 1 ? sources[0]! : title} />}
+      foot={(page, n) => (
+        <>
+          <span>{title}</span>
+          <span>
+            {page + 1} / {n}
           </span>
         </>
       )}

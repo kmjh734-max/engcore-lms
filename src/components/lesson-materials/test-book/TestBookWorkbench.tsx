@@ -3,7 +3,7 @@
 import { PASSAGE_PREP_CONCURRENCY } from "@/lib/lesson-materials/test-book";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { postJson } from "@/lib/lesson-materials/post-json";
@@ -78,6 +78,7 @@ import {
   TEST_BOOK_CSS,
   TestBookBrand,
   TestBookStudent,
+  FlowTestSheets,
   OddPageStart,
   TEST_BOOK_FONTS_HREF,
   TestSheets,
@@ -370,7 +371,7 @@ export function TestBookWorkbench({
   const [drawVocabOn, setDrawVocabOn] = useState(true);
   const [drawVocab, setDrawVocab] = useState<VocabExamOptions>(DEFAULT_VOCAB_EXAM);
   const [drawAnswers, setDrawAnswers] = useState(true);
-  /** 뽑은 테스트지: 시험지 제목·학생 이름(「이름」 칸), 양면 인쇄면 유형마다 새 종이(홀수 쪽) — 선생님 2026-11-04 */
+  /** 뽑은 테스트지: 시험지 제목·학생 이름(「이름」 칸), 양면 인쇄면 정답지만 새 종이(홀수 쪽)·시험지는 쭉 이어서 — 선생님 2026-11-04·11-06 */
   const [drawSheetTitle, setDrawSheetTitle] = useState("");
   const [drawStudent, setDrawStudent] = useState("");
   const [drawDuplex, setDrawDuplex] = useState(true);
@@ -617,17 +618,6 @@ export function TestBookWorkbench({
       .map((p) => ({ project: p, sheet: buildTestSheet(p, draw.picks[p.id]!, { seed: draw.seed, blankMode, writing: drawWriting, lineMode: drawLineMode, level: drawLevel }) }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draw, blankMode, drawWriting, drawLineMode, drawLevel, edited]);
-  /** 양면 인쇄: 유형마다 한 묶음(지문 차례) — 유형 하나가 나눠 줄 종이 한 묶음 */
-  const drawByType = useMemo(() => {
-    const order: string[] = [];
-    for (const d of drawn) for (const sec of d.sheet.sections) if (!order.includes(sec.type)) order.push(sec.type);
-    return order.map((type) => ({
-      type,
-      items: drawn
-        .map((d) => ({ ...d, sheet: { ...d.sheet, sections: d.sheet.sections.filter((sec) => sec.type === type) } }))
-        .filter((d) => d.sheet.sections.length > 0),
-    }));
-  }, [drawn]);
 
   // ---------------------------------------------------------------- 교재 차례·목차
   const testsOn = options.tests && book.length > 0 && (options.allWordTest || options.wordTest || options.types.length > 0);
@@ -1136,8 +1126,8 @@ export function TestBookWorkbench({
               <label className="flex items-start gap-2 text-xs font-semibold text-slate-700">
                 <input type="checkbox" className="mt-0.5" checked={drawDuplex} onChange={(e) => setDrawDuplex(e.target.checked)} />
                 <span>
-                  양면 인쇄 · 유형마다 새 종이
-                  <span className="block text-[10.5px] font-normal text-slate-400">유형별로 나눠 홀수 쪽에서 시작(나눠 줄 수 있게)</span>
+                  양면 인쇄 · 정답지는 새 종이
+                  <span className="block text-[10.5px] font-normal text-slate-400">시험지는 쭉 이어 싣고, 정답지만 홀수 쪽에서 시작</span>
                 </span>
               </label>
               <label className="block text-xs font-semibold text-slate-700">
@@ -1348,25 +1338,13 @@ export function TestBookWorkbench({
                 <>
                   <TestBookStudent.Provider value={drawStudent.trim()}>
                   {drawVocabExam ? <VocabExamSheets exam={drawVocabExam} measureKey={measureKey} title={drawSheetTitle.trim() || undefined} /> : null}
-                  {drawDuplex
-                    ? drawByType.map((g) => (
-                        <Fragment key={g.type}>
-                          <OddPageStart on />
-                          {g.items.map((d) => (
-                            <TestSheets
-                              key={`${d.project.id}-${g.type}`}
-                              index={indexOf(d.project.id)}
-                              project={d.project}
-                              sheet={d.sheet}
-                              title={drawSheetTitle.trim() || "테스트"}
-                              measureKey={measureKey}
-                            />
-                          ))}
-                        </Fragment>
-                      ))
-                    : drawn.map((d) => (
-                        <TestSheets key={d.project.id} index={indexOf(d.project.id)} project={d.project} sheet={d.sheet} title={drawSheetTitle.trim() || "테스트"} measureKey={measureKey} />
-                      ))}
+                  {drawn.length ? (
+                    <FlowTestSheets
+                      entries={drawn.map((d) => ({ index: indexOf(d.project.id), project: d.project, sheet: d.sheet }))}
+                      title={drawSheetTitle.trim() || "테스트"}
+                      measureKey={measureKey}
+                    />
+                  ) : null}
                   </TestBookStudent.Provider>
                   {drawAnswers ? <OddPageStart on={drawDuplex} /> : null}
                   {drawAnswers && drawVocabExam ? <VocabExamAnswerSheets exam={drawVocabExam} measureKey={measureKey} /> : null}

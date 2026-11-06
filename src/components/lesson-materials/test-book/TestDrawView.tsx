@@ -1,19 +1,19 @@
 "use client";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { downloadSheetsPdf, pdfFileName } from "@/lib/pdf/download-sheets-pdf";
 import type { TestBookProjectInput, TestSheet, VocabExam } from "@/lib/lesson-materials/test-book";
 import { useMaterialDesign } from "@/lib/lesson-materials/material-design";
 import {
   AnswerSheets,
+  FlowTestSheets,
   OddPageStart,
   TEST_BOOK_CSS,
   TEST_BOOK_FONTS_HREF,
   TestBookBrand,
   TestBookStudent,
-  TestSheets,
   VocabExamAnswerSheets,
   VocabExamSheets,
 } from "@/components/lesson-materials/test-book/TestBookSheets";
@@ -49,7 +49,7 @@ export function TestDrawView({
 }) {
   const base = role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials";
   const [answers, setAnswers] = useState(true);
-  /** 시험지 제목·학생 이름(「이름」 칸) · 양면 인쇄면 유형마다 새 종이(홀수 쪽) — 선생님 2026-11-04 */
+  /** 시험지 제목·학생 이름(「이름」 칸) · 양면 인쇄면 정답지만 새 종이(홀수 쪽), 시험지는 쭉 이어서 — 선생님 2026-11-04·11-06 */
   const [sheetTitle, setSheetTitle] = useState("");
   const [student, setStudent] = useState("");
   const [duplex, setDuplex] = useState(true);
@@ -61,17 +61,6 @@ export function TestDrawView({
   const sheets = useMemo(() => payload.sheets ?? [], [payload.sheets]);
   const asProject = (p: TestDrawPayload["sheets"][number]["project"]) =>
     ({ ...p, sentences: [], content: null, material: null }) as TestBookProjectInput;
-  /** 유형마다 한 묶음(지문 차례) — 나눠 줄 종이 한 묶음 */
-  const byType = useMemo(() => {
-    const order: string[] = [];
-    for (const s of sheets) for (const sec of s.sheet.sections) if (!order.includes(sec.type)) order.push(sec.type);
-    return order.map((type) => ({
-      type,
-      items: sheets
-        .map((s) => ({ ...s, sheet: { ...s.sheet, sections: s.sheet.sections.filter((sec) => sec.type === type) } }))
-        .filter((s) => s.sheet.sections.length > 0),
-    }));
-  }, [sheets]);
 
   // 바닥줄 쪽 번호(교재 화면과 같다)
   useEffect(() => {
@@ -135,8 +124,8 @@ export function TestDrawView({
         <label className="flex items-start gap-2 text-xs font-semibold text-slate-700">
           <input type="checkbox" className="mt-0.5" checked={duplex} onChange={(e) => setDuplex(e.target.checked)} />
           <span>
-            양면 인쇄 · 유형마다 새 종이
-            <span className="block text-[10.5px] font-normal text-slate-400">유형별로 나눠 홀수 쪽에서 시작(나눠 줄 수 있게)</span>
+            양면 인쇄 · 정답지는 새 종이
+            <span className="block text-[10.5px] font-normal text-slate-400">시험지는 쭉 이어 싣고, 정답지만 홀수 쪽에서 시작</span>
           </span>
         </label>
         <label className="block text-xs font-semibold text-slate-700">
@@ -178,18 +167,13 @@ export function TestDrawView({
             <div id="tb-print-root" className={`tb-theme-${md} relative flex flex-col gap-6 print:gap-0 [&_.tb-sheet]:shadow`}>
               <TestBookStudent.Provider value={student.trim()}>
                 {payload.vocabExam ? <VocabExamSheets exam={payload.vocabExam} measureKey="saved" title={sheetTitle.trim() || undefined} /> : null}
-                {duplex
-                  ? byType.map((g) => (
-                      <Fragment key={g.type}>
-                        <OddPageStart on />
-                        {g.items.map((s) => (
-                          <TestSheets key={`${s.project.id}-${g.type}`} index={s.project.index} project={asProject(s.project)} sheet={s.sheet} title={title} measureKey="saved" />
-                        ))}
-                      </Fragment>
-                    ))
-                  : sheets.map((s) => (
-                      <TestSheets key={s.project.id} index={s.project.index} project={asProject(s.project)} sheet={s.sheet} title={title} measureKey="saved" />
-                    ))}
+                {sheets.length ? (
+                  <FlowTestSheets
+                    entries={sheets.map((s) => ({ index: s.project.index, project: asProject(s.project), sheet: s.sheet }))}
+                    title={title}
+                    measureKey="saved"
+                  />
+                ) : null}
               </TestBookStudent.Provider>
               {answers ? <OddPageStart on={duplex} /> : null}
               {answers && payload.vocabExam ? <VocabExamAnswerSheets exam={payload.vocabExam} measureKey="saved" /> : null}
