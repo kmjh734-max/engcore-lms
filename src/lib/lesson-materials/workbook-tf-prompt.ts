@@ -36,7 +36,8 @@ JSON만 출력한다.
 - difficulty가 hard이면 세부 정보·추론·부분부정·인과 방향을 더 까다롭게 한다.
 - statement에 [T]/[F]나 정답 힌트를 넣지 않는다.
 - 같은 지문에서 일반형과 난이도 UP의 정답 배열이 동일하게 반복되지 않도록 문항 순서를 섞어라. 또한 각 문항은 서로 다른 근거 또는 논리 관계를 다루고, 동일한 핵심 내용을 표현만 바꿔 중복 출제하지 마라.
-- 생성된 영어 진술문을 확정하기 전에 문법적 정확성과 자연스러운 영어 표현을 검수하라. 원문의 표현을 억지로 조합한 문장이나 ‘the same area of a chair’와 같은 부자연스러운 표현은 자연스러운 패러프레이즈로 수정하라.`;
+- 생성된 영어 진술문을 확정하기 전에 문법적 정확성과 자연스러운 영어 표현을 검수하라. 원문의 표현을 억지로 조합한 문장이나 ‘the same area of a chair’와 같은 부자연스러운 표현은 자연스러운 패러프레이즈로 수정하라.
+- 낱말 수준(선생님 2026-11-06 「너무 어렵고 난해한 단어가 섞인다」): 영어 진술은 고등학교 교과서·수능 필수 어휘 수준의 쉬운 낱말로 쓴다. 지문에 나온 낱말이나 그보다 쉬운 낱말을 쓰고 지문보다 어려운 말로 바꿔 쓰지 않는다. 학술어·문어체·드문 낱말(ameliorate, efficacy, salient, proliferation, paradigm, ubiquitous, exacerbate, mitigate, intrinsic, multifaceted, pivotal, underscore, foster, facilitate, leverage 등)과 관용구는 쓰지 않는다. 지문의 핵심 명사(글감)는 그대로 써도 된다.`;
 
 export function buildWorkbookTfUserPrompt(input: {
   title?: string;
