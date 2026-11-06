@@ -174,7 +174,6 @@ export function TestDrawView({
                     measureKey="saved"
                   />
                 ) : null}
-              </TestBookStudent.Provider>
               {answers ? <OddPageStart on={duplex} /> : null}
               {answers && payload.vocabExam ? <VocabExamAnswerSheets exam={payload.vocabExam} measureKey="saved" /> : null}
               {answers && sheets.length ? (
@@ -184,6 +183,7 @@ export function TestDrawView({
                   measureKey="saved"
                 />
               ) : null}
+              </TestBookStudent.Provider>
             </div>
           </TestBookBrand.Provider>
         </div>

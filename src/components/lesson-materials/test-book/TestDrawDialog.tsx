@@ -99,31 +99,34 @@ function estimateMinutes(sheets: TestSheet[], vocabItems: number): number {
   return Math.max(1, Math.round(sec / 60));
 }
 /** 고른 유형을 열쇠로 섞어 지문마다 차례로 k개씩(골고루, 같은 열쇠면 같은 배정) */
-function assignTypes(ids: string[], types: TestBookTypeKey[], k: number, seed: string): Record<string, TestBookTypeKey[]> {
-  // 어법·어휘는 시험의 기본 밀도를 좌우하므로 선택하면 모든 지문에 우선 배치한다.
-  // 예전에는 이 둘도 무작위 배정되어 여러 지문에서 통째로 빠졌다.
+/**
+ * 지문마다 실을 유형(선생님 2026-11-06 「해석 적기·빈칸·T/F가 한 지문에만 몰린다 — 고른 유형은 여러 지문에서 고루」):
+ * 문장·자리 단위 유형(해석·빈칸·T/F·어순배열·영작·어법·어휘 등)은 고른 지문 모두에 싣고, 대신 지문당 문항 수를 줄여
+ * 전체 분량을 예전(지문마다 유형 몇 개씩 돌려 주던 때)과 비슷하게 맞춘다(share). 지문 통째 유형(요약문·도식화·제목·요지·
+ * 글의 순서·삽입·문장 순서·연결어)은 지문마다 하나씩 돌려 준다.
+ */
+function assignTypes(ids: string[], types: TestBookTypeKey[], k: number, seed: string): { picks: Record<string, TestBookTypeKey[]>; share: number } {
+  const isSet = (t: TestBookTypeKey) => WHOLE_PASSAGE_TYPES.has(t) || SET_COUNT_TYPES.has(t) || t === "link";
   const pinned: TestBookTypeKey[] = types.filter((type) => type === "grammar" || type === "vocab");
-  const order = types.filter((type) => !pinned.includes(type));
+  const spread = types.filter((t) => !pinned.includes(t) && !isSet(t));
+  const sets = types.filter((t) => !pinned.includes(t) && isSet(t));
   let h = 2166136261;
   for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
-  for (let i = order.length - 1; i > 0; i--) {
+  for (let i = sets.length - 1; i > 0; i--) {
     h = (Math.imul(h, 1103515245) + 12345) >>> 0;
     const j = h % (i + 1);
-    [order[i], order[j]] = [order[j]!, order[i]!];
+    [sets[i], sets[j]] = [sets[j]!, sets[i]!];
   }
-  const want = Math.min(Math.max(k, pinned.length), types.length);
+  // 예전에는 지문마다 (k - 고정 유형) 개만 돌려 받았다 — 그만큼의 비율로 지문당 문항 수를 줄인다
+  const slots = Math.max(1, Math.min(Math.max(k, pinned.length), types.length) - pinned.length);
+  const share = Math.min(1, slots / Math.max(1, spread.length + sets.length));
   const out: Record<string, TestBookTypeKey[]> = {};
-  let cursor = 0;
-  for (const id of ids) {
-    const picked: TestBookTypeKey[] = [...pinned];
-    while (picked.length < want && order.length > 0) {
-      const t = order[cursor % order.length]!;
-      cursor += 1;
-      if (!picked.includes(t)) picked.push(t);
-    }
+  ids.forEach((id, i) => {
+    const picked: TestBookTypeKey[] = [...pinned, ...spread];
+    if (sets.length) picked.push(sets[i % sets.length]!);
     out[id] = TEST_BOOK_TYPES.map((x) => x.key).filter((t) => picked.includes(t));
-  }
-  return out;
+  });
+  return { picks: out, share };
 }
 type PrepareResult = Awaited<ReturnType<typeof prepareWorkbookExtrasAction>>;
 
@@ -245,14 +248,20 @@ export function TestDrawDialog({
   function makeSnapshot(seed: string) {
     const auto = mode === "auto";
     const preset = AUTO[size];
-    const picks = auto
-      ? assignTypes(chosen.map((p) => p.id), types, preset.perPassage, seed)
-      : Object.fromEntries(chosen.map((p) => [p.id, types] as const));
+    const assigned = auto ? assignTypes(chosen.map((p) => p.id), types, preset.perPassage, seed) : null;
+    const picks = assigned ? assigned.picks : Object.fromEntries(chosen.map((p) => [p.id, types] as const));
+    // 자동이면 모든 지문에 싣는 유형의 지문당 문항 수를 비율만큼 줄인다(최소 1)
+    const useLimits: TestLimits = { ...limits };
+    if (assigned && assigned.share < 1) {
+      for (const [t, n] of Object.entries(limits) as Array<[TestBookTypeKey, number | undefined]>) {
+        if (typeof n === "number" && n > 0) useLimits[t] = Math.max(1, Math.round(n * assigned.share));
+      }
+    }
     const vocabOpts = vocab;
     return {
       sheets: chosen.map((p) => ({
         project: { id: p.id, index: indexOf(p.id), title: p.title, titleEn: p.titleEn, source: p.source },
-        sheet: buildTestSheet(p, picks[p.id]!, { seed, blankMode, writing, lineMode, level, limits }),
+        sheet: buildTestSheet(p, picks[p.id]!, { seed, blankMode, writing, lineMode, level, limits: useLimits }),
       })),
       vocabExam: vocabOn
         ? buildVocabExam(
@@ -432,12 +441,12 @@ export function TestDrawDialog({
                           size === k ? "border-violet-500 bg-violet-600 text-white" : "border-slate-200 bg-white text-slate-600"
                         }`}
                       >
-                        {AUTO[k].label} · 지문당 {AUTO[k].perPassage}유형
+                        {AUTO[k].label}
                       </button>
                     ))}
                   </div>
                   <p className="text-[11px] leading-relaxed text-slate-600">
-                    고른 유형을 지문마다 {AUTO[size].perPassage}개씩 골고루 나눠 무작위로 뽑고, 유형마다 지문당 문항 수를 줄입니다.
+                    고른 유형을 고른 지문 모두에 고루 싣고(요약문·글의 순서 같은 지문 통째 유형은 지문마다 하나씩), 분량에 맞춰 지문당 문항 수를 줄여 무작위로 뽑습니다.
                     <button type="button" onClick={() => setShowRule((v) => !v)} className="ml-1 font-semibold text-violet-700 underline">
                       {showRule ? "기준 닫기" : "기준 보기"}
                     </button>

@@ -1345,7 +1345,6 @@ export function TestBookWorkbench({
                       measureKey={measureKey}
                     />
                   ) : null}
-                  </TestBookStudent.Provider>
                   {drawAnswers ? <OddPageStart on={drawDuplex} /> : null}
                   {drawAnswers && drawVocabExam ? <VocabExamAnswerSheets exam={drawVocabExam} measureKey={measureKey} /> : null}
                   {drawAnswers ? (
@@ -1355,6 +1354,7 @@ export function TestBookWorkbench({
                       measureKey={measureKey}
                     />
                   ) : null}
+                  </TestBookStudent.Provider>
                 </>
               ) : (
                 <div className="flex h-[60mm] w-[210mm] items-center justify-center rounded bg-white/70 text-sm text-slate-500 shadow print:hidden">

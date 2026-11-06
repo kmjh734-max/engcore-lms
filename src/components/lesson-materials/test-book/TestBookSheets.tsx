@@ -533,6 +533,8 @@ export function PagedSheet({
     });
     if (cur.length || out.length === 0) out.push(cur);
     setPages((prev) => (JSON.stringify(prev) === JSON.stringify(out) ? prev : out));
+    // blocks 는 열쇠(blockKeys)로 본다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blockKeys, measureKey, mounted, fontTick]);
   if (!mounted) return null;
   return (
@@ -1817,6 +1819,8 @@ export const AnswerSheets = memo(function AnswerSheets({
   measureKey: string;
   title?: string;
 }) {
+  // 테스트지에 학생 이름을 넣었으면 정답지 머리에도 찍는다(선생님 2026-11-06)
+  const student = useContext(TestBookStudent);
   // 지문 머리 + 단어 정답은 한 덩어리, 유형 정답은 문항마다 덩어리 — 길어지면 쪽을 넘긴다
   const blocks: Block[] = entries.flatMap((e, k) => {
     const head: Block = {
@@ -1911,7 +1915,7 @@ export const AnswerSheets = memo(function AnswerSheets({
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right="정답만 싣습니다" />}
+      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right={student ? `이름 ${student}` : "정답만 싣습니다"} />}
     />
   );
 });
