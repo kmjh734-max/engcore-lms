@@ -83,6 +83,7 @@ import {
   type WorkbookWordOrderWritingSection,
 } from "@/lib/lesson-materials/workbook-types";
 import { formatAnswerOrderSequence } from "@/lib/lesson-materials/sentence-order-shuffle";
+import { sameCaseChoices } from "@/lib/lesson-materials/choice-case";
 import {
   buildGrammarFixSections,
   buildVocabFixSections,
@@ -822,9 +823,9 @@ function GrammarChoiceQuestionBody({
             >
               <span className="grammar-choice-num">{circledNumber(seg.number)}</span>
               <span className="grammar-choice-br">[</span>
-              {seg.leftText}
+              {sameCaseChoices(seg.leftText, seg.rightText)[0]}
               <span className="grammar-choice-or"> / </span>
-              {seg.rightText}
+              {sameCaseChoices(seg.leftText, seg.rightText)[1]}
               <span className="grammar-choice-br">]</span>
             </span>
           )
@@ -3857,25 +3858,18 @@ export function WorkbookWorkbench({
       });
     });
   };
+  /*
+   * 재료가 모자라 못 만든 지문 안내는 정답지에 싣지 않는다 — 정답지는 정답만(선생님 2026-11-06 검수:
+   * 정답지에 「재료가 모자라…」 줄만 있는 빈 쪽이 생겼다). 못 만든 지문은 그 유형 문제에 지문이 없는 것으로 보인다.
+   */
   const addSkipped = (
     key: string,
     order: number,
     list: ReadonlyArray<{ projectId: string; title: string; reason: string }>
   ) => {
-    if (list.length === 0) return;
-    answerBlocks.push({
-      key,
-      order,
-      node: (
-        <ul className="space-y-1 text-[11px] text-amber-700">
-          {list.map((s) => (
-            <li key={`${key}-${s.projectId}`}>
-              「{s.title}」 {s.reason}
-            </li>
-          ))}
-        </ul>
-      ),
-    });
+    void key;
+    void order;
+    void list;
   };
   {
     const ob = typeOrders.get("blank_fill");

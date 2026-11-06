@@ -11,6 +11,7 @@
  * 섞기는 열쇠(seed)로 정해진다 — 교재 견본은 늘 같은 열쇠, 뽑기는 누를 때마다 새 열쇠.
  */
 import { fixVocabWord, isBadWordForm, isEmptyVocabWord, isProperNounVocab } from "@/lib/lesson-materials/bad-word-forms";
+import { sameCaseChoices } from "@/lib/lesson-materials/choice-case";
 import {
   createSeededRng,
   fisherYatesShuffle,
@@ -866,7 +867,7 @@ function choiceSectionTest(
     }
     const n = circled(items.length);
     const swap = !book && hashSeedToUint32(`${seed}|wgc|${seg.number}`) % 2 === 1;
-    passage.push({ pick: swap ? [seg.rightText, seg.leftText] : [seg.leftText, seg.rightText], n });
+    passage.push({ pick: swap ? sameCaseChoices(seg.rightText, seg.leftText) : sameCaseChoices(seg.leftText, seg.rightText), n });
     items.push({ no: n, text: [], answer: it?.correctText ?? "" });
   }
   if (!items.length) return null;

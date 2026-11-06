@@ -1,5 +1,6 @@
 "use client";
 
+import { sameCaseChoices } from "@/lib/lesson-materials/choice-case";
 import {
   Fragment,
   useCallback,
@@ -843,7 +844,7 @@ function TestSentence({ row }: { row: OnePageTestRow }) {
           return (
             <Fragment key={i}>
               <b className="op-tc">
-                [{seg.leftText} / {seg.rightText}]
+                [{sameCaseChoices(seg.leftText, seg.rightText).join(" / ")}]
               </b>
               <sup>{seg.number})</sup>
             </Fragment>
