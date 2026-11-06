@@ -35,7 +35,7 @@ const PAD_X_MM = 14;
 const FOOT_MM = 6;
 
 export const TEST_BOOK_FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Noto+Sans+KR:wght@400;500;700;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap";
+  "https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&display=swap";
 
 export const TEST_BOOK_CSS = `
 .tb-sheet{position:relative;box-sizing:border-box;width:210mm;height:${PAGE_H_MM}mm;padding:${PAD_Y_MM}mm ${PAD_X_MM}mm;background:#fff;color:#15171c;overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;font-size:9.5pt;line-height:1.5;word-break:keep-all;overflow-wrap:break-word;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:page;page-break-after:always}

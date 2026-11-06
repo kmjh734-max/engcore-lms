@@ -71,7 +71,7 @@ const DESIGN_STYLES: Array<{ id: OnePageDesignStyle; label: string; hint: string
 ];
 /** A·B·C가 쓰는 글꼴. */
 const DESIGN_FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,500&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&family=Gowun+Batang:wght@400;700&display=swap";
+  "/fonts/print/fonts.css";
 
 /** 요약자료 버전(A 포괄형 / B 문장별). 모든 학원에서 고른다(선생님 결정 2026-10-05). */
 const SUMMARY_LAYOUT_KEY = "one-page-summary-layout";

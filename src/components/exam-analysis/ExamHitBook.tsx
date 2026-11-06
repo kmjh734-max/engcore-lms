@@ -466,7 +466,7 @@ export function ExamHitBook({ book, academyName, backHref }: { book: HitBook; ac
     <>
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&display=swap"
       />
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
       <HitBookTools backHref={backHref} />

@@ -342,4 +342,4 @@ export function gradeAccent(palette: BookCoverPalette, grade: string): string {
 
 /** 표지가 쓰는 글꼴(Google Fonts). 인쇄 전에 document.fonts.ready를 기다린다. */
 export const BOOK_COVER_FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Archivo:wdth,wght@62..125,100;62..125,200;62..125,500;62..125,700;62..125,800;62..125,900&family=Playfair+Display:ital,wght@1,700;1,900&display=block";
+  "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100;62..125,200;62..125,500;62..125,700;62..125,800;62..125,900&family=Playfair+Display:ital,wght@1,700;1,900&display=block";

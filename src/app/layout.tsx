@@ -8,6 +8,8 @@ import {
   SITE_URL,
 } from "@/lib/branding";
 import "./fonts/pretendard/pretendardvariable-dynamic-subset.css";
+// 인쇄 자료 글꼴: 조각내지 않은 한 파일·고정 굵기(인쇄 스풀링이 느리던 원인 — 2026-11-06)
+import "./fonts/print-fonts.css";
 import "./globals.css";
 
 const SHARE_IMAGE = "/og/engcore-share.png";

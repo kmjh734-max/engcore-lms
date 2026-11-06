@@ -9,7 +9,7 @@ import {
 
 /** 새 표지(타이포 블록 · 다크 네온 · 블록+네온)에 쓰는 글꼴 */
 const COVER_FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Anton&family=Black+Han+Sans&display=swap";
+  "https://fonts.googleapis.com/css2?family=Anton&display=swap";
 
 const ANTON = "'Anton', 'Arial Narrow', sans-serif";
 const HANGUL_DISPLAY = "'Black Han Sans', 'Noto Sans KR', sans-serif";
