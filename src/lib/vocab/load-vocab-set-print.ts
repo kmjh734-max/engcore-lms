@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { VocabItem, VocabSet } from "@/types/database";
-import type { VocabPrintSection } from "@/lib/vocab/vocab-print-types";
+import type { VocabPassageGroup, VocabPrintSection } from "@/lib/vocab/vocab-print-types";
 import { chunkIds, fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 const VOCAB_ITEM_PRINT_COLS =
@@ -9,6 +9,62 @@ const VOCAB_ITEM_PRINT_COLS =
 export interface VocabSetPrintData {
   set: VocabSet;
   items: VocabItem[];
+  passageGroups: VocabPassageGroup[];
+}
+
+/**
+ * 수업자료(최종통합자료·테스트 교재·수업용 자료)에서 「단어학습에 등록」한 단어장이면, 단어마다 어느 지문 단어인지
+ * 찾아 지문별 번호 구간을 만든다. 등록할 때처럼 지문 차례대로, 같은 단어는 처음 나온 지문 것으로 본다.
+ * 수업자료에서 만든 단어장이 아니면 빈 목록.
+ */
+export async function loadVocabPassageGroups(
+  supabase: SupabaseClient,
+  setId: string,
+  items: Pick<VocabItem, "word">[]
+): Promise<VocabPassageGroup[]> {
+  if (!items.length) return [];
+  const { data: docs } = await supabase
+    .from("lesson_material_documents")
+    .select("project_ids")
+    .eq("payload->>vocabSetId", setId)
+    .is("deleted_at", null)
+    .order("updated_at", { ascending: false })
+    .limit(1);
+  const ids = ((docs?.[0]?.project_ids as string[] | null) ?? []).filter(Boolean);
+  if (!ids.length) return [];
+  const { data: projects } = await supabase
+    .from("lesson_material_projects")
+    .select("id,title,source,words:lesson_pack_json->testBookMaterial->vocab")
+    .in("id", ids);
+  const byId = new Map((projects ?? []).map((p) => [p.id as string, p] as const));
+  const owner = new Map<string, string>();
+  const labelOf = new Map<string, string>();
+  for (const id of ids) {
+    const p = byId.get(id);
+    if (!p) continue;
+    labelOf.set(id, String(p.source || p.title || "지문"));
+    for (const row of (Array.isArray(p.words) ? p.words : []) as Array<{ word?: unknown }>) {
+      const k = String(row?.word ?? "").trim().toLowerCase();
+      if (k && !owner.has(k)) owner.set(k, id);
+    }
+  }
+  if (!owner.size) return [];
+  // 단어 차례대로 이어진 같은 지문을 한 구간으로. 찾지 못한 단어(나중에 넣은 것)는 앞 구간에 붙인다.
+  const groups: Array<VocabPassageGroup & { id: string }> = [];
+  items.forEach((it, i) => {
+    const id = owner.get(String(it.word ?? "").trim().toLowerCase()) ?? groups.at(-1)?.id ?? null;
+    if (!id) return;
+    const last = groups.at(-1);
+    if (last && last.id === id) last.to = i + 1;
+    else groups.push({ id, label: labelOf.get(id) ?? "지문", from: i + 1, to: i + 1 });
+  });
+  if (groups.length < 2) return [];
+  const seen = new Map<string, number>();
+  return groups.map(({ label, from, to }) => {
+    const n = (seen.get(label) ?? 0) + 1;
+    seen.set(label, n);
+    return { label: n > 1 ? `${label} (${n})` : label, from, to };
+  });
 }
 
 /** RLS가 읽기 권한을 결정한다(강사: 본인 세트 + 잠금 커리큘럼). */
@@ -33,6 +89,7 @@ export async function loadVocabSetPrintData(
   return {
     set: set as VocabSet,
     items,
+    passageGroups: await loadVocabPassageGroups(supabase, setId, items).catch(() => []),
   };
 }
 

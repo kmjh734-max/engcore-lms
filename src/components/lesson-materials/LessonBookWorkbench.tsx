@@ -1,6 +1,7 @@
 "use client";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
+import { useDocumentName } from "@/components/lesson-materials/useDocumentName";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { askCreditConfirm } from "@/lib/credits/confirm-store";
 import { postJson } from "@/lib/lesson-materials/post-json";
@@ -82,6 +83,8 @@ export function LessonBookWorkbench({
   const base = role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials";
   const ids = initialProjects.map((p) => p.id);
   const docIdRef = useRef<string | null>(null);
+  /** PDF 저장 이름은 자료 이름으로(선생님 2026-11-06) */
+  const docName = useDocumentName(role);
   useEffect(() => {
     docIdRef.current = new URLSearchParams(window.location.search).get("doc");
   }, []);
@@ -479,9 +482,9 @@ export function LessonBookWorkbench({
             disabled={!!pdf.busy}
             onClick={() =>
               void pdf.save(
-                "수업용 자료",
+                "수업용자료",
                 collectPrintPages(document.getElementById("lesson-pack-print-root"), PDF_SELECTOR),
-                [ready[0]?.title ?? "수업용 자료"]
+                [docName ?? ready[0]?.title ?? "수업용 자료"]
               )
             }
             className="w-full rounded-xl border border-violet-300 bg-white py-2.5 text-sm font-bold text-violet-800 hover:bg-violet-50 disabled:opacity-50"

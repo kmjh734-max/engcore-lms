@@ -7,6 +7,7 @@ import type {
   ExamPrintLayout,
   ExamPrintSettings,
 } from "@/lib/vocab/vocab-print-exam-config";
+import type { VocabPassageGroup } from "@/lib/vocab/vocab-print-types";
 import {
   EXAM_COLUMN_LABELS,
   EXAM_LINE_SPACING_LABELS,
@@ -23,6 +24,8 @@ interface VocabPrintExamConfigProps {
   wordCount: number;
   /** 범위 안에서 동의어·반의어가 적힌 단어 수 */
   relationCounts: { syn: number; ant: number };
+  /** 수업자료 단어장이면 지문별 번호 구간 — 있으면 지문으로도 범위를 고른다 */
+  passageGroups?: VocabPassageGroup[];
 }
 
 const ROWS = [
@@ -42,6 +45,7 @@ export function VocabPrintExamConfig({
   onReshuffle,
   wordCount,
   relationCounts,
+  passageGroups = [],
 }: VocabPrintExamConfigProps) {
   const { counts, layout } = settings;
   const range = resolveExamRange(settings, wordCount);
@@ -138,6 +142,9 @@ export function VocabPrintExamConfig({
           {range.from}~{range.to}번 단어 {maxPool}개에서 내요. 비워 두면 단어장 전체({wordCount}개).
         </p>
       </div>
+      {passageGroups.length > 1 ? (
+        <PassageRangePicker groups={passageGroups} range={range} onPick={(from, to) => setRange(from, to)} />
+      ) : null}
 
       <p className="border-t border-slate-200 pt-3 text-[13px] font-medium text-slate-600">
         문항 수 · 단어·의미·예문은 합계 {maxPool}문항까지, 동의어·반의어는 따로 더할 수 있어요 (예문 문항은 마지막에 1단)
@@ -263,6 +270,80 @@ export function VocabPrintExamConfig({
             : "범위 안 단어를 번호 순서대로 내요."}
         </p>
       </div>
+    </div>
+  );
+}
+
+/**
+ * 지문(출처)별로 범위 고르기(선생님 2026-11-06). 단어장이 지문 차례로 들어 있어 지문 몇 개는 늘 이어진 번호다 —
+ * 고르면 위 단어 번호 칸이 그 지문들의 처음·끝 번호로 바뀐다.
+ */
+function PassageRangePicker({
+  groups,
+  range,
+  onPick,
+}: {
+  groups: VocabPassageGroup[];
+  range: { from: number; to: number };
+  onPick: (from: number, to: number) => void;
+}) {
+  const startAt = groups.findIndex((g) => g.from === range.from);
+  const endAt = groups.findIndex((g) => g.to === range.to);
+  const matched = startAt >= 0 && endAt >= startAt;
+  const a = matched ? startAt : -1;
+  const b = matched ? endAt : -1;
+  const short = (label: string) => label.replace(/^\d{4}년\s*/, "").replace(/학력평가\s*/, "");
+  const pick = (na: number, nb: number) => {
+    if (na < 0 && nb < 0) return;
+    const s = na < 0 ? nb : na;
+    const e = nb < 0 ? na : nb;
+    const lo = Math.min(s, e);
+    const hi = Math.max(s, e);
+    onPick(groups[lo].from, groups[hi].to);
+  };
+  const selectClass =
+    "min-w-0 flex-1 rounded-md border border-slate-300 bg-white px-2 py-1.5 text-[13px] text-slate-700 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100";
+  return (
+    <div className="space-y-1.5">
+      <span className="text-[13px] font-medium text-slate-600">출제 범위 (지문별)</span>
+      <div className="flex items-center gap-1.5">
+        <select aria-label="처음 지문" value={a} onChange={(e) => pick(Number(e.target.value), b)} className={selectClass}>
+          <option value={-1}>처음 지문</option>
+          {groups.map((g, i) => (
+            <option key={i} value={i}>
+              {short(g.label)} ({g.to - g.from + 1})
+            </option>
+          ))}
+        </select>
+        <span className="text-[13px] text-slate-500">~</span>
+        <select aria-label="끝 지문" value={b} onChange={(e) => pick(a, Number(e.target.value))} className={selectClass}>
+          <option value={-1}>끝 지문</option>
+          {groups.map((g, i) => (
+            <option key={i} value={i}>
+              {short(g.label)} ({g.to - g.from + 1})
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {groups.map((g, i) => {
+          const on = matched && i >= a && i <= b;
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => onPick(g.from, g.to)}
+              title={`${g.label} · ${g.from}~${g.to}번`}
+              className={`rounded-md border px-2 py-0.5 text-xs font-semibold ${
+                on ? "border-brand-500 bg-brand-50 text-brand-700" : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50"
+              }`}
+            >
+              {short(g.label)}
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-xs text-slate-500">지문을 누르면 그 지문 단어만, 처음·끝을 고르면 그 사이 지문 단어로 내요.</p>
     </div>
   );
 }

@@ -382,7 +382,17 @@ export function VocabSetPrintView({
     }
   };
   const title = customTitle.trim() || autoTitle;
-  const headerTitle = title;
+  /** 시험 범위가 지문 몇 개와 딱 맞으면 시험지 머리에 그 지문을 적는다(선생님 2026-11-06: 지문별 시험지) */
+  const passageTag = useMemo(() => {
+    const groups = sections.length === 1 ? (sections[0].passageGroups ?? []) : [];
+    if (mode !== "exam" || groups.length < 2) return "";
+    const a = groups.findIndex((g) => g.from === examRange.from);
+    const b = groups.findIndex((g) => g.to === examRange.to);
+    if (a < 0 || b < a || (a === 0 && b === groups.length - 1)) return "";
+    const short = (label: string) => label.replace(/^\d{4}년\s*/, "").replace(/학력평가\s*/, "");
+    return a === b ? short(groups[a].label) : `${short(groups[a].label)} ~ ${short(groups[b].label)}`;
+  }, [sections, mode, examRange.from, examRange.to]);
+  const headerTitle = passageTag ? `${title} · ${passageTag}` : title;
   /** 시험지 이름 칸에 미리 넣을 학생 이름(선생님 2026-10-26). 학생마다 달라서 기억하지 않는다. */
   const [studentName, setStudentName] = useState("");
 
@@ -1134,6 +1144,7 @@ export function VocabSetPrintView({
                   onReshuffle={reshuffleExam}
                   wordCount={totalItems}
                   relationCounts={relationCounts}
+                  passageGroups={sections.length === 1 ? sections[0].passageGroups : undefined}
                 />
                 {examTotal === 0 ? (
                   <p className="text-[13px] text-amber-700">

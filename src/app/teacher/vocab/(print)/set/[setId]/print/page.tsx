@@ -45,6 +45,7 @@ export default async function TeacherVocabSetPrintPage({ params }: PageProps) {
             title: loaded.set.title,
             description: loaded.set.description,
             items: loaded.items,
+            passageGroups: loaded.passageGroups,
           },
         ]}
         backHref={backHref}

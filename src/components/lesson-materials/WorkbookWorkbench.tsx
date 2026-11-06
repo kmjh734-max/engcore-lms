@@ -4682,7 +4682,8 @@ export function WorkbookWorkbench({
                 disabled={grammarChoicePending || !!pdf.busy}
                 onClick={() =>
                   void pdf.save(
-                    label,
+                    // 저장 이름: 「자료 이름_워크북」·「자료 이름_워크북 문제지」(선생님 2026-11-06)
+                    part === "all" ? "워크북" : `워크북 ${label}`,
                     collectPrintPages(
                       document.getElementById("workbook-print-root"),
                       part === "all" ? ".workbook-a4-sheet" : `.workbook-a4-sheet[data-wb-part="${part}"]`

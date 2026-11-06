@@ -7,4 +7,15 @@ export interface VocabPrintSection {
   title: string;
   description?: string | null;
   items: VocabPrintRow[];
+  /**
+   * 수업자료에서 만든 단어장이면 지문(출처)별 단어 번호 구간(1부터, 끝 포함). 시험지를 지문별로 뽑을 때 쓴다
+   * (선생님 2026-11-06: 번호순 말고 지문별로도).
+   */
+  passageGroups?: VocabPassageGroup[];
+}
+
+export interface VocabPassageGroup {
+  label: string;
+  from: number;
+  to: number;
 }

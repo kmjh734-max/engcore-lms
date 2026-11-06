@@ -1,6 +1,7 @@
 "use client";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
+import { useDocumentName } from "@/components/lesson-materials/useDocumentName";
 import Link from "next/link";
 import {
   useCallback,
@@ -422,6 +423,8 @@ export function AnalysisReportWorkbench({
     role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials";
   /** 이 분석서 파일(자료함). 새로 만들면 만든 뒤에 알게 된다. */
   const docIdRef = useRef<string | null>(null);
+  /** PDF 저장 이름은 자료 이름으로(선생님 2026-11-06) */
+  const docName = useDocumentName(role);
   useEffect(() => {
     docIdRef.current = new URLSearchParams(window.location.search).get("doc");
   }, []);
@@ -1337,7 +1340,7 @@ export function AnalysisReportWorkbench({
               void pdf.save(
                 "분석서",
                 collectPrintPages(document.getElementById("analysis-report-print-root"), ".analysis-report-a4-sheet"),
-                [projects.length > 1 ? `${projects[0]?.title ?? ""} 외 ${projects.length - 1}개` : projects[0]?.title]
+                [docName ?? (projects.length > 1 ? `${projects[0]?.title ?? ""} 외 ${projects.length - 1}개` : projects[0]?.title)]
               );
             }}
           >

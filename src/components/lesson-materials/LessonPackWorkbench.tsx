@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useDocumentName } from "@/components/lesson-materials/useDocumentName";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
@@ -260,6 +261,8 @@ export function LessonPackWorkbench({
   const [boldLessonBody, setBoldLessonBody] = useState(true);
   const [showLogo, setShowLogo] = useState(true);
 
+  /** PDF 저장 이름은 자료 이름으로(선생님 2026-11-06) */
+  const docName = useDocumentName(role);
   // Document settings
   const [docTitle, setDocTitle] = useState(() => {
     const first = initialProjects[0];
@@ -1604,9 +1607,9 @@ export function LessonPackWorkbench({
             disabled={!!pdf.busy}
             onClick={() =>
               void pdf.save(
-                "수업자료",
+                "수업용자료",
                 collectPrintPages(document.getElementById("lesson-pack-print-root"), LP_PAGE_SELECTOR),
-                [docTitle]
+                [docName ?? docTitle]
               )
             }
           >
