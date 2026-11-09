@@ -1,6 +1,7 @@
 "use client";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
+import { isPrinting } from "@/lib/print/is-printing";
 import { useDocumentName } from "@/components/lesson-materials/useDocumentName";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { askCreditConfirm } from "@/lib/credits/confirm-store";
@@ -156,7 +157,7 @@ export function LessonBookWorkbench({
   useEffect(() => {
     if (typeof document === "undefined" || !document.fonts) return;
     let alive = true;
-    const bump = () => alive && setFontsTick((t) => t + 1);
+    const bump = () => alive && !isPrinting() && setFontsTick((t) => t + 1);
     void document.fonts.ready.then(bump);
     document.fonts.addEventListener?.("loadingdone", bump);
     return () => {

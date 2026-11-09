@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { isPrinting } from "@/lib/print/is-printing";
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
 import { usePdfPrefetch, usePdfSave } from "@/components/pdf/usePdfSave";
 import { collectPrintPages } from "@/lib/pdf/download-sheets-pdf";
@@ -240,7 +241,7 @@ export function LessonPackVocabExam({
   useEffect(() => {
     if (typeof document === "undefined" || !document.fonts) return;
     let alive = true;
-    const bump = () => alive && setFontsTick((t) => t + 1);
+    const bump = () => alive && !isPrinting() && setFontsTick((t) => t + 1);
     void document.fonts.ready.then(bump);
     document.fonts.addEventListener?.("loadingdone", bump);
     return () => {

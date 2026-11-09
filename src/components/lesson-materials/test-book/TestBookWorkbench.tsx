@@ -1,6 +1,7 @@
 "use client";
 
 import { PASSAGE_PREP_CONCURRENCY } from "@/lib/lesson-materials/test-book";
+import { isPrinting } from "@/lib/print/is-printing";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -487,7 +488,7 @@ export function TestBookWorkbench({
   useEffect(() => {
     if (typeof document === "undefined" || !document.fonts) return;
     let alive = true;
-    const bump = () => alive && setFontsTick((t) => t + 1);
+    const bump = () => alive && !isPrinting() && setFontsTick((t) => t + 1);
     void document.fonts.ready.then(bump);
     document.fonts.addEventListener?.("loadingdone", bump);
     return () => {

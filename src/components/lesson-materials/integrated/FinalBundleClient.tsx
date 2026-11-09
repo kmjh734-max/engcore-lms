@@ -1,6 +1,7 @@
 "use client";
 
 import { runWithConcurrency } from "@/lib/run-with-concurrency";
+import { isPrinting } from "@/lib/print/is-printing";
 import { PASSAGE_PREP_CONCURRENCY } from "@/lib/lesson-materials/test-book";
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -293,7 +294,7 @@ export function FinalBundleClient({
   useEffect(() => {
     if (typeof document === "undefined" || !document.fonts) return;
     let alive = true;
-    const bump = () => alive && setFontsTick((t) => t + 1);
+    const bump = () => alive && !isPrinting() && setFontsTick((t) => t + 1);
     void document.fonts.ready.then(bump);
     document.fonts.addEventListener?.("loadingdone", bump);
     return () => {

@@ -1,6 +1,44 @@
+import { createHash } from "node:crypto";
 import { gunzipSync } from "node:zlib";
+import { after } from "next/server";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { pdfServerDiagnostics, renderHtmlToPdf } from "@/lib/pdf/render-html-pdf";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+/**
+ * 한 번 만든 쪽 PDF를 저장소에 둔다(선생님 2026-11-06: 「PDF 저장이 너무 오래 걸린다 — 미리 다 만들어져 있고
+ * 누르면 바로」). 같은 쪽(같은 HTML)이면 Chrome으로 다시 그리지 않고 둔 것을 바로 돌려준다. 화면을 다시 열어도,
+ * 다른 컴퓨터에서 열어도 같다. 쪽을 고치면 그 묶음만 새로 만든다. 학원마다 따로 둔다.
+ */
+const CACHE_BUCKET = "pdf-cache";
+
+function cachePath(academyId: string, html: string, paper: { w: number; h: number }): string {
+  const key = createHash("sha256").update(`${paper.w}x${paper.h}|${html}`).digest("hex");
+  return `${academyId}/${key.slice(0, 2)}/${key}.pdf`;
+}
+
+async function readCached(path: string): Promise<Buffer | null> {
+  try {
+    const { data, error } = await createAdminClient().storage.from(CACHE_BUCKET).download(path);
+    if (error || !data) return null;
+    return Buffer.from(await data.arrayBuffer());
+  } catch {
+    return null;
+  }
+}
+
+async function writeCached(path: string, pdf: Uint8Array): Promise<void> {
+  const admin = createAdminClient();
+  const put = () =>
+    admin.storage.from(CACHE_BUCKET).upload(path, pdf, { contentType: "application/pdf", upsert: true });
+  let { error } = await put();
+  if (error && /bucket/i.test(error.message)) {
+    // 처음 한 번: 저장소 칸이 없으면 만든다(남에게 열리지 않게 비공개)
+    await admin.storage.createBucket(CACHE_BUCKET, { public: false }).catch(() => undefined);
+    ({ error } = await put());
+  }
+  if (error) console.warn("[pdf-cache] 저장 실패", error.message);
+}
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -65,11 +103,23 @@ export async function POST(request: Request) {
     return new Response("쪽을 읽지 못했습니다.", { status: 400 });
   }
 
+  const path = profile.academy_id ? cachePath(profile.academy_id, html, paper) : null;
+  if (path) {
+    const hit = await readCached(path);
+    if (hit) {
+      return new Response(new Uint8Array(hit), {
+        headers: { "Content-Type": "application/pdf", "Cache-Control": "no-store", "x-pdf-cache": "hit" },
+      });
+    }
+  }
+
   try {
     // 배포에서는 요청 주소가 곧 사이트 주소다(쪽 HTML의 base와 같다).
     const pdf = await renderHtmlToPdf(html, paper, new URL(request.url).origin);
+    // 저장소에 두는 일은 응답을 보낸 뒤에(기다리게 하지 않는다)
+    if (path) after(() => writeCached(path, pdf));
     return new Response(Buffer.from(pdf), {
-      headers: { "Content-Type": "application/pdf", "Cache-Control": "no-store" },
+      headers: { "Content-Type": "application/pdf", "Cache-Control": "no-store", "x-pdf-cache": "miss" },
     });
   } catch (e) {
     return new Response(e instanceof Error ? e.message : "PDF를 만들지 못했습니다.", { status: 500 });

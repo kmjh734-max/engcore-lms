@@ -1,6 +1,7 @@
 "use client";
 
 import { CloseSaveButton } from "@/components/lesson-materials/CloseSaveButton";
+import { isPrinting } from "@/lib/print/is-printing";
 import { useDocumentName } from "@/components/lesson-materials/useDocumentName";
 import Link from "next/link";
 import {
@@ -521,7 +522,7 @@ export function AnalysisReportWorkbench({
   useEffect(() => {
     if (designStyle === "base" || typeof document === "undefined" || !document.fonts) return;
     let alive = true;
-    const bump = () => alive && setFontsTick((t) => t + 1);
+    const bump = () => alive && !isPrinting() && setFontsTick((t) => t + 1);
     void document.fonts.ready.then(bump);
     document.fonts.addEventListener?.("loadingdone", bump);
     return () => {
@@ -735,6 +736,11 @@ export function AnalysisReportWorkbench({
   useLayoutEffect(() => {
     const root = measureRef.current;
     if (!root) return;
+    /*
+     * 인쇄하는 동안에는 다시 재지 않는다(선생님 2026-11-09 「바로 인쇄 누르면 여백이 많이 생긴다」): 인쇄용 글꼴이
+     * 들어오며 글꼴 신호가 다시 와서 인쇄 화면 크기로 잰 높이로 쪽을 다시 나눴다 — 18쪽이 52쪽(쪽마다 두세 문장)이 됐다.
+     */
+    if (typeof window !== "undefined" && window.matchMedia?.("print").matches) return;
     const widthPx = root.offsetWidth || 1;
     const pxPerMm = widthPx / 210;
     /*
