@@ -1,9 +1,6 @@
 import { createHash } from "node:crypto";
 import { callGrammarChoiceV2Json } from "@/lib/lesson-materials/grammar-choice-v2/openai-call";
-import {
-  resolveV2AnalyzerModel,
-  resolveV2AuditorModel,
-} from "@/lib/lesson-materials/grammar-choice-v2/generate";
+import { resolveV2AnalyzerModel } from "@/lib/lesson-materials/grammar-choice-v2/generate";
 import { isDerivedFromCorrect } from "@/lib/lesson-materials/grammar-choice-v2/local-validators";
 import { engcoreWordLevel } from "@/lib/vocab/engcore-level";
 import {
@@ -415,7 +412,12 @@ async function auditPairs(input: {
   const called = await callGrammarChoiceV2Json({
     stage: "REVIEWER",
     apiKey: input.apiKey,
-    model: resolveV2AuditorModel(),
+    /*
+     * 검수는 terra(2026-11-10). 8지문 나란히: sol 검수 100문항·지문당 147원 → terra 검수 100문항·89원.
+     * 통과한 문항을 직접 풀어 보니 같은 수준(같은 흠이 둘 다 나옴). 어휘 검수는 「반대말이 문맥에서 틀린가」만
+     * 보는 판정이라 싼 모델로 충분하다. 어법 검수(둘 다 맞는 문법 가려내기)는 sol 그대로.
+     */
+    model: process.env.OPENAI_VOCAB_AUDITOR_MODEL?.trim() || "gpt-5.6-terra",
     reasoningEffort: "medium",
     system: AUDITOR_SYSTEM,
     user: JSON.stringify({
@@ -479,6 +481,19 @@ function selectFinal(pairs: Located[], level: VocabWordLevel): Located[] {
     if ((perSentence.get(p.sentenceId) ?? 0) >= MAX_PER_SENTENCE) continue;
     if (usedTargets.has(p.targetText.toLowerCase())) continue;
     if (chosen.some((c) => p.start < c.end + 3 && c.start < p.end + 3)) continue;
+    /*
+     * 같은 문장에서 정답·오답을 맞바꾼 짝은 하나만(2026-11-10 시험): 「offers many [advantages], there are also
+     * some [disadvantages]」를 둘 다 내면 둘 다 반대로 골라도 문장이 선다 — 짝으로 보면 답이 둘이다.
+     */
+    const lower = (s: string) => s.trim().toLowerCase();
+    if (
+      chosen.some(
+        (c) =>
+          c.sentenceId === p.sentenceId &&
+          (lower(c.wrongText) === lower(p.targetText) || lower(c.targetText) === lower(p.wrongText))
+      )
+    )
+      continue;
     chosen.push(p);
     perSentence.set(p.sentenceId, (perSentence.get(p.sentenceId) ?? 0) + 1);
     usedTargets.add(p.targetText.toLowerCase());
