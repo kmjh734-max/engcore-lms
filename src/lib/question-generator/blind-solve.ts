@@ -13,6 +13,20 @@
  */
 import { questionGeneratorChatJsonWithRetry } from "@/lib/question-generator/openai";
 import type { GeneratedQuestionPayload } from "@/lib/question-generator/types";
+import { engcoreLevelOf } from "@/lib/vocab/engcore-lemma";
+
+/*
+ * 모델이 「낯선 낱말」로 꼽은 것 중 지문에 있거나 우리 단어장(EngCore, 고교필수~수능필수)에 있는 것은 뺀다.
+ * 고정 시험지(2026-11-10)에서 calamity가 아닌 civic·sensory·menacing 같은 단어장 낱말까지 낯설다며
+ * 멀쩡한 문항을 버리고 다시 만들었다. 단어장 밖 낱말(locomotion, soot, morsel)만 남긴다.
+ */
+function filterRareWords(rawList: unknown, passage: string): string[] {
+  const passageLower = String(passage ?? "").toLowerCase();
+  return (Array.isArray(rawList) ? rawList : [])
+    .map((w) => String(w).trim())
+    .filter((w) => w && !passageLower.includes(w.toLowerCase()))
+    .filter((w) => w.split(/\s+/).some((part) => engcoreLevelOf(part) === null));
+}
 
 const SOLVE_MODEL =
   process.env.OPENAI_MODEL_QG_SOLVE?.trim() || process.env.OPENAI_MODEL_QG_REVIEW?.trim() || "gpt-5.6-terra";
@@ -33,8 +47,30 @@ function isCountItem(payload: GeneratedQuestionPayload): boolean {
   );
 }
 
+/*
+ * 번호가 지문 안에 박힌 객관식(문장삽입 ①~⑤ 자리, 무관한문장 ⓐ~ⓔ, 어휘추론·어법추론 밑줄 번호).
+ * 보기 칸이 비어 있어 2026-11-10까지 직접 풀기를 건너뛰었다(고정 시험지에서 발견, 불량 59개가 이 네 유형).
+ * 고정 시험지 결과(terra): 어법추론 불량 22/26 잡고 멀쩡한 것 1/25 버림, 어휘추론·무관한문장은 오탐 0~1.
+ * 문장삽입은 모델이 자리를 자주 틀리게 골라(멀쩡한 것 7/25 버림, high로도 4/25) 뺀다 — 밑줄 없이 ①~⑤만 있는 꼴.
+ * 끄려면 QG_SOLVE_EMBEDDED=off, 문장삽입까지 보려면 =all.
+ */
+const SPOT_SETS = ["①②③④⑤", "ⓐⓑⓒⓓⓔ"];
+function isEmbeddedSpotItem(payload: GeneratedQuestionPayload): boolean {
+  const mode = (process.env.QG_SOLVE_EMBEDDED ?? "on").trim().toLowerCase();
+  if (mode === "off") return false;
+  if (hasChoices(payload)) return false;
+  const n = Number(payload.correctAnswer);
+  if (!Number.isInteger(n) || n < 1 || n > 5) return false;
+  const text = String(payload.passageModified ?? "");
+  const circled = [..."①②③④⑤"].filter((ch) => text.includes(ch)).length >= 4;
+  // 문장삽입(①~⑤ 자리, 밑줄 없음)은 =all 일 때만
+  if (circled && !/<u>/i.test(text) && mode !== "all") return false;
+  return SPOT_SETS.some((set) => [...set].filter((ch) => text.includes(ch)).length >= 4);
+}
+
 export function blindSolvable(payload: GeneratedQuestionPayload): boolean {
   if (isCountItem(payload)) return true;
+  if (isEmbeddedSpotItem(payload)) return true;
   const n = Number(payload.correctAnswer);
   return hasChoices(payload) && Number.isInteger(n) && n >= 1;
 }
@@ -69,7 +105,7 @@ export async function blindSolveQuestion(opts: {
 }): Promise<BlindSolveResult> {
   const { payload } = opts;
   const mcq = hasChoices(payload);
-  const unit = mcq ? "번" : "개";
+  const unit = mcq || isEmbeddedSpotItem(payload) ? "번" : "개";
   const key = Number(String(payload.correctAnswer ?? "").replace(/[^0-9]/g, ""));
   const shown = payload.passageModified?.trim() ? payload.passageModified : opts.passage;
   const choices = mcq
@@ -79,7 +115,11 @@ export async function blindSolveQuestion(opts: {
     `INSTRUCTION: ${compact(payload.instruction, 400)}`,
     `\nPASSAGE (<u>…</u> = underline, ___ = blank):\n${compact(shown)}`,
     payload.questionText ? `\nQUESTION TEXT:\n${compact(payload.questionText, 1600)}` : "",
-    mcq ? `\nCHOICES:\n${choices}` : "\n(No choices: write the count as the answer.)",
+    mcq
+      ? `\nCHOICES:\n${choices}`
+      : isEmbeddedSpotItem(payload)
+        ? "\nCHOICES: the numbered spots in the passage (① … ⑤, or ⓐ … ⓔ where ⓐ=1 … ⓔ=5). Answer with the spot number 1-5."
+        : "\n(No choices: write the count as the answer.)",
   ]
     .filter(Boolean)
     .join("\n");
@@ -137,10 +177,7 @@ export async function blindSolveQuestion(opts: {
    * 낯선 낱말(선생님 말 2026-10-04: 「너무 낯선 단어들이 포함되지 않도록」). 단어장 표는 수능 어휘보다 좁아
    * 코드만으로는 정상 수능 단어까지 걸린다. 풀어 보는 모델이 고등학생에게 낯선 말만 골라낸다.
    */
-  const passageLower = String(opts.passage ?? "").toLowerCase();
-  const rare = (Array.isArray(raw.rareWords) ? raw.rareWords : [])
-    .map((w) => String(w).trim())
-    .filter((w) => w && !passageLower.includes(w.toLowerCase()));
+  const rare = filterRareWords(raw.rareWords, opts.passage);
   if (rare.length) return { verdict: "drop", answer, reason: `낯선 낱말(${rare.slice(0, 5).join(", ")})을 고등학생이 아는 말로 바꿔 쓴다 — ${reason}`, rareWords: rare };
   return { verdict: "pass", answer, reason };
 }
@@ -283,8 +320,7 @@ export async function verifyChoicesIndependently(opts: {
 
   const unnatural = rows.filter((r) => r.natural === false).map((r) => r.n);
   if (unnatural.length) return { verdict: "drop", answer: null, reason: `보기 ${unnatural.join("·")}이 어색함 — ${reason}` };
-  const passageLower = String(opts.passage ?? "").toLowerCase();
-  const rare = (Array.isArray(raw.rareWords) ? raw.rareWords : []).map((w) => String(w).trim()).filter((w) => w && !passageLower.includes(w.toLowerCase()));
+  const rare = filterRareWords(raw.rareWords, opts.passage);
   if (rare.length) return { verdict: "drop", answer: null, reason: `낯선 낱말(${rare.slice(0, 5).join(", ")})을 고등학생이 아는 말로 바꿔 쓴다 — ${reason}`, rareWords: rare };
 
   if (isGist) {

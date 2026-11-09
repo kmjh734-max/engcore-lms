@@ -208,6 +208,60 @@ function extractJsonObject(text: string): unknown {
   }
 }
 
+/**
+ * 딥시크 시험용(2026-11-10, 고정 시험지로 검수 비교). 모델 이름이 deepseek- 로 시작할 때만 탄다 —
+ * 운영 설정에는 그런 모델이 없으므로 운영 흐름은 그대로다. 사용량은 deepseekUsage에 모은다.
+ */
+export const deepseekUsage = { calls: 0, input: 0, cached: 0, output: 0, failed: 0 };
+
+async function deepseekChatJson(
+  model: string,
+  opts: { system: string; user: string | string[]; maxTokens?: number; reasoningEffort?: string }
+): Promise<unknown> {
+  const key = process.env.DEEPSEEK_API_KEY?.trim();
+  if (!key) throw new Error("DEEPSEEK_API_KEY가 설정되지 않았습니다.");
+  const users = Array.isArray(opts.user) ? opts.user : [opts.user];
+  // 딥시크는 low·high·max만 받는다 — medium은 high로
+  const effort = opts.reasoningEffort === "low" ? "low" : opts.reasoningEffort === "xhigh" ? "max" : "high";
+  let last = "딥시크 호출 실패";
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch("https://api.deepseek.com/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          reasoning_effort: effort,
+          response_format: { type: "json_object" },
+          max_tokens: Math.max(opts.maxTokens ?? 4096, 8000),
+          messages: [
+            { role: "system", content: `${opts.system}\nReply with JSON only.` },
+            ...users.map((u) => ({ role: "user", content: u })),
+          ],
+        }),
+      });
+      const text = await res.text();
+      if (!res.ok) {
+        last = `딥시크 ${res.status}: ${text.slice(0, 200)}`;
+        await sleep(2000 * (attempt + 1));
+        continue;
+      }
+      const data = JSON.parse(text);
+      const u = data.usage ?? {};
+      deepseekUsage.calls += 1;
+      deepseekUsage.input += Number(u.prompt_tokens ?? 0);
+      deepseekUsage.cached += Number(u.prompt_cache_hit_tokens ?? 0);
+      deepseekUsage.output += Number(u.completion_tokens ?? 0);
+      return extractJsonObject(String(data.choices?.[0]?.message?.content ?? ""));
+    } catch (e) {
+      last = e instanceof Error ? e.message : String(e);
+      await sleep(2000 * (attempt + 1));
+    }
+  }
+  deepseekUsage.failed += 1;
+  throw new Error(last);
+}
+
 export async function questionGeneratorChatJson(opts: {
   system: string;
   user: string | string[];
@@ -220,6 +274,8 @@ export async function questionGeneratorChatJson(opts: {
   /** 프롬프트 앞부분 재사용 이름표 (유형마다 하나) */
   cacheKey?: string;
 }): Promise<unknown> {
+  const first = opts.preferredModels?.[0];
+  if (first?.startsWith("deepseek-")) return deepseekChatJson(first, opts);
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) {
     throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
