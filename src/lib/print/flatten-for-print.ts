@@ -32,6 +32,21 @@ function flatColors(text: string, under: Rgb): string {
 
 const hasAlpha = (text: string) => /rgba\(|color\(srgb[^)]*\//.test(text);
 
+/**
+ * 지워야 하는 그림자인가: 흐림이 있거나 반투명이면 지운다.
+ * 흐림 0·불투명 그림자는 PDF에서 단색 도형이라 그대로 둔다 — print-flatten.css 가 그러데이션 대신 쓰는 단색 띠·겹동그라미.
+ */
+function shadowNeedsFlatten(v: string): boolean {
+  if (!v || v === "none") return false;
+  for (const part of v.split(/,(?![^(]*\))/)) {
+    const c = parseColor(part);
+    if (!c || c.a < 0.999) return true;
+    const lengths = part.replace(/rgba?\([^)]*\)|color\([^)]*\)/g, "").match(/-?[\d.]+px/g) ?? [];
+    if (lengths.length >= 3 && parseFloat(lengths[2]!) !== 0) return true;
+  }
+  return false;
+}
+
 function mix(c: Rgb, a: number, under: Rgb): string {
   const ch = (i: number) => Math.round(c[i]! * a + under[i]! * (1 - a));
   return `rgb(${ch(0)}, ${ch(1)}, ${ch(2)})`;
@@ -104,7 +119,7 @@ export function flattenForPrint(root: ParentNode = document.body, opts: { images
       if (pbg && pbg.a > 0 && pbg.a < 0.999) decl.push(`background-color:${mix(pbg.rgb, pbg.a, below)}`);
       const pbi = ps.backgroundImage;
       if (pbi && pbi !== "none" && pbi.includes("gradient") && hasAlpha(pbi)) decl.push(`background-image:${flatColors(pbi, below)}`);
-      if (ps.boxShadow && ps.boxShadow !== "none") decl.push("box-shadow:none");
+      if (shadowNeedsFlatten(ps.boxShadow)) decl.push("box-shadow:none");
       if (ps.filter && ps.filter !== "none") decl.push("filter:none");
       const po = parseFloat(ps.opacity);
       if (po < 1 && po > 0 && !decl.length && pbg) decl.push(`background-color:${mix(pbg.rgb, pbg.a * po, below)}`);
@@ -129,7 +144,16 @@ export function flattenForPrint(root: ParentNode = document.body, opts: { images
     const color = parseColor(cs.color);
     if (color && color.a > 0 && color.a < 0.999 && el.childNodes.length) set(el, rec, "color", mix(color.rgb, color.a, bgc && bgc.a >= 0.999 ? bgc.rgb : base()));
 
-    if (cs.boxShadow && cs.boxShadow !== "none") set(el, rec, "box-shadow", "none");
+    // 요소 투명도(흐린 글씨·로고 0.8~0.9): 투명 그룹이 생겨 쪽이 그림으로 바뀐다 → 불투명으로, 글자색·바탕색은 그만큼 바탕과 섞는다(2026-11-09)
+    const op = parseFloat(cs.opacity);
+    if (op > 0 && op < 1) {
+      const below = base();
+      set(el, rec, "opacity", "1");
+      if (color && color.a > 0) set(el, rec, "color", mix(color.rgb, color.a * op, bgc && bgc.a >= 0.999 ? bgc.rgb : below));
+      if (bgc && bgc.a >= 0.999) set(el, rec, "background-color", mix(bgc.rgb, op, below));
+    }
+
+    if (shadowNeedsFlatten(cs.boxShadow)) set(el, rec, "box-shadow", "none");
     if (cs.textShadow && cs.textShadow !== "none") set(el, rec, "text-shadow", "none");
     if (cs.filter && cs.filter !== "none") set(el, rec, "filter", "none");
     if (cs.backdropFilter && cs.backdropFilter !== "none") set(el, rec, "backdrop-filter", "none");

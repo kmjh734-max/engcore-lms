@@ -507,7 +507,18 @@ export function tokenizeAnswerPhrase(answer: string): string[] {
     .replace(/[“”‘’"'`ʼ]/g, (mark, at: number, whole: string) => {
       const before = whole[at - 1] ?? "";
       const after = whole[at + 1] ?? "";
-      return /[A-Za-z]/.test(before) && /[A-Za-z]/.test(after) ? "’" : "";
+      if (/[A-Za-z]/.test(before) && /[A-Za-z]/.test(after)) return "’";
+      /*
+       * 복수 소유격(members’ votes)도 살린다 — 떼면 <보기>에 members만 남아 정답을 쓸 수 없다(2026-11-09 점검 dbda145e).
+       * 앞에 열린 홑따옴표(‘ 또는 낱말 앞 ')가 남아 있으면 닫는 따옴표로 본다.
+       */
+      if (/[’'ʼ]/.test(mark) && /s/i.test(before) && (!after || /\s/.test(after))) {
+        const head = whole.slice(0, at);
+        const opens = (head.match(/‘|(?:^|\s)'/g) ?? []).length;
+        const closes = (head.match(/’(?![A-Za-z])|[A-Za-z]'(?![A-Za-z])/g) ?? []).length;
+        if (opens <= closes) return "’";
+      }
+      return "";
     })
     /*
      * 낱말 안의 붙임표도 살린다 — hip-hop이 hip과 hop으로 갈라지면 <보기>에 둘로

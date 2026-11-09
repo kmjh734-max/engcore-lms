@@ -172,7 +172,7 @@ const SHAPE: Record<string, Rule[]> = {
   "as if 과거": [b("as (?:if|though)")],
   "관계절 수일치": [b(REL)],
   "관계절 선행사 수일치": [b(REL)],
-  "make+O+원형": [b("(?:make|makes|made|making|let|lets|have|has|had)")],
+  "사역동사+O+원형": [b("(?:make|makes|made|making|let|lets|have|has|had)")],
   "사역동사 능동": [b("(?:make|makes|made|making|let|lets|have|has|had|get|gets|got)")],
   "지각동사 보어": [b("(?:see|sees|saw|seen|hear|hears|heard|watch|watches|watched|feel|feels|felt|notice|notices|noticed|observe|observed|witness|witnessed|look at|listen to)")],
   "사역·지각 원형 분석": [b("(?:make|makes|made|let|lets|have|has|had|see|saw|hear|heard|watch|watched|feel|felt|notice|noticed)")],

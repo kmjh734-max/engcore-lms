@@ -236,23 +236,27 @@ export const TEST_BOOK_CSS = `
 .tb-note .tb-psgbox p{margin:0;font-size:10pt;line-height:2.05;text-align:justify}
 .tb-fill{flex:1;display:flex;flex-direction:column;min-height:0;margin-bottom:3mm}
 .tb-fill:last-child{margin-bottom:0}
-.tb-gridlines{flex:1;border-top:1pt solid #15171c;background-image:linear-gradient(transparent calc(100% - .5pt),#c9cdd4 0);background-size:100% 7mm;position:relative}
-.tb-gridlines.tb-num{background-image:linear-gradient(transparent calc(100% - .5pt),#c9cdd4 0),linear-gradient(90deg,transparent 9mm,#c9cdd4 9mm,#c9cdd4 calc(9mm + .5pt),transparent 0)}
+.tb-gridlines{flex:1;border-top:1pt solid #15171c;position:relative}
+/* 쓰기 줄은 그러데이션 대신 진짜 선(.tb-rl) — 그러데이션은 인쇄 때 프린터 해상도 그림으로 바뀌어 스풀링이 느리다(2026-11-09) */
+.tb-rl{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.tb-rl i{display:block;box-sizing:border-box;border-bottom:.5pt solid #c9cdd4}
+.tb-rl b{position:absolute;top:0;bottom:0;border-left:.5pt solid #c9cdd4}
 /* 백지노트(2026-10-27 시안 A안): 원문 문장 번호 · 문장별 정리 · 4단 정리 */
 .tb-bn-psg p{margin:0;font-size:10pt;line-height:2.05;text-align:justify}
 .tb-bn-psg sup{font-size:7.5pt;font-weight:800;color:var(--tb-accent,#15171c);margin:0 .6mm 0 .4mm;vertical-align:.25em}
 .tb-bn-rows{flex:1;display:flex;flex-direction:column;border-top:1pt solid #15171c;min-height:0}
-.tb-bn-rows > div{flex:1;min-height:7mm;display:grid;grid-template-columns:8mm 1fr;align-items:start;border-bottom:.8pt solid #9aa0aa;background-image:linear-gradient(transparent calc(100% - .5pt),#dfe2e6 0);background-size:100% 7mm;background-position:0 -.5pt}
+.tb-bn-rows > div{flex:1;min-height:7mm;display:grid;grid-template-columns:8mm 1fr;align-items:start;border-bottom:.8pt solid #9aa0aa;position:relative}
+.tb-bn-rows > div > .tb-rl i{border-bottom-color:#dfe2e6}
 .tb-bn-rows > div > b{font-size:8.5pt;color:var(--tb-accent,#15171c);padding-top:1.4mm;text-align:center}
 .tb-bn-four{display:flex;flex-direction:column;gap:0;margin-bottom:3mm}
 .tb-bn-step{display:grid;grid-template-columns:24mm 1fr;border:.8pt solid #9aa0aa;border-radius:1.4mm;overflow:hidden;min-height:19mm}
 .tb-bn-step > div:first-child{background:var(--tb-accent,#15171c);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.6mm;padding:1.4mm}
 .tb-bn-step > div:first-child b{font-size:10pt;font-weight:800}
 .tb-bn-step > div:first-child small{font-size:7pt;opacity:.85;text-align:center;line-height:1.3}
-.tb-bn-step > div:last-child{position:relative;background-image:linear-gradient(transparent calc(100% - .5pt),#d6d9de 0);background-size:100% 6.4mm}
+.tb-bn-step > div:last-child{position:relative}
+.tb-bn-step .tb-rl i{border-bottom-color:#d6d9de}
 .tb-bn-step em{position:absolute;right:1.6mm;top:1.2mm;font-style:normal;font-size:7.5pt;color:#6a707c}
 .tb-bn-arrow{text-align:center;color:#9aa0aa;font-size:9pt;line-height:1;padding:.8mm 0}
-.tb-gridlines.tb-syn{background-image:linear-gradient(transparent calc(100% - .5pt),#c9cdd4 0),linear-gradient(90deg,transparent 42mm,#c9cdd4 42mm,#c9cdd4 calc(42mm + .5pt),transparent calc(42mm + .5pt),transparent 82mm,#c9cdd4 82mm,#c9cdd4 calc(82mm + .5pt),transparent calc(82mm + .5pt),transparent 132mm,#c9cdd4 132mm,#c9cdd4 calc(132mm + .5pt),transparent 0)}
 .tb-synhead{display:grid;grid-template-columns:42mm 40mm 50mm 1fr;font-size:8pt;color:#6a707c;border-top:1pt solid #15171c;padding:.8mm 0}
 .tb-synhead span{padding-left:1.4mm}
 .tb-ticks{display:flex;flex-wrap:wrap;gap:1mm 3.4mm;font-size:8pt;color:#4b515c;margin-bottom:1.4mm}
@@ -1708,6 +1712,18 @@ const FOUR_STEPS: Array<{ no: string; title: string; hint: string }> = [
   { no: "4", title: "결론", hint: "요지 · 교훈" },
 ];
 
+/** 쓰기 줄: 칸을 넘치는 만큼 그려 두고 칸 밖은 잘린다(overflow hidden). cols=세로선 자리(mm). */
+function RuleLines({ step, count, cols }: { step: number; count: number; cols?: number[] }) {
+  return (
+    <div className="tb-rl" aria-hidden>
+      {Array.from({ length: count }, (_, i) => (
+        <i key={i} style={{ height: `${step}mm` }} />
+      ))}
+      {cols?.map((x) => <b key={x} style={{ left: `${x}mm` }} />)}
+    </div>
+  );
+}
+
 function FourStep({ s }: { s: (typeof FOUR_STEPS)[number] }) {
   return (
     <div className="tb-bn-step">
@@ -1718,6 +1734,7 @@ function FourStep({ s }: { s: (typeof FOUR_STEPS)[number] }) {
         <small>{s.hint}</small>
       </div>
       <div>
+        <RuleLines step={6.4} count={12} />
         <em>문장 ____ ~ ____</em>
       </div>
     </div>
@@ -1758,6 +1775,7 @@ export const BlankNoteSheets = memo(function BlankNoteSheets({ index, project }:
             <div className="tb-bn-rows">
               {sentences.map((_, i) => (
                 <div key={i}>
+                  <RuleLines step={7} count={8} />
                   <b>{circled(i)}</b>
                   <span />
                 </div>
@@ -1793,7 +1811,9 @@ export const BlankNoteSheets = memo(function BlankNoteSheets({ index, project }:
               <span>= 동의어</span>
               <span>↔ 반의어</span>
             </div>
-            <div className="tb-gridlines tb-syn" />
+            <div className="tb-gridlines tb-syn">
+              <RuleLines step={7} count={40} cols={[42, 82, 132]} />
+            </div>
           </div>
           <div className="tb-fill">
             <div className="tb-lb">
@@ -1805,7 +1825,9 @@ export const BlankNoteSheets = memo(function BlankNoteSheets({ index, project }:
                 <span key={t}>{t}</span>
               ))}
             </div>
-            <div className="tb-gridlines tb-num" />
+            <div className="tb-gridlines tb-num">
+              <RuleLines step={7} count={40} cols={[9]} />
+            </div>
           </div>
         </div>
         <BookFoot />

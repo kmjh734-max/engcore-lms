@@ -1,0 +1,167 @@
+/*
+ * 인쇄 때만 그러데이션·투명 번짐을 같은 색의 단색 띠·동그라미로 바꾼다(2026-11-09, 선생님 「인쇄 스풀링이 너무 오래 걸린다」).
+ *
+ * 왜: 크롬은 그러데이션을 PDF 「음영」으로 넘기고, 윈도 프린터 드라이버로 보낼 때 그것을 프린터 해상도(600dpi)
+ * 그림으로 바꾼다. 쪽 전체 배경 번짐이면 쪽마다 수십 MB가 된다. 끝이 transparent 인 번짐은 투명 그룹까지 붙는다.
+ * 발곡고2 4과 워크북(370쪽)에 그러데이션 1,850개·투명 그룹 369개가 들어 있었다.
+ *
+ * 규칙: 화면 모양은 그대로 두고 여기서만 바꾼다. box-shadow(흐림 0)는 PDF에서 단색 도형이라 프린터가 빨리 그린다.
+ * 새 인쇄 디자인에 gradient·mask-image·opacity 를 쓰면 여기에 단색 대응을 같이 넣는다.
+ * 선택자 앞 :root:root 는 원래 규칙(!important 포함, 디자인 두 겹이 같이 붙은 경우 포함)보다 우선하게 하려고 붙였다.
+ */
+@media print {
+  /* ── 쪽 위쪽 옅은 번짐 → 6단 단색 띠(아래로 갈수록 옅게) ── */
+  :root:root .md-b .workbook-a4-sheet,
+  :root:root .md-b .analysis-report-a4-sheet,
+  :root:root .tb-theme-b .tb-sheet.tb-part {
+    background: #fff !important;
+    box-shadow:
+      inset 0 7mm 0 color-mix(in srgb, var(--md-accent, var(--tb-accent, #6a4bd8)) 9.2%, #fff),
+      inset 0 14mm 0 color-mix(in srgb, var(--md-accent, var(--tb-accent, #6a4bd8)) 7.5%, #fff),
+      inset 0 21mm 0 color-mix(in srgb, var(--md-accent, var(--tb-accent, #6a4bd8)) 5.8%, #fff),
+      inset 0 28mm 0 color-mix(in srgb, var(--md-accent, var(--tb-accent, #6a4bd8)) 4.2%, #fff),
+      inset 0 35mm 0 color-mix(in srgb, var(--md-accent, var(--tb-accent, #6a4bd8)) 2.5%, #fff),
+      inset 0 42mm 0 color-mix(in srgb, var(--md-accent, var(--tb-accent, #6a4bd8)) 0.8%, #fff) !important;
+  }
+  :root:root .qg-style.md.md-b .qg-print-sheet {
+    background: #fff !important;
+    box-shadow:
+      inset 0 6.3mm 0 color-mix(in srgb, var(--md-accent) 9.2%, #fff),
+      inset 0 12.7mm 0 color-mix(in srgb, var(--md-accent) 7.5%, #fff),
+      inset 0 19mm 0 color-mix(in srgb, var(--md-accent) 5.8%, #fff),
+      inset 0 25.3mm 0 color-mix(in srgb, var(--md-accent) 4.2%, #fff),
+      inset 0 31.7mm 0 color-mix(in srgb, var(--md-accent) 2.5%, #fff),
+      inset 0 38mm 0 color-mix(in srgb, var(--md-accent) 0.8%, #fff) !important;
+  }
+  /* 워크북 D 파스텔 블룸: 보라(#f1edff) → 복숭아(#fff7f2, 30mm) → 흰색(46mm) */
+  :root:root .wb-style.wb-style-d .workbook-a4-sheet {
+    background: #fff !important;
+    box-shadow:
+      inset 0 7.5mm 0 color-mix(in srgb, #f1edff 88%, #fff7f2),
+      inset 0 15mm 0 color-mix(in srgb, #f1edff 63%, #fff7f2),
+      inset 0 22.5mm 0 color-mix(in srgb, #f1edff 38%, #fff7f2),
+      inset 0 30mm 0 color-mix(in srgb, #f1edff 13%, #fff7f2),
+      inset 0 38mm 0 color-mix(in srgb, #fff7f2 70%, #fff),
+      inset 0 46mm 0 color-mix(in srgb, #fff7f2 25%, #fff) !important;
+  }
+
+  /* ── 오른쪽 위 동그란 번짐 → 겹동그라미 단색 ── */
+  :root:root .md-b .workbook-a4-sheet::after,
+  :root:root .md-b .analysis-report-a4-sheet::after,
+  :root:root .qg-style.md.md-b .qg-print-sheet::after,
+  :root:root .tb-theme-b .tb-sheet.tb-part::before {
+    background: color-mix(in srgb, var(--md-accent, var(--tb-accent, #6a4bd8)) 11%, #fff) !important;
+    box-shadow: inset 0 0 0 12mm color-mix(in srgb, var(--md-accent, var(--tb-accent, #6a4bd8)) 5%, #fff) !important;
+  }
+  :root:root .wb-style.wb-style-d .workbook-a4-sheet::after {
+    background: color-mix(in srgb, #7b5cff 11%, #fff) !important;
+    box-shadow: inset 0 0 0 11mm color-mix(in srgb, #ff8a5c 6%, #fff) !important;
+  }
+
+  /* ── 제목 밑 선(끝이 투명해지는 번짐) → 단색 ── */
+  :root:root .md-b .wb-sheet-rule,
+  :root:root .md-b .ar-head-rule {
+    background: var(--md-accent) !important;
+  }
+  :root:root .qg-style.md.md-b .qg-print-header {
+    background-image: none !important;
+    border-bottom: 3px solid var(--md-accent) !important;
+  }
+  :root:root .wb-style.wb-style-d .wb-sheet-rule {
+    background: #6a4bd8 !important;
+  }
+  :root:root .wb-style.wb-style-d .wb-title-no {
+    background: #6a4bd8 !important;
+  }
+  :root:root .wb-style.wb-style-d .wb-divider {
+    background: #e6e0ff !important;
+  }
+
+  /* ── 형광펜 밑줄(투명→색 반 칸) → 아래쪽 안쪽 그림자 ── */
+  :root:root .op-style.op-style-a .op-x,
+  :root:root .op-style.op-style-a .op-bk,
+  :root:root .ar-style-a .ar-hl--imply,
+  :root:root .ar-style-a .ar-hl--grammar {
+    background: none !important;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  :root:root .op-style.op-style-a .op-x { box-shadow: inset 0 -0.48em 0 #dfe7f3 !important; }
+  :root:root .op-style.op-style-a .op-bk { box-shadow: inset 0 -0.5em 0 #f5e19a !important; }
+  :root:root .ar-style-a .ar-hl--imply { box-shadow: inset 0 -0.42em 0 #f6d3e2 !important; }
+  :root:root .ar-style-a .ar-hl--grammar { box-shadow: inset 0 -0.4em 0 #dde7f7 !important; }
+
+  /* ── 테스트 교재 테마 B ── */
+  :root:root .tb-theme-b .tb-part .tb-dh::after {
+    background: var(--tb-accent, #15171c) !important;
+  }
+  :root:root .tb-theme-b .tb-q .tb-qn,
+  :root:root .tb-theme-b .tb-part .tb-q .tb-qn {
+    background: var(--tb-accent, #15171c) !important;
+  }
+  :root:root .tb-theme-b .tb-divider {
+    background: color-mix(in srgb, var(--tb-accent, #15171c) 8%, #fff) !important;
+  }
+  :root:root .tb-theme-b .tb-divider .tb-dstrip {
+    background: color-mix(in srgb, var(--tb-accent, #15171c) 30%, #fff) !important;
+    box-shadow: inset 0 0 0 18mm color-mix(in srgb, var(--tb-accent, #15171c) 14%, #fff) !important;
+  }
+  :root:root .tb-theme-b .tb-divider .tb-dbar,
+  :root:root .tb-theme-b .tb-pdiv .tb-ptop {
+    background: var(--tb-accent, #15171c) !important;
+  }
+  :root:root .tb-theme-b .tb-contents .tb-cbar {
+    background: #6a4bd8 !important;
+  }
+
+  /* ── 테스트 교재 테마 E(구석 번짐) → 바탕색만 ── */
+  :root:root .tb-theme-e .tb-sheet.tb-part,
+  :root:root .tb-theme-e .tb-divider,
+  :root:root .tb-theme-e .tb-contents {
+    background: #fbfbfe !important;
+  }
+  :root:root .tb-theme-e .tb-pdiv .tb-ptop {
+    background: color-mix(in srgb, var(--tb-accent, #15171c) 85%, #fff) !important;
+  }
+
+  /* ── 테스트 교재 테마 F ── */
+  :root:root .tb-theme-f .tb-part .tb-dh,
+  :root:root .tb-theme-f .tb-q .tb-qn,
+  :root:root .tb-theme-f .tb-part .tb-q .tb-qn,
+  :root:root .tb-theme-f .tb-foot .tb-pgno,
+  :root:root .tb-theme-f .tb-pdiv .tb-ptop {
+    background: var(--tb-accent, #15171c) !important;
+  }
+  :root:root .tb-theme-f .tb-q::after {
+    background: color-mix(in srgb, var(--tb-accent, #15171c) 30%, #fff) !important;
+  }
+  :root:root .tb-theme-f .tb-row.tb-th {
+    background: color-mix(in srgb, var(--tb-accent, #15171c) 10%, #fff) !important;
+  }
+  :root:root .tb-theme-f .tb-divider {
+    background: color-mix(in srgb, var(--tb-accent, #15171c) 45%, #ffb08a) !important;
+  }
+  :root:root .tb-theme-f .tb-contents .tb-cno {
+    background: none !important;
+    -webkit-background-clip: border-box !important;
+    background-clip: border-box !important;
+    color: var(--tb-accent, #15171c) !important;
+    -webkit-text-fill-color: currentColor !important;
+  }
+  :root:root .tb-theme-f .tb-contents .tb-cbar {
+    background: #6a4bd8 !important;
+  }
+
+  /* ── 적중 자료집: 아래로 흐려지는 가림(mask) → 그냥 자른다 ── */
+  :root:root .hb .exam.mini .ebody,
+  :root:root .hb .sheet .pm {
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+
+  /* ── 쪽마다 찍히는 학원 로고: 반투명 빼기 ── */
+  :root:root .lesson-pack-print-logo-fixed img,
+  :root:root .lesson-pack-footer-logo img {
+    opacity: 1 !important;
+  }
+}

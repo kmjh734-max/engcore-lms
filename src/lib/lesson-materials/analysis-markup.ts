@@ -195,7 +195,7 @@ const MARKUP_EXTRA_LABELS = [
   "too ... to 구문", "enough to 구문", "the 비교급, the 비교급", "배수 비교",
   "as ... as 구문", "원급 비교", "비교급 강조", "최상급 표현",
   "it takes 구문", "not only A but also B", "no sooner ~ than",
-  "have+O+p.p.", "make+O+원형", "help+O+(to) V",
+  "have+O+p.p.", "사역동사+O+원형", "help+O+(to) V",
 ] as const;
 
 function normalizeLabel(raw: string): string {
@@ -216,6 +216,8 @@ const ALLOWED_LABELS: ReadonlySet<string> = new Set(
 
 /** 모델이 자주 쓰는 다른 표현을 고정 어휘로 옮긴다. 없으면 그대로 두고 대조한다. */
 const LABEL_ALIASES: Record<string, string> = {
+  // let·have 문장에도 make가 보여 헷갈린다 — 선생님 2026-11-09 「사역동사+O+원형」으로. 옛 저장본도 새 이름으로 보인다
+  "make+O+원형": "사역동사+O+원형",
   "관계대명사절": "관계사절",
   "관계대명사 절": "관계사절",
   "형용사적 수식 분사": "분사 명사 수식",

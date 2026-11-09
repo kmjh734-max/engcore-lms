@@ -18,7 +18,7 @@ export const ANALYSIS_LABEL_GUIDE: Array<[label: string, rule: string]> = [
   ["5형식 수동", "능동 5형식의 목적어가 주어가 되고 목적격보어가 남는다(was found to be)"],
   ["목적격보어 to부정사", "allow·want·ask·expect·convince·require + O + to V"],
   ["목적격보어 분사", "지각·imagine·keep·find + O + -ing(능동)/p.p.(수동) — O와의 관계로 고른다"],
-  ["make+O+원형", "사역 make·let·have + O + 동사원형(수동이 되면 be made to V)"],
+  ["사역동사+O+원형", "사역 make·let·have + O + 동사원형(수동이 되면 be made to V)"],
   ["사역동사 수동", "be made to V — 수동이 되면 원형이 to부정사로"],
   ["지각동사 보어", "see·hear·watch·notice + O + 원형/-ing"],
   ["have+O+p.p.", "O가 ~되게 하다(O와 p.p.가 수동 관계)"],
