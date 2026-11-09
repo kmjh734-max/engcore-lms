@@ -32,7 +32,12 @@ const GPT56_WRITE_UPLIFT = 1.15;
 
 export const MODEL_PRICES: Record<string, ModelPrice> = {
   // 2026-09-29 공식 가격표에서 옮겨 적음 (developers.openai.com/api/docs/pricing)
-  "gpt-5.6-sol": { in: 4, cachedIn: 0.4, out: 20, writeUplift: GPT56_WRITE_UPLIFT },
+  /*
+   * sol은 1.23(2026-11-10 청구 대조, 10-27~11-09): 캐시가 잘 걸리게 고친 뒤 처음 보는 입력 중 캐시 쓰기 비율이 올라
+   * 평균 1.15로는 sol을 1.3% 낮게 셌다. 청구 「cache writes $9.08 + input $0.68」÷ 단가표 처음 보는 입력값 = 1.23.
+   * terra는 같은 셈으로 1.145라 그대로 둔다. 다시 재는 스크립트: scripts/tmp-rv/goldset/_oai-reconcile.mts
+   */
+  "gpt-5.6-sol": { in: 4, cachedIn: 0.4, out: 20, writeUplift: 1.23 },
   "gpt-5.6-terra": { in: 2, cachedIn: 0.2, out: 12, writeUplift: GPT56_WRITE_UPLIFT },
   "gpt-5.6-luna": { in: 0.2, cachedIn: 0.02, out: 1.2, writeUplift: GPT56_WRITE_UPLIFT },
   "gpt-5.5": { in: 5, cachedIn: 0.5, out: 30 },
