@@ -11,8 +11,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * 다른 컴퓨터에서 열어도 같다. 쪽을 고치면 그 묶음만 새로 만든다. 학원마다 따로 둔다.
  */
 const CACHE_BUCKET = "pdf-cache";
-/** 만드는 방식이 바뀌면 올린다 — 예전 PDF를 돌려주지 않게(server-pdf.ts의 같은 값과 맞춘다). flat1: 서버에서 불투명 바꾸기(2026-11-09) */
-const PDF_CACHE_VERSION = "flat1";
+/** 만드는 방식이 바뀌면 올린다 — 예전 PDF를 돌려주지 않게(server-pdf.ts의 같은 값과 맞춘다). flat1: 서버에서 불투명 바꾸기(2026-11-09), font2: 사이트 주소에서 그려 인쇄 글꼴이 들어감·빈 「(계속)」 쪽 표시(2026-11-10) */
+const PDF_CACHE_VERSION = "font2";
 
 function cacheKey(html: string, paper: { w: number; h: number }): string {
   return createHash("sha256").update(`${PDF_CACHE_VERSION}|${paper.w}x${paper.h}|${html}`).digest("hex");

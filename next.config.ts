@@ -42,7 +42,8 @@ const nextConfig: NextConfig = {
     "/teacher/lesson-materials/input": comicTracePaths,
     "/admin/lesson-materials/project/[projectId]": comicTracePaths,
     "/teacher/lesson-materials/project/[projectId]": comicTracePaths,
-    "/api/pdf/render": ["./node_modules/@sparticuz/chromium/bin/**/*"],
+    // pdfjs: 만든 PDF에서 빈 「(계속)」 쪽 찾기(일꾼 파일은 실행 중에 불러와 추적되지 않는다)
+    "/api/pdf/render": ["./node_modules/@sparticuz/chromium/bin/**/*", "./node_modules/pdfjs-dist/legacy/build/**/*"],
   },
   images: {
     remotePatterns: [

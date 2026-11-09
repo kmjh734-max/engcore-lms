@@ -14,7 +14,7 @@ import type { PdfPaper } from "@/lib/pdf/download-sheets-pdf";
 
 const CHUNK_PAGES = 15;
 /** 서버 저장소 열쇠의 판 — /api/pdf/render 의 같은 값과 맞춘다 */
-const PDF_CACHE_VERSION = "flat1";
+const PDF_CACHE_VERSION = "font2";
 const CONCURRENCY = 10;
 
 /** 조상 껍데기에서 지울 모양 — 쪽의 크기·위치를 바꾸지 않게 */
@@ -447,6 +447,12 @@ export async function renderPagesToPdf(
   return job;
 }
 
+/** 「engcore-skip:3,7」 → {3, 7} (render-html-pdf.ts의 PDF_SKIP_PREFIX — 서버 모듈이라 여기서는 글로 맞춘다) */
+function skipPagesOf(subject: string | undefined): Set<number> {
+  const m = /engcore-skip:([\d,]+)/.exec(subject ?? "");
+  return new Set(m ? m[1]!.split(",").map(Number).filter((n) => Number.isInteger(n)) : []);
+}
+
 async function mergeEntries(
   entries: Array<Promise<PageResult>>,
   total: number,
@@ -460,7 +466,7 @@ async function mergeEntries(
     )
   );
   const results = await Promise.all(entries);
-  // 쪽이 모두 한 묶음에서 차례대로 나왔으면 그 PDF를 그대로 준다
+  // 쪽이 모두 한 묶음에서 차례대로 나왔으면 그 PDF를 그대로 준다(뺄 빈 쪽이 없을 때)
   const first = results[0]!;
   if (
     results.every((r, i) => r.bytes === first.bytes && r.count === 1 && r.from === i) &&
@@ -468,7 +474,9 @@ async function mergeEntries(
   ) {
     const { PDFDocument } = await import("pdf-lib");
     const doc = await PDFDocument.load(first.bytes);
-    if (doc.getPageCount() === results.length) return new Blob([first.bytes], { type: "application/pdf" });
+    if (doc.getPageCount() === results.length && skipPagesOf(doc.getSubject()).size === 0) {
+      return new Blob([first.bytes], { type: "application/pdf" });
+    }
   }
   const { PDFDocument } = await import("pdf-lib");
   const merged = await PDFDocument.create();
@@ -478,13 +486,18 @@ async function mergeEntries(
    * 57쪽이 9MB·5초가 되었다(2026-10-20 잰 값).
    */
   const groups: Array<{ bytes: ArrayBuffer; indices: number[] }> = [];
+  /** 서버가 빈 쪽으로 적어 둔 쪽(워크북 「(계속)」 마지막 쪽 — render-html-pdf.ts) */
+  const skips = new Map<ArrayBuffer, Set<number>>();
   for (const r of results) {
     let doc = loaded.get(r.bytes);
     if (!doc) {
       doc = await PDFDocument.load(r.bytes);
       loaded.set(r.bytes, doc);
+      skips.set(r.bytes, skipPagesOf(doc.getSubject()));
     }
-    const indices = r.count < 0 ? doc.getPageIndices() : [r.from];
+    const skip = skips.get(r.bytes)!;
+    const indices = (r.count < 0 ? doc.getPageIndices() : [r.from]).filter((i) => !skip.has(i));
+    if (indices.length === 0) continue;
     const last = groups[groups.length - 1];
     if (last && last.bytes === r.bytes) last.indices.push(...indices);
     else groups.push({ bytes: r.bytes, indices });

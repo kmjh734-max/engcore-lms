@@ -89,6 +89,76 @@ function allowed(url: string, origin: string): boolean {
   }
 }
 
+/*
+ * 워크북 「(계속)」 마지막 쪽이 PDF에서 비는 것(선생님 2026-11-10): 워크북은 한 유형을 단으로 길게 흘려 쪽마다 한 단씩
+ * 보여 준다. 화면에서 마지막 단에 두세 줄만 넘어간 유형은, 인쇄(PDF) 글자 폭이 화면과 아주 조금 달라 그 줄이 앞 단에 다
+ * 들어가고 마지막 쪽에 머리글만 남았다(내용은 빠지지 않는다). 화면 배치로는 알 수 없어, 만든 PDF의 글자로 확인한다.
+ * 빈 쪽은 PDF의 Subject에 「engcore-skip:쪽,쪽」으로 적어 두고 합칠 때 뺀다(저장소에 둔 PDF에도 남는다).
+ */
+/** box: 본문 칸의 자리(쪽 왼쪽 위 기준 CSS px) */
+type TailCandidate = { index: number; box: { left: number; top: number; right: number; bottom: number } };
+export const PDF_SKIP_PREFIX = "engcore-skip:";
+
+/** 서버 Chrome 안에서 돈다: 여러 쪽으로 이어지는 유형의 마지막 쪽 중 글이 몇 줄 안 되는 쪽(쪽 차례·머리글 글자 수) */
+function findTailWindowCandidates(): TailCandidate[] {
+  const out: TailCandidate[] = [];
+  Array.from(document.body.children).forEach((piece, index) => {
+    const body = piece.querySelector<HTMLElement>("[data-wb-window]");
+    const m = /^(\d+)\/(\d+)$/.exec(body?.dataset.wbWindow ?? "");
+    if (!body || !m || m[1] !== m[2] || m[2] === "1") return;
+    const br = body.getBoundingClientRect();
+    let lines = 0;
+    const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n && lines <= 12; n = walker.nextNode()) {
+      if (!n.textContent?.trim()) continue;
+      const range = document.createRange();
+      range.selectNodeContents(n);
+      for (const q of Array.from(range.getClientRects())) {
+        if (q.width > 0 && q.right > br.left && q.left < br.right && q.bottom > br.top && q.top < br.bottom) lines++;
+      }
+    }
+    if (lines > 12) return;
+    const pr = piece.getBoundingClientRect();
+    out.push({ index, box: { left: br.left - pr.left, top: br.top - pr.top, right: br.right - pr.left, bottom: br.bottom - pr.top } });
+  });
+  return out;
+}
+
+/** 만든 PDF에서 후보 쪽의 글자를 읽어, 머리글·쪽 번호 말고 글자가 없으면 빈 쪽으로 적는다 */
+async function markEmptyTailPages(pdf: Uint8Array, candidates: TailCandidate[]): Promise<Uint8Array> {
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(pdf), isEvalSupported: false, disableFontFace: true }).promise;
+  const empty: number[] = [];
+  try {
+    for (const c of candidates) {
+      if (c.index >= doc.numPages) continue;
+      const pg = await doc.getPage(c.index + 1);
+      const pageH = pg.getViewport({ scale: 1 }).height;
+      const content = await pg.getTextContent();
+      /*
+       * 본문 칸 안에 놓인 글자만 센다 — 옆 단 글자도 PDF 안에는 그려져 있고(잘려서 안 보일 뿐) 글자 읽기에는 잡힌다.
+       * PDF 단위(pt, 아래가 0)를 CSS px(위가 0)로: px = pt / 0.75.
+       */
+      let inside = 0;
+      for (const it of content.items as Array<{ str?: string; transform?: number[] }>) {
+        const text = String(it.str ?? "").replace(/\s+/g, "");
+        if (!text || !it.transform) continue;
+        const x = it.transform[4]! / 0.75;
+        const y = (pageH - it.transform[5]!) / 0.75;
+        if (x >= c.box.left - 2 && x < c.box.right - 2 && y > c.box.top && y < c.box.bottom + 6) inside += text.length;
+      }
+      if (inside === 0) empty.push(c.index);
+    }
+  } finally {
+    await doc.destroy().catch(() => undefined);
+  }
+  if (empty.length === 0) return pdf;
+  const { PDFDocument } = await import("pdf-lib");
+  const out = await PDFDocument.load(pdf);
+  out.setSubject(`${PDF_SKIP_PREFIX}${empty.join(",")}`);
+  return await out.save({ useObjectStreams: true });
+}
+
 export async function renderHtmlToPdf(
   html: string,
   paper: { w: number; h: number },
@@ -107,10 +177,22 @@ export async function renderHtmlToPdf(
   try {
     await page.setJavaScriptEnabled(false);
     await page.setRequestInterception(true);
+    /*
+     * 쪽 HTML을 빈 문서(about:blank, 주소 없음)에 넣으면 우리 사이트의 /fonts/print 글꼴이 「다른 사이트 글꼴」로 막혀(CORS)
+     * PDF가 Source Serif 4·IBM Plex Sans KR 대신 기본 글꼴(Times 등)로 나왔다 — 2026-11-06 인쇄 글꼴을 그 폴더로 옮긴 뒤.
+     * 줄바꿈이 달라져 워크북 「(계속)」 쪽이 비기도 했다(선생님 2026-11-10). 사이트 주소의 빈 쪽을 열어 두고(요청은 여기서
+     * 바로 답한다) 그 위에 넣으면 같은 사이트 글꼴이 된다.
+     */
+    const blankUrl = `${origin}/__pdf-render-blank`;
     page.on("request", (req) => {
+      if (req.url() === blankUrl) {
+        void req.respond({ status: 200, contentType: "text/html; charset=utf-8", body: "<!doctype html><title></title>" });
+        return;
+      }
       if (allowed(req.url(), origin)) void req.continue();
       else void req.abort();
     });
+    await page.goto(blankUrl, { waitUntil: "load", timeout: 10_000 });
     // 예전 그림 저장과 같은 모양이 나오게 화면용 CSS로 그린다(인쇄용 CSS는 화면 밖 요소를 숨긴다).
     await page.emulateMediaType("screen");
     /*
@@ -131,6 +213,10 @@ export async function renderHtmlToPdf(
       .evaluate(`var __name = (f) => f; (${flattenForPrint.toString()})(document.body, { images: false }); void 0`)
       .catch((e) => console.warn("[pdf] 불투명 바꾸기 실패", e));
     lap("flatten");
+    const candidates = await page
+      .evaluate(`var __name = (f) => f; (${findTailWindowCandidates.toString()})()`)
+      .then((v) => v as TailCandidate[])
+      .catch(() => [] as TailCandidate[]);
     const pdf = await page.pdf({
       width: `${paper.w}mm`,
       height: `${paper.h}mm`,
@@ -140,7 +226,13 @@ export async function renderHtmlToPdf(
       timeout: 40_000,
     });
     lap("pdf");
-    return pdf;
+    if (candidates.length === 0) return pdf;
+    const marked = await markEmptyTailPages(pdf, candidates).catch((e) => {
+      console.warn("[pdf] 빈 쪽 찾기 실패", e);
+      return pdf;
+    });
+    lap("tail");
+    return marked;
   } finally {
     await page.close().catch(() => undefined);
   }
