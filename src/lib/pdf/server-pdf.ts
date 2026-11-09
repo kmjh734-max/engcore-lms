@@ -15,7 +15,7 @@ import type { PdfPaper } from "@/lib/pdf/download-sheets-pdf";
 const CHUNK_PAGES = 15;
 /** 서버 저장소 열쇠의 판 — /api/pdf/render 의 같은 값과 맞춘다 */
 const PDF_CACHE_VERSION = "font2";
-const CONCURRENCY = 10;
+const CONCURRENCY = 16;
 
 /** 조상 껍데기에서 지울 모양 — 쪽의 크기·위치를 바꾸지 않게 */
 const NEUTRAL: Array<[string, string]> = [

@@ -159,6 +159,62 @@ async function markEmptyTailPages(pdf: Uint8Array, candidates: TailCandidate[]):
   return await out.save({ useObjectStreams: true });
 }
 
+/*
+ * CSS·글꼴·그림을 서버 안에 기억해 두고 쪽 묶음마다 다시 받지 않는다(선생님 2026-11-10 「속도만 빠르게」). 운영에서
+ * 묶음 하나 9초 중 쪽을 넣고 CSS·글꼴을 받는 데 평균 4.8초(최대 16.6초)였다 — 묶음마다 새 탭이 같은 파일을 인터넷으로
+ * 다시 받았다. 한 서버가 여러 묶음을 동시에 맡으므로(유동 실행) 한 번 받은 파일은 다른 묶음도 바로 쓴다.
+ */
+type Asset = { status: number; headers: Record<string, string>; body: Buffer };
+const ga = globalThis as typeof globalThis & { __pdfAssets?: Map<string, Promise<Asset | null>>; __pdfAssetBytes?: number };
+const assets: Map<string, Promise<Asset | null>> = (ga.__pdfAssets ??= new Map());
+const ASSET_BYTES_LIMIT = 120 * 1024 * 1024;
+const ASSET_TYPES = new Set(["stylesheet", "font", "image"]);
+
+async function fetchAsset(url: string, headers: Record<string, string>): Promise<Asset | null> {
+  const res = await fetch(url, { headers: { "user-agent": headers["user-agent"] ?? "", accept: headers.accept ?? "*/*" } });
+  if (!res.ok) return null;
+  const body = Buffer.from(await res.arrayBuffer());
+  return {
+    status: 200,
+    headers: {
+      "content-type": res.headers.get("content-type") ?? "application/octet-stream",
+      // 사이트 주소에서 그리지만, 다른 곳(구글 글꼴·Supabase)의 글꼴도 막히지 않게
+      "access-control-allow-origin": "*",
+    },
+    body,
+  };
+}
+
+async function serveAsset(req: import("puppeteer-core").HTTPRequest): Promise<void> {
+  const url = req.url();
+  if (req.method() !== "GET" || !ASSET_TYPES.has(req.resourceType()) || url.startsWith("data:") || url.startsWith("blob:")) {
+    await req.continue().catch(() => undefined);
+    return;
+  }
+  let job = assets.get(url);
+  if (!job) {
+    job = fetchAsset(url, req.headers()).catch(() => null);
+    assets.set(url, job);
+    void job.then((a) => {
+      if (!a) {
+        assets.delete(url);
+        return;
+      }
+      ga.__pdfAssetBytes = (ga.__pdfAssetBytes ?? 0) + a.body.length;
+      // 넘치면 오래된 것부터 버린다
+      while ((ga.__pdfAssetBytes ?? 0) > ASSET_BYTES_LIMIT && assets.size > 1) {
+        const oldest = assets.keys().next().value!;
+        const old = assets.get(oldest);
+        assets.delete(oldest);
+        void old?.then((o) => (ga.__pdfAssetBytes = (ga.__pdfAssetBytes ?? 0) - (o?.body.length ?? 0)));
+      }
+    });
+  }
+  const asset = await job;
+  if (asset) await req.respond(asset).catch(() => undefined);
+  else await req.continue().catch(() => undefined);
+}
+
 export async function renderHtmlToPdf(
   html: string,
   paper: { w: number; h: number },
@@ -189,8 +245,11 @@ export async function renderHtmlToPdf(
         void req.respond({ status: 200, contentType: "text/html; charset=utf-8", body: "<!doctype html><title></title>" });
         return;
       }
-      if (allowed(req.url(), origin)) void req.continue();
-      else void req.abort();
+      if (!allowed(req.url(), origin)) {
+        void req.abort();
+        return;
+      }
+      void serveAsset(req);
     });
     await page.goto(blankUrl, { waitUntil: "load", timeout: 10_000 });
     // 예전 그림 저장과 같은 모양이 나오게 화면용 CSS로 그린다(인쇄용 CSS는 화면 밖 요소를 숨긴다).
