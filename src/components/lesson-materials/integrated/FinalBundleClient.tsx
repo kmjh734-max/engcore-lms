@@ -321,15 +321,29 @@ export function FinalBundleClient({
   const updateTests = (patch: Partial<IntegratedPayload["tests"]>) => update({ tests: { ...payload.tests, ...patch } });
 
   /** PDF 이름은 자료함 파일 이름 그대로(선생님 2026-10-26) — 화면에서 이름을 바꿨을 수 있어 누를 때 다시 읽는다 */
+  /** 누르는 즉시 버튼을 「저장 중…」으로(선생님 2026-11-10 「눌렀는데 반응이 없다」 — 이름 묻기·쪽 뜨기 동안 아무 표시가 없었다) */
+  const [pdfStarting, setPdfStarting] = useState(false);
   async function savePdf() {
-    const pages = collectPrintPages(document.getElementById("final-bundle-print-root"), PDF_PAGE_SELECTOR);
-    const res = await postJson<{ ok: true; name: string } | { ok: false; message: string }>("/api/lesson-materials/documents/open", {
-      op: "getName",
-      role,
-      id: docId,
-    }).catch(() => null);
-    const fileName = (res && res.ok ? res.name : name) || payload.cover.title.replace(/\s+/g, " ") || "통합자료";
-    await pdf.save("통합자료", pages, [fileName], undefined, true);
+    if (pdfStarting) return;
+    setPdfStarting(true);
+    try {
+      // 바뀐 글이 화면에 그려지게 한 프레임 쉰다
+      await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+      const pages = collectPrintPages(document.getElementById("final-bundle-print-root"), PDF_PAGE_SELECTOR);
+      // 이름 묻기가 늦어도 저장을 붙잡지 않게 2초까지만 기다린다
+      const res = await Promise.race([
+        postJson<{ ok: true; name: string } | { ok: false; message: string }>("/api/lesson-materials/documents/open", {
+          op: "getName",
+          role,
+          id: docId,
+        }).catch(() => null),
+        new Promise<null>((r) => setTimeout(() => r(null), 2000)),
+      ]);
+      const fileName = (res && res.ok ? res.name : name) || payload.cover.title.replace(/\s+/g, " ") || "통합자료";
+      await pdf.save("통합자료", pages, [fileName], undefined, true);
+    } finally {
+      setPdfStarting(false);
+    }
   }
   // 글꼴이 늦게 들어오면 테스트 교재 쪽 나눔을 다시 잰다(먼저 잰 높이로 나누면 쪽이 넘친다)
   const [fontsTick, setFontsTick] = useState(0);
@@ -750,16 +764,17 @@ export function FinalBundleClient({
   return (
     <div className="fixed inset-0 z-50 flex bg-slate-200 print:static print:block print:bg-white">
       <aside className="flex w-[340px] shrink-0 flex-col border-r border-slate-200 bg-white print:hidden">
-        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+        {/* 자료 이름이 길면 한 줄에 「닫기(저장)」와 같이 두었을 때 버튼이 세로로 찌그러지고 이름이 칸 밖으로 나갔다(선생님 2026-11-10) — 두 줄로 */}
+        <div className="flex flex-col items-start gap-1.5 border-b border-slate-100 px-4 py-3">
           <button
             type="button"
             onClick={() => void saveAndClose()}
             disabled={closing}
-            className="text-sm font-semibold text-slate-500 hover:text-slate-800 disabled:opacity-60"
+            className="shrink-0 whitespace-nowrap text-sm font-semibold text-slate-500 hover:text-slate-800 disabled:opacity-60"
           >
             {closing ? "저장 중…" : "‹ 닫기(저장)"}
           </button>
-          <p className="flex items-center gap-2 text-base font-black text-slate-900">
+          <p className="flex w-full min-w-0 items-start gap-2 break-keep text-base font-black leading-snug text-slate-900">
             <span className="rounded-md bg-violet-100 px-1.5 py-0.5 text-violet-700">🗂</span>
             <DocumentTitle role={role} fallback={name || "통합 자료"} />
           </p>
@@ -959,11 +974,11 @@ export function FinalBundleClient({
           <button
             type="button"
             // 미리 만들기가 덜 끝났어도 누를 수 있다(선생님 2026-11-10 「켜지기까지 기다리게 하지 말고 예전처럼」) — 진행 숫자가 뜬다
-            disabled={!!pdf.busy || !settled}
+            disabled={!!pdf.busy || !settled || pdfStarting}
             onClick={() => void savePdf()}
             className="mt-2 w-full rounded-xl border border-violet-300 bg-white py-2.5 text-sm font-bold text-violet-800 hover:bg-violet-50 disabled:opacity-50"
           >
-            ⤓ PDF로 저장
+            {pdfStarting ? "저장 중…" : "⤓ PDF로 저장"}
           </button>
           {pdf.status ? (
             <p className={`mt-1 text-[11px] font-semibold ${pdf.busy ? "text-violet-700" : "text-rose-600"}`}>{pdf.status}</p>

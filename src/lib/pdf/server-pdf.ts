@@ -124,8 +124,18 @@ function collectCss(): string {
   const links = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
     .filter((l) => l.href && !l.disabled)
     // 개발 서버는 CSS 주소에 여는 시각(?v=…)을 붙인다 — 그대로 두면 열 때마다 쪽 열쇠가 달라 저장해 둔 PDF를 못 쓴다
+    /*
+     * 운영(Vercel)은 배포마다 바뀌는 꼬리표(?dpl=dpl_…)를 붙인다 — 그대로 두면 배포할 때마다 모든 쪽 열쇠가 달라져 저장해 둔
+     * PDF를 하나도 못 찾고 전부 다시 만들었다(선생님 2026-11-10 「PDF 저장 누르고 너무 오래 걸려」). 파일 이름에 내용 지문이
+     * 있어(…/css/0c9c66c1….css) 꼬리표 없이도 내용이 바뀌면 열쇠가 바뀐다.
+     */
     .map((l) => {
-      const href = l.href.replace(/([?&])v=\d+(&|$)/, (_m, a: string, b: string) => (b ? a : ""));
+      let href = l.href;
+      for (let prev = ""; prev !== href; ) {
+        prev = href;
+        href = href.replace(/([?&])(?:v|dpl)=[^&#]*(&|$)/, (_m, a: string, b: string) => (b ? a : ""));
+      }
+      href = href.replace(/[?&]$/, "");
       return `<link rel="stylesheet" href="${href.replace(/"/g, "&quot;")}"${l.media ? ` media="${l.media}"` : ""}>`;
     });
   const styles = Array.from(document.querySelectorAll("style")).map((s) => {
@@ -310,11 +320,6 @@ async function limited<T>(run: () => Promise<T>): Promise<T> {
 /** 다 합친 파일도 쪽 목록마다 기억해 둔다(버튼을 누르면 합치는 시간 없이 바로 받게) */
 const mergedCache = new Map<string, Promise<Blob>>();
 
-/** 쪽들의 PDF를 (기억해 둔 것은 그대로, 없는 것만 만들어) 쪽 차례대로 돌려준다. */
-function ensurePages(pages: HTMLElement[], paper: PdfPaper): { entries: Array<Promise<PageResult>>; listKey: string } {
-  const head = collectCss();
-  return schedulePieces(head, pages.map((p) => pieceOf(p, paper)), paper);
-}
 
 /**
  * 미리 만들기용: 쪽 조각을 몇 쪽씩 나눠 만들며 사이사이 화면에 틈을 준다(2026-10-29 속도: 184쪽을 한 번에
@@ -434,7 +439,11 @@ export async function renderPagesToPdf(
   paper: PdfPaper,
   onProgress?: (done: number, total: number) => void
 ): Promise<Blob> {
-  const { entries, listKey } = ensurePages(pages, paper);
+  /*
+   * 누를 때도 쪽을 몇 쪽씩 나눠 떠서 사이사이 화면에 틈을 준다 — 한 번에 249쪽을 뜨느라 화면이 5초 멈춰 「PDF 만드는 중」도
+   * 안 뜨고 눌러도 반응이 없어 보였다(선생님 2026-11-10).
+   */
+  const { entries, listKey } = await ensurePagesGently(pages, paper);
   const ready = mergedCache.get(listKey);
   if (ready) {
     const blob = await ready.catch(() => null);
