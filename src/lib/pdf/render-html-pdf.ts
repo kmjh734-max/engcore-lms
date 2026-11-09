@@ -92,9 +92,17 @@ function allowed(url: string, origin: string): boolean {
 export async function renderHtmlToPdf(
   html: string,
   paper: { w: number; h: number },
-  origin: string
+  origin: string,
+  /** 단계마다 걸린 시간(ms)을 적어 준다 — 응답 머리(Server-Timing)로 내보내 어디가 느린지 본다 */
+  timing?: Record<string, number>
 ): Promise<Uint8Array> {
+  let t = Date.now();
+  const lap = (name: string) => {
+    if (timing) timing[name] = Date.now() - t;
+    t = Date.now();
+  };
   const browser = await getBrowser(origin);
+  lap("browser");
   const page = await browser.newPage();
   try {
     await page.setJavaScriptEnabled(false);
@@ -105,9 +113,14 @@ export async function renderHtmlToPdf(
     });
     // 예전 그림 저장과 같은 모양이 나오게 화면용 CSS로 그린다(인쇄용 CSS는 화면 밖 요소를 숨긴다).
     await page.emulateMediaType("screen");
-    await page.setContent(html, { waitUntil: "networkidle0", timeout: 40_000 });
-    // 스크립트를 꺼도 page.pdf는 글꼴이 다 들어오기를 기다린다. 혹시 몰라 한 번 더 기다린다.
-    await page.evaluateHandle("document.fonts.ready").catch(() => undefined);
+    /*
+     * networkidle0은 요청이 끝나고도 0.5초를 더 쉬었다 — 묶음마다 0.5초(2026-11-10 속도). CSS·그림이 들어오는 load까지만
+     * 기다리고, 배치를 한 번 시켜 글꼴 받기를 시작하게 한 뒤 글꼴을 기다린다.
+     */
+    await page.setContent(html, { waitUntil: "load", timeout: 40_000 });
+    lap("content");
+    await page.evaluate("void document.body.offsetHeight; document.fonts.ready.then(() => 1)").catch(() => undefined);
+    lap("fonts");
     /*
      * 반투명 효과를 불투명으로(받은 PDF를 인쇄할 때 스풀링이 느리지 않게 — 2026-11-06). 예전엔 「PDF로 저장」을 누를 때
      * 브라우저에서 화면 전체를 바꾼 뒤 떠 보냈는데, 그러면 미리 만들어 둔 쪽과 HTML이 달라 누를 때마다 전부 새로
@@ -117,7 +130,8 @@ export async function renderHtmlToPdf(
       // __name: 번들러(esbuild 등)가 함수 이름을 지키려고 끼워 넣는 도우미 — 서버 Chrome에는 없으니 빈 것으로 둔다
       .evaluate(`var __name = (f) => f; (${flattenForPrint.toString()})(document.body, { images: false }); void 0`)
       .catch((e) => console.warn("[pdf] 불투명 바꾸기 실패", e));
-    return await page.pdf({
+    lap("flatten");
+    const pdf = await page.pdf({
       width: `${paper.w}mm`,
       height: `${paper.h}mm`,
       printBackground: true,
@@ -125,6 +139,8 @@ export async function renderHtmlToPdf(
       margin: { top: 0, right: 0, bottom: 0, left: 0 },
       timeout: 40_000,
     });
+    lap("pdf");
+    return pdf;
   } finally {
     await page.close().catch(() => undefined);
   }

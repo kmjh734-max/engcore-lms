@@ -128,11 +128,18 @@ export async function POST(request: Request) {
 
   try {
     // 배포에서는 요청 주소가 곧 사이트 주소다(쪽 HTML의 base와 같다).
-    const pdf = await renderHtmlToPdf(html, paper, new URL(request.url).origin);
+    const timing: Record<string, number> = {};
+    const pdf = await renderHtmlToPdf(html, paper, new URL(request.url).origin, timing);
     // 저장소에 두는 일은 응답을 보낸 뒤에(기다리게 하지 않는다)
     if (path) after(() => writeCached(path, pdf));
     return new Response(Buffer.from(pdf), {
-      headers: { "Content-Type": "application/pdf", "Cache-Control": "no-store", "x-pdf-cache": "miss" },
+      headers: {
+        "Content-Type": "application/pdf",
+        "Cache-Control": "no-store",
+        "x-pdf-cache": "miss",
+        "Server-Timing": Object.entries(timing).map(([k, v]) => `${k};dur=${v}`).join(", "),
+        "x-pdf-html-kb": String(Math.round(html.length / 1024)),
+      },
     });
   } catch (e) {
     return new Response(e instanceof Error ? e.message : "PDF를 만들지 못했습니다.", { status: 500 });

@@ -257,7 +257,7 @@ export function FinalBundleClient({
   /** PDF로 바로 저장(인쇄 창 없이) */
   const pdf = usePdfSave();
   // 미리 PDF를 만들어 두어 「PDF로 저장」을 누르면 바로 받아진다 — 다 불러온 뒤에 시작(쪽 번호가 정해진 뒤)
-  const pdfPrefetch = usePdfPrefetch("final-bundle-print-root", PDF_PAGE_SELECTOR, { enabled: settled });
+  usePdfPrefetch("final-bundle-print-root", PDF_PAGE_SELECTOR, { enabled: settled });
   const [pageCounts, setPageCounts] = useState<Record<string, number>>({});
   /** 묶음 안 세부 항목(워크북 유형·수업용 자료 지문)마다 쪽 수 — 이어진 쪽끼리 한 줄 */
   const [subCounts, setSubCounts] = useState<Record<string, Array<{ label: string; note?: string; n: number }>>>({});
@@ -958,11 +958,12 @@ export function FinalBundleClient({
           </button>
           <button
             type="button"
-            disabled={!!pdf.busy || !pdfPrefetch.ready}
+            // 미리 만들기가 덜 끝났어도 누를 수 있다(선생님 2026-11-10 「켜지기까지 기다리게 하지 말고 예전처럼」) — 진행 숫자가 뜬다
+            disabled={!!pdf.busy || !settled}
             onClick={() => void savePdf()}
             className="mt-2 w-full rounded-xl border border-violet-300 bg-white py-2.5 text-sm font-bold text-violet-800 hover:bg-violet-50 disabled:opacity-50"
           >
-            {pdfPrefetch.ready ? "⤓ PDF로 저장" : "PDF 준비 중…"}
+            ⤓ PDF로 저장
           </button>
           {pdf.status ? (
             <p className={`mt-1 text-[11px] font-semibold ${pdf.busy ? "text-violet-700" : "text-rose-600"}`}>{pdf.status}</p>
