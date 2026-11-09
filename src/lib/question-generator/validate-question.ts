@@ -1073,7 +1073,17 @@ export function validateGeneratedQuestion(opts: {
       const cnt = new Map<string, number>();
       for (const h of heads) cnt.set(h, (cnt.get(h) ?? 0) + 1);
       const [word, n] = [...cnt].sort((a, b) => b[1] - a[1])[0]!;
-      if (n >= 4) {
+      /*
+       * 글감 낱말(Myers-Briggs, Hemingway's, bee)이나 한글 보기(투표, 마이어스-브릭스)로 다섯 보기가 시작하는 것은
+       * 틀이 아니라 글감이다 — 학생이 틀로 가를 수도 없다. 2026-10-27~11-09 작업 다섯 개에서 이 경고로만
+       * 다시 만든 것이 13번(재생성 99번 중 가장 많은 갈래)이었다. 틀 낱말(the·how·why …)은 그대로 막는다.
+       */
+      const TEMPLATE_HEADS = new Set(["the", "a", "an", "how", "why", "what", "when", "where", "which", "who", "ways", "way", "importance", "role", "effects", "benefits", "reasons", "need", "necessity", "difficulty", "difficulties", "can", "is", "are", "do", "does"]);
+      const bare = word.replace(/[’']s$/, "").replace(/[^a-z0-9-]/g, "");
+      const topicWord =
+        /[가-힣]/.test(word) ||
+        (!TEMPLATE_HEADS.has(bare) && bare.length >= 3 && new RegExp(`\\b${bare.replace(/-/g, "\\-")}`, "i").test(opts.passage));
+      if (n >= 4 && !topicWord) {
         warnings.push(`보기 ${n}개가 "${word}"로 시작합니다. 틀을 바꿔 주세요.`);
         score -= 35;
       }

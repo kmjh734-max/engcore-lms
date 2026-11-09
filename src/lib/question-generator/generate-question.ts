@@ -239,6 +239,7 @@ questionText empty.`;
 - explanation: list which numbers are false and why (Korean, brief).
 - Every statement must be clearly true or clearly false from the passage alone: no vague references ("the opposite direction" of what?), no comparisons the passage never makes, no paraphrase that could be read either way. A false statement changes one checkable fact.
 - A TRUE statement must stay true against the WHOLE passage: do not drop a limit the passage adds later (원문 "keeps increasing … but both begin to fall after a peak" → 「계속 늘어난다」는 거짓으로도 읽힌다 — 「늘어나는 동안 …도 함께 늘어난다」). Keep the exact relation word: "is offset by" = 상쇄된다(not 줄인다), "may" ≠ 「한다」, "some" ≠ 「모두」.
+- A TRUE statement adds nothing the passage does not say: no new agent ("it is estimated" → "archaeologists estimated"), form ("a short assessment" → "a questionnaire"), listener, or swapped word (pollen → nectar). One added detail makes it unverifiable, and the item is rejected.
 ${craft}
 ${contentFalseChoiceCraft(en)}
 ${paraphrase}
@@ -350,6 +351,8 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
 - CRITICAL: PARAPHRASE the lead-in (지시문) only — reword synonyms/structure; do NOT copy it verbatim from the passage.
 - Keep (A)(B)(C) body paragraphs as ORIGINAL wording from the passage (do not paraphrase A/B/C).
 - Exactly one correct order. Put lead-in+(A)(B)(C) in passageModified. questionText empty.
+- CHOOSE THE CUT POINTS so that only one order works (고정 시험지 2026-11-10: 두 순서가 다 읽히는 문항이 많았다). Start each of the 2nd and 3rd paragraphs in the correct order with a sentence that cannot stand right after the lead-in or another paragraph: a reference back (this/these/such/the + a noun just introduced, he/she/they), an addition or contrast word (also, In addition, however, Instead), or a time step (Then, Later). Do not cut where the next paragraph opens with a fresh general statement.
+- Before answering, read each of the other four orders: if any of them also reads naturally, move the cut points (or skip with {"skip":true,"reason":"순서 단서 없음"}).
 LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean in passage or choices.`;
       }
       return `순서추론 LOW (하) — 효자 기출동형:
@@ -357,6 +360,8 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
 - Keep the lead-in (지시문) as ORIGINAL wording from the passage (do not paraphrase).
 - Keep (A)(B)(C) as ORIGINAL wording from the passage.
 - Exactly one correct order. Put lead-in+(A)(B)(C) in passageModified. questionText empty.
+- CHOOSE THE CUT POINTS so that only one order works (고정 시험지 2026-11-10: 두 순서가 다 읽히는 문항이 많았다). Start each of the 2nd and 3rd paragraphs in the correct order with a sentence that cannot stand right after the lead-in or another paragraph: a reference back (this/these/such/the + a noun just introduced, he/she/they), an addition or contrast word (also, In addition, however, Instead), or a time step (Then, Later). Do not cut where the next paragraph opens with a fresh general statement.
+- Before answering, read each of the other four orders: if any of them also reads naturally, move the cut points (or skip with {"skip":true,"reason":"순서 단서 없음"}).
 LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean in passage or choices.`;
     case "sentence_insertion": {
       // 선생님과 함께 전수조사(2026-09-29): 정답 자리가 ④에 44%, ③④를 합치면 71%였다.
