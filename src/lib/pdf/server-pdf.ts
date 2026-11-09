@@ -156,7 +156,38 @@ async function gzip(text: string): Promise<{ body: BodyInit; encoding: string }>
   return { body: await new Response(stream).arrayBuffer(), encoding: "gzip" };
 }
 
+async function sha256Hex(text: string): Promise<string | null> {
+  try {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 서버 저장소에 같은 쪽 PDF가 있으면 그것만 받는다(선생님 2026-11-09 「PDF 저장 누르면 바로」): 예전엔 저장해 둔
+ * 쪽이어도 묶음마다 쪽 HTML(수 MB)을 올려 보내 찾느라 121쪽에 25초가 걸렸다. 지문(해시)만 보내 묻는다.
+ */
+async function cachedChunk(html: string, paper: PdfPaper): Promise<ArrayBuffer | null> {
+  const key = await sha256Hex(`${paper.w}x${paper.h}|${html}`);
+  if (!key) return null;
+  try {
+    const res = await fetch("/api/pdf/render", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key, paper }),
+    });
+    if (!res.ok || !(res.headers.get("content-type") ?? "").includes("pdf")) return null;
+    return await res.arrayBuffer();
+  } catch {
+    return null;
+  }
+}
+
 async function renderChunk(html: string, paper: PdfPaper): Promise<ArrayBuffer> {
+  const hit = await cachedChunk(html, paper);
+  if (hit) return hit;
   const { body, encoding } = await gzip(JSON.stringify({ html, paper }));
   const res = await fetch("/api/pdf/render", {
     method: "POST",

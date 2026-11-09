@@ -12,8 +12,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
  */
 const CACHE_BUCKET = "pdf-cache";
 
-function cachePath(academyId: string, html: string, paper: { w: number; h: number }): string {
-  const key = createHash("sha256").update(`${paper.w}x${paper.h}|${html}`).digest("hex");
+function cacheKey(html: string, paper: { w: number; h: number }): string {
+  return createHash("sha256").update(`${paper.w}x${paper.h}|${html}`).digest("hex");
+}
+
+function cachePath(academyId: string, key: string): string {
   return `${academyId}/${key.slice(0, 2)}/${key}.pdf`;
 }
 
@@ -95,15 +98,23 @@ export async function POST(request: Request) {
   try {
     const raw = Buffer.from(await request.arrayBuffer());
     const text = (request.headers.get("x-body-encoding") === "gzip" ? gunzipSync(raw) : raw).toString("utf8");
-    const body = JSON.parse(text) as { html?: string; paper?: { w?: number; h?: number } };
+    const body = JSON.parse(text) as { html?: string; key?: string; paper?: { w?: number; h?: number } };
     html = String(body.html ?? "");
     paper = { w: Number(body.paper?.w) || 210, h: Number(body.paper?.h) || 297 };
+    // 지문(해시)만 물으면 저장해 둔 PDF가 있을 때만 돌려준다(없으면 404 — 브라우저가 쪽 HTML을 보내 새로 만든다)
+    if (!html && typeof body.key === "string" && /^[0-9a-f]{64}$/.test(body.key)) {
+      const hit = profile.academy_id ? await readCached(cachePath(profile.academy_id, body.key)) : null;
+      if (!hit) return new Response("없음", { status: 404 });
+      return new Response(new Uint8Array(hit), {
+        headers: { "Content-Type": "application/pdf", "Cache-Control": "no-store", "x-pdf-cache": "hit" },
+      });
+    }
     if (!html) throw new Error("빈 쪽");
   } catch {
     return new Response("쪽을 읽지 못했습니다.", { status: 400 });
   }
 
-  const path = profile.academy_id ? cachePath(profile.academy_id, html, paper) : null;
+  const path = profile.academy_id ? cachePath(profile.academy_id, cacheKey(html, paper)) : null;
   if (path) {
     const hit = await readCached(path);
     if (hit) {
