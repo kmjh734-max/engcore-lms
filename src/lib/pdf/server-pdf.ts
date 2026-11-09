@@ -291,39 +291,71 @@ function ensurePages(pages: HTMLElement[], paper: PdfPaper): { entries: Array<Pr
  * 미리 만들기용: 쪽 조각을 몇 쪽씩 나눠 만들며 사이사이 화면에 틈을 준다(2026-10-29 속도: 184쪽을 한 번에
  * 복사·글로 바꾸느라 무언가 고친 2.5초 뒤 화면이 1~3초 멈췄다).
  */
-async function ensurePagesGently(pages: HTMLElement[], paper: PdfPaper): Promise<{ entries: Array<Promise<PageResult>>; listKey: string }> {
+async function ensurePagesGently(
+  pages: HTMLElement[],
+  paper: PdfPaper,
+  holdOpenTail = false
+): Promise<{ entries: Array<Promise<PageResult>>; listKey: string }> {
   const head = collectCss();
   const pieces: PagePiece[] = [];
   for (let i = 0; i < pages.length; i++) {
     pieces.push(pieceOf(pages[i]!, paper));
     if (i % 6 === 5) await new Promise((r) => setTimeout(r, 0));
   }
-  return schedulePieces(head, pieces, paper);
+  return schedulePieces(head, pieces, paper, holdOpenTail);
 }
 
-function schedulePieces(head: string, pieces: PagePiece[], paper: PdfPaper): { entries: Array<Promise<PageResult>>; listKey: string } {
-  // 스타일(수백 KB)은 한 번만 센다 — 예전엔 쪽마다 스타일까지 붙여 다시 세어 184쪽이면 같은 글을 184번 읽었다
-  const headKey = hash(head);
-  const keys = pieces.map((p) => hash(`${paper.w}x${paper.h}|${headKey}|${p.html}`));
-  const missing: number[] = [];
-  keys.forEach((k, i) => {
-    if (!pageCache.has(k) && !missing.some((j) => keys[j] === k)) missing.push(i);
-  });
-  // 없는 쪽을 묶음으로 만든다. 긴 쪽은 장 수를 미리 알 수 없어 혼자 보낸다.
-  const batches: number[][] = [];
+/**
+ * 쪽 차례를 묶음으로 나눈다. 경계는 쪽 내용(열쇠)으로만 정한다 — 쪽이 어떤 차례로 나타나든(화면이 18쪽 → 52쪽 →
+ * 115쪽으로 늘려 가도) 같은 쪽들은 늘 같은 묶음이 되어, 서버 저장소·브라우저 보관함의 묶음 PDF를 다시 찾는다.
+ * 예전엔 「아직 없는 쪽」을 15쪽씩 묶어 열 때마다 묶음이 달라졌고, 다시 열어도 저장해 둔 것을 못 찾아 전부 새로
+ * 만들었다(선생님 2026-11-09 「PDF 저장 누르면 너무 오래 걸린다」, 최종통합자료 115쪽).
+ * 긴 쪽은 장 수를 미리 알 수 없어 혼자 묶는다. open: 끝 묶음이 경계 없이 끝났는지(쪽이 더 붙을 수 있다).
+ */
+export function chunkPages(keys: string[], tall: boolean[]): { chunks: number[][]; open: boolean } {
+  const chunks: number[][] = [];
   let cur: number[] = [];
-  for (const i of missing) {
-    if (pieces[i]!.tall) {
-      batches.push([i]);
+  for (let i = 0; i < keys.length; i++) {
+    if (tall[i]) {
+      if (cur.length) chunks.push(cur);
+      chunks.push([i]);
+      cur = [];
       continue;
     }
     cur.push(i);
-    if (cur.length >= CHUNK_PAGES) {
-      batches.push(cur);
+    // 평균 8쪽쯤에서 끊긴다(열쇠를 섞은 값으로), 많아도 15쪽
+    const k = keys[i]!;
+    let mix = 0;
+    for (let j = 0; j < k.length; j++) mix = Math.imul(mix ^ k.charCodeAt(j), 0x5bd1e995) >>> 0;
+    if ((mix >>> 13) % 8 === 0 || cur.length >= CHUNK_PAGES) {
+      chunks.push(cur);
       cur = [];
     }
   }
-  if (cur.length) batches.push(cur);
+  if (cur.length) chunks.push(cur);
+  return { chunks, open: cur.length > 0 };
+}
+
+function schedulePieces(
+  head: string,
+  pieces: PagePiece[],
+  paper: PdfPaper,
+  /** 화면이 아직 쪽을 늘려 가는 중이면 끝 묶음(경계 없이 끝난 것)은 미룬다 — 쪽이 더 붙으면 묶음이 달라진다 */
+  holdOpenTail = false
+): { entries: Array<Promise<PageResult>>; listKey: string } {
+  // 스타일(수백 KB)은 한 번만 센다 — 예전엔 쪽마다 스타일까지 붙여 다시 세어 184쪽이면 같은 글을 184번 읽었다
+  const headKey = hash(head);
+  const keys = pieces.map((p) => hash(`${paper.w}x${paper.h}|${headKey}|${p.html}`));
+  const { chunks, open } = chunkPages(keys, pieces.map((p) => p.tall));
+  const scheduled = new Set<string>();
+  const batches: number[][] = [];
+  chunks.forEach((chunk, ci) => {
+    if (holdOpenTail && open && ci === chunks.length - 1) return;
+    // 묶음의 쪽이 다 있으면 건너뛴다(같은 쪽이 앞에서 이미 잡혔어도)
+    if (chunk.every((i) => pageCache.has(keys[i]!) || scheduled.has(keys[i]!))) return;
+    chunk.forEach((i) => scheduled.add(keys[i]!));
+    batches.push(chunk);
+  });
   for (const batch of batches) {
     const html = documentHtml(head, batch.map((i) => pieces[i]!.html), paper);
     const job = limited(() => renderChunk(html, paper));
@@ -350,9 +382,10 @@ export async function prefetchPagesPdf(
 ): Promise<void> {
   if (pages.length === 0) return;
   try {
-    const { entries, listKey } = await ensurePagesGently(pages, paper);
+    const { entries, listKey } = await ensurePagesGently(pages, paper, opts.merge === false);
     if (opts.merge === false) {
-      await Promise.allSettled(entries);
+      // 미룬 끝 묶음의 쪽은 아직 없다(undefined) — 있는 것만 기다린다
+      await Promise.allSettled(entries.filter(Boolean));
       return;
     }
     if (mergedCache.has(listKey)) return;

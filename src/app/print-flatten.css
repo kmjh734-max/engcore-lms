@@ -164,4 +164,15 @@
   :root:root .lesson-pack-footer-logo img {
     opacity: 1 !important;
   }
+
+  /*
+   * ── 쪽 밖으로 나간 장식은 오른쪽에서 자른다(2026-11-09 선생님 「인쇄하면 갑자기 좌우 여백이 생긴다」) ──
+   * 인쇄 때 쪽 틀은 overflow:visible 이라(아래로 넘친 내용을 살리려고) 바탕 모양 B의 오른쪽 위 번짐 원(right:-26mm)이
+   * 종이 밖으로 나가 문서 폭이 236mm가 됐고, 크롬이 쪽 전체를 89%로 줄여 찍어 양옆이 비었다.
+   * 가로만 clip(세로는 그대로) — clip은 넘친 폭을 문서 폭에 넣지 않는다.
+   */
+  :root:root :is(.lesson-pack-a4-sheet, .workbook-a4-sheet, .analysis-report-a4-sheet, .one-page-a4-sheet,
+      .qg-print-sheet, .qg-print-page, .tb-sheet, .final-bundle-sheet) {
+    overflow-x: clip !important;
+  }
 }
