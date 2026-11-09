@@ -220,7 +220,7 @@ export function LessonPackWorkbench({
   /** PDF로 바로 저장(인쇄 창 없이) */
   const pdf = usePdfSave();
   // 미리 PDF를 만들어 두어 「PDF로 저장」을 누르면 바로 받아진다
-  usePdfPrefetch("lesson-pack-print-root", LP_PAGE_SELECTOR);
+  usePdfPrefetch("lesson-pack-print-root", LP_PAGE_SELECTOR, { enabled: !embedded });
   /*
    * 테스트 교재 자료 더하기(선생님 2026-10-21) — 수업용 자료 뒤에 붙는다(계획표는 최종통합자료에서만). 최종통합자료에
    * 끼울 때는 통합자료가 같은 묶음을 따로 켜고 끄므로 여기서는 싣지 않는다(두 번 들어가지 않게).

@@ -327,7 +327,8 @@ export function LessonBookWorkbench({
   );
 
   const pdf = usePdfSave();
-  usePdfPrefetch("lesson-pack-print-root", PDF_SELECTOR);
+  // 최종통합자료 안(embedded)에서는 통합자료가 한 번에 만든다 — 여기서도 돌면 가려진 채로 빈 PDF를 만들어 서버 일만 늘었다(2026-11-10)
+  usePdfPrefetch("lesson-pack-print-root", PDF_SELECTOR, { enabled: !embedded });
   const [zoom, setZoom] = useState(70);
 
   if (embedded) return sheets;

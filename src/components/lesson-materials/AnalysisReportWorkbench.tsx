@@ -452,7 +452,8 @@ export function AnalysisReportWorkbench({
   const [editTarget, setEditTarget] = useState<MarkupEditTarget | null>(null);
   const [reportFor, setReportFor] = useState<number | null>(null);
   const [editNotice, setEditNotice] = useState<string | null>(null);
-  usePdfPrefetch("analysis-report-print-root", ".analysis-report-a4-sheet", { enabled: !editMode });
+  // 최종통합자료 안(embedded)에서는 통합자료가 한 번에 만든다 — 여기서도 돌면 가려진 채로 빈 PDF를 만들어 서버 일만 늘었다(2026-11-10)
+  usePdfPrefetch("analysis-report-print-root", ".analysis-report-a4-sheet", { enabled: !editMode && !embedded });
   /*
    * 해석 방식. 선생님 요청: 전체 해석과 직독직해 중 고를 수 있게. 고른 값은 이 브라우저에 기억한다.
    * 직독직해 조각이 없는 예전 분석서는 전체 해석으로 나간다.
