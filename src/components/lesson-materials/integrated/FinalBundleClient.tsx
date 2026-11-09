@@ -212,10 +212,52 @@ export function FinalBundleClient({
     if (typeof window !== "undefined") for (const w of materials.workbooks) void fetchWorkbookDoc(role, w.docId).catch(() => undefined);
     return null;
   });
+  /*
+   * 다 불러왔는지(선생님 2026-11-09 「7쪽 > 52쪽 > 120쪽 > 258쪽 이렇게 나온다」·「PDF 저장이 또 오래 걸린다」):
+   * 묶음마다 따로 쪽을 나눠 화면이 쪽을 늘려 가는 동안 뒤쪽 쪽 번호·목차가 계속 바뀌어, 미리 만들어 둔 쪽 PDF가
+   * 번호 하나 차이로 못 쓰게 되고 다시 만들었다. 이제 워크북을 다 받고 화면 변화가 잠잠해질 때까지 가렸다가
+   * 한 번에 보여 주고, PDF 미리 만들기도 그때(마지막 쪽 번호로) 한 번 시작한다.
+   */
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !bodiesOn) return;
+    let alive = true;
+    let done = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const finish = () => {
+      if (!alive || done) return;
+      done = true;
+      observer.disconnect();
+      setSettled(true);
+    };
+    const arm = () => {
+      if (done) return;
+      if (timer) clearTimeout(timer);
+      // 수업용 자료·분석서는 「불러오는 중」 표시 없이 몇 초 동안 0쪽이었다가 한꺼번에 들어온다 — 빈 묶음이 있으면 더 기다린다
+      const waiting = () =>
+        !!root.querySelector("[data-bundle-loading]") ||
+        Array.from(root.querySelectorAll<HTMLElement>("[data-bundle-section]")).some(
+          (sec) => !Array.from(sec.querySelectorAll<HTMLElement>(PAGE_SELECTOR)).some((el) => el.offsetParent !== null)
+        );
+      timer = setTimeout(() => (waiting() ? arm() : finish()), 1200);
+    };
+    const observer = new MutationObserver(arm);
+    observer.observe(root, { childList: true, subtree: true, characterData: true });
+    void (document.fonts?.ready ?? Promise.resolve()).then(() => alive && arm());
+    // 무엇이 끝없이 바뀌어도 1분 뒤에는 보여 준다
+    const cap = setTimeout(finish, 60_000);
+    return () => {
+      alive = false;
+      observer.disconnect();
+      if (timer) clearTimeout(timer);
+      clearTimeout(cap);
+    };
+  }, [bodiesOn]);
   /** PDF로 바로 저장(인쇄 창 없이) */
   const pdf = usePdfSave();
-  // 미리 PDF를 만들어 두어 「PDF로 저장」을 누르면 바로 받아진다
-  usePdfPrefetch("final-bundle-print-root", PDF_PAGE_SELECTOR);
+  // 미리 PDF를 만들어 두어 「PDF로 저장」을 누르면 바로 받아진다 — 다 불러온 뒤에 시작(쪽 번호가 정해진 뒤)
+  usePdfPrefetch("final-bundle-print-root", PDF_PAGE_SELECTOR, { enabled: settled });
   const [pageCounts, setPageCounts] = useState<Record<string, number>>({});
   /** 묶음 안 세부 항목(워크북 유형·수업용 자료 지문)마다 쪽 수 — 이어진 쪽끼리 한 줄 */
   const [subCounts, setSubCounts] = useState<Record<string, Array<{ label: string; note?: string; n: number }>>>({});
@@ -908,14 +950,15 @@ export function FinalBundleClient({
         <div className="border-t border-slate-100 p-4">
           <button
             type="button"
+            disabled={!settled}
             onClick={() => window.print()}
-            className="w-full rounded-xl bg-violet-600 py-3 text-sm font-bold text-white hover:bg-violet-700"
+            className="w-full rounded-xl bg-violet-600 py-3 text-sm font-bold text-white hover:bg-violet-700 disabled:opacity-50"
           >
-            인쇄 ({totalPages}쪽)
+            {settled ? `인쇄 (${totalPages}쪽)` : "자료 불러오는 중…"}
           </button>
           <button
             type="button"
-            disabled={!!pdf.busy}
+            disabled={!!pdf.busy || !settled}
             onClick={() => void savePdf()}
             className="mt-2 w-full rounded-xl border border-violet-300 bg-white py-2.5 text-sm font-bold text-violet-800 hover:bg-violet-50 disabled:opacity-50"
           >
@@ -924,9 +967,6 @@ export function FinalBundleClient({
           {pdf.status ? (
             <p className={`mt-1 text-[11px] font-semibold ${pdf.busy ? "text-violet-700" : "text-rose-600"}`}>{pdf.status}</p>
           ) : null}
-          <p className="mt-2 text-[10px] leading-relaxed text-slate-400">
-            쪽 번호는 자료를 모두 불러온 뒤 맞춰집니다. 모두 불러온 뒤 저장하세요.
-          </p>
         </div>
       </aside>
 
@@ -946,12 +986,17 @@ export function FinalBundleClient({
             <style>{TEST_BOOK_CSS}</style>
           </>
         ) : null}
+        {!settled ? (
+          <div className="pointer-events-none absolute inset-x-0 top-24 z-20 flex justify-center print:hidden">
+            <p className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-violet-700 shadow">자료를 불러오는 중입니다…</p>
+          </div>
+        ) : null}
         <TestBookBrand.Provider value={brand}>
         <div className="flex justify-center p-6 print:p-0">
           <div
             ref={rootRef}
             id="final-bundle-print-root"
-            className={`tb-theme-${payload.theme} flex flex-col items-center gap-6 print:gap-0 [&_.tb-sheet]:shadow-xl`}
+            className={`tb-theme-${payload.theme} flex flex-col items-center gap-6 print:gap-0 [&_.tb-sheet]:shadow-xl ${settled ? "" : "invisible"}`}
             style={{ ["--bundle-zoom" as string]: String(zoom / 100) }}
           >
             <FrontCover preset={preset} cover={payload.cover} logoSrc={logoSrc} />

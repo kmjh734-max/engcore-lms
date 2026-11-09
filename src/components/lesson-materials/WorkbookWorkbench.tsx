@@ -3661,7 +3661,10 @@ export function WorkbookWorkbench({
 
   if (embeddedDocId && (generating || error || !workbook)) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500 print:hidden">
+      <div
+        data-bundle-loading={error ? undefined : ""}
+        className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-500 print:hidden"
+      >
         {error ?? "워크북을 불러오고 있습니다…"}
       </div>
     );
