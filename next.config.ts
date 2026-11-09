@@ -23,6 +23,13 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "50mb",
     },
+    // 램 8GB 서피스에서 개발 서버가 4GB까지 불었다(2026-11-09). 웹팩이 메모리를 덜 쓰게 한다.
+    webpackMemoryOptimizations: true,
+  },
+  // 개발 서버: 안 보는 페이지의 컴파일 결과를 빨리 버린다(기본 60초·5쪽 → 20초·2쪽). 운영에는 영향 없음.
+  onDemandEntries: {
+    maxInactiveAge: 20_000,
+    pagesBufferLength: 2,
   },
   serverExternalPackages: [
     "@ffmpeg-installer/ffmpeg",
