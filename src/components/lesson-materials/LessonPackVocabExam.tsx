@@ -99,7 +99,7 @@ export function LessonPackVocabExam({
   const missing = projects.length - ready.length;
   const indexOf = (id: string) => projects.findIndex((p) => p.id === id);
   /** 전체 단어장 번호(지문 차례, 같은 낱말은 한 번) — 출제 범위는 이 번호로 */
-  const wordCount = useMemo(() => allVocabRows(ready, () => 0).length, [ready]);
+  const wordCount = useMemo(() => allVocabRows(ready, () => 0).at(-1)?.no ?? 0, [ready]);
 
   // 출제 범위는 파일마다 달라 기억하지 않는다(비우면 전체)
   const [rangeFrom, setRangeFrom] = useState(savedExam?.rangeFrom ?? 0);

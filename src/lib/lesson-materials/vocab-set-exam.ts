@@ -1,5 +1,5 @@
 import type { VocabItem } from "@/types/database";
-import { fixVocabWord, isBadWordForm, isEmptyVocabWord, isProperNounVocab } from "@/lib/lesson-materials/bad-word-forms";
+import { fixVocabWord, isBadWordForm, isEmptyVocabWord, isProperNounVocabStrict } from "@/lib/lesson-materials/bad-word-forms";
 import type {
   OnePageContent,
 } from "@/lib/lesson-materials/one-page";
@@ -23,9 +23,11 @@ export function vocabSetAsProject(
   set: { id: string; title: string },
   items: VocabItem[]
 ): TestBookProjectInput {
+  // 번호는 단어장 인쇄(단어 탭 「인쇄」)와 같게 — 빼는 단어가 있어도 뒤 번호가 당겨지지 않는다
   const vocab: TestBookVocabRow[] = items
-    .filter((i) => i.word?.trim() && i.meaning?.trim() && !isProperNounVocab(i.word, i.meaning))
-    .map((i) => ({
+    .map((i, n) => ({ i, listNo: n + 1 }))
+    .filter(({ i }) => i.word?.trim() && i.meaning?.trim() && !isProperNounVocabStrict(i.word, i.meaning))
+    .map(({ i, listNo }) => ({
       word: fixVocabWord(i.word.trim()),
       pos: i.part_of_speech?.trim() ?? "",
       meaning: i.meaning.trim(),
@@ -35,6 +37,7 @@ export function vocabSetAsProject(
       phrase: "",
       confusables: Array.isArray(i.confusables) ? i.confusables : [],
       key: false,
+      listNo,
     }));
   const material = { version: "vocab-set", sourceHash: set.id, vocab, keyIndexes: [], chunks: [] } as unknown as TestBookMaterial;
   return {

@@ -130,6 +130,11 @@ export type TestBookVocabRow = {
   confusables?: string[];
   /** 내용상 핵심어이거나 바꿔 쓰기로 나올 만한 단어 */
   key: boolean;
+  /**
+   * 단어장 번호(자료함 「단어」 탭 단어장만): 단어장 인쇄가 매기는 번호 그대로. 고유명사·뜻 없는 단어를 빼도
+   * 시험 출제 범위 번호가 학생이 받은 단어장과 같게(윌링어학원 Jayden 선생님 2026-11-09 「1~100번을 받았는데 105번까지 나온다」)
+   */
+  listNo?: number;
 };
 
 export type TestBookMaterial = {
@@ -1864,7 +1869,7 @@ export function buildVocabExam(
       const k = r.word.toLowerCase();
       if (seen.has(k)) continue;
       seen.add(k);
-      wordNo += 1;
+      wordNo = r.listNo ?? wordNo + 1;
       if (!r.word || !r.meaning) continue;
       if (opts.range && (wordNo < opts.range.from || wordNo > opts.range.to)) continue;
       rows.push({ ...r, passage: p.passage, wordNo });

@@ -1058,7 +1058,8 @@ export function allVocabRows(projects: TestBookProjectInput[], indexOf: (id: str
       const k = row.word.toLowerCase();
       if (seen.has(k)) continue;
       seen.add(k);
-      out.push({ no: out.length + 1, passage: indexOf(p.id) + 1, row });
+      // 단어 탭 단어장은 단어장 인쇄 번호 그대로(빠진 단어가 있어도 번호를 당기지 않는다)
+      out.push({ no: row.listNo ?? out.length + 1, passage: indexOf(p.id) + 1, row });
     }
   }
   return out;

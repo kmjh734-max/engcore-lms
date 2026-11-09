@@ -107,6 +107,14 @@ export function isProperNounVocab(word: string, meaning: string | null | undefin
   return /^tilly$/i.test(word.trim()) || /고유명사|(인물|사람|인공지능|로봇|등장인물) ?이름|인명|지명/.test(meaning ?? "");
 }
 
+/**
+ * 자료함 「단어」 탭 단어장용: 「지명」은 땅 이름만 — 지명하다(nominate)·지명된 사람(nominee)·선견지명(vision)은
+ * 보통 낱말이라 시험에 낸다(2026-11-09). 수업용 자료 단어 정리는 이미 인쇄한 번호가 바뀌지 않게 위 규칙 그대로 둔다.
+ */
+export function isProperNounVocabStrict(word: string, meaning: string | null | undefined): boolean {
+  return /^tilly$/i.test(word.trim()) || /고유명사|(인물|사람|인공지능|로봇|등장인물) ?이름|인명|(?<!견)지명(?![하되된])/.test(meaning ?? "");
+}
+
 /** 동의어·반의어 칸에 모델이 「없음」 대신 적은 글자(none) — 보기로 나오면 안 된다 */
 export function isEmptyVocabWord(word: string): boolean {
   return /^(none|n\/a|nil|null|없음|-+)$/i.test(word.trim());
