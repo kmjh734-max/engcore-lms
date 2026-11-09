@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * 인쇄 직전에 반투명 효과를 같은 모양의 불투명 색으로 바꾼다(선생님 2026-11-06 「인쇄 스풀링이 너무 오래 걸린다」).
  *
@@ -9,76 +7,79 @@
  * 쪽 나누기에 영향이 없게 색만 바꾸고, 인쇄가 끝나면 되돌린다.
  */
 
-type Rgb = [number, number, number];
-
-/** rgba(r,g,b,a) · color(srgb r g b / a) (color-mix 결과) */
-const ANY_COLOR = /rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)|color\(srgb\s+([\d.e-]+)\s+([\d.e-]+)\s+([\d.e-]+)\s*(?:\/\s*([\d.]+))?\s*\)/g;
-
-function parseColor(v: string): { rgb: Rgb; a: number } | null {
-  const m = v.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)/);
-  if (m) return { rgb: [Number(m[1]), Number(m[2]), Number(m[3])], a: m[4] === undefined ? 1 : Number(m[4]) };
-  const c = v.match(/color\(srgb\s+([\d.e-]+)\s+([\d.e-]+)\s+([\d.e-]+)\s*(?:\/\s*([\d.]+))?\s*\)/);
-  if (c) return { rgb: [Number(c[1]) * 255, Number(c[2]) * 255, Number(c[3]) * 255], a: c[4] === undefined ? 1 : Number(c[4]) };
-  return null;
-}
-
-/** 글(그라데이션 등) 안의 반투명 색을 밑 바탕색과 섞은 불투명 색으로 */
-function flatColors(text: string, under: Rgb): string {
-  return text.replace(ANY_COLOR, (_m, r, g, b, a, sr, sg, sb, sa) => {
-    if (r !== undefined) return mix([Number(r), Number(g), Number(b)], Number(a), under);
-    return mix([Number(sr) * 255, Number(sg) * 255, Number(sb) * 255], sa === undefined ? 1 : Number(sa), under);
-  });
-}
-
-const hasAlpha = (text: string) => /rgba\(|color\(srgb[^)]*\//.test(text);
-
-/**
- * 지워야 하는 그림자인가: 흐림이 있거나 반투명이면 지운다.
- * 흐림 0·불투명 그림자는 PDF에서 단색 도형이라 그대로 둔다 — print-flatten.css 가 그러데이션 대신 쓰는 단색 띠·겹동그라미.
+/*
+ * 서버 PDF(render-html-pdf.ts)가 이 함수를 글로 떠서 서버 Chrome 쪽에서 그대로 돌린다(2026-11-09 PDF 저장 바로 받기).
+ * 그래서 도우미는 모두 함수 안에 둔다 — 바깥 이름을 쓰면 서버 Chrome에서 찾지 못한다.
  */
-function shadowNeedsFlatten(v: string): boolean {
-  if (!v || v === "none") return false;
-  for (const part of v.split(/,(?![^(]*\))/)) {
-    const c = parseColor(part);
-    if (!c || c.a < 0.999) return true;
-    const lengths = part.replace(/rgba?\([^)]*\)|color\([^)]*\)/g, "").match(/-?[\d.]+px/g) ?? [];
-    if (lengths.length >= 3 && parseFloat(lengths[2]!) !== 0) return true;
-  }
-  return false;
-}
-
-function mix(c: Rgb, a: number, under: Rgb): string {
-  const ch = (i: number) => Math.round(c[i]! * a + under[i]! * (1 - a));
-  return `rgb(${ch(0)}, ${ch(1)}, ${ch(2)})`;
-}
-
-/** 요소 밑에 깔린 불투명 바탕색(조상 가운데 처음으로 불투명한 바탕색, 없으면 흰색) */
-function underColor(el: Element, cache: Map<Element, Rgb>): Rgb {
-  let n: Element | null = el.parentElement;
-  const path: Element[] = [];
-  let found: Rgb = [255, 255, 255];
-  while (n) {
-    const hit = cache.get(n);
-    if (hit) {
-      found = hit;
-      break;
-    }
-    path.push(n);
-    const c = parseColor(getComputedStyle(n).backgroundColor);
-    if (c && c.a >= 0.999) {
-      found = c.rgb;
-      break;
-    }
-    n = n.parentElement;
-  }
-  for (const p of path) cache.set(p, found);
-  return found;
-}
-
+type Rgb = [number, number, number];
 type Saved = { el: HTMLElement; props: Array<[string, string, string]> };
 
-/** 반투명을 불투명으로 바꾸고, 되돌리는 함수를 준다 */
 export function flattenForPrint(root: ParentNode = document.body, opts: { images?: boolean } = {}): () => void {
+  /** rgba(r,g,b,a) · color(srgb r g b / a) (color-mix 결과) */
+  const ANY_COLOR = /rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)|color\(srgb\s+([\d.e-]+)\s+([\d.e-]+)\s+([\d.e-]+)\s*(?:\/\s*([\d.]+))?\s*\)/g;
+
+  function parseColor(v: string): { rgb: Rgb; a: number } | null {
+    const m = v.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)/);
+    if (m) return { rgb: [Number(m[1]), Number(m[2]), Number(m[3])], a: m[4] === undefined ? 1 : Number(m[4]) };
+    const c = v.match(/color\(srgb\s+([\d.e-]+)\s+([\d.e-]+)\s+([\d.e-]+)\s*(?:\/\s*([\d.]+))?\s*\)/);
+    if (c) return { rgb: [Number(c[1]) * 255, Number(c[2]) * 255, Number(c[3]) * 255], a: c[4] === undefined ? 1 : Number(c[4]) };
+    return null;
+  }
+
+  /** 글(그라데이션 등) 안의 반투명 색을 밑 바탕색과 섞은 불투명 색으로 */
+  function flatColors(text: string, under: Rgb): string {
+    return text.replace(ANY_COLOR, (_m, r, g, b, a, sr, sg, sb, sa) => {
+      if (r !== undefined) return mix([Number(r), Number(g), Number(b)], Number(a), under);
+      return mix([Number(sr) * 255, Number(sg) * 255, Number(sb) * 255], sa === undefined ? 1 : Number(sa), under);
+    });
+  }
+
+  const hasAlpha = (text: string) => /rgba\(|color\(srgb[^)]*\//.test(text);
+
+  /**
+   * 지워야 하는 그림자인가: 흐림이 있거나 반투명이면 지운다.
+   * 흐림 0·불투명 그림자는 PDF에서 단색 도형이라 그대로 둔다 — print-flatten.css 가 그러데이션 대신 쓰는 단색 띠·겹동그라미.
+   */
+  function shadowNeedsFlatten(v: string): boolean {
+    if (!v || v === "none") return false;
+    for (const part of v.split(/,(?![^(]*\))/)) {
+      const c = parseColor(part);
+      if (!c || c.a < 0.999) return true;
+      const lengths = part.replace(/rgba?\([^)]*\)|color\([^)]*\)/g, "").match(/-?[\d.]+px/g) ?? [];
+      if (lengths.length >= 3 && parseFloat(lengths[2]!) !== 0) return true;
+    }
+    return false;
+  }
+
+  function mix(c: Rgb, a: number, under: Rgb): string {
+    const ch = (i: number) => Math.round(c[i]! * a + under[i]! * (1 - a));
+    return `rgb(${ch(0)}, ${ch(1)}, ${ch(2)})`;
+  }
+
+  /** 요소 밑에 깔린 불투명 바탕색(조상 가운데 처음으로 불투명한 바탕색, 없으면 흰색) */
+  function underColor(el: Element, cache: Map<Element, Rgb>): Rgb {
+    let n: Element | null = el.parentElement;
+    const path: Element[] = [];
+    let found: Rgb = [255, 255, 255];
+    while (n) {
+      const hit = cache.get(n);
+      if (hit) {
+        found = hit;
+        break;
+      }
+      path.push(n);
+      const c = parseColor(getComputedStyle(n).backgroundColor);
+      if (c && c.a >= 0.999) {
+        found = c.rgb;
+        break;
+      }
+      n = n.parentElement;
+    }
+    for (const p of path) cache.set(p, found);
+    return found;
+  }
+
+
   const saved: Saved[] = [];
   const added: Array<{ canvas: HTMLCanvasElement; img: HTMLImageElement; display: string }> = [];
   const cache = new Map<Element, Rgb>();

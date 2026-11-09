@@ -76,29 +76,60 @@ export function usePdfPrefetch(
   const paperKey = `${paper.w}x${paper.h}`;
   useEffect(() => {
     if (!enabled || typeof window === "undefined") return;
+    // 저장에 쓰는 코드(PDF 합치기 등)를 화면에 들어올 때 미리 불러 둔다 — 처음 누를 때 불러오느라 기다리지 않게
+    void import("@/lib/pdf/server-pdf").catch(() => undefined);
+    void import("pdf-lib").catch(() => undefined);
     let timer: ReturnType<typeof setTimeout> | null = null;
     let retry: ReturnType<typeof setTimeout> | null = null;
     let observer: MutationObserver | null = null;
     let alive = true;
+    /*
+     * 화면이 쪽을 늘려 가는 동안(7쪽 → 52쪽 → 200쪽)에도 나온 쪽부터 바로 만든다(선생님 2026-11-09 「불러오는 동안
+     * PDF 저장을 누르면 0/250이 뜬다」). 예전엔 화면 변화가 2.5초 멈출 때까지 기다려, 다 불러온 뒤에야 만들기 시작했다.
+     * 쪽마다 기억해 두므로 다시 돌아도 새로 나온 쪽·바뀐 쪽만 만든다. 합치기는 화면이 멈춘 뒤에 한 번.
+     */
+    let running = false;
+    let dirty = false;
+    let lastChange = 0;
+    const SETTLE_MS = 1500;
     const run = async () => {
       if (!alive || document.hidden) return;
-      if (document.fonts) await document.fonts.ready;
-      const { prefetchPagesPdf } = await import("@/lib/pdf/server-pdf");
-      // 가장 많은 쪽(전체)부터 만들어 두면 나머지는 기억해 둔 쪽을 합치기만 한다
-      const sets = selectorKey
-        .split("|||")
-        .map((sel) => collectPrintPages(document.getElementById(rootId), sel))
-        .filter((pages) => pages.length > 0 && pages.length <= 300)
-        .sort((a, b) => b.length - a.length);
-      for (const pages of sets) {
-        if (!alive) return;
-        await prefetchPagesPdf(pages, paper).catch(() => undefined);
+      if (running) {
+        dirty = true;
+        return;
       }
+      running = true;
+      dirty = false;
+      try {
+        if (document.fonts) await document.fonts.ready;
+        const { prefetchPagesPdf } = await import("@/lib/pdf/server-pdf");
+        const settled = Date.now() - lastChange >= SETTLE_MS;
+        // 가장 많은 쪽(전체)부터 만들어 두면 나머지는 기억해 둔 쪽을 합치기만 한다
+        const sets = selectorKey
+          .split("|||")
+          .map((sel) => collectPrintPages(document.getElementById(rootId), sel))
+          // 워크북 한 과가 370쪽까지 된다 — 300쪽에서 끊었더니 큰 자료는 미리 만들어지지 않았다(2026-11-09)
+          .filter((pages) => pages.length > 0 && pages.length <= 1000)
+          .sort((a, b) => b.length - a.length);
+        for (const pages of settled ? sets : sets.slice(0, 1)) {
+          if (!alive) return;
+          await prefetchPagesPdf(pages, paper, { merge: settled }).catch(() => undefined);
+        }
+        if (!settled) dirty = true;
+      } finally {
+        running = false;
+      }
+      if (alive && dirty) schedule(Math.max(300, SETTLE_MS - (Date.now() - lastChange)));
     };
-    const schedule = () => {
+    const schedule = (ms = 400) => {
       if (timer) clearTimeout(timer);
-      // 쪽 나눔 측정·글꼴이 자리 잡을 때까지 기다린다
-      timer = setTimeout(() => void run(), 2500);
+      timer = setTimeout(() => void run(), ms);
+    };
+    const onChange = () => {
+      lastChange = Date.now();
+      // 만드는 중이면 끝난 뒤 다시 돈다(dirty). 아니면 잠깐 모아서 바로 시작한다.
+      if (running) dirty = true;
+      else schedule();
     };
     const attach = () => {
       const root = document.getElementById(rootId);
@@ -106,8 +137,9 @@ export function usePdfPrefetch(
         retry = setTimeout(attach, 1000);
         return;
       }
-      observer = new MutationObserver(schedule);
+      observer = new MutationObserver(onChange);
       observer.observe(root, { childList: true, subtree: true, characterData: true, attributes: true });
+      lastChange = Date.now();
       schedule();
     };
     attach();

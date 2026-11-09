@@ -13,7 +13,9 @@ import type { PdfPaper } from "@/lib/pdf/download-sheets-pdf";
  */
 
 const CHUNK_PAGES = 15;
-const CONCURRENCY = 4;
+/** 서버 저장소 열쇠의 판 — /api/pdf/render 의 같은 값과 맞춘다 */
+const PDF_CACHE_VERSION = "flat1";
+const CONCURRENCY = 6;
 
 /** 조상 껍데기에서 지울 모양 — 쪽의 크기·위치를 바꾸지 않게 */
 const NEUTRAL: Array<[string, string]> = [
@@ -111,7 +113,11 @@ function attrs(el: Element): string {
 function collectCss(): string {
   const links = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
     .filter((l) => l.href && !l.disabled)
-    .map((l) => `<link rel="stylesheet" href="${l.href.replace(/"/g, "&quot;")}"${l.media ? ` media="${l.media}"` : ""}>`);
+    // 개발 서버는 CSS 주소에 여는 시각(?v=…)을 붙인다 — 그대로 두면 열 때마다 쪽 열쇠가 달라 저장해 둔 PDF를 못 쓴다
+    .map((l) => {
+      const href = l.href.replace(/([?&])v=\d+(&|$)/, (_m, a: string, b: string) => (b ? a : ""));
+      return `<link rel="stylesheet" href="${href.replace(/"/g, "&quot;")}"${l.media ? ` media="${l.media}"` : ""}>`;
+    });
   const styles = Array.from(document.querySelectorAll("style")).map((s) => {
     try {
       const rules = s.sheet?.cssRules;
@@ -165,13 +171,41 @@ async function sha256Hex(text: string): Promise<string | null> {
   }
 }
 
+/*
+ * 브라우저 안 보관함(Cache Storage)에도 쪽 PDF를 둔다(선생님 2026-11-09 「화면에 들어가서 누르면 바로」). 서버 저장소에서
+ * 찾아도 로그인 확인·저장소 받기로 한 번에 2초 남짓 걸렸다. 같은 컴퓨터에서 다시 열면 서버를 거치지 않고 바로 꺼낸다.
+ */
+const LOCAL_CACHE = "engcore-pdf-chunks-v1";
+const LOCAL_LIMIT = 400;
+
+async function localGet(key: string): Promise<ArrayBuffer | null> {
+  try {
+    if (typeof caches === "undefined") return null;
+    const hit = await (await caches.open(LOCAL_CACHE)).match(`/__pdf-chunk/${key}`);
+    return hit ? await hit.arrayBuffer() : null;
+  } catch {
+    return null;
+  }
+}
+
+async function localPut(key: string, bytes: ArrayBuffer): Promise<void> {
+  try {
+    if (typeof caches === "undefined") return;
+    const cache = await caches.open(LOCAL_CACHE);
+    await cache.put(`/__pdf-chunk/${key}`, new Response(bytes.slice(0), { headers: { "Content-Type": "application/pdf" } }));
+    // 오래된 것부터 지워 쌓이지 않게(keys는 넣은 차례)
+    const keys = await cache.keys();
+    for (let i = 0; i < keys.length - LOCAL_LIMIT; i++) await cache.delete(keys[i]!);
+  } catch {
+    /* 보관함이 막혀 있으면(사생활 보호 창 등) 넘어간다 */
+  }
+}
+
 /**
  * 서버 저장소에 같은 쪽 PDF가 있으면 그것만 받는다(선생님 2026-11-09 「PDF 저장 누르면 바로」): 예전엔 저장해 둔
  * 쪽이어도 묶음마다 쪽 HTML(수 MB)을 올려 보내 찾느라 121쪽에 25초가 걸렸다. 지문(해시)만 보내 묻는다.
  */
-async function cachedChunk(html: string, paper: PdfPaper): Promise<ArrayBuffer | null> {
-  const key = await sha256Hex(`${paper.w}x${paper.h}|${html}`);
-  if (!key) return null;
+async function cachedChunk(key: string, paper: PdfPaper): Promise<ArrayBuffer | null> {
   try {
     const res = await fetch("/api/pdf/render", {
       method: "POST",
@@ -186,8 +220,16 @@ async function cachedChunk(html: string, paper: PdfPaper): Promise<ArrayBuffer |
 }
 
 async function renderChunk(html: string, paper: PdfPaper): Promise<ArrayBuffer> {
-  const hit = await cachedChunk(html, paper);
-  if (hit) return hit;
+  const key = await sha256Hex(`${PDF_CACHE_VERSION}|${paper.w}x${paper.h}|${html}`);
+  if (key) {
+    const local = await localGet(key);
+    if (local) return local;
+    const hit = await cachedChunk(key, paper);
+    if (hit) {
+      void localPut(key, hit);
+      return hit;
+    }
+  }
   const { body, encoding } = await gzip(JSON.stringify({ html, paper }));
   const res = await fetch("/api/pdf/render", {
     method: "POST",
@@ -197,7 +239,9 @@ async function renderChunk(html: string, paper: PdfPaper): Promise<ArrayBuffer> 
   if (!res.ok || !(res.headers.get("content-type") ?? "").includes("pdf")) {
     throw new Error((await res.text().catch(() => "")).slice(0, 200) || `PDF 서버 오류 (${res.status})`);
   }
-  return res.arrayBuffer();
+  const bytes = await res.arrayBuffer();
+  if (key) void localPut(key, bytes);
+  return bytes;
 }
 
 function hash(text: string): string {
@@ -298,10 +342,19 @@ function schedulePieces(head: string, pieces: PagePiece[], paper: PdfPaper): { e
 }
 
 /** 화면을 열거나 고친 뒤 미리 만들어(합쳐) 둔다. 실패해도 조용히 넘어간다(누를 때 다시 만든다). */
-export async function prefetchPagesPdf(pages: HTMLElement[], paper: PdfPaper): Promise<void> {
+export async function prefetchPagesPdf(
+  pages: HTMLElement[],
+  paper: PdfPaper,
+  /** merge:false — 화면이 아직 쪽을 늘려 가는 중이면 쪽 PDF만 만들고 합치기는 미룬다 */
+  opts: { merge?: boolean } = {}
+): Promise<void> {
   if (pages.length === 0) return;
   try {
     const { entries, listKey } = await ensurePagesGently(pages, paper);
+    if (opts.merge === false) {
+      await Promise.allSettled(entries);
+      return;
+    }
     if (mergedCache.has(listKey)) return;
     const job = mergeEntries(entries, pages.length);
     mergedCache.set(listKey, job);

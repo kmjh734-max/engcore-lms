@@ -32,15 +32,11 @@ export async function downloadSheetsPdf(
   try {
     if (typeof document !== "undefined" && document.fonts) await document.fonts.ready;
     const { renderPagesToPdf } = await import("@/lib/pdf/server-pdf");
-    // 반투명 효과를 불투명으로 바꿔 떠 보낸다(받은 PDF를 인쇄할 때 스풀링이 느리지 않게 — 2026-11-06)
-    const { flattenForPrint } = await import("@/lib/print/flatten-for-print");
-    const restoreFlat = flattenForPrint(document.body, { images: false });
-    let blob: Blob;
-    try {
-      blob = await renderPagesToPdf(pages, opts.paper ?? A4, opts.onProgress);
-    } finally {
-      restoreFlat();
-    }
+    /*
+     * 반투명 → 불투명 바꾸기(스풀링, 2026-11-06)는 서버 Chrome이 한다(render-html-pdf.ts). 여기서 화면을 바꿔 떠 보내면
+     * 미리 만들어 둔 쪽과 HTML이 달라져 누를 때마다 전부 새로 만들었다(2026-11-09 「PDF 저장이 너무 오래 걸린다」).
+     */
+    const blob = await renderPagesToPdf(pages, opts.paper ?? A4, opts.onProgress);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

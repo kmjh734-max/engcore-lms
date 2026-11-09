@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import puppeteer, { type Browser } from "puppeteer-core";
+import { flattenForPrint } from "@/lib/print/flatten-for-print";
 
 /**
  * 쪽 HTML을 서버의 Chrome으로 PDF로 만든다(글자가 글자로 남는다). /api/pdf/render가 쓴다.
@@ -107,6 +108,15 @@ export async function renderHtmlToPdf(
     await page.setContent(html, { waitUntil: "networkidle0", timeout: 40_000 });
     // 스크립트를 꺼도 page.pdf는 글꼴이 다 들어오기를 기다린다. 혹시 몰라 한 번 더 기다린다.
     await page.evaluateHandle("document.fonts.ready").catch(() => undefined);
+    /*
+     * 반투명 효과를 불투명으로(받은 PDF를 인쇄할 때 스풀링이 느리지 않게 — 2026-11-06). 예전엔 「PDF로 저장」을 누를 때
+     * 브라우저에서 화면 전체를 바꾼 뒤 떠 보냈는데, 그러면 미리 만들어 둔 쪽과 HTML이 달라 누를 때마다 전부 새로
+     * 만들었다(선생님 2026-11-09 「PDF 저장이 너무 오래 걸린다」). 이제 서버 Chrome이 그리기 직전에 바꾼다.
+     */
+    await page
+      // __name: 번들러(esbuild 등)가 함수 이름을 지키려고 끼워 넣는 도우미 — 서버 Chrome에는 없으니 빈 것으로 둔다
+      .evaluate(`var __name = (f) => f; (${flattenForPrint.toString()})(document.body, { images: false }); void 0`)
+      .catch((e) => console.warn("[pdf] 불투명 바꾸기 실패", e));
     return await page.pdf({
       width: `${paper.w}mm`,
       height: `${paper.h}mm`,
