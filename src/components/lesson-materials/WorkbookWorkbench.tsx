@@ -597,7 +597,9 @@ function PageShell({
       {win ? (
         <div
           className="workbook-a4-body overflow-hidden"
-          style={{ height: `${columnHeightMm}mm` }}
+          // Chrome은 PDF로 뽑을 때 여러 단 글의 overflow:hidden을 지키지 않아 앞뒤 쪽 단 글자가 쪽 양옆에 비어져 나왔다
+          // (2026-11-09 최종통합자료 PDF). clip-path는 PDF에서도 잘린다.
+          style={{ height: `${columnHeightMm}mm`, clipPath: "inset(0)" }}
           data-wb-window={`${windowIndex + 1}/${windowCount ?? 1}`}
         >
           <WindowFlow columns={columns} heightMm={columnHeightMm} index={windowIndex}>

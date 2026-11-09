@@ -74,7 +74,14 @@ export function usePdfPrefetch(
   const selectorKey = (Array.isArray(selectors) ? selectors : [selectors]).join("|||");
   const paper = opts.paper ?? A4;
   const paperKey = `${paper.w}x${paper.h}`;
+  /*
+   * 다 만들어 두었는지(선생님 2026-11-09 「누르자마자 바로 다운받게」): 화면이 버튼을 「PDF 준비 중」으로 두었다가
+   * 이것이 true가 되면 켠다 — 켜진 버튼은 누르면 바로 받아진다. 처음 한 번 다 만든 뒤에는 화면이 조금 바뀌어도
+   * 다시 끄지 않는다(그때 누르면 바뀐 쪽만 잠깐 만든다). 미리 만들기가 실패해도 true(누를 때 만든다).
+   */
+  const [ready, setReady] = useState(false);
   useEffect(() => {
+    setReady(false);
     if (!enabled || typeof window === "undefined") return;
     // 저장에 쓰는 코드(PDF 합치기 등)를 화면에 들어올 때 미리 불러 둔다 — 처음 누를 때 불러오느라 기다리지 않게
     void import("@/lib/pdf/server-pdf").catch(() => undefined);
@@ -93,7 +100,12 @@ export function usePdfPrefetch(
     let lastChange = 0;
     const SETTLE_MS = 1500;
     const run = async () => {
-      if (!alive || document.hidden) return;
+      if (!alive) return;
+      // 다른 탭에 가 있으면 만들지 않는다 — 버튼은 켜 둔다(누를 때 만든다)
+      if (document.hidden) {
+        setReady(true);
+        return;
+      }
       if (running) {
         dirty = true;
         return;
@@ -116,6 +128,9 @@ export function usePdfPrefetch(
           await prefetchPagesPdf(pages, paper, { merge: settled }).catch(() => undefined);
         }
         if (!settled) dirty = true;
+        else if (!dirty && alive) setReady(true);
+      } catch {
+        if (alive) setReady(true);
       } finally {
         running = false;
       }
@@ -152,4 +167,5 @@ export function usePdfPrefetch(
     // paper는 paperKey로 비교한다
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rootId, selectorKey, enabled, paperKey]);
+  return { ready };
 }

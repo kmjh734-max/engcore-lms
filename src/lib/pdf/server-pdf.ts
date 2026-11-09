@@ -15,7 +15,7 @@ import type { PdfPaper } from "@/lib/pdf/download-sheets-pdf";
 const CHUNK_PAGES = 15;
 /** 서버 저장소 열쇠의 판 — /api/pdf/render 의 같은 값과 맞춘다 */
 const PDF_CACHE_VERSION = "flat1";
-const CONCURRENCY = 6;
+const CONCURRENCY = 10;
 
 /** 조상 껍데기에서 지울 모양 — 쪽의 크기·위치를 바꾸지 않게 */
 const NEUTRAL: Array<[string, string]> = [
@@ -79,6 +79,16 @@ function clonePage(page: HTMLElement): HTMLElement {
   clone.style.setProperty("box-shadow", "none", "important");
   clone.style.setProperty("margin", "0", "important");
   clone.style.setProperty("zoom", "1", "important");
+  /*
+   * 화면 밖 쪽 그리기 미루기(content-visibility:auto)는 서버 Chrome(화면용 CSS)에도 걸려, 워크북 쪽이 PDF에서 두 장으로
+   * 쪼개졌다(2026-11-09 최종통합자료 115쪽 → 176쪽·22MB). 보낼 사본에서는 끈다.
+   */
+  if (getComputedStyle(page).contentVisibility === "auto") {
+    clone.style.setProperty("content-visibility", "visible", "important");
+    clone.style.setProperty("contain-intrinsic-size", "none", "important");
+    // 미루기에 딸려 있던 「쪽 밖은 잘라 낸다」는 남긴다 — 빼면 워크북 옆 단 글자가 쪽 오른쪽에 비어져 나온다
+    clone.style.setProperty("contain", "layout style paint", "important");
+  }
   // 화면에서만 숨긴 쪽(정답지 탭 등)도 싣는다
   if (getComputedStyle(page).display === "none") clone.style.setProperty("display", "block", "important");
   return clone;
@@ -136,10 +146,29 @@ function collectCss(): string {
  */
 type PagePiece = { html: string; tall: boolean };
 
+/**
+ * 쪽의 진짜 높이. 화면 밖이라 그리기를 미룬 쪽(content-visibility:auto)은 offsetHeight가 예전에 재 둔 크기를 그대로
+ * 돌려준다 — 쪽을 나누는 도중의 긴 높이(워크북 1243px)가 남아 A4 쪽을 「긴 쪽」으로 보고 한 장씩 따로 보내 두 장으로
+ * 쪼갰다(2026-11-09). 그런 쪽은 안의 내용 끝까지로 잰다(내용 위치는 물어보면 브라우저가 계산해 준다).
+ */
+function pageHeight(page: HTMLElement): number {
+  const cs = getComputedStyle(page);
+  if (cs.contentVisibility !== "auto") return page.offsetHeight;
+  let bottom = 0;
+  for (const c of Array.from(page.children) as HTMLElement[]) {
+    const ccs = getComputedStyle(c);
+    if (ccs.position === "absolute" || ccs.position === "fixed" || ccs.display === "none") continue;
+    if (c.offsetParent !== page) return page.offsetHeight;
+    bottom = Math.max(bottom, c.offsetTop + c.offsetHeight + (parseFloat(ccs.marginBottom) || 0));
+  }
+  const natural = bottom + (parseFloat(cs.paddingBottom) || 0) + (parseFloat(cs.borderBottomWidth) || 0);
+  return Math.max(natural, parseFloat(cs.minHeight) || 0);
+}
+
 function pieceOf(page: HTMLElement, paper: PdfPaper): PagePiece {
   const shell = wrapWithAncestors(page, clonePage(page));
   const pxPerMm = (page.offsetWidth || 1) / paper.w;
-  const tall = page.offsetHeight > paper.h * pxPerMm * 1.02;
+  const tall = pageHeight(page) > paper.h * pxPerMm * 1.02;
   // 종이 한 장짜리 쪽은 종이 크기로 자른다(소수점 차이로 빈 장이 끼지 않게). 긴 쪽은 이어지는 장으로 흘린다.
   if (!tall) {
     shell.style.setProperty("height", `${paper.h}mm`, "important");
