@@ -6,7 +6,12 @@ import puppeteer, { type Browser } from "puppeteer-core";
  * 받은 HTML은 스크립트를 끄고 그리며, origin·구글 글꼴·Supabase 말고는 접속하지 않는다.
  */
 const WINDOWS_CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
-let browserPromise: Promise<Browser> | null = null;
+/*
+ * 개발 서버는 코드가 다시 컴파일될 때마다 이 모듈을 새로 읽어 변수가 null로 돌아간다. 그러면 Chrome을 또 띄우고
+ * 예전 Chrome은 꺼지지 않은 채 남았다(2026-11-09 개발 서버 밑에 Chrome 9개·수 GB). 그래서 globalThis에 둔다.
+ */
+const g = globalThis as typeof globalThis & { __pdfBrowserPromise?: Promise<Browser> | null };
+let browserPromise: Promise<Browser> | null = g.__pdfBrowserPromise ?? null;
 /** 한글 글꼴을 깔았는지(자가 시험에서 본다) */
 let fontNote = "";
 export function pdfServerDiagnostics() {
@@ -18,6 +23,7 @@ async function getBrowser(origin: string): Promise<Browser> {
     const b = await browserPromise.catch(() => null);
     if (b?.connected) return b;
     browserPromise = null;
+    g.__pdfBrowserPromise = null;
   }
   browserPromise = (async () => {
     const local = process.env.CHROME_PATH || (existsSync(WINDOWS_CHROME) ? WINDOWS_CHROME : "");
@@ -47,6 +53,7 @@ async function getBrowser(origin: string): Promise<Browser> {
     }
     return puppeteer.launch({ executablePath: local, headless: true, args: ["--no-sandbox"] });
   })();
+  g.__pdfBrowserPromise = browserPromise;
   return browserPromise;
 }
 
