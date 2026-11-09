@@ -24,6 +24,10 @@
     },
     "src/app/teacher/lesson-materials/input/page.tsx": {
       "maxDuration": 120
+    },
+    "src/app/api/pdf/render/route.ts": {
+      "memory": 3009,
+      "maxDuration": 60
     }
   }
 }
