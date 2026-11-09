@@ -328,6 +328,9 @@ export function isClearNounSlot(tokens: string[], i: number): boolean {
     if (NOUN_SLOT_BEFORE.has(prev)) return true;
     if (/'s$/.test(prev) || /s'$/.test(prev)) return true;
     if (/(?:ive|ous|ful|less|able|ible)$/.test(prev) && prev.length > 4) return true;
+    // 하이픈 꾸밈말 뒤는 명사 자리(first-preference votes, long-term goals) — 2026-11-10 시험에서 vote가 원형으로 남아
+    // 「동사만 바꿀 것」 조건으로는 정답을 쓸 수 없었다
+    if (/^[a-z]+(?:-[a-z]+)+$/.test(prev)) return true;
   }
   if (next && NOUN_SLOT_AFTER.has(next)) return true;
   return false;

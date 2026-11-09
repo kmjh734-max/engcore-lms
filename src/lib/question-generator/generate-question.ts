@@ -3174,7 +3174,24 @@ export async function generateOneQuestion(opts: {
     const pool = top.length >= 2 ? top : ranked.sort((a, b) => b.s - a.s).slice(0, 3).map((x) => x.t);
     // 다시 만들 때는 다음 문장으로 넘긴다. 같은 문장으로 세 번 시도하면 같은 까닭(다른 어순도 답)으로 또 버려졌다.
     const retryShift = Math.max(0, (opts.attempt ?? 1) - 1);
-    const pick = pool[((opts.diversitySlot?.index ?? 0) + typeOffset + (opts.copyIndex ?? 0) * 3 + retryShift) % pool.length]!;
+    /*
+     * 사본(copyIndex)은 반드시 다른 문장으로(2026-11-10): 예전 식 copyIndex*3은 후보가 2·3개일 때 나누어떨어져
+     * 대체 문항(copyIndex+2 → +6)이 같은 지문의 원래 문항과 문장까지 똑같았다(66문항 시험에서 대체 3건 모두).
+     * 사본 0은 핵심 후보(pool) 안에서 고르고, 사본 k는 핵심 후보 → 나머지 순으로 늘어놓은 목록에서 k칸 뒤를 쓴다.
+     */
+    const base = (opts.diversitySlot?.index ?? 0) + typeOffset + retryShift;
+    const copyK = opts.copyIndex ?? 0;
+    const firstIdx = base % pool.length;
+    const ordered = [
+      ...pool.slice(firstIdx),
+      ...pool.slice(0, firstIdx),
+      ...ranked
+        .slice()
+        .sort((a, b) => b.s - a.s)
+        .map((x) => x.t)
+        .filter((t) => !pool.includes(t)),
+    ];
+    const pick = ordered[copyK % ordered.length]!;
     return `\n\nUSE THIS SENTENCE: 이번 문항은 이 문장을 빈칸으로 한다(글자 그대로, 한 자도 바꾸지 말 것).\n"${pick}"`;
   })();
 
