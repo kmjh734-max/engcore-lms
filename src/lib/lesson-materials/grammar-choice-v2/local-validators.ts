@@ -328,6 +328,18 @@ export function rejectCandidate(input: {
   if (correct !== candidate.sourceSpan) return "SOURCE_ANSWER_MISMATCH";
   if (!sentence.text.includes(correct)) return "SOURCE_SPAN_NOT_FOUND";
   if (bothWhatThatGrammatical(sentence.text, correct, wrong)) return "BOTH_GRAMMATICAL";
+  /*
+   * 목적의 to부정사 정답에 V-ing 오답은 분사구문으로 읽혀 둘 다 선다(2026-11-10 시험:
+   * 「consider the costs [to avoid / avoiding] financial strain」, 「utilizes a video lecture service
+   * [to expand / expanding] her knowledge」). 다른 오답(동사원형 등)을 가진 후보만 남긴다.
+   */
+  if (
+    candidate.pointCode === "INFINITIVE_ADVERB_ROLE" &&
+    /^to\s+[a-z]/i.test(correct.trim()) &&
+    /^[a-z]+ing\b/i.test(wrong.trim())
+  ) {
+    return "BOTH_GRAMMATICAL";
+  }
   if (ambiguousSubjectBoundary(sentence.text, correct)) return "AMBIGUOUS_SUBJECT_BOUNDARY";
   if (
     candidate.pointCode === "INDIRECT_QUESTION_ORDER" &&

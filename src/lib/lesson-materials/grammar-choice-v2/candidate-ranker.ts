@@ -97,6 +97,14 @@ export function rankCandidates(
       dropped.push({ item, reason: "DUPLICATE_SUBTYPE" });
       continue;
     }
+    /*
+     * 한 문장에서 같은 문법은 한 번만(2026-11-10 시험: 「how to run, how to skip, or how to climb」을
+     * 세 칸 모두 같은 준동사 병렬로 냈다). 한 문장에 서로 다른 문법이 여럿 들어가는 것은 그대로 둔다.
+     */
+    if (kept.some((k) => k.sentenceId === item.sentenceId && k.pointCode === item.pointCode)) {
+      dropped.push({ item, reason: "DUPLICATE_SUBTYPE" });
+      continue;
+    }
     if (item.transformCode === "ADJ_ADV") {
       if (adjAdv >= limits.maxAdjAdv) {
         dropped.push({ item, reason: "DUPLICATE_SUBTYPE" });
