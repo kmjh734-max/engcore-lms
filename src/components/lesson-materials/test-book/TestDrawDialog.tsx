@@ -345,10 +345,10 @@ export function TestDrawDialog({
               {list.map((p, i) => {
                 const ok = isTestBookProjectReady(p);
                 return (
-                  <label key={p.id} className="flex min-h-[26px] items-center gap-2 text-[13px] text-slate-800">
+                  <label key={p.id} className="flex min-h-[26px] items-center gap-2 py-0.5 text-[13px] text-slate-800">
                     <input
                       type="checkbox"
-                      className="h-4 w-4 accent-violet-600"
+                      className="h-4 w-4 shrink-0 accent-violet-600"
                       disabled={!ok}
                       checked={picked.has(p.id)}
                       onChange={() =>
@@ -360,8 +360,14 @@ export function TestDrawDialog({
                         })
                       }
                     />
-                    <span className="min-w-0 flex-1 truncate">
-                      {String(i + 1).padStart(2, "0")} {p.title}
+                    {/* 제목과 출처를 함께(선생님 2026-11-09: 제목만으로는 어느 지문인지 고르기 어렵다) */}
+                    <span className="min-w-0 flex-1" title={p.source ? `${p.title} · ${p.source}` : p.title}>
+                      <span className="block truncate">
+                        {String(i + 1).padStart(2, "0")} {p.title}
+                      </span>
+                      {p.source?.trim() ? (
+                        <span className="block truncate pl-[1.4em] text-[11px] font-medium text-slate-500">{p.source.trim()}</span>
+                      ) : null}
                     </span>
                     {!ok ? <span className="shrink-0 text-[10px] font-semibold text-amber-600">재료 없음</span> : null}
                   </label>
