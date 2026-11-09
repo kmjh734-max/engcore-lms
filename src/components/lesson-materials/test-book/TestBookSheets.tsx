@@ -56,6 +56,9 @@ export const TEST_BOOK_CSS = `
 .tb-dh h2 small{font-size:8.5pt;font-weight:500;color:#6a707c;margin-left:2mm;letter-spacing:0}
 .tb-dh .tb-k{text-align:right;font-size:7.6pt;color:#6a707c;line-height:1.35}
 .tb-dh .tb-k b{display:block;color:#15171c;font-size:9pt}
+.tb-dh .tb-dh-name{display:flex;align-items:center;gap:2.5mm;border:1.4pt solid #15171c;border-radius:1.6mm;padding:1mm 3.5mm;line-height:1.1}
+.tb-dh .tb-dh-name small{font-size:7.6pt;font-weight:800;color:#6a707c;letter-spacing:.06em}
+.tb-dh .tb-dh-name b{font-size:22pt;font-weight:900;color:#15171c;letter-spacing:-.01em}
 .tb-who{display:grid;grid-template-columns:1.3fr 1fr .9fr;gap:5mm;font-size:8.5pt;color:#6a707c}
 .tb-who span{border-bottom:.6pt solid #c9cdd4;padding-bottom:1mm}
 .tb-who .tb-who-name{margin-left:3mm;color:#15171c;font-size:10pt;font-weight:700}
@@ -262,6 +265,8 @@ export const TEST_BOOK_CSS = `
 .tb-arow dd{margin:0;min-width:0}
 .tb-arow dd b{color:#6a707c;font-weight:500;margin-right:1mm}
 .tb-arow dd > span{display:inline-block;margin-right:4mm}
+/* 단어 쓰기 정답은 번호를 세로로 한 줄에 하나씩(1 / 2 / 3 / 4) — 채점할 때 번호 찾기 쉽게(선생님 2026-11-09) */
+.tb-arow-v dd > span{display:block;margin-right:0}
 /* 인쇄: 전역 규칙(globals.css)이 body 안을 모두 숨기고 등록된 인쇄 루트만 보인다. 여기서 직접 보이게 하고
    A4 용지(app-print-a4)를 지정한다 — 빠뜨리면 빈 종이나 레터 용지로 나온다. */
 @media print{
@@ -683,7 +688,8 @@ function Segs({ segs }: { segs: TestSeg[] }) {
   );
 }
 
-export function DocHead({ title, sub, label, right }: { title: string; sub?: string; label: string; right?: string }) {
+/** name: 정답지 머리에 크게 찍는 학생 이름(누구 시험지인지 한눈에 — 선생님 2026-11-09) */
+export function DocHead({ title, sub, label, right, name }: { title: string; sub?: string; label: string; right?: string; name?: string }) {
   return (
     <div className="tb-b">
       <div className="tb-dh">
@@ -691,10 +697,17 @@ export function DocHead({ title, sub, label, right }: { title: string; sub?: str
           {title}
           {sub ? <small>{sub}</small> : null}
         </h2>
-        <div className="tb-k">
-          <b>{label}</b>
-          {right}
-        </div>
+        {name ? (
+          <div className="tb-dh-name">
+            <small>{label}</small>
+            <b>{name}</b>
+          </div>
+        ) : (
+          <div className="tb-k">
+            <b>{label}</b>
+            {right}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1172,13 +1185,14 @@ export const AllWordAnswerSheets = memo(function AllWordAnswerSheets({
   indexOf: (id: string) => number;
   measureKey: string;
 }) {
+  const student = useContext(TestBookStudent);
   const rows = allVocabRows(projects, indexOf);
   const chunks: AllRow[][] = [];
   for (let i = 0; i < rows.length; i += 6) chunks.push(rows.slice(i, i + 6));
   const blocks: Block[] = chunks.map((c, i) => ({
     key: `wa${i}`,
     node: (
-      <dl className="tb-arow">
+      <dl className="tb-arow tb-arow-v">
         <dt>{i === 0 ? "전체 단어" : ""}</dt>
         <dd>
           {c.map((r) => (
@@ -1195,7 +1209,7 @@ export const AllWordAnswerSheets = memo(function AllWordAnswerSheets({
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title="정답 · 전체 단어 TEST" sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right="정답만 싣습니다" />}
+      head={(page) => <DocHead title="정답 · 전체 단어 TEST" sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right="정답만 싣습니다" name={student || undefined} />}
     />
   );
 });
@@ -1835,7 +1849,7 @@ export const AnswerSheets = memo(function AnswerSheets({
           {e.word ? (
             <>
               {e.word.meaning.length ? (
-                <dl className="tb-arow">
+                <dl className="tb-arow tb-arow-v">
                   <dt>단어 A</dt>
                   <dd>
                     {e.word.meaning.map((m) => (
@@ -1861,7 +1875,7 @@ export const AnswerSheets = memo(function AnswerSheets({
                 </dl>
               ) : null}
               {e.word.forms.length ? (
-                <dl className="tb-arow">
+                <dl className="tb-arow tb-arow-v">
                   <dt>단어 C</dt>
                   <dd>
                     {e.word.forms.map((f) => (
@@ -1888,7 +1902,7 @@ export const AnswerSheets = memo(function AnswerSheets({
           {
             key: `a${k}-${i}-${sec.type}`,
             node: (
-              <dl className="tb-arow">
+              <dl className={sec.type === "words" && !sec.answer ? "tb-arow tb-arow-v" : "tb-arow"}>
                 <dt>{label}</dt>
                 <dd>{sectionAnswer(sec)}</dd>
               </dl>
@@ -1915,7 +1929,7 @@ export const AnswerSheets = memo(function AnswerSheets({
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right={student ? `이름 ${student}` : "정답만 싣습니다"} />}
+      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right="정답만 싣습니다" name={student || undefined} />}
     />
   );
 });
@@ -2268,11 +2282,12 @@ export const VocabExamAnswerSheets = memo(function VocabExamAnswerSheets({
   /** 출처(있으면 「정답만 싣습니다」 대신) */
   source?: string;
 }) {
+  const student = useContext(TestBookStudent);
   if (!exam.total) return null;
   const blocks: Block[] = exam.sections.map((sec) => ({
     key: `va-${sec.kind}`,
     node: (
-      <dl className="tb-arow">
+      <dl className={sec.items[0]?.choices ? "tb-arow" : "tb-arow tb-arow-v"}>
         <dt>{sec.title}</dt>
         <dd>
           {sec.items.map((it) => (
@@ -2289,7 +2304,7 @@ export const VocabExamAnswerSheets = memo(function VocabExamAnswerSheets({
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right={source || "정답만 싣습니다"} />}
+      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right={source || "정답만 싣습니다"} name={student || undefined} />}
     />
   );
 });
