@@ -125,7 +125,13 @@ export type AnalyzerResult = {
  * 호출당 출력이 1/3이 되어 호출 자체가 빨라지고, 남는 호출은 전역 게이트가
  * 병렬로 흘린다. 묶음을 키워 봐야 같은 토큰을 직렬로 뱉을 뿐이다.
  */
-export const ANALYZER_SENTENCES_PER_CALL = 1;
+/*
+ * 2026-11-10 3으로 올림(원가). 위 실측은 effort=low 때였다. 지금은 none이라 1문장 호출의 출력이 163토큰뿐이고,
+ * 원가의 대부분이 호출마다 다시 읽는 7천 토큰 지시문이었다(지문당 sol 16번, 지문당 217원 · 400크레딧 = 1.84배).
+ * 같은 8지문을 1문장/3문장으로 나란히 돌림: 문항 45→45·48→54, 지문당 198→147원·199→163원, 24초→21초·19초.
+ * 직접 풀어 본 품질은 같은 수준(둘 다 흐린 문항 1~2개). 시험 스크립트 scripts/tmp-rv/goldset/_gc-variant.mts
+ */
+export const ANALYZER_SENTENCES_PER_CALL = 3;
 
 /**
  * 문장 하나에 허용하는 후보 수. 호출 상한은 묶음 크기에 비례해 잡는다.
@@ -189,7 +195,12 @@ export async function analyzeAndGeneratePassage(input: {
   /** 지문들이 공유하는 호출 게이트. 없으면 이 지문만의 상한을 쓴다. */
   limiter?: Limiter;
 }): Promise<AnalyzerResult> {
-  const perCall = Math.max(1, input.sentencesPerCall ?? ANALYZER_SENTENCES_PER_CALL);
+  // 시험용 덮어쓰기(2026-11-10 원가 시험): GRAMMAR_V2_SENTENCES_PER_CALL
+  const envPerCall = Number(process.env.GRAMMAR_V2_SENTENCES_PER_CALL ?? "");
+  const perCall = Math.max(
+    1,
+    input.sentencesPerCall ?? (Number.isInteger(envPerCall) && envPerCall > 0 ? envPerCall : ANALYZER_SENTENCES_PER_CALL)
+  );
   const chunks = chunkSentences(input.sentences, perCall);
   const started = Date.now();
   const gate = input.limiter ?? createLimiter(ANALYZER_CHUNK_CONCURRENCY);
