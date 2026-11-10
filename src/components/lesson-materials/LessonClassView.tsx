@@ -184,9 +184,26 @@ function SentenceLine({
   spots: SpotMark[];
   layers: Record<Layer, boolean>;
 }) {
-  const g = layers.grammar ? grammar : [];
+  // 다섯 낱말 넘는 문법 자리는 앞 두 낱말에만 밑줄·번호(선생님 2026-11-11 점검: 절 전체 밑줄이 문장을 덮었다) — 전체는 아래 문법 줄에
+  const g = (layers.grammar ? grammar : []).map((m) => {
+    const span = text.slice(m.start, m.end);
+    const words = span.trim().split(/\s+/);
+    if (words.length <= 5) return m;
+    const re = /\S+\s+\S+/.exec(span);
+    return re ? { ...m, end: m.start + re.index + re[0].length } : m;
+  });
   const v = layers.vocab ? vocab : [];
-  const s = layers.spots ? spots : [];
+  const s0 = layers.spots ? spots : [];
+  // 다른 출제 자리 안에 든 자리의 꼬리표는 바깥 자리 끝으로(함축 「work those pathways to your advantage」 안의 지칭 「those pathways」)
+  const tagAt = (m: SpotMark) => {
+    let at = m.end;
+    for (const o of s0) if (o !== m && o.start <= m.start && o.end > m.end && o.end > at) at = o.end;
+    return at;
+  };
+  const s = s0;
+  const tagGroups = new Map<number, SpotMark[]>();
+  for (const m of s) tagGroups.set(tagAt(m), [...(tagGroups.get(tagAt(m)) ?? []), m]);
+
   const cuts = new Set<number>([0, text.length]);
   for (const m of [...g, ...v, ...s]) {
     cuts.add(Math.max(0, Math.min(text.length, m.start)));
@@ -194,55 +211,78 @@ function SentenceLine({
   }
   const pts = [...cuts].sort((a, b) => a - b);
   const parts: ReactNode[] = [];
+  let skip = 0; // 앞 꼬리표에 붙여 쓴 문장부호 글자 수
   for (let k = 0; k < pts.length - 1; k++) {
-    const a = pts[k]!;
+    const a = pts[k]! + skip;
+    skip = 0;
     const b = pts[k + 1]!;
+    if (a >= b) continue;
     const inside = <T extends { start: number; end: number }>(list: T[]) => list.filter((m) => m.start <= a && m.end >= b);
     const gs = inside(g);
     const ss = inside(s);
-    const vs = v.filter((m) => m.start === a);
-    const cls = [
-      gs.length ? "lc-g" : "",
-      ...ss.map((x) => `lc-s-${x.kind}`),
-      inside(v).length ? "lc-v" : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-    parts.push(
-      <span key={`t${a}`} className={cls || undefined}>
-        {vs.map((m, i) => (
-          <span key={i} className="lc-vl">
-            <span className="lc-full">
-              {m.syn.length ? <span className="lc-syn">= {m.syn.join(", ")}</span> : null}
-              {m.syn.length && m.ant.length ? " " : null}
-              {m.ant.length ? <span className="lc-ant">↔ {m.ant.join(", ")}</span> : null}
-            </span>
-            <span className="lc-short">
-              {m.syn.length ? <span className="lc-syn">= {m.syn[0]}</span> : <span className="lc-ant">↔ {m.ant[0]}</span>}
-            </span>
-          </span>
-        ))}
-        {text.slice(a, b)}
+    const vs = v.filter((m) => m.start === pts[k]);
+    const cls = [gs.length ? "lc-g" : "", ...ss.map((x) => `lc-s-${x.kind}`), inside(v).length ? "lc-v" : ""].filter(Boolean).join(" ") || undefined;
+    const labels = vs.map((m, i) => (
+      <span key={`v${i}`} className="lc-vl">
+        <span className="lc-full">
+          {m.syn.length ? <span className="lc-syn">= {m.syn.join(", ")}</span> : null}
+          {m.syn.length && m.ant.length ? " " : null}
+          {m.ant.length ? <span className="lc-ant">↔ {m.ant.join(", ")}</span> : null}
+        </span>
+        <span className="lc-short">
+          {m.syn.length ? <span className="lc-syn">= {m.syn[0]}</span> : <span className="lc-ant">↔ {m.ant[0]}</span>}
+        </span>
       </span>
-    );
-    for (const m of g.filter((x) => x.end === b)) {
-      parts.push(
+    ));
+    const sups = g
+      .filter((x) => x.end === b)
+      .map((m) => (
         <sup key={`g${m.no}`} className="lc-gn">
           {CIRCLED[m.no - 1] ?? `(${m.no})`}
         </sup>
-      );
-    }
-    // 같은 어구의 꼬리표는 하나로(빈칸·함축) — 꼬리표만 다음 줄로 떨어지지 않게(선생님 2026-11-10 점검)
-    const ending = s.filter((x) => x.end === b);
-    const groups = new Map<number, SpotMark[]>();
-    for (const m of ending) groups.set(m.start, [...(groups.get(m.start) ?? []), m]);
-    for (const [st, ms] of groups) {
+      ));
+    const tagged = tagGroups.get(b) ?? [];
+    const chips = groupSpots(tagged).length
+      ? [
+          <span key={`s${b}`} className={`lc-tag lc-tag-${tagged[0]!.kind}`}>
+            {[...new Set(tagged.map((m) => SPOT_LABEL[m.kind]))].join("·")}
+          </span>,
+        ]
+      : [];
+    const seg = text.slice(a, b);
+    if (!sups.length && !chips.length) {
       parts.push(
-        <span key={`s${st}-${b}`} className={`lc-tag lc-tag-${ms[0]!.kind}`}>
-          {ms.map((m) => SPOT_LABEL[m.kind]).join("·")}
+        <span key={`t${a}`} className={cls}>
+          {labels}
+          {seg}
         </span>
       );
+      continue;
     }
+    // 꼬리표·번호는 앞 낱말과 바로 뒤 문장부호에 붙여 혼자 다음 줄로 떨어지지 않게(선생님 2026-11-11 점검: 「, who were …」로 시작하는 줄)
+    const cut = seg.search(/\S+\s*$/);
+    const head = cut > 0 ? seg.slice(0, cut) : "";
+    const last = cut > 0 ? seg.slice(cut) : seg;
+    const punct = /^[,.;:!?)”’"]+/.exec(text.slice(b))?.[0] ?? "";
+    skip = punct.length;
+    if (head)
+      parts.push(
+        <span key={`t${a}`} className={cls}>
+          {labels}
+          {head}
+        </span>
+      );
+    parts.push(
+      <span key={`n${b}`} className="lc-nowrap">
+        <span className={cls}>
+          {head ? null : labels}
+          {last}
+        </span>
+        {sups}
+        {chips}
+        {punct}
+      </span>
+    );
   }
   return <>{parts}</>;
 }
@@ -699,6 +739,7 @@ const CSS = `
 .lc-g{border-bottom:2px solid var(--gram)}
 .lc-gn{color:var(--gram);font-weight:800;font-size:.6em;margin-left:1px}
 .lc-v{position:relative}
+.lc-nowrap{white-space:nowrap}
 .lc-vl{position:absolute;left:0;top:-1.55em;white-space:nowrap;font-size:.46em;font-weight:600;line-height:1;pointer-events:none}
 .lc-vl.up{top:-2.95em}
 .lc-vl::after{content:"";position:absolute;left:var(--tick,3px);top:100%;height:var(--tickh,.5em);border-left:1px dotted var(--syn);opacity:.8}.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
