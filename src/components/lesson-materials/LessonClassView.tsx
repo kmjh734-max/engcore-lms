@@ -111,15 +111,7 @@ function vocabMarks(p: TestBookProjectInput): VocabMark[] {
       }
     }
   }
-  // 이름표 글씨(본문의 0.46배)가 다음 낱말 이름표와 겹치면 한 줄 위로 올린다
-  out.sort((a, b) => a.si - b.si || a.start - b.start);
-  for (let i = 1; i < out.length; i++) {
-    const prev = out[i - 1]!;
-    const cur = out[i]!;
-    if (prev.si !== cur.si) continue;
-    const prevLen = (prev.syn.length ? 2 + prev.syn.join(", ").length : 0) + (prev.ant.length ? 3 + prev.ant.join(", ").length : 0);
-    if (prevLen * 0.5 + 1 > cur.start - prev.start) cur.level = prev.level === 0 ? 1 : 0;
-  }
+  // 겹침은 그린 뒤 실제 위치로 고친다(LessonClassView 의 useLayoutEffect)
   return out;
 }
 
@@ -179,10 +171,15 @@ function SentenceLine({
     parts.push(
       <span key={`t${a}`} className={cls || undefined}>
         {vs.map((m, i) => (
-          <span key={i} className={m.level ? "lc-vl lc-vl2" : "lc-vl"}>
-            {m.syn.length ? <span className="lc-syn">= {m.syn.join(", ")}</span> : null}
-            {m.syn.length && m.ant.length ? " " : null}
-            {m.ant.length ? <span className="lc-ant">↔ {m.ant.join(", ")}</span> : null}
+          <span key={i} className="lc-vl">
+            <span className="lc-full">
+              {m.syn.length ? <span className="lc-syn">= {m.syn.join(", ")}</span> : null}
+              {m.syn.length && m.ant.length ? " " : null}
+              {m.ant.length ? <span className="lc-ant">↔ {m.ant.join(", ")}</span> : null}
+            </span>
+            <span className="lc-short">
+              {m.syn.length ? <span className="lc-syn">= {m.syn[0]}</span> : <span className="lc-ant">↔ {m.ant[0]}</span>}
+            </span>
           </span>
         ))}
         {text.slice(a, b)}
@@ -617,7 +614,7 @@ const CSS = `
 .lc-thead span{font-size:1.05em;font-weight:800;color:var(--head)}
 .lc-thead b{font-size:.8em}
 .lc-sec-t{border-bottom:none;border-left:4px solid var(--head);padding:1em 0 .3em .6em;margin-top:.4em}
-.lc-en{font-family:var(--fe,var(--ff));font-size:1em;line-height:2.25;margin:0;text-shadow:var(--shadow)}
+.lc-en{font-family:var(--fe,var(--ff));font-size:1em;line-height:2.75;margin:0;text-shadow:var(--shadow)}
 .lc-sn{display:inline-block;min-width:1.4em;color:var(--sub);font-size:.62em;font-weight:800}
 .lc-ko{font-size:.68em;color:var(--sub);margin:0 0 .2em 1.6em;line-height:1.55}
 .lc-easy{font-size:.68em;line-height:1.55;margin:.3em 0 .2em 1.6em;padding:.35em .8em;border-left:4px solid var(--easy);
@@ -626,11 +623,11 @@ const CSS = `
 .lc-g{border-bottom:2px solid var(--gram)}
 .lc-gn{color:var(--gram);font-weight:800;font-size:.6em;margin-left:1px}
 .lc-v{position:relative}
-.lc-vl{position:absolute;left:0;top:-1.05em;white-space:nowrap;font-size:.46em;font-weight:600;line-height:1;pointer-events:none}
-.lc-vl2{top:-2.1em}
+.lc-vl{position:absolute;left:0;top:-1.5em;white-space:nowrap;font-size:.46em;font-weight:600;line-height:1;pointer-events:none}
+.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
 .lc-syn{color:var(--syn)}.lc-ant{color:var(--ant)}
 .lc-s-blank{box-shadow:inset 0 -.42em 0 color-mix(in srgb,var(--t-blank) 42%,transparent)}
-.lc-s-implication{border-top:2px dashed var(--t-implication);border-bottom:2px dashed var(--t-implication)}
+.lc-s-implication{background:color-mix(in srgb,transparent 72%,var(--t-implication) 28%);border-radius:3px}
 .lc-s-reference{border-bottom:3px dotted var(--t-reference)}
 .lc-s-insert{color:var(--t-insert);font-weight:700}
 .lc-tag{display:inline-block;font-family:var(--ff);font-size:.55em;font-weight:800;padding:0 .55em;border-radius:999px;margin:0 2px;vertical-align:middle;line-height:1.7;color:#111;text-shadow:none}
@@ -820,20 +817,45 @@ export function LessonClassView({
     setPages({ key: layoutKey, list: paginate(heights, blocks) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, extra]);
-  // 동반의어 이름표가 지문 칸 오른쪽을 넘으면 낱말 오른쪽 끝에 맞춘다(옆 설명 칸·쪽 밖으로 나가지 않게)
+  // 동반의어 이름표 자리 잡기(선생님 2026-11-10 「동반의어끼리 겹친다」): 그린 뒤 실제 위치를 재서
+  // 같은 줄 앞 이름표와 겹치면 오른쪽으로 비키고, 칸 오른쪽을 넘으면 칸 끝에 붙인다. 그래도 겹치면 동의어 하나만.
   useLayoutEffect(() => {
     const root = pagesRef.current;
     if (!root) return;
-    root.querySelectorAll<HTMLElement>(".lc-vl").forEach((el) => {
-      el.style.left = "";
-      el.style.right = "";
-      const box = el.closest(".lc-main")?.getBoundingClientRect();
-      if (box && el.getBoundingClientRect().right > box.right + 1) {
-        el.style.left = "auto";
-        el.style.right = "0";
+    root.querySelectorAll<HTMLElement>(".lc-main").forEach((main) => {
+      const box = main.getBoundingClientRect();
+      const labels = Array.from(main.querySelectorAll<HTMLElement>(".lc-vl"));
+      if (!labels.length) return;
+      const scale = main.offsetWidth ? box.width / main.offsetWidth : 1;
+      for (const el of labels) {
+        el.classList.remove("cmp");
+        el.style.left = "0px";
+      }
+      let lineTop = Number.NaN;
+      let prevRight = -Infinity;
+      for (const el of labels) {
+        const place = () => {
+          el.style.left = "0px";
+          let r = el.getBoundingClientRect();
+          if (Math.abs(r.top - lineTop) > 4) {
+            lineTop = r.top;
+            prevRight = -Infinity;
+          }
+          let shift = Math.max(0, prevRight + 6 - r.left);
+          if (r.right + shift > box.right) shift = box.right - r.right;
+          el.style.left = `${shift / scale}px`;
+          r = el.getBoundingClientRect();
+          return r;
+        };
+        let r = place();
+        if (r.left < prevRight + 4) {
+          el.classList.add("cmp");
+          r = place();
+        }
+        prevRight = Math.max(prevRight, r.right);
       }
     });
-  }, [pages, zoom]);
+  }, [pages, zoom, settings.theme]);
   const firstPageOf = useMemo(() => {
     const m = new Map<number, number>();
     pages.list.forEach((pg, pi) => {
