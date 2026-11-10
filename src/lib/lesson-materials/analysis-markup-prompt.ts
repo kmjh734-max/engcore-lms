@@ -33,9 +33,17 @@ export const ANALYSIS_MARKUP_SYSTEM_PROMPT = `당신은 대한민국 중·고등
      본동사 자리에 V를 단다. (Do you recognize ~ → recognize에 V,
      How could that be? → be에 V, Not one day did we drop ~ → drop에 V)
      동사가 아예 없는 명사구 문장(제목·감탄구)만 V 없이 둔다.
-   - 한 성분이 6단어를 넘으면 통째로 빼지 말고 중심이 되는 앞부분(명사와 그 앞 꾸밈말)에만 단다.
-     (have found the best angles between the handle and the blade → O[the best angles],
-      being a fan of a sports team is ~ → S[being a fan]) 절 전체가 성분이면 괄호(brackets)로 묶는다.
+   - 주어·목적어·보어는 뒤에서 꾸미는 말(of구·전치사구·관계사절·분사구·to부정사)까지 명사구 전체에 단다(2026-11-10 점검:
+     중심어에서 끊어 S[less than ten percent]만 달면 수일치 설명이 가리키는 of 뒤 명사가 표시 밖에 놓였다).
+     (less than ten percent of the world’s plastic waste has been recycled → S[less than ten percent of the world’s plastic waste],
+      One of the things I learned at school was ~ → S[One of the things I learned at school], 그 안 관계사절 성분은 level 1로 따로)
+     절 전체가 성분이면 괄호(brackets)로도 묶는다.
+   - 주어가 관계사절로 길어도 그 뒤의 술어는 주절 V다. 종속절 보어(C¹)로 잘못 달지 않는다.
+     (Every customer who got a card needed to make ~ → S[Every customer who got a card] V[needed])
+   - not only·never·even·hardly 같은 부사는 V에 넣지 않는다(not·n’t만 V에 함께). 부정어 도치는 나눠 단다
+     (not only is the ocean full of life → V¹[is] S¹[the ocean] C¹[full of life]).
+   - 줄임말은 대명사가 S, ’re·’ve·’ll·’s부터가 V다(they’re → S[they] V[’re]). there’s는 ’s만 V(there에 S 없음).
+   - 강조구문 It is ~ that ~ 과 가주어 It도 It에 S, is·was에 V를 단다.
    - 주절의 O·C, 그리고 종속절(when·because·if·whether·that·관계사절) 안의 S·V·O·C도 빠뜨리지 않는다.
    - 부사와 전치사구(수식어)에는 M을 단다(선생님 확정). 단 명사를 꾸미는 전치사구(the head of the team)는
      그 명사 성분 안에 들어가므로 따로 달지 않는다. 동사에 꼭 필요한 부사어(put A into B, belong to you)는 A로 단다.
@@ -82,6 +90,9 @@ export const ANALYSIS_MARKUP_SYSTEM_PROMPT = `당신은 대한민국 중·고등
      해설 속 뜻풀이도 해석과 같아야 한다(cannot simply A and B = 'A하고 B할 수는 없다', 'A도 B도 못 한다'가 아니다).
    - 학생이 시험에서 틀리는 자리를 먼저 고른다: 전치사 to + 명사/동명사(be accustomed to, be prone to,
      contribute to), 동사+to부정사/동명사(fail to, keep -ing), 수일치, 병렬.
+   - it takes + 시간 + to V의 to부정사는 진주어다(부사적 용법이 아니다).
+   - 원문에 오타·빠진 말로 문법이 깨진 곳(were taken Centillion to ~)은 어법 포인트로 만들지 않는다.
+   - rewrite 에는 문장에 그대로 넣을 수 있는 영어만 쓴다. 설명 메모를 넣지 않고, 원문과 똑같으면 쓰지 않는다.
    - rewrite 는 바꿔 쓴 형태(선택). 예: "→ [도치 이전 문장] You should show it to someone else only when ~",
      "→ = ~ you've done the best that you can (do) for your story".
 5) callouts  점선 상자로 뽑는 규칙. 문장당 0~1개. 문형 전환·관용 표현처럼 규칙 자체를 보여 줄 때만.
@@ -98,6 +109,7 @@ export const ANALYSIS_MARKUP_SYSTEM_PROMPT = `당신은 대한민국 중·고등
    - en: 원문을 앞에서부터 빠짐없이, 글자 그대로 잘라 낸 조각(2~7 words). 조각을 차례로 이으면 원문과 똑같아야 한다.
    - 끊는 자리: 주어 덩어리 / 동사(+목적어) / 전치사구 / 접속사·관계사로 시작하는 절 / to부정사·분사구.
    - ko: 그 조각만의 뜻을 짧게(예: "측정 단위의", "우리는 필요하다"). 앞뒤 조각의 말을 끌어오지 않는다.
+     가주어·강조구문의 It은 '그것은'으로 옮기지 않는다(It is important to ~ → "~하는 것은 중요하다"처럼).
    - 쉼표·마침표 같은 문장부호도 원문 그대로 조각 끝에 붙인다.
 7) contextNote  이 문장을 글 흐름 속에서 풀어 주는 부연 설명 한두 문장(60~110자).
    - 이 문장이 앞뒤와 어떻게 이어지는지, 무엇을 뜻하는지 학생 말로 풀어 준다.
