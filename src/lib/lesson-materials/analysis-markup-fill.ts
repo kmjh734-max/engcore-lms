@@ -185,5 +185,69 @@ export function fillMissingRoles(text: string, roles: MarkupRoleMark[], brackets
   }
 
   sort();
+  return extendCutPhrases(text, rs, brackets);
+}
+
+/*
+ * 7. 중심어에서 끊긴 주어·목적어·보어를 뒤 수식어까지(2026-11-10 전수 점검 — 214개 분석서 1,986문장 중 49곳으로 가장 많은 꼴):
+ * S[less than ten percent] of the world’s plastic waste V[has been recycled] → S가 of구까지. 설명(★ 수일치 「of 뒤 명사」)은
+ * 그 명사를 가리키는데 표시는 밖에 있어 학생이 헷갈렸다.
+ * 넓히는 것: 구간 바로 뒤(빈칸만)에 표시 없는 수식어가 이어지고, 그다음 같은 층 이하 성분까지 쉼표·괄호 없이 닿을 때.
+ *  - S: of·전치사구·관계사절·분사(-ing/-ed)·to부정사로 시작할 때
+ *  - O·C: of구·관계사절(which·who·whom·whose)로 시작할 때만(gave O[the book] to her 같은 부사어, told O[me] that ~의
+ *    둘째 목적어 that절을 먹지 않게)
+ * 사이에 든 더 깊은 층 성분(관계사절 안 S1·V1)은 그대로 안에 둔다.
+ */
+const S_POSTMOD = /^(?:of|in|on|at|for|with|from|about|between|among|behind|around|near|inside|outside|like|to|that|which|who|whom|whose|where|[a-z]+ing|[a-z]+ed)$/i;
+const OC_POSTMOD = /^(?:of|which|who|whom|whose)$/i;
+/** 넓힌 구간 끝에 남으면 안 되는 낱말(뒤에 붙은 부사·기능어 — support of their team | sometimes) */
+const TRAIL_DROP = /^(?:and|or|but|nor|to|of|the|a|an|sometimes|often|always|never|also|still|even|just|only|usually|typically|already|now|then|too|rarely|seldom|really|actually|probably|certainly|[a-z]+ly)$/i;
+/** O·C를 넓힐 때 여기서 멈춘다 — 동사에 걸린 부사구(the benefits of space technology | in our daily lives) */
+const ADV_PREP = /^(?:in|on|at|for|during|since|until|by|into|over|through|across|after|before|with|without|throughout)$/i;
+const WH_WORD = /^(?:what|where|when|why|how|who|whom|whose|which|that|whether)$/i;
+
+export function extendCutPhrases(text: string, roles: MarkupRoleMark[], brackets: MarkupBracket[]): MarkupRoleMark[] {
+  if (roles.some((r) => r.edited)) return roles;
+  const rs = roles.map((r) => ({ ...r, span: { ...r.span } })).sort((a, b) => a.span.start - b.span.start || b.span.end - a.span.end);
+  for (const r of rs) {
+    if (r.role !== "S" && r.role !== "O" && r.role !== "C") continue;
+    const gapStart = r.span.end;
+    const firstWord = /^\s+([A-Za-z’']+)/.exec(text.slice(gapStart));
+    if (!firstWord) continue;
+    const isS = r.role === "S";
+    if (!(isS ? S_POSTMOD : OC_POSTMOD).test(firstWord[1]!)) continue;
+    // 쉼표로 끝난 구간 뒤 which·who는 계속적 용법이라 성분 밖이다(“Sugungga,” which is ~)
+    if (/,["”’]*\s*$/.test(text.slice(r.span.start, gapStart))) continue;
+    const next = rs.find((o) => o !== r && o.level <= r.level && o.span.start >= gapStart);
+    // S는 바로 다음 같은 층 성분이 V여야 한다(V가 C로 잘못 달린 문장에서 동사까지 먹지 않게). O·C는 없으면 문장 끝까지.
+    if (isS && next?.role !== "V") continue;
+    let gap = text.slice(gapStart, next ? next.span.start : text.length);
+    if (!next) gap = gap.replace(/[\s.!?"”’]*$/, "");
+    gap = gap.replace(/\s+$/, "");
+    // 문장이 둘 붙었거나(마침표 뒤 대문자·□·!?) 쉼표·괄호·대시·따옴표가 끼면 다른 덩어리일 수 있어 넓히지 않는다
+    if (!gap.trim() || /[,;:()—–"“”□!?]/.test(gap) || /\.\s+[A-Z]/.test(gap)) continue;
+    // 낱말 단위로: O·C는 부사구 전치사에서 멈추고(의문사·관계사가 나온 뒤는 절 안이라 계속), 끝의 부사·기능어는 뗀다
+    const toks = [...gap.matchAll(/[A-Za-z0-9’'.-]+/g)].map((m) => ({ w: m[0], end: m.index! + m[0].length }));
+    let keep = toks.length;
+    if (!isS) {
+      let inClause = false;
+      for (let i = 0; i < toks.length; i++) {
+        if (WH_WORD.test(toks[i]!.w)) inClause = true;
+        if (!inClause && i >= 2 && ADV_PREP.test(toks[i]!.w)) {
+          keep = i;
+          break;
+        }
+      }
+    }
+    while (keep > 0 && TRAIL_DROP.test(toks[keep - 1]!.w.replace(/\.$/, ""))) keep--;
+    if (keep < 1 || (keep < 2 && !isS)) continue;
+    const span = { start: r.span.start, end: gapStart + toks[keep - 1]!.end };
+    // 사이에 같은 층 이하 표시가 있거나, 괄호·다른 표시와 엇갈리면 건드리지 않는다
+    if (rs.some((o) => o !== r && o.level <= r.level && overlaps(o.span, { start: gapStart, end: span.end }))) continue;
+    if (brackets.some((b) => crosses(b.span, span)) || rs.some((o) => o !== r && crosses(o.span, span))) continue;
+    // 부사절 괄호가 사이에서 시작하면(S when ~ V) 넓히지 않는다
+    if (brackets.some((b) => b.kind === "adverbial" && b.span.start >= gapStart && b.span.start < span.end)) continue;
+    r.span = span;
+  }
   return rs;
 }

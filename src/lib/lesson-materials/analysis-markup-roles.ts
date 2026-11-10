@@ -42,7 +42,8 @@ const IRREGULAR_PP = new Set([
 const NO_SUBJECT = new Set(["there", "let's", "let’s", "lets"]);
 const RELATIVE_PRONOUN = new Set(["who", "whom", "whose", "which", "that"]);
 /** 이 낱말 바로 뒤의 who·which·that은 관계대명사가 아니다(앞에 선행사 명사가 없다) */
-const AFTER_CONJ = /\b(if|when|because|since|although|though|while|unless|once|until|and|but|or|so)\s*,?\s*$/i;
+// how·what·why·where·whether 뒤 that은 간접의문문 안 지시대명사 주어(how that might change — 2026-11-10)
+const AFTER_CONJ = /\b(if|when|because|since|although|though|while|unless|once|until|and|but|or|so|how|what|why|where|whether)\s*,?\s*$/i;
 const ING_BASE = new Set(["bring", "sing", "ring", "swing", "cling", "fling", "sting", "spring", "string", "wring", "sling"]);
 
 type Tok = { w: string; start: number; end: number };
@@ -130,8 +131,17 @@ export function normalizeMarkupRoles(
   rs = rs.filter((r) => {
     if (r.role !== "S" || !RELATIVE_PRONOUN.has(lower(slice(text, r.span).trim()))) return true;
     if (AFTER_CONJ.test(text.slice(0, r.span.start))) return true;
-    const inNominalClause = brackets.some((bracket) => bracket.kind === "nominal" && inside(r.span, bracket.span));
-    return r.level === 0 || inNominalClause;
+    // 문장 첫머리·세미콜론·콜론 뒤의 that은 지시대명사 주어다(…; that is why — 2026-11-10 점검 b147f2c5 #9)
+    if (/(?:^|[;:])\s*["“]?\s*$/.test(text.slice(0, r.span.start))) return true;
+    /*
+     * 명사절 괄호 안의 의문대명사(I know who came)는 남긴다 — 단 괄호 맨 앞 낱말일 때만. 예전엔 괄호 안에 있기만 하면
+     * 남겨, 목적어 that절 안의 관계대명사(space technology that has not yet been invented)에도 S가 보였다
+     * (2026-11-10 전수 점검 96a2ac02 #10 등).
+     */
+    const startsNominalClause = brackets.some(
+      (bracket) => bracket.kind === "nominal" && inside(r.span, bracket.span) && /^\s*$/.test(text.slice(bracket.span.start, r.span.start))
+    );
+    return r.level === 0 || startsNominalClause;
   });
   // 명사절 접속사(proves that the world is ~의 that)에 단 성분: 바로 뒤가 더 깊은 층의 S면 접속사다
   rs = rs.filter((r, i) => {
