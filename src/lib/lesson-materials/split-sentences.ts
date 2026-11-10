@@ -35,10 +35,30 @@ function isAbbreviation(token: string): boolean {
   return ABBREVIATIONS.has(bare);
 }
 
+/**
+ * 따옴표 안의 끝맺음(. ! ?)에서 자를지: 따옴표가 닫힌 뒤 같은 문장이 이어지면(“Hurry! One item left!” even though ~,
+ * “…,” she said) 자르지 않고, 대사가 따옴표 안에서 끝나면(“We’re both busy. Tilly can —” 다음 대사) 자른다.
+ * 2026-11-10 전수 점검: 따옴표 안을 통째로 묶어 대사 여러 문장·두 사람 말이 한 문장이 된 것 15곳.
+ */
+function quoteContinuesAfterClose(chars: string[], from: number, curly: boolean): boolean {
+  for (let j = from; j < chars.length && j < from + 600; j++) {
+    const c = chars[j]!;
+    if (c === "\n") return false;
+    if ((curly && c === "”") || (!curly && c === '"')) {
+      const rest = chars.slice(j + 1, j + 12).join("");
+      // 닫힌 뒤 소문자·쉼표·대시로 이어지면 같은 문장
+      return /^\s*[a-z,;:—–-]/.test(rest);
+    }
+  }
+  return true;
+}
+
 export function splitEnglishSentences(text: string): string[] {
   const cleaned = String(text ?? "")
     .replace(/\r\n/g, "\n")
     .replace(/[ \t]+/g, " ")
+    // □ 소제목은 새 줄로(…main source of income. □ For a Sustainable Diet — 2026-11-10)
+    .replace(/\s*([□■◆▶►])\s*/g, "\n$1 ")
     .trim();
   if (!cleaned) return [];
 
@@ -67,6 +87,13 @@ export function splitEnglishSentences(text: string): string[] {
     if (ch === "“") quoteDepth++;
     else if (ch === "”") quoteDepth = Math.max(0, quoteDepth - 1);
     else if (ch === '"') straightOpen = !straightOpen;
+    // 대사와 대사 사이(…told me —” “I’ll tell you…): 앞 대사가 끝맺음·대시로 닫히고 바로 새 따옴표가 열리면 자른다
+    if (ch === "”" && quoteDepth === 0 && chars[i + 1] === " " && chars[i + 2] === "“" && /[.!?—–…]\s*$/.test(buf.slice(0, -1))) {
+      const t = buf.trim();
+      if (t) sentences.push(t);
+      buf = "";
+      continue;
+    }
     if (!/[.!?]/.test(ch)) continue;
 
     let look = i + 1;
@@ -91,7 +118,7 @@ export function splitEnglishSentences(text: string): string[] {
 
     if (!endOfText && !newline && !newSentence) continue;
     const insideQuote = (quoteDepth > 0 || straightOpen) && buf.length < 400;
-    if (insideQuote && !endOfText && !newline) continue;
+    if (insideQuote && !endOfText && !newline && quoteContinuesAfterClose(chars, i + 1, quoteDepth > 0)) continue;
 
     const t = buf.trim();
     const lastWord = t.split(/\s+/).pop() ?? "";

@@ -681,20 +681,44 @@ export function readAnalysisMarkup(
     notes: heading ? [] : notesKept,
     points: heading ? [] : points,
     callouts,
-    tagSpans,
+    // 제목 줄에는 주제문·어법 빈출 꼬리표도 달지 않는다(「Why Do We Need Bees?」에 주제문 — 2026-11-10)
+    tagSpans: heading ? [] : tagSpans,
     chunks,
     translation,
     ...(o.translationEdited === true ? { translationEdited: true } : {}),
-    tags,
+    tags: heading ? [] : tags,
   };
   return hasAnyMarkup(markup) ? markup : null;
 }
 
-/** 제목·번호 줄처럼 문장이 아닌 줄: 여섯 낱말 이하이고 끝에 마침표·물음표·느낌표가 없다 */
+/** 제목에서 소문자로 두는 낱말(관사·짧은 전치사·접속사) */
+const TITLE_SMALL = new Set(["a", "an", "the", "of", "in", "on", "at", "to", "for", "and", "or", "but", "nor", "with", "by", "from", "as", "vs", "via", "into", "than"]);
+/** 낱말마다 대문자로 시작하는 제목꼴(Why Do We Need Bees? · Hallyu Was Not Built in a Day) */
+function isTitleCase(t: string): boolean {
+  const ws = t.replace(/[^A-Za-z’'\s-]/g, " ").split(/\s+/).filter((w) => /[A-Za-z]/.test(w));
+  const content = ws.filter((w, i) => i === 0 || !TITLE_SMALL.has(w.toLowerCase()));
+  return content.length >= 2 && content.every((w) => /^[A-Z]/.test(w));
+}
+
+/**
+ * 제목·번호 줄처럼 문장이 아닌 줄(성분·설명·꼬리표를 달지 않는다). 2026-11-10 전수 점검에서 문장으로 분석된 제목 38곳 —
+ * 마침표가 있는 번호(「1.」「Lesson 3.」), 대괄호 제목(「[Conclusion]」), □ 소제목, 제목형 물음(「Why Do We Need Bees?」),
+ * 긴 제목(「Lesson 2: Hallyu Was Not Built in a Day」), 영어가 없는 안내문(「이미지 속 텍스트는 다음과 같습니다.」)이 빠져 있었다.
+ */
 export function isHeadingLine(text: string): boolean {
   const t = text.trim();
+  if (!/[A-Za-z]{2,}/.test(t)) return true;
+  const n = t.split(/\s+/).filter(Boolean).length;
+  if (/^\d+[.)]?$/.test(t)) return true;
+  if (/^(?:lesson|unit|chapter|part|section|step)\s*\d+[.:)]?$/i.test(t)) return true;
+  if (/^\[[^\]]+\]$/.test(t)) return true;
+  if (/^[□■◆◇▶►●○※]/.test(t) && n <= 10 && !/[.!]["”’)]*$/.test(t)) return true;
+  if (/\?["”’)]*$/.test(t) && n <= 8 && isTitleCase(t)) return true;
   if (/[.?!]["”’)]*$/.test(t)) return false;
-  return t.split(/\s+/).filter(Boolean).length <= 6;
+  // 콜론으로 끝나도 동사가 있으면 문장이다(「The results were as follows:」의 성분이 지워졌다, 2026-11-03)
+  if (/:$/.test(t) && /\b(?:am|is|are|was|were|be|been|has|have|had|do|does|did|will|would|can|could|shall|should|may|might|must)\b/i.test(t)) return false;
+  if (n <= 12 && isTitleCase(t)) return true;
+  return n <= 6;
 }
 
 export function hasAnyMarkup(m: AnalysisSentenceMarkup | null | undefined): boolean {
