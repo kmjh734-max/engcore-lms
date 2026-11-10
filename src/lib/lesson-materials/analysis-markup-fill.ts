@@ -34,7 +34,14 @@ const CLAUSE_VERB = new Set([
   "admit", "insist", "assume", "guess", "imagine", "recognize", "reveal", "indicate", "demonstrate", "write", "ask", "highlight", "involve",
   "determine", "recall", "predict", "confirm", "doubt", "acknowledge", "note", "observe", "conclude", "announce", "emphasize", "warn",
   "promise", "deny", "ensure", "consider", "describe", "teach", "check", "figure", "work", "illustrate", "emphasise", "recognise", "realise",
+  // 2026-11-10 점검: fear·judge 뒤 목적어 that절에 O가 안 붙었다
+  "fear", "judge", "accept", "worry", "assert", "maintain", "reckon", "regret", "demand", "recommend", "propose", "require",
 ]);
+/** 문장 첫머리 등위접속사·접속부사(But the only time ~ is · Yet our ego ~ have made) — 주어 찾기에서 건너뛴다 */
+const CONJ_START = new Set(["but", "and", "yet", "so", "or", "nor"]);
+/** 의문문 앞 의문사·접속사(What had I done? · Or have you ever felt ~?) — 그 뒤 조동사가 도치된 V다 */
+const Q_LEAD = new Set(["what", "why", "how", "where", "when", "who", "whom", "which", "whose", "or", "and", "but", "so"]);
+const PRONOUN_SUBJ = /^(i|you|we|they|he|she|it|that|who|what)(['’](?:re|ve|ll|m|s|d))$/i;
 const IRREGULAR_BASE: Record<string, string> = {
   said: "say", told: "tell", thought: "think", knew: "know", known: "know", found: "find", felt: "feel", saw: "see", seen: "see",
   wrote: "write", written: "write", taught: "teach", meant: "mean", understood: "understand", forgot: "forget", forgotten: "forget",
@@ -85,12 +92,47 @@ export function fillMissingRoles(text: string, roles: MarkupRoleMark[], brackets
   sort();
   const main = (role: string) => rs.filter((r) => r.level === 0 && r.role === role);
 
-  // 1. 의문문 앞 조동사
+  // 0. 줄임말 주어가 V 안에 든 것(V[they’re] · V[you’ve done]): V는 ’부터, 앞 대명사는 S(there’s의 there는 S 아님)
+  for (const v of rs.filter((r) => r.role === "V")) {
+    const head = tokens(text, v.span.start, v.span.end)[0];
+    const m = head && head.start === v.span.start ? PRONOUN_SUBJ.exec(head.w) : null;
+    if (!m) continue;
+    const apos = head!.start + m[1]!.length;
+    v.span = { start: apos, end: v.span.end };
+    if (!rs.some((r) => r.role === "S" && overlaps(r.span, { start: head!.start, end: apos }))) rs.push({ span: { start: head!.start, end: apos }, role: "S", level: v.level });
+  }
+  sort();
+  // 0b. there’s(there is)의 ’s에 V가 없으면 단다(주절 V가 없을 때)
+  {
+    const t0 = tokens(text, 0, text.length).find((t) => /^there['’]s$/.test(t.w));
+    if (t0 && !rs.some((r) => r.level === 0 && r.role === "V") && !covered({ start: t0.start + 5, end: t0.end }, 0)) {
+      add({ start: t0.start + 5, end: t0.end }, "V", 0);
+    }
+  }
+
+  // 1. 의문문 앞 조동사 — 문장 첫 낱말이거나, 의문사·접속사 뒤(What had I done? · Or have you ever felt ~?)
   const all = tokens(text, 0, text.length);
-  const first = all[0];
-  if (first && /\?["”’)]*\s*$/.test(text) && (AUX_Q.has(first.w) || BE.has(first.w) || HAVE.has(first.w)) && !covered(first)) {
-    const next = rs.find((r) => r.span.start >= first.end);
-    if (next && next.level === 0 && next.role === "S") add({ start: first.start, end: first.end }, "V", 0);
+  const isQuestion = /\?["”’)]*\s*$/.test(text) || /^\s*["“]?(?:have|has|had|do|does|did)\s+(?:you|we|they|he|she|i)\s+ever\b/i.test(text);
+  for (let qi = 0; qi < Math.min(3, all.length) && isQuestion; qi++) {
+    const tok = all[qi]!;
+    if (!(AUX_Q.has(tok.w) || BE.has(tok.w) || HAVE.has(tok.w))) {
+      if (Q_LEAD.has(tok.w)) continue;
+      break;
+    }
+    if (!covered(tok)) {
+      const next = rs.find((r) => r.span.start >= tok.end);
+      if (next && next.level === 0 && next.role === "S" && /^\s+$/.test(text.slice(tok.end, next.span.start))) add({ start: tok.start, end: tok.end }, "V", 0);
+    }
+    break;
+  }
+  // 1b. 강조구문·가주어 It is/was ~ 에 주절 S·V가 하나도 없으면 단다(It is only in later development that we understood ~)
+  {
+    const m = /^\s*(It)\s+(is|was)\b/.exec(text);
+    if (m && !main("S").length && !main("V").length) {
+      const s0 = text.indexOf(m[1]!);
+      const v0s = text.indexOf(m[2]!, s0 + 2);
+      if (add({ start: s0, end: s0 + 2 }, "S", 0)) add({ start: v0s, end: v0s + m[2]!.length }, "V", 0);
+    }
   }
 
   // 2. 주절 V: S 바로 뒤 조동사·be·have부터
@@ -119,7 +161,12 @@ export function fillMissingRoles(text: string, roles: MarkupRoleMark[], brackets
   if (v0 && !main("S").length) {
     let from = 0;
     for (const r of rs) if (r.level === 0 && r.role === "M" && r.span.end <= v0.span.start && /^[\s,]*$/.test(text.slice(from, r.span.start))) from = r.span.end;
-    const seg = tokens(text, from, v0.span.start);
+    let seg = tokens(text, from, v0.span.start);
+    // 첫머리 But·Yet·And는 건너뛴다(But the only time it will increase ~ is — 2026-11-10)
+    if (seg.length > 1 && CONJ_START.has(seg[0]!.w)) {
+      from = seg[0]!.end;
+      seg = seg.slice(1);
+    }
     if (seg.length && !NOT_SUBJECT_START.has(seg[0]!.w) && /^[\s,“"]*$/.test(text.slice(from, seg[0]!.start))) {
       const span = { start: seg[0]!.start, end: seg[seg.length - 1]!.end };
       // 사이는 공백만, 같은 층 표시·부사절과 겹치지 않을 때
@@ -135,22 +182,58 @@ export function fillMissingRoles(text: string, roles: MarkupRoleMark[], brackets
     rs = rs.filter((r) => r !== next);
   }
 
-  // 5. 동사 바로 뒤 명사절 괄호에 O·C
+  // 5. 동사 바로 뒤 명사절 괄호에 O·C. 사이에 같은 층 M(are exactly why ~)·IO(teach us that ~)가 끼어도 된다(2026-11-10).
   for (const b of brackets) {
     if (b.kind !== "nominal") continue;
-    const v = rs.filter((r) => r.role === "V" && r.span.end <= b.span.start && /^\s*$/.test(text.slice(r.span.end, b.span.start))).pop();
+    // 사이에 낀 표시는 같은 층 M·IO만, 나머지는 빈칸
+    let pos = b.span.start;
+    let io: MarkupRoleMark | undefined;
+    for (;;) {
+      const mid = rs.filter((r) => r.span.end <= pos && /^\s*,?\s*$/.test(text.slice(r.span.end, pos)) && (r.role === "M" || r.role === "IO")).pop();
+      if (!mid) break;
+      if (mid.role === "IO") io = mid;
+      pos = mid.span.start;
+    }
+    const v = rs.filter((r) => r.role === "V" && r.span.end <= pos && /^\s*$/.test(text.slice(r.span.end, pos))).pop();
     if (!v) continue;
-    // 그 층에 이미 이 자리를 덮는 표시가 있거나, 안쪽 성분이 같은 층이면(절로 안 봄) 건드리지 않는다
+    if (io && io.level !== v.level) continue;
+    // 그 층에 이미 이 자리를 덮는 표시가 있으면 건드리지 않는다
     if (rs.some((r) => r.level <= v.level && overlaps(r.span, b.span))) continue;
-    if (!rs.some((r) => r.level > v.level && within(r.span, b.span))) continue;
     const vw = words(text.slice(v.span.start, v.span.end));
     const last = vw[vw.length - 1] ?? "";
+    const bt = text.slice(b.span.start, b.span.end).trim().toLowerCase();
+    // 안쪽 성분이 더 깊은 층(절)이 아니면: 연결동사 뒤 명사구 보어(had become one of ~)·to부정사 목적어(started to put ~)만
+    const isClause = rs.some((r) => r.level > v.level && within(r.span, b.span));
+    if (!isClause && !LINK.has(last) && !/^to\s/.test(bt)) continue;
     // 수동태(It is estimated that ~)·가주어 it(It seems that ~)은 진주어라 건드리지 않는다
     const passive = vw.some((w) => BE.has(w)) && looksLikeVerb(last) && !BE.has(last);
     const subj = rs.filter((r) => r.role === "S" && r.level === v.level && r.span.end <= v.span.start).pop();
     if (passive || (subj && /^it$/i.test(text.slice(subj.span.start, subj.span.end).trim()))) continue;
-    if (LINK.has(last)) add(b.span, "C", v.level);
-    else if (clauseVerb(last)) add(b.span, "O", v.level);
+    if (io) add(b.span, "DO", v.level);
+    else if (LINK.has(last)) add(b.span, "C", v.level);
+    else if (clauseVerb(last) || /^to\s/.test(bt)) add(b.span, "O", v.level);
+  }
+
+  // 5b. 연결동사 뒤 「the fact + that절」처럼 짧은 명사 + 명사절 괄호 → 둘을 합쳐 C(is the fact that ~ — 2026-11-10)
+  for (const v of rs.filter((r) => r.role === "V" && LINK.has(words(text.slice(r.span.start, r.span.end)).pop() ?? ""))) {
+    if (rs.some((r) => r !== v && r.level === v.level && (r.role === "C" || r.role === "O") && r.span.start >= v.span.end)) continue;
+    const b = brackets.find((x) => x.kind === "nominal" && x.span.start > v.span.end && /^\s+(?:the|a|an|this|that|its|their|our|his|her|my|your)\s+[A-Za-z]+(?:\s+[A-Za-z]+)?\s+$/i.test(text.slice(v.span.end, x.span.start)));
+    if (!b) continue;
+    const start = v.span.end + (text.slice(v.span.end).length - text.slice(v.span.end).trimStart().length);
+    if (rs.some((r) => r.level <= v.level && overlaps(r.span, { start, end: b.span.end }))) continue;
+    add({ start, end: b.span.end }, "C", v.level);
+  }
+
+  // 5c. 전치사 하나에만 단 A·M 뒤에 명사절 괄호가 이어지면 괄호 끝까지(A[with] how hot or cold ~ → A[with how hot or cold ~])
+  for (const r of rs) {
+    if (r.role !== "A" && r.role !== "M") continue;
+    if (!/^[a-z]+$/i.test(text.slice(r.span.start, r.span.end).trim()) || !/^(?:with|about|of|on|in|for|to|from|by|at)$/i.test(text.slice(r.span.start, r.span.end).trim())) continue;
+    const b = brackets.find((x) => x.kind === "nominal" && /^\s+$/.test(text.slice(r.span.end, x.span.start)));
+    if (!b) continue;
+    const span = { start: r.span.start, end: b.span.end };
+    if (rs.some((o) => o !== r && o.level <= r.level && overlaps(o.span, { start: r.span.end, end: b.span.end }))) continue;
+    if (brackets.some((x) => crosses(x.span, span)) || rs.some((o) => o !== r && crosses(o.span, span))) continue;
+    r.span = span;
   }
 
   // 6. to부정사로 끝난 구간을 절 끝까지
