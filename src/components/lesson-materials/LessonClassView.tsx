@@ -614,7 +614,7 @@ const CSS = `
 .lc-thead span{font-size:1.05em;font-weight:800;color:var(--head)}
 .lc-thead b{font-size:.8em}
 .lc-sec-t{border-bottom:none;border-left:4px solid var(--head);padding:1em 0 .3em .6em;margin-top:.4em}
-.lc-en{font-family:var(--fe,var(--ff));font-size:1em;line-height:2.75;margin:0;text-shadow:var(--shadow)}
+.lc-en{font-family:var(--fe,var(--ff));font-size:1em;line-height:3.15;margin:0;text-shadow:var(--shadow)}
 .lc-sn{display:inline-block;min-width:1.4em;color:var(--sub);font-size:.62em;font-weight:800}
 .lc-ko{font-size:.68em;color:var(--sub);margin:0 0 .2em 1.6em;line-height:1.55}
 .lc-easy{font-size:.68em;line-height:1.55;margin:.3em 0 .2em 1.6em;padding:.35em .8em;border-left:4px solid var(--easy);
@@ -623,8 +623,8 @@ const CSS = `
 .lc-g{border-bottom:2px solid var(--gram)}
 .lc-gn{color:var(--gram);font-weight:800;font-size:.6em;margin-left:1px}
 .lc-v{position:relative}
-.lc-vl{position:absolute;left:0;top:-1.5em;white-space:nowrap;font-size:.46em;font-weight:600;line-height:1;pointer-events:none}
-.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
+.lc-vl{position:absolute;left:0;top:-1.55em;white-space:nowrap;font-size:.46em;font-weight:600;line-height:1;pointer-events:none}
+.lc-vl.up{top:-2.95em}.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
 .lc-syn{color:var(--syn)}.lc-ant{color:var(--ant)}
 .lc-s-blank{box-shadow:inset 0 -.42em 0 color-mix(in srgb,var(--t-blank) 42%,transparent)}
 .lc-s-implication{background:color-mix(in srgb,transparent 72%,var(--t-implication) 28%);border-radius:3px}
@@ -817,42 +817,46 @@ export function LessonClassView({
     setPages({ key: layoutKey, list: paginate(heights, blocks) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, extra]);
-  // 동반의어 이름표 자리 잡기(선생님 2026-11-10 「동반의어끼리 겹친다」): 그린 뒤 실제 위치를 재서
-  // 같은 줄 앞 이름표와 겹치면 오른쪽으로 비키고, 칸 오른쪽을 넘으면 칸 끝에 붙인다. 그래도 겹치면 동의어 하나만.
+  // 동반의어 이름표 자리 잡기 — 늘 자기 낱말 위에(선생님 2026-11-10 「동반의어가 그 자리에 안 맞는다」: 옆으로 비키면 어느 낱말 것인지 모른다).
+  // 같은 줄 앞 이름표와 겹치면 한 칸 위층으로, 거기도 겹치면 동의어 하나만. 칸 오른쪽을 넘으면 낱말 오른쪽 끝에 맞춘다.
   useLayoutEffect(() => {
     const root = pagesRef.current;
     if (!root) return;
+    const hit = (a: DOMRect, b: DOMRect) => a.left < b.right + 3 && b.left < a.right + 3 && a.top < b.bottom && b.top < a.bottom;
     root.querySelectorAll<HTMLElement>(".lc-main").forEach((main) => {
       const box = main.getBoundingClientRect();
       const labels = Array.from(main.querySelectorAll<HTMLElement>(".lc-vl"));
-      if (!labels.length) return;
-      const scale = main.offsetWidth ? box.width / main.offsetWidth : 1;
-      for (const el of labels) {
-        el.classList.remove("cmp");
-        el.style.left = "0px";
-      }
+      let placed: DOMRect[] = [];
       let lineTop = Number.NaN;
-      let prevRight = -Infinity;
       for (const el of labels) {
-        const place = () => {
-          el.style.left = "0px";
-          let r = el.getBoundingClientRect();
-          if (Math.abs(r.top - lineTop) > 4) {
-            lineTop = r.top;
-            prevRight = -Infinity;
+        const set = (level: 0 | 1, compact: boolean) => {
+          el.classList.toggle("cmp", compact);
+          el.classList.toggle("up", level === 1);
+          el.style.left = "";
+          el.style.right = "";
+          if (el.getBoundingClientRect().right > box.right) {
+            el.style.left = "auto";
+            el.style.right = "0";
           }
-          let shift = Math.max(0, prevRight + 6 - r.left);
-          if (r.right + shift > box.right) shift = box.right - r.right;
-          el.style.left = `${shift / scale}px`;
-          r = el.getBoundingClientRect();
-          return r;
+          return el.getBoundingClientRect();
         };
-        let r = place();
-        if (r.left < prevRight + 4) {
-          el.classList.add("cmp");
-          r = place();
+        let r = set(0, false);
+        const hostTop = el.parentElement?.getBoundingClientRect().top ?? r.top;
+        if (Math.abs(hostTop - lineTop) > 4) {
+          lineTop = hostTop;
+          placed = [];
         }
-        prevRight = Math.max(prevRight, r.right);
+        const tries: Array<[0 | 1, boolean]> = [
+          [0, false],
+          [1, false],
+          [0, true],
+          [1, true],
+        ];
+        for (const [lv, cp] of tries) {
+          r = set(lv, cp);
+          if (!placed.some((q) => hit(q, r))) break;
+        }
+        placed.push(r);
       }
     });
   }, [pages, zoom, settings.theme]);
