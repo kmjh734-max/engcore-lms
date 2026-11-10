@@ -24,15 +24,30 @@ export type MockExamSummary = {
   count: number;
 };
 
-/** 2024년 고2 6월 학력평가 24번 */
+/*
+ * 시험 종류: 학력평가 · 모의평가 · 수능(2026-11-10 워크시트메이커에서 넣음). 수능은 시행 연도·달로 적고(2025년 11월 =
+ * 2026학년도 수능, 2020년은 12월 시행) 고3으로 둔다.
+ */
+export function mockKindShort(kind: string): string {
+  return kind === "모의평가" ? "모평" : kind === "수능" ? "수능" : "학평";
+}
+
+/** 시험 이름: 24년 고2 6월 학평 · 25년 11월 수능(26학년도) */
+export function mockExamShortName(p: { year: number; month: number; grade: number; kind: string }): string {
+  const yy = String(p.year).slice(2);
+  if (p.kind === "수능") return `${yy}년 ${p.month}월 수능(${String(p.year + 1).slice(2)}학년도)`;
+  return `${yy}년 고${p.grade} ${p.month}월 ${mockKindShort(p.kind)}`;
+}
+
+/** 2024년 고2 6월 학력평가 24번 · 2025년 11월 수능(2026학년도) 24번 */
 export function mockPassageLabel(p: Pick<MockPassage, "year" | "month" | "grade" | "kind" | "item_no">) {
+  if (p.kind === "수능") return `${p.year}년 ${p.month}월 수능(${p.year + 1}학년도) ${p.item_no}번`;
   return `${p.year}년 고${p.grade} ${p.month}월 ${p.kind} ${p.item_no}번`;
 }
 
 /** 24년 고2 6월 학평 24번 (보고서 표처럼 좁은 칸) */
 export function mockPassageShortLabel(p: Pick<MockPassage, "year" | "month" | "grade" | "kind" | "item_no">) {
-  const kind = p.kind === "모의평가" ? "모평" : "학평";
-  return `${String(p.year).slice(2)}년 고${p.grade} ${p.month}월 ${kind} ${p.item_no}번`;
+  return `${mockExamShortName(p)} ${p.item_no}번`;
 }
 
 export const mockExamKey = (p: { year: number; month: number; grade: number }) => `${p.year}-${p.month}-${p.grade}`;

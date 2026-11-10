@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { loadOwnAnalysis, requireExamStaff } from "@/lib/exam-analysis/access";
 import { categoryOfName, EXAM_LEVELS } from "@/lib/exam-analysis/types";
+import { mockPassageShortLabel } from "@/lib/mock-passages";
 
 export const runtime = "nodejs";
 
@@ -98,7 +99,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
           .maybeSingle();
         if (mk) {
           mkId = mk.id;
-          mkLabel = label || `${String(mk.year).slice(2)}년 고${mk.grade} ${mk.month}월 ${mk.kind === "모의평가" ? "모평" : "학평"} ${mk.item_no}번`;
+          mkLabel = label || mockPassageShortLabel(mk);
         }
       }
       patch.source_edited = true;

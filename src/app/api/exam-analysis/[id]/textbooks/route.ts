@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { loadOwnAnalysis, requireExamStaff } from "@/lib/exam-analysis/access";
 import { resolveTextbookPassageAcademyId } from "@/lib/textbooks/shared-passages";
+import { mockExamShortName } from "@/lib/mock-passages";
 
 export const runtime = "nodejs";
 
@@ -56,9 +57,8 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   const exams = new Map<string, { key: string; label: string; parts: { id: string; label: string }[] }>();
   for (const r of mockRows) {
     const key = `${r.year}-${r.month}-${r.grade}`;
-    const kind = r.kind === "모의평가" ? "모평" : "학평";
     if (!exams.has(key)) {
-      exams.set(key, { key, label: `${String(r.year).slice(2)}년 고${r.grade} ${r.month}월 ${kind}`, parts: [] });
+      exams.set(key, { key, label: mockExamShortName(r), parts: [] });
     }
     exams.get(key)!.parts.push({ id: r.id, label: `${r.item_no}번` });
   }
