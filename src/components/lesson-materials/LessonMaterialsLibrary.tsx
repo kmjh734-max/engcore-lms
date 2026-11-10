@@ -47,9 +47,9 @@ type LibraryTab =
 
 const LIBRARY_TABS: Array<{ id: LibraryTab; label: string }> = [
   { id: "materials", label: "지문자료" },
-  { id: "lesson", label: "수업용자료" },
-  // 윌링어학원만(선생님 2026-10-27) — 지문을 골라 단어장 만들기 · 목록 · 시험지
+  // 지문을 골라 단어장 만들기 · 목록 · 시험지 — 수업용자료 앞에(선생님 2026-11-10, 단어는 수업용자료에서 빠져 이 탭으로)
   { id: "vocab", label: "단어" },
+  { id: "lesson", label: "수업용자료" },
   { id: "analysis", label: "분석서" },
   { id: "workbook", label: "워크북" },
   { id: "onePageSummary", label: "1장 요약직보자료" },
