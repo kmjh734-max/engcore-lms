@@ -19,7 +19,7 @@ import type { AnalysisReportData } from "@/lib/lesson-materials/generate-analysi
 import { generateAndSaveLessonPackVocab } from "@/lib/lesson-materials/lesson-pack-vocab";
 import { findPhrase, isOnePageContentFresh, onePageSentences, type OnePageContent } from "@/lib/lesson-materials/one-page";
 import { patchLessonPack } from "@/lib/lesson-materials/patch-lesson-pack";
-import { generateTeacherNotes, teacherNotesSourceHash, type TeacherNotes } from "@/lib/lesson-materials/teacher-notes";
+import { generateGrammarShort, generateTeacherNotes, teacherNotesSourceHash, type TeacherNotes } from "@/lib/lesson-materials/teacher-notes";
 import { pickKeySentenceIds } from "@/lib/lesson-materials/key-sentences";
 import { generateWorkbookLineTranslation } from "@/lib/lesson-materials/generate-workbook-line-translation";
 import { generateWorkbookWordOrderWriting } from "@/lib/lesson-materials/generate-workbook-word-order-writing";
@@ -860,7 +860,16 @@ export async function prepareTeacherNotesAction(
   try {
     const { notes } = await withAiUsage(
       { academyId: profile!.academy_id, actorId: profile!.id, featureKey: TEACHER_NOTES_FEATURE, usedFor: "lesson_teacher_notes", projectId },
-      () => generateTeacherNotes({ sentences: english, korean: sentences.map((s) => s.korean) })
+      async () => {
+        const made = await generateTeacherNotes({ sentences: english, korean: sentences.map((s) => s.korean) });
+        // 지문 아래 문법 한 줄 요약(해설지처럼) — 분석서가 있을 때만
+        const marks = pickClassGrammar(english, ((project.analysis_report_json as AnalysisReportData | null)?.sentences ?? []));
+        const texts = await generateGrammarShort(
+          marks.map((m) => ({ sentence: english[m.si] ?? "", q: m.q, label: m.label, explanation: m.explanation }))
+        ).catch(() => [] as string[]);
+        if (texts.length) made.notes.grammarShort = marks.map((m, i) => ({ q: m.q, label: m.label, text: texts[i] ?? "" }));
+        return made;
+      }
     );
     await flushAiUsage();
     await patchLessonPack(supabase, projectId, pack, { teacherNotes: notes });
@@ -879,7 +888,54 @@ export async function prepareTeacherNotesAction(
 }
 
 /** 수업 화면에 겹칠 문법 번호(분석서 표시에서) — 문장 번호는 0부터, 자리는 그 문장 글자 위치 */
-export type ClassGrammarMark = { si: number; start: number; end: number; no: number; label: string; explanation: string; star: boolean };
+export type ClassGrammarMark = {
+  si: number;
+  start: number;
+  end: number;
+  no: number;
+  q: string;
+  label: string;
+  explanation: string;
+  star: boolean;
+  /** 해설지 한 줄 요약(교사용 해설을 만들 때 같이 만든다) */
+  short: string;
+};
+/** 분석서 문법 표시에서 수업 화면에 겹칠 자리를 고른다 — 문장마다 ★ 먼저, 없으면 첫 번째, 문장당 2개(선생님 2026-11-10 「중요한 문법」) */
+function pickClassGrammar(english: string[], analysisSentences: AnalysisReportData["sentences"]): Omit<ClassGrammarMark, "no" | "short">[] {
+  const squash = (t: string) => t.replace(/\s+/g, " ").trim();
+  const findIn = (t: string, q: string) => {
+    const i = t.indexOf(q);
+    return i >= 0 ? i : t.toLowerCase().indexOf(q.toLowerCase());
+  };
+    const marks: Omit<ClassGrammarMark, "no" | "short">[] = [];
+    for (const as of analysisSentences) {
+      const m = as.markup;
+      if (!m?.points?.length) continue;
+      const own = english.findIndex((e) => squash(e) === squash(m.text));
+      for (const pt of m.points) {
+        const q = m.text.slice(pt.span.start, pt.span.end).trim();
+        if (!q) continue;
+        let si = own;
+        let at = si >= 0 ? findIn(english[si]!, q) : -1;
+        if (at < 0) {
+          si = english.findIndex((e) => findIn(e, q) >= 0);
+          at = si >= 0 ? findIn(english[si]!, q) : -1;
+        }
+        if (at < 0) continue;
+        marks.push({ si, start: at, end: at + q.length, q, label: pt.label, explanation: pt.explanation, star: pt.star === true });
+      }
+    }
+    // 중요한 문법만(선생님 2026-11-10): 문장마다 ★ 먼저, 없으면 첫 번째 — 문장당 2개까지
+    const picked: typeof marks = [];
+    for (const si of [...new Set(marks.map((m) => m.si))]) {
+      const own = marks.filter((m) => m.si === si);
+      const stars = own.filter((m) => m.star);
+      picked.push(...(stars.length ? stars : own).slice(0, 2));
+    }
+    picked.sort((a, b) => a.si - b.si || a.start - b.start);
+  return picked;
+}
+
 
 /**
  * 교사용·학생용 수업 화면을 열 때만 읽는 재료: 교사용 해설(지금 원문으로 만든 것만)과 분석서 문법 번호.
@@ -909,43 +965,14 @@ export async function loadClassViewDataAction(
       .order("order_index", { ascending: true }),
   ]);
   const out: Record<string, { notes: TeacherNotes | null; grammar: ClassGrammarMark[] }> = {};
-  const squash = (t: string) => t.replace(/\s+/g, " ").trim();
-  const findIn = (t: string, q: string) => {
-    const i = t.indexOf(q);
-    return i >= 0 ? i : t.toLowerCase().indexOf(q.toLowerCase());
-  };
   for (const r of (rows ?? []) as unknown as Array<{ id: string; tn: TeacherNotes | null; ar: AnalysisReportData["sentences"] | null }>) {
     const english = onePageSentences((items ?? []).filter((it) => it.project_id === r.id && String(it.english_text ?? "").trim())).map(
       (s) => s.english
     );
     const notes = r.tn && r.tn.sourceHash === teacherNotesSourceHash(english) ? r.tn : null;
-    const marks: Omit<ClassGrammarMark, "no">[] = [];
-    for (const as of r.ar ?? []) {
-      const m = as.markup;
-      if (!m?.points?.length) continue;
-      const own = english.findIndex((e) => squash(e) === squash(m.text));
-      for (const pt of m.points) {
-        const q = m.text.slice(pt.span.start, pt.span.end).trim();
-        if (!q) continue;
-        let si = own;
-        let at = si >= 0 ? findIn(english[si]!, q) : -1;
-        if (at < 0) {
-          si = english.findIndex((e) => findIn(e, q) >= 0);
-          at = si >= 0 ? findIn(english[si]!, q) : -1;
-        }
-        if (at < 0) continue;
-        marks.push({ si, start: at, end: at + q.length, label: pt.label, explanation: pt.explanation, star: pt.star === true });
-      }
-    }
-    // 중요한 문법만(선생님 2026-11-10): 문장마다 ★ 먼저, 없으면 첫 번째 — 문장당 2개까지
-    const picked: typeof marks = [];
-    for (const si of [...new Set(marks.map((m) => m.si))]) {
-      const own = marks.filter((m) => m.si === si);
-      const stars = own.filter((m) => m.star);
-      picked.push(...(stars.length ? stars : own).slice(0, 2));
-    }
-    picked.sort((a, b) => a.si - b.si || a.start - b.start);
-    out[r.id] = { notes, grammar: picked.map((g, i) => ({ ...g, no: i + 1 })) };
+    const picked = pickClassGrammar(english, r.ar ?? []);
+    const short = new Map((notes?.grammarShort ?? []).map((g) => [`${g.label}|${g.q}`, g.text] as const));
+    out[r.id] = { notes, grammar: picked.map((g, i) => ({ ...g, no: i + 1, short: short.get(`${g.label}|${g.q}`) ?? "" })) };
   }
   return { ok: true, data: out };
 }

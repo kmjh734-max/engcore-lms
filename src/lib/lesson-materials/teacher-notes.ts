@@ -27,6 +27,8 @@ export type TeacherNotes = {
   easy: Array<{ sentence: number; text: string }>;
   /** 지문 위 출제 자리 — q는 그 문장에 그대로 있는 어구 */
   spots: Array<{ sentence: number; q: string; kind: TeacherSpotKind; note: string }>;
+  /** 지문 아래 문법 한 줄 요약(문법 해설지처럼) — 분석서 문법 자리(q·label)마다 */
+  grammarShort?: Array<{ q: string; label: string; text: string }>;
   sourceHash: string;
   model: string;
   createdAt: string;
@@ -266,4 +268,60 @@ export async function generateTeacherNotes(input: {
     };
   }
   throw new Error(`교사용 해설 만들기 실패: ${lastErr}`);
+}
+
+const GRAMMAR_SHORT_SYSTEM = `너는 고등학교 영어 문법 해설지를 쓰는 강사다. 각 문법 자리를 해설지 한 줄로 요약한다.
+- 한 줄 25~45자 안팎. "형태/규칙 → 이 문장에서의 이유" 꼴로, 군더더기 없이.
+- 예: "have been p.p. = 완료 수동: 사업이 '추진되는' 대상, 지금까지 이어짐"
+- 예: "rise(자동사) vs raise(타동사): 뒤에 목적어 없음 → rise"
+- 예: "목적격 관계대명사 생략: the one (that) they left"
+- 설명에 없는 내용을 보태지 않는다. 받은 순서 그대로 같은 개수.
+JSON {"items": ["…", "…"]} 하나만 돌려준다.`;
+
+/** 분석서 문법 설명(길다)을 해설지 한 줄로 — 호출 한 번, 출력 수백 토큰 */
+export async function generateGrammarShort(
+  points: Array<{ sentence: string; q: string; label: string; explanation: string }>,
+  model = TEACHER_NOTES_MODEL
+): Promise<string[]> {
+  if (!points.length) return [];
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OPENAI_API_KEY 없음");
+  const user = points
+    .map((p, i) => `${i + 1}. [${p.label}] 자리: ${p.q}\n문장: ${p.sentence}\n설명: ${p.explanation}`)
+    .join("\n\n");
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await openAiFetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: GRAMMAR_SHORT_SYSTEM },
+          { role: "user", content: user },
+        ],
+        response_format: { type: "json_object" },
+        reasoning_effort: "low",
+        max_completion_tokens: 4000,
+        prompt_cache_key: "teacher-notes-grammar",
+      }),
+    });
+    if (!res.ok) {
+      if (res.status >= 500 || res.status === 429) {
+        await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+        continue;
+      }
+      throw new Error(`문법 요약 실패: ${(await res.text()).slice(0, 200)}`);
+    }
+    const json = (await res.json()) as { choices: Array<{ message: { content: string } }> };
+    try {
+      const items = (JSON.parse(json.choices[0]?.message?.content ?? "") as { items?: unknown }).items;
+      if (Array.isArray(items)) {
+        const out = items.map((x) => String(x ?? "").trim());
+        if (out.length === points.length) return out;
+      }
+    } catch {
+      /* 다시 */
+    }
+  }
+  return [];
 }

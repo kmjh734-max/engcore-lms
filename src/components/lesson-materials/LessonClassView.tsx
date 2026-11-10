@@ -239,11 +239,21 @@ function passageBlocks(
       </div>
     ),
   });
-  // 문장마다 한 줄: 왼쪽(3) 영어 · 해석 · 쉽게 말하면 · 그 문장의 출제 예상 자리, 오른쪽(1) 그 문장의 문법 설명
+  // 흐름 단계는 그 단계가 시작하는 문장 옆에 둔다(「3·4」 → 3번 문장)
+  const flowAt = new Map<number, Array<{ f: NonNullable<typeof notes>["flow"][number]; i: number }>>();
+  (notes?.flow ?? []).forEach((f, i) => {
+    const n = Number((f.sentences.match(/\d+/) ?? [])[0]);
+    const si = Number.isFinite(n) && n >= 1 ? Math.min(n - 1, p.sentences.length - 1) : 0;
+    flowAt.set(si, [...(flowAt.get(si) ?? []), { f, i }]);
+  });
+  const flowCount = notes?.flow.length ?? 0;
+
+  // 문장마다 한 줄: 왼쪽(3) 영어 · 해석 · 문법 한 줄 · 출제 예상 자리, 오른쪽(1) 흐름 · 쉽게 말하면
   p.sentences.forEach((s, si) => {
     const easy = layers.easy ? notes?.easy.find((e) => e.sentence === si) : undefined;
     const own = grammar.filter((m) => m.si === si);
     const ownSpots = spots.filter((m) => m.si === si);
+    const steps = layers.side ? (flowAt.get(si) ?? []) : [];
     out.push({
       key: k(`s${si}`),
       node: (
@@ -254,10 +264,25 @@ function passageBlocks(
               <SentenceLine text={s.english} grammar={own} vocab={vocab.filter((m) => m.si === si)} spots={ownSpots} layers={layers} />
             </p>
             {layers.ko && teacher && s.korean ? <p className="lc-ko">{s.korean}</p> : null}
-            {easy ? (
-              <p className="lc-easy">
-                <b>쉽게 말하면</b> {easy.text}
-              </p>
+            {layers.grammar && own.length ? (
+              <div className="lc-glines">
+                {own.map((m) => (
+                  <p key={m.no}>
+                    <span className="lc-gn2">{CIRCLED[m.no - 1] ?? `(${m.no})`}</span>{" "}
+                    {teacher ? (
+                      m.short || (
+                        <>
+                          <b>{m.label}</b> {m.q}
+                        </>
+                      )
+                    ) : (
+                      <>
+                        <b>{m.label}</b> {blank}
+                      </>
+                    )}
+                  </p>
+                ))}
+              </div>
             ) : null}
             {layers.spots && ownSpots.length ? (
               <div className="lc-spots">
@@ -271,15 +296,26 @@ function passageBlocks(
             ) : null}
           </div>
           <div className="lc-aside">
-            {layers.grammar
-              ? own.map((m) => (
-                  <p key={m.no}>
-                    <span className="lc-gn2">{CIRCLED[m.no - 1] ?? `(${m.no})`}</span> <b>{m.label}</b>
-                    <br />
-                    {teacher ? m.explanation : <span className="lc-blank lc-blank-s" />}
-                  </p>
-                ))
-              : null}
+            {steps.map(({ f, i }) => {
+              const hide = !teacher && i > 0 && i < flowCount - 1;
+              return (
+                <div key={i} className="lc-astep">
+                  <b>
+                    {i + 1}. {f.label}
+                  </b>
+                  {f.lines.map((l, j) => (
+                    <div key={j}>{hide ? <span className="lc-blank lc-blank-s" /> : l}</div>
+                  ))}
+                </div>
+              );
+            })}
+            {easy ? (
+              <p className="lc-aeasy">
+                <b>쉽게 말하면</b>
+                <br />
+                {easy.text}
+              </p>
+            ) : null}
           </div>
         </div>
       ),
@@ -290,35 +326,6 @@ function passageBlocks(
     out.push({ key: k(`${key}-h`), keepNext: true, node: <h3 className={`lc-sec ${cls}`}>{title}</h3> });
     for (const it of items) out.push({ key: k(`${key}-${it.key}`), node: <div className="lc-item">{it.node}</div> });
   };
-
-  // 지문 끝: 글의 흐름(가로)
-  if (layers.side && notes?.flow.length) {
-    out.push({ key: k("flow-h"), keepNext: true, node: <h3 className="lc-sec">글의 흐름</h3> });
-    out.push({
-      key: k("flow"),
-      node: (
-        <div className="lc-flow">
-          {notes.flow.map((f, i) => {
-            const hide = !teacher && i > 0 && i < notes.flow.length - 1;
-            return (
-              <div key={i} className="lc-fstep">
-                {i > 0 ? <span className="lc-farr">→</span> : null}
-                <div className="lc-fbox">
-                  <b>
-                    {f.label}
-                    {f.sentences ? ` (${f.sentences})` : ""}
-                  </b>
-                  {f.lines.map((l, j) => (
-                    <div key={j}>{hide ? blank : l}</div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ),
-    });
-  }
 
   if (!teacher || !notes) return out;
 
@@ -545,8 +552,14 @@ const CSS = `
 .lc-meta{color:var(--sub);font-size:.72em;margin:2px 0 0}
 .lc-row2{display:grid;grid-template-columns:3fr 1fr;gap:0 4mm;padding-top:.85em}
 .lc-main{min-width:0}
-.lc-aside{font-size:.6em;line-height:1.5;border-left:1px dashed var(--line);padding:1.1em 0 0 2.5mm;color:var(--ink)}
+.lc-aside{font-size:.6em;line-height:1.5;border-left:1px dashed var(--line);padding:.6em 0 0 2.5mm;color:var(--ink)}
 .lc-aside p{margin:0 0 .5em}
+.lc-astep{border:1.5px solid var(--line);border-left:4px solid var(--head);border-radius:6px;padding:.35em .55em;margin-bottom:.45em;background:var(--panel)}
+.lc-astep b{color:var(--head)}
+.lc-aeasy{border-left:3px solid var(--easy);padding:.2em 0 .2em .55em;background:color-mix(in srgb,var(--bg) 86%,var(--easy) 14%);border-radius:0 6px 6px 0}
+.lc-aeasy b{color:var(--easy)}
+.lc-glines{font-size:.64em;line-height:1.5;margin:.25em 0 0 1.6em}
+.lc-glines p{margin:.1em 0}
 .lc-spots{font-size:.64em;line-height:1.5;margin:.3em 0 0 1.6em}
 .lc-spots p{margin:.15em 0}
 .lc-blank-s{min-width:100%;display:block;margin-top:.9em}
