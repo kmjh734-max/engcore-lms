@@ -195,6 +195,8 @@ export function normalizeMarkupRoles(
     }
     // 부사만 건너고 조동사를 못 만났으면 되돌린다
     if (!sawAux || start >= r.span.start) continue;
+    // V가 not으로 시작하게 되면 부정어 도치(not only was the planet ~)라 넓히지 않는다(2026-11-10)
+    if (/^not\b/i.test(text.slice(start, r.span.start))) continue;
     const next = { start, end: r.span.end };
     // 넓힌 자리가 다른 성분·괄호와 반쯤 걸치면 넓히지 않는다
     if (rs.some((o) => o !== r && crosses(o.span, next)) || brackets.some((b) => crosses(b.span, next))) continue;
@@ -237,6 +239,9 @@ export function normalizeMarkupRoles(
     if (!prev || prev.role !== "O") continue;
     const gap = text.slice(prev.span.end, r.span.start);
     if (r.span.start < prev.span.end || !/^\s*(to\s+)?$/i.test(gap)) continue;
+    // 목적어보다 얕은 층의 동사는 그 목적어의 보어가 아니다 — 관계사절 안 목적어 뒤 주절 동사
+    // (Every customer who got a card needed ~의 needed를 C¹으로 바꿨다 — 2026-11-10 전수 점검)
+    if (r.level < prev.level) continue;
     // 그 목적어를 거느린 동사가 5형식 동사
     const verb = [...rs.slice(0, i - 1)].reverse().find((x) => x.role === "V" && x.level === prev.level);
     const base = verb ? ocVerbBase(slice(text, verb.span)) : "";
