@@ -54,6 +54,19 @@ const LAYERS: Array<{ id: Layer; label: string }> = [
   { id: "ko", label: "해석" },
   { id: "side", label: "흐름" },
 ];
+/** 교사용 해설에서 보여 줄 항목(선생님 2026-11-10 「시안처럼 보여 줄 수 있는 걸 선택」) */
+type TSec = "bg" | "tip" | "tts" | "flow" | "voc" | "fig" | "check" | "qt";
+const TSECS: Array<{ id: TSec; label: string }> = [
+  { id: "bg", label: "배경지식" },
+  { id: "tip", label: "강의 Tip" },
+  { id: "tts", label: "주제·제목·요약문" },
+  { id: "flow", label: "지문 FLOW" },
+  { id: "voc", label: "핵심 어휘" },
+  { id: "fig", label: "비유·함축" },
+  { id: "check", label: "시험 직전 체크" },
+  { id: "qt", label: "출제 가능성" },
+];
+const ALL_TSEC = Object.fromEntries(TSECS.map((t) => [t.id, true])) as Record<TSec, boolean>;
 const FONTS_HREF =
   "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic:wght@400;700;800&family=Gowun+Dodum&family=Nanum+Pen+Script&family=Gaegu:wght@400;700&family=Merriweather:wght@400;700&family=Lora:wght@400;700&display=swap";
 const SETTINGS_KEY = "lesson-class-view";
@@ -69,6 +82,10 @@ type Settings = {
   layers: Record<Layer, boolean>;
   /** 지문마다 뒤에 백지노트(2쪽) */
   blankNote: boolean;
+  /** 교사용 해설 항목 */
+  tsec: Record<TSec, boolean>;
+  /** 학생용에 붙일 항목(선생님 2026-11-10 「학생용도 마찬가지로」) — 처음엔 모두 끔 */
+  tsecS: Record<TSec, boolean>;
 };
 const DEFAULT_SETTINGS: Settings = {
   mode: "teacher",
@@ -78,6 +95,8 @@ const DEFAULT_SETTINGS: Settings = {
   size: 14,
   layers: { grammar: true, vocab: true, spots: true, easy: true, ko: true, side: true },
   blankNote: false,
+  tsec: ALL_TSEC,
+  tsecS: Object.fromEntries(TSECS.map((t) => [t.id, false])) as Record<TSec, boolean>,
 };
 
 // ---------------------------------------------------------------- 지문 위 표시 모으기
@@ -218,7 +237,8 @@ function passageBlocks(
   mode: Mode,
   layers: Record<Layer, boolean>,
   notes: TeacherNotes | null,
-  grammar: GrammarMark[]
+  grammar: GrammarMark[],
+  tsec: Record<TSec, boolean> = ALL_TSEC
 ): Block[] {
   const teacher = mode === "teacher";
   const vocab = vocabMarks(p);
@@ -331,12 +351,14 @@ function passageBlocks(
     for (const it of items) out.push({ key: k(`${key}-${it.key}`), node: <div className="lc-item">{it.node}</div> });
   };
 
-  if (!teacher || !notes) return out;
+  if (!notes) return out;
 
   // 교사용 해설 — A안(강의 노트형, 선생님 2026-11-10 「A안이 그나마 나음」), 새 쪽에서
-  const num = (n: number, title: string) => (
+  if (!TSECS.some((t) => tsec[t.id])) return out;
+  let secNo = 0;
+  const num = (_n: number, title: string) => (
     <h4 className="la-h">
-      <i>{n}</i>
+      <i>{++secNo}</i>
       {title}
     </h4>
   );
@@ -346,7 +368,7 @@ function passageBlocks(
     keepNext: true,
     node: (
       <header className="la-band">
-        <span>교사용 해설</span>
+        <span>{teacher ? "교사용 해설" : "핵심 정리"}</span>
         <b>
           {String(index + 1).padStart(2, "0")} · {notes.title.en || p.title}
         </b>
@@ -354,11 +376,8 @@ function passageBlocks(
       </header>
     ),
   });
-  out.push({
-    key: k("t-12"),
-    node: (
-      <div className="la-grid">
-        <div>
+  const bgCol = tsec.bg ? (
+        <div key="bg">
           {num(1, "배경지식")}
           {notes.background.map((b, i) => (
             <div key={i} className="la-term">
@@ -369,7 +388,9 @@ function passageBlocks(
             </div>
           ))}
         </div>
-        <div>
+      ) : null;
+  const tipCol = tsec.tip ? (
+        <div key="tip">
           {num(2, "강의 Tip")}
           {notes.tip.hookTitle ? <p className="la-hook">🎬 {notes.tip.hookTitle}</p> : null}
           {notes.tip.script ? <div className="la-bubble">{notes.tip.script.replace(/^“|”$/g, "")}</div> : null}
@@ -386,10 +407,14 @@ function passageBlocks(
             </ul>
           ) : null}
         </div>
-      </div>
-    ),
-  });
-  out.push({
+      ) : null;
+  // 두 칸 중 하나만 고르면 한 칸 전체 폭으로
+  const pair = (key: string, cols: Array<ReactNode | null>) => {
+    const shown = cols.filter(Boolean);
+    if (shown.length) out.push({ key: k(key), node: <div className={shown.length === 2 ? "la-grid" : "la-grid la-one"}>{shown}</div> });
+  };
+  pair("t-12", [bgCol, tipCol]);
+  if (tsec.tts) out.push({
     key: k("t-3"),
     node: (
       <div>
@@ -414,7 +439,7 @@ function passageBlocks(
       </div>
     ),
   });
-  if (notes.flow.length)
+  if (tsec.flow && notes.flow.length)
     out.push({
       key: k("t-4"),
       node: (
@@ -442,7 +467,7 @@ function passageBlocks(
         </div>
       ),
     });
-  if (notes.vocab.length)
+  if (tsec.voc && notes.vocab.length)
     out.push({
       key: k("t-5"),
       node: (
@@ -467,11 +492,8 @@ function passageBlocks(
         </div>
       ),
     });
-  out.push({
-    key: k("t-67"),
-    node: (
-      <div className="la-grid">
-        <div>
+  const figCol = tsec.fig ? (
+        <div key="fig">
           {num(6, "비유 · 함축")}
           {notes.figurative.length ? (
             notes.figurative.map((f, i) => (
@@ -485,7 +507,9 @@ function passageBlocks(
             <p className="lc-dim">이 지문에는 따로 짚을 비유적 표현이 없습니다.</p>
           )}
         </div>
-        <div>
+      ) : null;
+  const checkCol = tsec.check ? (
+        <div key="check">
           {num(7, "시험 직전 체크")}
           <ul className="la-check">
             <li>
@@ -507,10 +531,9 @@ function passageBlocks(
             </li>
           </ul>
         </div>
-      </div>
-    ),
-  });
-  if (notes.questionTypes.length) {
+      ) : null;
+  pair("t-67", [figCol, checkCol]);
+  if (tsec.qt && notes.questionTypes.length) {
     out.push({ key: k("t-8h"), keepNext: true, node: num(8, "출제 가능성") });
     out.push({
       key: k("t-8n"),
@@ -628,7 +651,8 @@ const CSS = `
 .lc-gn{color:var(--gram);font-weight:800;font-size:.6em;margin-left:1px}
 .lc-v{position:relative}
 .lc-vl{position:absolute;left:0;top:-1.55em;white-space:nowrap;font-size:.46em;font-weight:600;line-height:1;pointer-events:none}
-.lc-vl.up{top:-2.95em}.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
+.lc-vl.up{top:-2.95em}
+.lc-vl::after{content:"";position:absolute;left:var(--tick,3px);top:100%;height:var(--tickh,.5em);border-left:1px solid var(--syn);opacity:.75}.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
 .lc-syn{color:var(--syn)}.lc-ant{color:var(--ant)}
 .lc-s-blank{box-shadow:inset 0 -.42em 0 color-mix(in srgb,var(--t-blank) 42%,transparent)}
 .lc-s-implication{background:color-mix(in srgb,transparent 72%,var(--t-implication) 28%);border-radius:3px}
@@ -661,6 +685,7 @@ const CSS = `
 .la-h i{font-style:normal;background:var(--ink);color:var(--bg);border-radius:50%;width:1.45em;height:1.45em;display:inline-flex;align-items:center;justify-content:center;font-size:.8em}
 .la-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;font-size:.72em;line-height:1.55}
 .la-grid .la-h{font-size:1.2em}
+.la-one{grid-template-columns:1fr}
 .la-term{margin-bottom:.5em}.la-term small{color:var(--sub);margin-left:.4em}.la-term p{margin:0}
 .la-hook{font-weight:800;margin:0 0 .4em}
 .la-bubble{background:color-mix(in srgb,var(--bg) 88%,var(--t-implication) 12%);border:1.5px solid var(--t-implication);border-radius:12px 12px 12px 2px;padding:.5em .8em;margin-bottom:.5em}
@@ -721,7 +746,14 @@ export function LessonClassView({
       if (raw) {
         const saved = JSON.parse(raw) as Partial<Settings>;
         const size = typeof saved.size === "number" && saved.size >= 11 && saved.size <= 24 ? saved.size : DEFAULT_SETTINGS.size;
-        setSettings({ ...DEFAULT_SETTINGS, ...saved, size, layers: { ...DEFAULT_SETTINGS.layers, ...(saved.layers ?? {}) } });
+        setSettings({
+          ...DEFAULT_SETTINGS,
+          ...saved,
+          size,
+          layers: { ...DEFAULT_SETTINGS.layers, ...(saved.layers ?? {}) },
+          tsec: { ...ALL_TSEC, ...(saved.tsec ?? {}) },
+          tsecS: { ...DEFAULT_SETTINGS.tsecS, ...(saved.tsecS ?? {}) },
+        });
       }
     } catch {
       /* 기본 */
@@ -838,8 +870,18 @@ export function LessonClassView({
   // ------------------------------------------------ 덩어리 → A4 쪽
   const blocks = useMemo(
     () =>
-      projects.flatMap((p, i) => passageBlocks(p, i, settings.mode, settings.layers, extra[p.id]?.notes ?? null, extra[p.id]?.grammar ?? [])),
-    [projects, settings.mode, settings.layers, extra]
+      projects.flatMap((p, i) =>
+        passageBlocks(
+          p,
+          i,
+          settings.mode,
+          settings.layers,
+          extra[p.id]?.notes ?? null,
+          extra[p.id]?.grammar ?? [],
+          settings.mode === "teacher" ? settings.tsec : settings.tsecS
+        )
+      ),
+    [projects, settings.mode, settings.layers, settings.tsec, settings.tsecS, extra]
   );
   const measureRef = useRef<HTMLDivElement>(null);
   const pagesRef = useRef<HTMLDivElement>(null);
@@ -856,7 +898,7 @@ export function LessonClassView({
       document.fonts.removeEventListener?.("loadingdone", bump);
     };
   }, []);
-  const layoutKey = `${settings.mode}|${settings.size}|${settings.koFont}|${settings.enFont}|${JSON.stringify(settings.layers)}|${blocks.length}|${fontsTick}|${loaded}`;
+  const layoutKey = `${settings.mode}|${settings.size}|${settings.koFont}|${settings.enFont}|${JSON.stringify(settings.layers)}|${JSON.stringify(settings.mode === "teacher" ? settings.tsec : settings.tsecS)}|${blocks.length}|${fontsTick}|${loaded}`;
   const [pages, setPages] = useState<{ key: string; list: number[][] }>({ key: "", list: [] });
   useLayoutEffect(() => {
     const root = measureRef.current;
@@ -906,6 +948,16 @@ export function LessonClassView({
         for (const [lv, cp] of tries) {
           r = set(lv, cp);
           if (!placed.some((q) => hit(q, r))) break;
+        }
+        // 이름표 → 낱말 잇는 선(선생님 2026-11-10 「동반의어가 그 단어랑 선이라도」): 아래층 이름표를 지나가지 않는 자리로
+        const host = el.parentElement?.getBoundingClientRect();
+        if (host) {
+          const scale = main.offsetWidth ? box.width / main.offsetWidth : 1;
+          let x = host.left + Math.min(4, host.width / 2);
+          for (const q of placed) if (q.bottom <= host.top && q.top > r.bottom - 1 && x >= q.left - 2 && x <= q.right + 2) x = q.right + 3;
+          x = Math.min(Math.max(x, host.left + 1), host.right - 1);
+          el.style.setProperty("--tick", `${(x - r.left) / scale}px`);
+          el.style.setProperty("--tickh", `${Math.max(0, host.top - r.bottom + 2) / scale}px`);
         }
         placed.push(r);
       }
@@ -1103,6 +1155,29 @@ export function LessonClassView({
             <input type="checkbox" checked={settings.blankNote} onChange={(e) => update({ blankNote: e.target.checked })} />
             백지노트
           </label>
+          {settings.mode ? (
+            <details className="relative">
+              <summary className="cursor-pointer select-none rounded-md border border-white/30 px-2 py-0.5 font-bold">
+                {settings.mode === "teacher" ? "교사용 해설 항목 ▾" : "학생용에 붙일 정리 ▾"}
+              </summary>
+              <div className="absolute left-0 top-full z-10 mt-1 w-48 space-y-1 rounded-lg bg-white p-2 text-slate-800 shadow-xl">
+                {TSECS.map((t) => (
+                  <label key={t.id} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={(settings.mode === "teacher" ? settings.tsec : settings.tsecS)[t.id]}
+                      onChange={(e) =>
+                        settings.mode === "teacher"
+                          ? update({ tsec: { ...settings.tsec, [t.id]: e.target.checked } })
+                          : update({ tsecS: { ...settings.tsecS, [t.id]: e.target.checked } })
+                      }
+                    />
+                    {t.label}
+                  </label>
+                ))}
+              </div>
+            </details>
+          ) : null}
         </span>
         <span className="ml-auto flex items-center gap-2">
           {missing.length ? (
