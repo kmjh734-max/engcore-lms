@@ -22,6 +22,7 @@ const FEATURES: Record<string, FeatureInfo> = {
   qg_generate_set: { label: "변형문제 1지문 다문항", group: "변형문제", unit: "문항" },
   lesson_analysis_report: { label: "지문 분석서", group: "지문 분석서", unit: "지문" },
   lesson_pack: { label: "수업용 자료", group: "수업자료", unit: "지문" },
+  lesson_teacher_notes: { label: "교사용 수업 해설", group: "수업자료", unit: "지문" },
   lesson_illustration: { label: "지문 삽화", group: "수업자료", unit: "장" },
   /*
    * 아래 셋은 워크북과 1장 테스트지가 함께 쓴다(값도 같다). 어디서 썼는지는

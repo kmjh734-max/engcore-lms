@@ -19,6 +19,7 @@ import type { AnalysisReportData } from "@/lib/lesson-materials/generate-analysi
 import { generateAndSaveLessonPackVocab } from "@/lib/lesson-materials/lesson-pack-vocab";
 import { findPhrase, isOnePageContentFresh, onePageSentences, type OnePageContent } from "@/lib/lesson-materials/one-page";
 import { patchLessonPack } from "@/lib/lesson-materials/patch-lesson-pack";
+import { generateTeacherNotes, teacherNotesSourceHash, type TeacherNotes } from "@/lib/lesson-materials/teacher-notes";
 import { pickKeySentenceIds } from "@/lib/lesson-materials/key-sentences";
 import { generateWorkbookLineTranslation } from "@/lib/lesson-materials/generate-workbook-line-translation";
 import { generateWorkbookWordOrderWriting } from "@/lib/lesson-materials/generate-workbook-word-order-writing";
@@ -826,4 +827,125 @@ export async function loadDrawProjectsAction(
   // 테스트지도 지문은 폴더 차례로(선생님 2026-11-06)
   const ids = await sortProjectIdsByPassageOrder(supabase, picked);
   return { ok: true, projects: await loadBundleExtraProjects(supabase, ids) };
+}
+
+/**
+ * 교사용 수업 화면 해설(선생님 2026-11-10) — 지문 하나에 호출 한 번(teacher-notes.ts). 기능을 켠 학원만.
+ * 값은 지문당 lesson_teacher_notes(500, 마이그레이션 209). 다시 만들면 다시 받는다.
+ */
+const TEACHER_NOTES_FEATURE = "lesson_teacher_notes";
+
+export async function prepareTeacherNotesAction(
+  role: Role,
+  input: { projectId: string; regenerate?: boolean }
+): Promise<{ ok: true; notes: TeacherNotes } | Fail> {
+  const { profile, error } = await requireLessonRole(role);
+  if (error) return { ok: false, message: error };
+  if (!(await isAcademyFeatureOn(createAdminClient(), profile!.academy_id, "lesson_class_view")))
+    return { ok: false, message: "이 학원에서는 아직 쓸 수 없는 기능입니다." };
+  const projectId = String(input.projectId ?? "").trim();
+  if (!projectId) return { ok: false, message: "선택된 지문이 없습니다." };
+  const loaded = await loadProject(role, profile!, projectId);
+  if (!loaded) return { ok: false, message: "지문을 찾을 수 없습니다." };
+  const { supabase, project, items } = loaded;
+  const pack = (project.lesson_pack_json ?? {}) as Partial<LessonPackData>;
+  const sentences = onePageSentences(items.filter((it) => String(it.english_text ?? "").trim()));
+  if (!sentences.length) return { ok: false, message: "지문 문장이 없습니다." };
+  const english = sentences.map((s) => s.english);
+  const saved = pack.teacherNotes;
+  const hash = teacherNotesSourceHash(english);
+  if (!input.regenerate && saved && saved.sourceHash === hash) return { ok: true, notes: saved };
+  const shortfall = await lessonCreditShortfall(profile!.academy_id!, TEACHER_NOTES_FEATURE);
+  if (shortfall) return { ok: false, message: shortfall };
+  try {
+    const { notes } = await withAiUsage(
+      { academyId: profile!.academy_id, actorId: profile!.id, featureKey: TEACHER_NOTES_FEATURE, usedFor: "lesson_teacher_notes", projectId },
+      () => generateTeacherNotes({ sentences: english, korean: sentences.map((s) => s.korean) })
+    );
+    await flushAiUsage();
+    await patchLessonPack(supabase, projectId, pack, { teacherNotes: notes });
+    await debitLessonCredits({
+      academyId: profile!.academy_id!,
+      actorId: profile!.id,
+      featureKey: TEACHER_NOTES_FEATURE,
+      projectId,
+      idempotencyKey: `${TEACHER_NOTES_FEATURE}:${projectId}:${hash}:${notes.createdAt}`,
+      note: `교사용 수업 해설 · ${project.title}`,
+    });
+    return { ok: true, notes };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "교사용 해설을 만들지 못했습니다." };
+  }
+}
+
+/** 수업 화면에 겹칠 문법 번호(분석서 표시에서) — 문장 번호는 0부터, 자리는 그 문장 글자 위치 */
+export type ClassGrammarMark = { si: number; start: number; end: number; no: number; label: string; explanation: string; star: boolean };
+
+/**
+ * 교사용·학생용 수업 화면을 열 때만 읽는 재료: 교사용 해설(지금 원문으로 만든 것만)과 분석서 문법 번호.
+ * 수업용 자료 화면은 무거운 분석서 칸을 읽지 않으므로 따로 둔다.
+ */
+export async function loadClassViewDataAction(
+  role: Role,
+  input: { projectIds: string[] }
+): Promise<{ ok: true; data: Record<string, { notes: TeacherNotes | null; grammar: ClassGrammarMark[] }> } | Fail> {
+  const { profile, error } = await requireLessonRole(role);
+  if (error) return { ok: false, message: error };
+  if (!(await isAcademyFeatureOn(createAdminClient(), profile!.academy_id, "lesson_class_view")))
+    return { ok: false, message: "이 학원에서는 아직 쓸 수 없는 기능입니다." };
+  const ids = [...new Set((input.projectIds ?? []).map(String).filter(Boolean))].slice(0, 80);
+  if (!ids.length) return { ok: true, data: {} };
+  const supabase = await createClient();
+  const [{ data: rows }, { data: items }] = await Promise.all([
+    supabase
+      .from("lesson_material_projects")
+      .select("id, tn:lesson_pack_json->teacherNotes, ar:analysis_report_json->sentences")
+      .in("id", ids)
+      .is("deleted_at", null),
+    supabase
+      .from("lesson_material_items")
+      .select("project_id,english_text,korean_text,order_index")
+      .in("project_id", ids)
+      .order("order_index", { ascending: true }),
+  ]);
+  const out: Record<string, { notes: TeacherNotes | null; grammar: ClassGrammarMark[] }> = {};
+  const squash = (t: string) => t.replace(/\s+/g, " ").trim();
+  const findIn = (t: string, q: string) => {
+    const i = t.indexOf(q);
+    return i >= 0 ? i : t.toLowerCase().indexOf(q.toLowerCase());
+  };
+  for (const r of (rows ?? []) as unknown as Array<{ id: string; tn: TeacherNotes | null; ar: AnalysisReportData["sentences"] | null }>) {
+    const english = onePageSentences((items ?? []).filter((it) => it.project_id === r.id && String(it.english_text ?? "").trim())).map(
+      (s) => s.english
+    );
+    const notes = r.tn && r.tn.sourceHash === teacherNotesSourceHash(english) ? r.tn : null;
+    const marks: Omit<ClassGrammarMark, "no">[] = [];
+    for (const as of r.ar ?? []) {
+      const m = as.markup;
+      if (!m?.points?.length) continue;
+      const own = english.findIndex((e) => squash(e) === squash(m.text));
+      for (const pt of m.points) {
+        const q = m.text.slice(pt.span.start, pt.span.end).trim();
+        if (!q) continue;
+        let si = own;
+        let at = si >= 0 ? findIn(english[si]!, q) : -1;
+        if (at < 0) {
+          si = english.findIndex((e) => findIn(e, q) >= 0);
+          at = si >= 0 ? findIn(english[si]!, q) : -1;
+        }
+        if (at < 0) continue;
+        marks.push({ si, start: at, end: at + q.length, label: pt.label, explanation: pt.explanation, star: pt.star === true });
+      }
+    }
+    // 중요한 문법만(선생님 2026-11-10): 문장마다 ★ 먼저, 없으면 첫 번째 — 문장당 2개까지
+    const picked: typeof marks = [];
+    for (const si of [...new Set(marks.map((m) => m.si))]) {
+      const own = marks.filter((m) => m.si === si);
+      const stars = own.filter((m) => m.star);
+      picked.push(...(stars.length ? stars : own).slice(0, 2));
+    }
+    picked.sort((a, b) => a.si - b.si || a.start - b.start);
+    out[r.id] = { notes, grammar: picked.map((g, i) => ({ ...g, no: i + 1 })) };
+  }
+  return { ok: true, data: out };
 }

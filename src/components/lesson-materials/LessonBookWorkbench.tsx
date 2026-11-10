@@ -37,6 +37,7 @@ import { TRANSLATION_MODES, VocabExamControls, VocabExamRangeControls } from "@/
 import { MaterialDesignPicker } from "@/components/lesson-materials/MaterialDesignPicker";
 import { useMaterialDesign, type MaterialDesign } from "@/lib/lesson-materials/material-design";
 import { RegenMaterials, type RegenPart } from "@/components/lesson-materials/test-book/LessonPackExtras";
+import { LessonClassView } from "@/components/lesson-materials/LessonClassView";
 
 type LoadResult = Awaited<ReturnType<typeof loadDrawProjectsAction>>;
 type PrepareResult = Awaited<ReturnType<typeof prepareWorkbookExtrasAction>>;
@@ -69,6 +70,7 @@ export function LessonBookWorkbench({
   embedded = false,
   design,
   savedOptions = null,
+  classView = false,
 }: {
   role: "admin" | "teacher";
   projects: TestBookProjectInput[];
@@ -80,6 +82,8 @@ export function LessonBookWorkbench({
   design?: MaterialDesign;
   /** 파일에 저장된 설정(있으면 브라우저 기억보다 먼저) */
   savedOptions?: Partial<LessonBookOptions> | null;
+  /** 교사용·학생용 수업 화면을 켠 학원(lesson_class_view) */
+  classView?: boolean;
 }) {
   const base = role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials";
   const ids = initialProjects.map((p) => p.id);
@@ -330,6 +334,7 @@ export function LessonBookWorkbench({
   // 최종통합자료 안(embedded)에서는 통합자료가 한 번에 만든다 — 여기서도 돌면 가려진 채로 빈 PDF를 만들어 서버 일만 늘었다(2026-11-10)
   usePdfPrefetch("lesson-pack-print-root", PDF_SELECTOR, { enabled: !embedded });
   const [zoom, setZoom] = useState(70);
+  const [classOpen, setClassOpen] = useState(false);
 
   if (embedded) return sheets;
 
@@ -472,6 +477,15 @@ export function LessonBookWorkbench({
         </div>
 
         <div className="space-y-2 border-t border-slate-100 p-4">
+          {classView ? (
+            <button
+              type="button"
+              onClick={() => setClassOpen(true)}
+              className="w-full rounded-xl bg-emerald-700 py-3 text-sm font-bold text-white hover:bg-emerald-800"
+            >
+              교사용·학생용 수업 화면
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={() => window.print()}
@@ -520,6 +534,14 @@ export function LessonBookWorkbench({
           </div>
         </div>
       </main>
+      {classView && classOpen ? (
+        <LessonClassView
+          role={role}
+          projects={projects}
+          title={docName ?? ready[0]?.title ?? "수업용 자료"}
+          onClose={() => setClassOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }

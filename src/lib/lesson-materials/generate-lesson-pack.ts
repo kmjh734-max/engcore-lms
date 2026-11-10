@@ -49,6 +49,8 @@ export type LessonPackData = {
    * 적어도 열 때마다 다시 만들지 않는다(예전에는 열 때마다 다시 만들어 고친 내용을 덮었다).
    */
   vocabAntonymChecked?: boolean;
+  /** 교사용 수업 화면 해설(teacher-notes.ts, 2026-11-10) */
+  teacherNotes?: import("@/lib/lesson-materials/teacher-notes").TeacherNotes | null;
 };
 
 function parseJsonSafe<T>(text: string): T | null {

@@ -1,3 +1,6 @@
+import { getCurrentProfile } from "@/lib/auth/get-profile";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isAcademyFeatureOn } from "@/lib/academies/features";
 import { createClient } from "@/lib/supabase/server";
 import { resolveDocumentProjectIds } from "@/lib/lesson-materials/document-page";
 import { LessonBookWorkbench } from "@/components/lesson-materials/LessonBookWorkbench";
@@ -40,5 +43,17 @@ export default async function TeacherLessonPackPage({
     : { data: null };
   const savedOptions = normalizeLessonBookOptions((doc as { opts?: unknown } | null)?.opts);
 
-  return <LessonBookWorkbench role="teacher" projects={projects} savedOptions={savedOptions} logoSrc={branding.logoUrl} academyName={branding.name || ""} />;
+  // 교사용·학생용 수업 화면(정수학원 먼저, 2026-11-10)
+  const profile = await getCurrentProfile();
+  const classView = await isAcademyFeatureOn(createAdminClient(), profile?.academy_id, "lesson_class_view");
+  return (
+    <LessonBookWorkbench
+      role="teacher"
+      projects={projects}
+      savedOptions={savedOptions}
+      logoSrc={branding.logoUrl}
+      academyName={branding.name || ""}
+      classView={classView}
+    />
+  );
 }

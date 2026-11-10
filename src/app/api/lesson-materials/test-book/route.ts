@@ -5,6 +5,8 @@ import {
   prepareWorkbookExtrasAction,
   loadDrawProjectsAction,
   prepareTestBookPassageAction,
+  prepareTeacherNotesAction,
+  loadClassViewDataAction,
   registerTestBookVocabAction,
   saveTestBookOptionsAction,
 } from "@/lib/lesson-materials/test-book-actions";
@@ -46,6 +48,16 @@ export async function POST(request: Request) {
           projectIds: Array.isArray(body.projectIds) ? body.projectIds.map(String) : [],
           lessonTab: body.lessonTab === true,
         })
+      );
+    }
+    if (body.op === "teacherNotes") {
+      return NextResponse.json(
+        await prepareTeacherNotesAction(role, { projectId: String(body.projectId ?? ""), regenerate: body.forceRegenerate === true })
+      );
+    }
+    if (body.op === "classData") {
+      return NextResponse.json(
+        await loadClassViewDataAction(role, { projectIds: Array.isArray(body.projectIds) ? body.projectIds.map(String) : [] })
       );
     }
     if (body.op === "loadDraw") {
