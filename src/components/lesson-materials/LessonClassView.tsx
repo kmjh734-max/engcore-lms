@@ -239,28 +239,48 @@ function passageBlocks(
       </div>
     ),
   });
+  // 문장마다 한 줄: 왼쪽(3) 영어 · 해석 · 쉽게 말하면 · 그 문장의 출제 예상 자리, 오른쪽(1) 그 문장의 문법 설명
   p.sentences.forEach((s, si) => {
     const easy = layers.easy ? notes?.easy.find((e) => e.sentence === si) : undefined;
+    const own = grammar.filter((m) => m.si === si);
+    const ownSpots = spots.filter((m) => m.si === si);
     out.push({
       key: k(`s${si}`),
       node: (
-        <div className="lc-sent">
-          <p className="lc-en">
-            <span className="lc-sn">{si + 1}</span>
-            <SentenceLine
-              text={s.english}
-              grammar={grammar.filter((m) => m.si === si)}
-              vocab={vocab.filter((m) => m.si === si)}
-              spots={spots.filter((m) => m.si === si)}
-              layers={layers}
-            />
-          </p>
-          {layers.ko && teacher && s.korean ? <p className="lc-ko">{s.korean}</p> : null}
-          {easy ? (
-            <p className="lc-easy">
-              <b>쉽게 말하면</b> {easy.text}
+        <div className="lc-row2">
+          <div className="lc-main">
+            <p className="lc-en">
+              <span className="lc-sn">{si + 1}</span>
+              <SentenceLine text={s.english} grammar={own} vocab={vocab.filter((m) => m.si === si)} spots={ownSpots} layers={layers} />
             </p>
-          ) : null}
+            {layers.ko && teacher && s.korean ? <p className="lc-ko">{s.korean}</p> : null}
+            {easy ? (
+              <p className="lc-easy">
+                <b>쉽게 말하면</b> {easy.text}
+              </p>
+            ) : null}
+            {layers.spots && ownSpots.length ? (
+              <div className="lc-spots">
+                {ownSpots.map((m, i) => (
+                  <p key={i}>
+                    <span className={`lc-tag lc-tag-${m.kind}`}>{SPOT_LABEL[m.kind]}</span> <b>{m.q}</b>
+                    {m.note ? <> — {teacher || m.kind === "blank" || m.kind === "insert" ? m.note : blank}</> : null}
+                  </p>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <div className="lc-aside">
+            {layers.grammar
+              ? own.map((m) => (
+                  <p key={m.no}>
+                    <span className="lc-gn2">{CIRCLED[m.no - 1] ?? `(${m.no})`}</span> <b>{m.label}</b>
+                    <br />
+                    {teacher ? m.explanation : <span className="lc-blank lc-blank-s" />}
+                  </p>
+                ))
+              : null}
+          </div>
         </div>
       ),
     });
@@ -271,21 +291,7 @@ function passageBlocks(
     for (const it of items) out.push({ key: k(`${key}-${it.key}`), node: <div className="lc-item">{it.node}</div> });
   };
 
-  // 지문 아래: 출제 예상 자리 · 글의 흐름 · 문법 포인트
-  if (layers.spots)
-    section(
-      "spots",
-      "출제 예상 자리",
-      spots.map((m, i) => ({
-        key: String(i),
-        node: (
-          <>
-            <span className={`lc-tag lc-tag-${m.kind}`}>{SPOT_LABEL[m.kind]}</span> <b>{m.q}</b>
-            {m.note ? <> — {teacher || m.kind === "blank" || m.kind === "insert" ? m.note : blank}</> : null}
-          </>
-        ),
-      }))
-    );
+  // 지문 끝: 글의 흐름(가로)
   if (layers.side && notes?.flow.length) {
     out.push({ key: k("flow-h"), keepNext: true, node: <h3 className="lc-sec">글의 흐름</h3> });
     out.push({
@@ -313,25 +319,23 @@ function passageBlocks(
       ),
     });
   }
-  if (layers.grammar)
-    section(
-      "grammar",
-      "문법 포인트",
-      grammar.map((m) => ({
-        key: String(m.no),
-        node: (
-          <>
-            <span className="lc-gn2">{CIRCLED[m.no - 1] ?? `(${m.no})`}</span> <b>{m.label}</b>
-            {teacher ? <span> — {m.explanation}</span> : <> — {blank}</>}
-          </>
-        ),
-      }))
-    );
 
   if (!teacher || !notes) return out;
 
-  // 교사용 해설 8칸
-  out.push({ key: k("t-h"), keepNext: true, node: <h2 className="lc-h2">교사용 해설</h2> });
+  // 교사용 해설 8칸 — 새 쪽에서(선생님 2026-11-10 「별도 페이지에 깔끔하게」)
+  out.push({
+    key: k("t-h"),
+    newPage: true,
+    keepNext: true,
+    node: (
+      <div className="lc-thead">
+        <span>교사용 해설</span>
+        <b>
+          {String(index + 1).padStart(2, "0")} · {notes.title.en || p.title}
+        </b>
+      </div>
+    ),
+  });
   const t = (key: string, title: string, items: ReactNode[]) =>
     section(
       key,
@@ -539,7 +543,17 @@ const CSS = `
 .lc-headblock{padding-bottom:3mm}
 .lc-h1{font-size:1.35em;font-weight:800;margin:0;line-height:1.3}
 .lc-meta{color:var(--sub);font-size:.72em;margin:2px 0 0}
-.lc-sent{padding-top:.85em}
+.lc-row2{display:grid;grid-template-columns:3fr 1fr;gap:0 4mm;padding-top:.85em}
+.lc-main{min-width:0}
+.lc-aside{font-size:.6em;line-height:1.5;border-left:1px dashed var(--line);padding:1.1em 0 0 2.5mm;color:var(--ink)}
+.lc-aside p{margin:0 0 .5em}
+.lc-spots{font-size:.64em;line-height:1.5;margin:.3em 0 0 1.6em}
+.lc-spots p{margin:.15em 0}
+.lc-blank-s{min-width:100%;display:block;margin-top:.9em}
+.lc-thead{display:flex;align-items:baseline;gap:.8em;padding:.6em .9em;border-radius:8px;background:color-mix(in srgb,var(--bg) 80%,var(--head) 20%);margin-bottom:.2em}
+.lc-thead span{font-size:1.05em;font-weight:800;color:var(--head)}
+.lc-thead b{font-size:.8em}
+.lc-sec-t{border-bottom:none;border-left:4px solid var(--head);padding:1em 0 .3em .6em;margin-top:.4em}
 .lc-en{font-family:var(--fe,var(--ff));font-size:1em;line-height:2.25;margin:0;text-shadow:var(--shadow)}
 .lc-sn{display:inline-block;min-width:1.4em;color:var(--sub);font-size:.62em;font-weight:800}
 .lc-ko{font-size:.68em;color:var(--sub);margin:0 0 .2em 1.6em;line-height:1.55}
@@ -568,7 +582,6 @@ const CSS = `
 .lc-fstep{display:flex;align-items:center}
 .lc-farr{color:var(--sub);padding:0 .35em;font-weight:800}
 .lc-fbox{border:1.5px solid var(--line);border-radius:8px;padding:.35em .6em;background:var(--panel);text-align:center;max-width:15em}
-.lc-h2{margin:0;padding:1.6em 0 0;font-size:1.05em;font-weight:800}
 .lc-sec-t{color:var(--head)}
 .lc-script{border-left:4px solid var(--t-implication);padding:.3em .8em !important;background:color-mix(in srgb,var(--bg) 88%,var(--t-implication) 12%);border-radius:0 6px 6px 0}
 .lc-dim{color:var(--sub)}
@@ -690,6 +703,8 @@ export function LessonClassView({
     [projects, settings.mode, settings.layers, extra]
   );
   const measureRef = useRef<HTMLDivElement>(null);
+  const pagesRef = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(100);
   const [fontsTick, setFontsTick] = useState(0);
   useEffect(() => {
     if (typeof document === "undefined" || !document.fonts) return;
@@ -712,6 +727,20 @@ export function LessonClassView({
     setPages({ key: layoutKey, list: paginate(heights, blocks) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, extra]);
+  // 동반의어 이름표가 지문 칸 오른쪽을 넘으면 낱말 오른쪽 끝에 맞춘다(옆 설명 칸·쪽 밖으로 나가지 않게)
+  useLayoutEffect(() => {
+    const root = pagesRef.current;
+    if (!root) return;
+    root.querySelectorAll<HTMLElement>(".lc-vl").forEach((el) => {
+      el.style.left = "";
+      el.style.right = "";
+      const box = el.closest(".lc-main")?.getBoundingClientRect();
+      if (box && el.getBoundingClientRect().right > box.right + 1) {
+        el.style.left = "auto";
+        el.style.right = "0";
+      }
+    });
+  }, [pages, zoom]);
   const firstPageOf = useMemo(() => {
     const m = new Map<number, number>();
     pages.list.forEach((pg, pi) => {
@@ -723,7 +752,6 @@ export function LessonClassView({
 
   // ------------------------------------------------ PDF — 화면의 쪽을 그대로
   const pdf = usePdfSave();
-  const pagesRef = useRef<HTMLDivElement>(null);
   const [pendingPdf, setPendingPdf] = useState<Mode | null>(null);
   useEffect(() => {
     if (!pendingPdf || settings.mode !== pendingPdf || pages.key !== layoutKey) return;
@@ -739,7 +767,6 @@ export function LessonClassView({
     setPendingPdf(mode);
   };
 
-  const [zoom, setZoom] = useState(100);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [cur, setCur] = useState(0);
   const goPassage = (i: number) => {
