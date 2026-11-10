@@ -28,7 +28,7 @@ export type TeacherNotes = {
   /** 지문 위 출제 자리 — q는 그 문장에 그대로 있는 어구 */
   spots: Array<{ sentence: number; q: string; kind: TeacherSpotKind; note: string }>;
   /** 지문 아래 문법 한 줄 요약(문법 해설지처럼) — 분석서 문법 자리(q·label)마다 */
-  grammarShort?: Array<{ q: string; label: string; text: string }>;
+  grammarShort?: Array<{ q: string; label: string; text: string; term?: string }>;
   sourceHash: string;
   model: string;
   createdAt: string;
@@ -271,19 +271,18 @@ export async function generateTeacherNotes(input: {
   throw new Error(`교사용 해설 만들기 실패: ${lastErr}`);
 }
 
-const GRAMMAR_SHORT_SYSTEM = `너는 고등학교 영어 문법 해설지를 쓰는 강사다. 각 문법 자리를 해설지 한 줄로 요약한다.
-- 한 줄 25~45자 안팎. "형태/규칙 → 이 문장에서의 이유" 꼴로, 군더더기 없이.
-- 예: "have been p.p. = 완료 수동: 사업이 '추진되는' 대상, 지금까지 이어짐"
-- 예: "rise(자동사) vs raise(타동사): 뒤에 목적어 없음 → rise"
-- 예: "목적격 관계대명사 생략: the one (that) they left"
+const GRAMMAR_SHORT_SYSTEM = `너는 고등학교 영어 문법 해설지를 쓰는 강사다. 각 문법 자리마다 정확한 문법 용어와 설명을 쓴다(선생님 2026-11-10 「정확한 문법 표현을 쓴 다음에 설명」).
+- term: 교과서·천일문식 정확한 문법 용어(예: "현재완료 수동태", "목적격 관계대명사 생략", "결과의 분사구문", "5형식 수동태(목적격보어 to부정사)", "자동사 rise vs 타동사 raise"). 받은 이름표보다 정확하면 바꿔 쓴다.
+- text: 이 문장에서 왜 그 형태인지 1~2문장(40~90자). 형태 규칙 → 이 문장의 근거 순서로. 학생이 읽고 바로 이해하게.
+- 예: {"term":"현재완료 수동태","text":"have been p.p. 꼴. 주어 projects가 '추진되는' 대상이라 수동태, 과거부터 지금까지 이어진 일이라 현재완료를 쓴다."}
 - 설명에 없는 내용을 보태지 않는다. 받은 순서 그대로 같은 개수.
-JSON {"items": ["…", "…"]} 하나만 돌려준다.`;
+JSON {"items": [{"term":"…","text":"…"}, …]} 하나만 돌려준다.`;
 
 /** 분석서 문법 설명(길다)을 해설지 한 줄로 — 호출 한 번, 출력 수백 토큰 */
 export async function generateGrammarShort(
   points: Array<{ sentence: string; q: string; label: string; explanation: string }>,
   model = TEACHER_NOTES_MODEL
-): Promise<string[]> {
+): Promise<Array<{ term: string; text: string }>> {
   if (!points.length) return [];
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY 없음");
@@ -302,7 +301,7 @@ export async function generateGrammarShort(
         ],
         response_format: { type: "json_object" },
         reasoning_effort: "low",
-        max_completion_tokens: 4000,
+        max_completion_tokens: 6000,
         prompt_cache_key: "teacher-notes-grammar",
       }),
     });
@@ -317,7 +316,11 @@ export async function generateGrammarShort(
     try {
       const items = (JSON.parse(json.choices[0]?.message?.content ?? "") as { items?: unknown }).items;
       if (Array.isArray(items)) {
-        const out = items.map((x) => String(x ?? "").trim());
+        const out = items.map((x, i) =>
+          x && typeof x === "object"
+            ? { term: String((x as { term?: unknown }).term ?? "").trim() || points[i]!.label, text: String((x as { text?: unknown }).text ?? "").trim() }
+            : { term: points[i]?.label ?? "", text: String(x ?? "").trim() }
+        );
         if (out.length === points.length) return out;
       }
     } catch {

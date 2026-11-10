@@ -872,8 +872,9 @@ export async function prepareTeacherNotesAction(
         const marks = pickClassGrammar(english, ((project.analysis_report_json as AnalysisReportData | null)?.sentences ?? []));
         const texts = await generateGrammarShort(
           marks.map((m) => ({ sentence: english[m.si] ?? "", q: m.q, label: m.label, explanation: m.explanation }))
-        ).catch(() => [] as string[]);
-        if (texts.length) made.notes.grammarShort = marks.map((m, i) => ({ q: m.q, label: m.label, text: texts[i] ?? "" }));
+        ).catch(() => [] as Array<{ term: string; text: string }>);
+        if (texts.length)
+          made.notes.grammarShort = marks.map((m, i) => ({ q: m.q, label: m.label, term: texts[i]?.term ?? m.label, text: texts[i]?.text ?? "" }));
         return made;
       }
     );
@@ -905,15 +906,17 @@ export type ClassGrammarMark = {
   star: boolean;
   /** 해설지 한 줄 요약(교사용 해설을 만들 때 같이 만든다) */
   short: string;
+  /** 정확한 문법 용어(없으면 분석서 이름표) */
+  term: string;
 };
 /** 분석서 문법 표시에서 수업 화면에 겹칠 자리를 고른다 — 문장마다 ★ 먼저, 없으면 첫 번째, 문장당 2개(선생님 2026-11-10 「중요한 문법」) */
-function pickClassGrammar(english: string[], analysisSentences: AnalysisReportData["sentences"]): Omit<ClassGrammarMark, "no" | "short">[] {
+function pickClassGrammar(english: string[], analysisSentences: AnalysisReportData["sentences"]): Omit<ClassGrammarMark, "no" | "short" | "term">[] {
   const squash = (t: string) => t.replace(/\s+/g, " ").trim();
   const findIn = (t: string, q: string) => {
     const i = t.indexOf(q);
     return i >= 0 ? i : t.toLowerCase().indexOf(q.toLowerCase());
   };
-    const marks: Omit<ClassGrammarMark, "no" | "short">[] = [];
+    const marks: Omit<ClassGrammarMark, "no" | "short" | "term">[] = [];
     for (const as of analysisSentences) {
       const m = as.markup;
       if (!m?.points?.length) continue;
@@ -977,8 +980,16 @@ export async function loadClassViewDataAction(
     );
     const notes = r.tn && r.tn.sourceHash === teacherNotesSourceHash(english) ? r.tn : null;
     const picked = pickClassGrammar(english, r.ar ?? []);
-    const short = new Map((notes?.grammarShort ?? []).map((g) => [`${g.label}|${g.q}`, g.text] as const));
-    out[r.id] = { notes, grammar: picked.map((g, i) => ({ ...g, no: i + 1, short: short.get(`${g.label}|${g.q}`) ?? "" })) };
+    const short = new Map((notes?.grammarShort ?? []).map((g) => [`${g.label}|${g.q}`, g] as const));
+    out[r.id] = {
+      notes,
+      grammar: picked.map((g, i) => {
+        const s = short.get(`${g.label}|${g.q}`);
+        // 요약이 없으면 분석서 설명 앞 두 문장
+        const fallback = g.explanation.split(/(?<=[.다])\s+/).slice(0, 2).join(" ");
+        return { ...g, no: i + 1, term: s?.term || g.label, short: s?.text || fallback };
+      }),
+    };
   }
   return { ok: true, data: out };
 }

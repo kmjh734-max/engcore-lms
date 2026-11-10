@@ -115,16 +115,29 @@ function findIn(sentence: string, q: string): number {
   return sentence.toLowerCase().indexOf(q.toLowerCase());
 }
 
-function vocabMarks(p: TestBookProjectInput): VocabMark[] {
+/**
+ * 지문 위 동반의어 — 내용상 중요한 낱말·표현에만(선생님 2026-11-10 「marine에 동반의어는 필요 없잖아」).
+ * 교사용 해설의 핵심 어휘(글의 논리에 중요한 B2~C1, 문맥상 동의어)를 쓰고, 반의어는 단어 정리에 있으면 가져온다.
+ * 해설이 아직 없으면 단어 정리의 ★핵심어만.
+ */
+function vocabMarks(p: TestBookProjectInput, notes: TeacherNotes | null): VocabMark[] {
   const out: VocabMark[] = [];
   const taken = new Set<string>();
-  for (const v of p.material?.vocab ?? []) {
-    const syn = v.synonyms.filter(Boolean).slice(0, 3);
-    const ant = v.antonyms.filter(Boolean).slice(0, 3);
+  const rows = p.material?.vocab ?? [];
+  const antOf = (w: string) => rows.find((r) => r.word.trim().toLowerCase() === w.trim().toLowerCase())?.antonyms ?? [];
+  const source = notes?.vocab.length
+    ? notes.vocab.map((v) => ({ word: v.word, syn: v.synonyms, ant: antOf(v.word) }))
+    : rows.filter((r) => r.key).map((r) => ({ word: r.word, syn: r.synonyms, ant: r.antonyms }));
+  for (const v of source) {
+    const syn = v.syn.filter(Boolean).slice(0, 3);
+    const ant = v.ant.filter(Boolean).slice(0, 3);
     if (!syn.length && !ant.length) continue;
     const word = v.word.trim();
-    if (!word || word.includes(" ") || taken.has(word.toLowerCase())) continue;
-    const re = new RegExp(`\\b${escapeRe(word)}(s|es|d|ed|ing|ly)?\\b`, "i");
+    if (!word || taken.has(word.toLowerCase())) continue;
+    // 낱말이면 굴절형까지(promote → promoted), 어구면 그대로
+    const re = word.includes(" ")
+      ? new RegExp(`\\b${escapeRe(word)}\\b`, "i")
+      : new RegExp(`\\b${escapeRe(word.replace(/(e|s|ed|ing)$/i, ""))}[a-z]{0,4}\\b`, "i");
     for (let si = 0; si < p.sentences.length; si++) {
       const m = re.exec(p.sentences[si]!.english);
       if (m) {
@@ -134,6 +147,7 @@ function vocabMarks(p: TestBookProjectInput): VocabMark[] {
       }
     }
   }
+  out.sort((a, b) => a.si - b.si || a.start - b.start);
   // 겹침은 그린 뒤 실제 위치로 고친다(LessonClassView 의 useLayoutEffect)
   return out;
 }
@@ -241,7 +255,7 @@ function passageBlocks(
   tsec: Record<TSec, boolean> = ALL_TSEC
 ): Block[] {
   const teacher = mode === "teacher";
-  const vocab = vocabMarks(p);
+  const vocab = vocabMarks(p, notes);
   const spots = spotMarks(p, notes);
   const blank = <span className="lc-blank" />;
   const k = (s: string) => `${p.id}:${s}`;
@@ -292,18 +306,9 @@ function passageBlocks(
               <div className="lc-glines">
                 {own.map((m) => (
                   <p key={m.no}>
-                    <span className="lc-gn2">{CIRCLED[m.no - 1] ?? `(${m.no})`}</span>{" "}
-                    {teacher ? (
-                      m.short || (
-                        <>
-                          <b>{m.label}</b> {m.q}
-                        </>
-                      )
-                    ) : (
-                      <>
-                        <b>{m.label}</b> {blank}
-                      </>
-                    )}
+                    <span className="lc-gn2">{CIRCLED[m.no - 1] ?? `(${m.no})`}</span> <b className="lc-gterm">{m.term || m.label}</b>{" "}
+                    <span className="lc-gq">{m.q.length > 48 ? `${m.q.slice(0, 46)}…` : m.q}</span>
+                    {teacher ? (m.short ? <span className="lc-gx"> — {m.short}</span> : null) : <> — {blank}</>}
                   </p>
                 ))}
               </div>
@@ -633,7 +638,9 @@ const CSS = `
 .lc-aeasy{border-left:3px solid var(--easy);padding:.2em 0 .2em .55em;background:color-mix(in srgb,var(--bg) 86%,var(--easy) 14%);border-radius:0 6px 6px 0}
 .lc-aeasy b{color:var(--easy)}
 .lc-glines{font-size:.64em;line-height:1.5;margin:.25em 0 0 1.6em}
-.lc-glines p{margin:.1em 0}
+.lc-glines p{margin:.15em 0}
+.lc-gterm{color:var(--head)}
+.lc-gq{font-style:italic;color:var(--sub)}
 .lc-spots{font-size:.64em;line-height:1.5;margin:.3em 0 0 1.6em}
 .lc-spots p{margin:.15em 0}
 .lc-blank-s{min-width:100%;display:block;margin-top:.9em}
