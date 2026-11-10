@@ -1,4 +1,6 @@
 import { openAiFetch } from "@/lib/ai-usage/openai-fetch";
+import { isUsableAntonym } from "@/lib/lesson-materials/teacher-notes-shared";
+export { isUsableAntonym };
 
 /**
  * 교사용 수업자료 해설(선생님 2026-11-10, 정수학원 먼저).
@@ -29,6 +31,8 @@ export type TeacherNotes = {
   spots: Array<{ sentence: number; q: string; kind: TeacherSpotKind; note: string }>;
   /** 지문 아래 문법 한 줄 요약(문법 해설지처럼) — 분석서 문법 자리(q·label)마다 */
   grammarShort?: Array<{ q: string; label: string; text: string; term?: string }>;
+  /** 지문 위 동반의어(5~7개, 문맥 동의어·반의어) — 없으면 vocab에서 */
+  keyVocab?: KeyVocab[];
   sourceHash: string;
   model: string;
   createdAt: string;
@@ -329,3 +333,87 @@ export async function generateGrammarShort(
   }
   return [];
 }
+
+/** 지문 위 동반의어용 핵심 어휘(선생님 2026-11-11 「동반의어 개선」): 고르기·문맥 동의어·반의어를 한 번에 */
+export type KeyVocab = { word: string; synonyms: string[]; antonym: string };
+
+const KEY_VOCAB_SYSTEM = `너는 고1 내신·수능 영어 강사다. 지문과 후보 어휘를 받아, 지문 위에 동반의어를 달 낱말·어구를 고르고 동의어·반의어를 단다.
+
+고르기(5~7개)
+- 주제·논리 전개의 핵심어이거나, 패러프레이징(바꿔 쓰기)·어휘 추론 문제로 나올 만한 낱말·어구만.
+- 빼는 것: 쉬운 말(중학 필수 수준 이하: under, vast, buy, often, reach 등), 고유명사·전문 명칭·학문 용어(marine, oceanographer, orbit, organic, millennia 등), 동의어로 바꿔 외울 필요가 없는 말.
+- 후보에 없어도 지문에 있으면 골라도 된다. word는 지문에 나온 꼴 그대로(대소문자·굴절 포함).
+
+동의어(synonyms)
+- 기본 2개, 꼭 필요할 때만 3개. 그 문장의 그 자리에 넣어도 뜻과 어법이 그대로인 것만(품사·시제·수·뒤에 오는 전치사까지 맞춘다).
+- 수준은 원래 낱말과 비슷하거나 쉬운 것, 수능·내신 패러프레이징에 실제로 쓰이는 말. 너무 쉬운 말(use, give, change, good, together)·희귀어(enigma, intricacy 등)·사전 뜻만 비슷하고 이 문맥에선 뜻이 바뀌는 말은 금지. 어구 가능.
+- 예: "projects have been promoted as improving ~"의 promoted → presented, advertised (encouraged·supported는 틀림)
+- 예: "afford the rent"의 afford → pay for, manage to pay (finance는 틀림)
+
+반의어(antonym)
+- 이 문맥에서 반대 뜻이 분명하고 학습에 쓸모 있을 때만 1개, 아니면 "".
+- 한 낱말이나 굳은 표현만. 'fail to ~', 'not ~', 'remain ~', 'stay ~'처럼 부정·동사구로 만든 표현, 네 낱말 이상은 쓰지 않는다(없으면 "").
+
+JSON {"items":[{"word":"…","synonyms":["…","…"],"antonym":"…"}]} 하나만 돌려준다.`;
+
+export async function generateKeyVocab(input: {
+  sentences: string[];
+  candidates: Array<{ word: string; meaning: string }>;
+  model?: string;
+}): Promise<KeyVocab[]> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OPENAI_API_KEY 없음");
+  const user = `[지문]\n${input.sentences.map((s, i) => `${i + 1}. ${s}`).join("\n")}\n\n[후보 어휘]\n${input.candidates
+    .map((c) => `- ${c.word}: ${c.meaning}`)
+    .join("\n")}`;
+  const passage = input.sentences.join(" ").toLowerCase();
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await openAiFetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: input.model ?? TEACHER_NOTES_MODEL,
+        messages: [
+          { role: "system", content: KEY_VOCAB_SYSTEM },
+          { role: "user", content: user },
+        ],
+        response_format: { type: "json_object" },
+        reasoning_effort: "low",
+        max_completion_tokens: 4000,
+        prompt_cache_key: "teacher-notes-keyvocab",
+      }),
+    });
+    if (!res.ok) {
+      if (res.status >= 500 || res.status === 429) {
+        await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+        continue;
+      }
+      throw new Error(`핵심 어휘 실패: ${(await res.text()).slice(0, 200)}`);
+    }
+    const json = (await res.json()) as { choices: Array<{ message: { content: string } }> };
+    try {
+      const items = (JSON.parse(json.choices[0]?.message?.content ?? "") as { items?: unknown }).items;
+      if (!Array.isArray(items)) continue;
+      const out: KeyVocab[] = [];
+      for (const x of items) {
+        const o = (x ?? {}) as { word?: unknown; synonyms?: unknown; antonym?: unknown };
+        const word = String(o.word ?? "").trim();
+        const lw = word.toLowerCase();
+        // 지문에 있는 말만(굴절형은 앞부분으로)
+        if (!word || (!passage.includes(lw) && !passage.includes(lw.slice(0, Math.max(4, lw.length - 3))))) continue;
+        const synonyms = (Array.isArray(o.synonyms) ? o.synonyms : [])
+          .map((s) => String(s ?? "").trim())
+          .filter((s) => s && s.toLowerCase() !== lw && !s.toLowerCase().includes(lw))
+          .slice(0, 3);
+        const antonym = String(o.antonym ?? "").trim();
+        if (!synonyms.length && !antonym) continue;
+        out.push({ word, synonyms, antonym: antonym.toLowerCase() === lw || !isUsableAntonym(antonym) ? "" : antonym });
+      }
+      if (out.length) return out.slice(0, 8);
+    } catch {
+      /* 다시 */
+    }
+  }
+  return [];
+}
+

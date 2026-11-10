@@ -7,6 +7,7 @@ import { usePdfSave } from "@/components/pdf/usePdfSave";
 import { collectPrintPages } from "@/lib/pdf/download-sheets-pdf";
 import type { TestBookProjectInput } from "@/lib/lesson-materials/test-book";
 import type { TeacherNotes, TeacherSpotKind } from "@/lib/lesson-materials/teacher-notes";
+import { isUsableAntonym } from "@/lib/lesson-materials/teacher-notes-shared";
 import type { ClassGrammarMark } from "@/lib/lesson-materials/test-book-actions";
 import { BlankNoteSheets, TEST_BOOK_CSS, TEST_BOOK_FONTS_HREF, TestBookBrand, partStyle } from "@/components/lesson-materials/test-book/TestBookSheets";
 
@@ -125,7 +126,9 @@ function vocabMarks(p: TestBookProjectInput, notes: TeacherNotes | null): VocabM
   const taken = new Set<string>();
   const rows = p.material?.vocab ?? [];
   const antOf = (w: string) => rows.find((r) => r.word.trim().toLowerCase() === w.trim().toLowerCase())?.antonyms ?? [];
-  const source = notes?.vocab.length
+  const source = notes?.keyVocab?.length
+    ? notes.keyVocab.map((v) => ({ word: v.word, syn: v.synonyms, ant: v.antonym && isUsableAntonym(v.antonym) ? [v.antonym] : [] }))
+    : notes?.vocab.length
     ? notes.vocab.map((v) => ({ word: v.word, syn: v.synonyms, ant: antOf(v.word) }))
     : rows.filter((r) => r.key).map((r) => ({ word: r.word, syn: r.synonyms, ant: r.antonyms }));
   for (const v of source) {

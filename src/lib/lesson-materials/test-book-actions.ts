@@ -19,7 +19,7 @@ import type { AnalysisReportData } from "@/lib/lesson-materials/generate-analysi
 import { generateAndSaveLessonPackVocab } from "@/lib/lesson-materials/lesson-pack-vocab";
 import { findPhrase, isOnePageContentFresh, onePageSentences, type OnePageContent } from "@/lib/lesson-materials/one-page";
 import { patchLessonPack } from "@/lib/lesson-materials/patch-lesson-pack";
-import { generateGrammarShort, generateTeacherNotes, teacherNotesSourceHash, type TeacherNotes } from "@/lib/lesson-materials/teacher-notes";
+import { generateGrammarShort, generateKeyVocab, generateTeacherNotes, teacherNotesSourceHash, type TeacherNotes } from "@/lib/lesson-materials/teacher-notes";
 import { pickKeySentenceIds } from "@/lib/lesson-materials/key-sentences";
 import { generateWorkbookLineTranslation } from "@/lib/lesson-materials/generate-workbook-line-translation";
 import { generateWorkbookWordOrderWriting } from "@/lib/lesson-materials/generate-workbook-word-order-writing";
@@ -875,6 +875,12 @@ export async function prepareTeacherNotesAction(
         ).catch(() => [] as Array<{ term: string; text: string }>);
         if (texts.length)
           made.notes.grammarShort = marks.map((m, i) => ({ q: m.q, label: m.label, term: texts[i]?.term ?? m.label, text: texts[i]?.text ?? "" }));
+        // 지문 위 동반의어 — 고르기·문맥 동의어·반의어(선생님 2026-11-11)
+        const keyVocab = await generateKeyVocab({
+          sentences: english,
+          candidates: made.notes.vocab.map((v) => ({ word: v.word, meaning: v.meaning })),
+        }).catch(() => [] as Awaited<ReturnType<typeof generateKeyVocab>>);
+        if (keyVocab.length) made.notes.keyVocab = keyVocab;
         return made;
       }
     );
