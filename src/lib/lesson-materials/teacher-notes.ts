@@ -1,4 +1,5 @@
 import { openAiFetch } from "@/lib/ai-usage/openai-fetch";
+import { engcoreLevelOf } from "@/lib/vocab/engcore-lemma";
 import { isUsableAntonym } from "@/lib/lesson-materials/teacher-notes-shared";
 export { isUsableAntonym };
 
@@ -279,6 +280,7 @@ const GRAMMAR_SHORT_SYSTEM = `너는 고등학교 영어 문법 해설지를 쓰
 - term: 교과서·천일문식 정확한 문법 용어(예: "현재완료 수동태", "목적격 관계대명사 생략", "결과의 분사구문", "5형식 수동태(목적격보어 to부정사)", "자동사 rise vs 타동사 raise"). 받은 이름표보다 정확하면 바꿔 쓴다.
 - text: 이 문장에서 왜 그 형태인지 1~2문장(40~90자). 형태 규칙 → 이 문장의 근거 순서로. 학생이 읽고 바로 이해하게.
 - 예: {"term":"현재완료 수동태","text":"have been p.p. 꼴. 주어 projects가 '추진되는' 대상이라 수동태, 과거부터 지금까지 이어진 일이라 현재완료를 쓴다."}
+- 복수 주어에 맞춘 현재형(live, care)을 '동사원형'이라 부르지 않는다 — '복수 현재형'이라 쓴다.
 - 설명에 없는 내용을 보태지 않는다. 받은 순서 그대로 같은 개수.
 JSON {"items": [{"term":"…","text":"…"}, …]} 하나만 돌려준다.`;
 
@@ -345,7 +347,8 @@ const KEY_VOCAB_SYSTEM = `너는 고1 내신·수능 영어 강사다. 지문과
 - 후보에 없어도 지문에 있으면 골라도 된다. word는 지문에 나온 꼴 그대로(대소문자·굴절 포함).
 
 동의어(synonyms)
-- 기본 2개, 꼭 필요할 때만 3개. 그 문장의 그 자리에 넣어도 뜻과 어법이 그대로인 것만(품사·시제·수·뒤에 오는 전치사까지 맞춘다).
+- 후보 3~4개를 좋은 순서로(화면에는 걸러서 2개만 싣는다). 그 문장의 그 자리에 넣어도 뜻과 어법이 그대로인 것만(품사·시제·수·뒤에 오는 전치사까지 맞춘다).
+- 고1이 교과서·수능에서 흔히 보는 말만. trailblazer, enigma, intricacy, notwithstanding 같은 낯선 말은 쓰지 않는다.
 - 수준은 원래 낱말과 비슷하거나 쉬운 것, 수능·내신 패러프레이징에 실제로 쓰이는 말. 너무 쉬운 말(use, give, change, good, together)·희귀어(enigma, intricacy 등)·사전 뜻만 비슷하고 이 문맥에선 뜻이 바뀌는 말은 금지. 어구 가능.
 - 예: "projects have been promoted as improving ~"의 promoted → presented, advertised (encouraged·supported는 틀림)
 - 예: "afford the rent"의 afford → pay for, manage to pay (finance는 틀림)
@@ -404,9 +407,10 @@ export async function generateKeyVocab(input: {
         const synonyms = (Array.isArray(o.synonyms) ? o.synonyms : [])
           .map((s) => String(s ?? "").trim())
           .filter((s) => s && s.toLowerCase() !== lw && !s.toLowerCase().includes(lw))
-          .slice(0, 3);
+          .filter((s) => isFamiliarSynonym(s, word))
+          .slice(0, 2);
         const antonym = String(o.antonym ?? "").trim();
-        if (!synonyms.length && !antonym) continue;
+        if (!synonyms.length) continue; // 동의어가 남지 않으면 지문 위에 올리지 않는다
         out.push({ word, synonyms, antonym: antonym.toLowerCase() === lw || !isUsableAntonym(antonym) ? "" : antonym });
       }
       if (out.length) return out.slice(0, 8);
@@ -417,3 +421,18 @@ export async function generateKeyVocab(input: {
   return [];
 }
 
+
+/**
+ * 학생이 아는 동의어인지(선생님 2026-11-11 「trailblazer 이런 단어 잘 안 써」): 사이트 어휘 등급표(초등~수능필수)에 있고,
+ * 원래 낱말보다 한 단계 넘게 어렵지 않아야(고교기본까지는 늘 허용). 어구는 낱말마다 같은 기준(관사·전치사 같은 짧은 말은 넘어감).
+ */
+function isFamiliarSynonym(syn: string, word: string): boolean {
+  const base = word.includes(" ") ? null : engcoreLevelOf(word);
+  const ceiling = Math.max(7, (base ?? 7) + 1); // 원래 낱말보다 한 단계까지(고교기본은 늘 허용) — pioneer(중학고난도) → trailblazer(고교필수) 빠짐
+  const tokens = syn.toLowerCase().split(/[\s]+/).filter((t) => t.length > 3);
+  if (!tokens.length) return true;
+  return tokens.every((t) => {
+    const lv = engcoreLevelOf(t);
+    return lv !== null && lv <= ceiling;
+  });
+}

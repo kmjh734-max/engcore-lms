@@ -940,12 +940,11 @@ function pickClassGrammar(english: string[], analysisSentences: AnalysisReportDa
         marks.push({ si, start: at, end: at + q.length, q, label: pt.label, explanation: pt.explanation, star: pt.star === true });
       }
     }
-    // 중요한 문법만(선생님 2026-11-10): 문장마다 ★ 먼저, 없으면 첫 번째 — 문장당 2개까지
+    // 중요한 문법(선생님 2026-11-10·11 「한 문장에 여러 개일 수 있다」): 문장마다 ★ 먼저, 나머지로 채워 문장당 3개까지
     const picked: typeof marks = [];
     for (const si of [...new Set(marks.map((m) => m.si))]) {
       const own = marks.filter((m) => m.si === si);
-      const stars = own.filter((m) => m.star);
-      picked.push(...(stars.length ? stars : own).slice(0, 2));
+      picked.push(...[...own.filter((m) => m.star), ...own.filter((m) => !m.star)].slice(0, 3));
     }
     picked.sort((a, b) => a.si - b.si || a.start - b.start);
   return picked;

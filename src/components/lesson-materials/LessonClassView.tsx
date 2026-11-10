@@ -127,7 +127,7 @@ function vocabMarks(p: TestBookProjectInput, notes: TeacherNotes | null): VocabM
   const rows = p.material?.vocab ?? [];
   const antOf = (w: string) => rows.find((r) => r.word.trim().toLowerCase() === w.trim().toLowerCase())?.antonyms ?? [];
   const source = notes?.keyVocab?.length
-    ? notes.keyVocab.map((v) => ({ word: v.word, syn: v.synonyms, ant: v.antonym && isUsableAntonym(v.antonym) ? [v.antonym] : [] }))
+    ? notes.keyVocab.filter((v) => v.synonyms.length).map((v) => ({ word: v.word, syn: v.synonyms, ant: v.antonym && isUsableAntonym(v.antonym) ? [v.antonym] : [] }))
     : notes?.vocab.length
     ? notes.vocab.map((v) => ({ word: v.word, syn: v.synonyms, ant: antOf(v.word) }))
     : rows.filter((r) => r.key).map((r) => ({ word: r.word, syn: r.synonyms, ant: r.antonyms }));
@@ -673,9 +673,9 @@ const CSS = `
 .lc-meta{color:var(--sub);font-size:.72em;margin:2px 0 0}
 .lc-row2{display:grid;grid-template-columns:3fr 1fr;gap:0 4mm;padding-top:.85em}
 .lc-main{min-width:0}
-.lc-aside{font-size:.6em;line-height:1.5;border-left:1px dashed var(--line);padding:.6em 0 0 2.5mm;color:var(--ink)}
+.lc-aside{font-size:calc(var(--fs) * .68);line-height:1.5;border-left:1px dashed var(--line);padding:.6em 0 0 2.5mm;color:var(--ink)}
 .lc-aside p{margin:0 0 .5em}
-.lc-astep{border:1.5px solid var(--line);border-left:4px solid var(--head);border-radius:6px;padding:.35em .55em;margin-bottom:.45em;background:var(--panel)}
+.lc-astep{border:1.5px solid var(--line);border-left:4px solid var(--head);border-radius:6px;padding:.45em .65em;margin-bottom:.5em;background:var(--panel)}
 .lc-astep b{color:var(--head)}
 .lc-aeasy{border-left:3px solid var(--easy);padding:.2em 0 .2em .55em;background:color-mix(in srgb,var(--bg) 86%,var(--easy) 14%);border-radius:0 6px 6px 0}
 .lc-aeasy b{color:var(--easy)}
