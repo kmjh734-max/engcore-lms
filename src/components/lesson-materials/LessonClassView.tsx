@@ -1208,9 +1208,21 @@ export function LessonClassView({
           </button>
         </span>
       </div>
-      {busy || error || pdf.status ? (
+      {/* 진행 표시(선생님 2026-11-10 「반응이 없어」 — 해설은 지문당 30~40초, 4개씩) */}
+      {busy ? (
+        <div className="flex items-center gap-3 bg-amber-400 px-4 py-2 text-sm font-bold text-slate-900">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-900 border-t-transparent" />
+          {busy}
+          <span className="text-xs font-semibold text-slate-800">지문 하나에 30~40초 걸립니다 · 4개씩 함께 만듭니다 · 다 되면 쪽이 저절로 바뀝니다</span>
+        </div>
+      ) : !loaded ? (
+        <div className="flex items-center gap-3 bg-slate-600 px-4 py-2 text-sm font-semibold text-white">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          해설 불러오는 중…
+        </div>
+      ) : null}
+      {error || pdf.status ? (
         <div className="bg-slate-800 px-4 py-1 text-xs font-semibold">
-          {busy ? <span className="text-amber-300">{busy}</span> : null}
           {error ? <span className="ml-3 text-rose-300">{error}</span> : null}
           {pdf.status ? <span className="ml-3 text-sky-200">{pdf.status}</span> : null}
         </div>
