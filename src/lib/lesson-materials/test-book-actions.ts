@@ -132,6 +132,8 @@ export async function prepareWorkbookExtrasAction(
     vocabTab?: boolean;
     /** 워크북에서 고른 유형(tb_*) — 그 유형 재료만 만들고 유형마다 값을 받는다(선생님 2026-10-28) */
     tbTypes?: string[];
+    /** 새 수업용 자료(교사용·학생용 수업 화면) — 값은 교사용 해설 500 하나로 받으므로 재료 값은 받지 않는다(선생님 2026-11-10) */
+    classView?: boolean;
   }
 ) {
   return preparePassage(role, input, "workbook");
@@ -303,6 +305,7 @@ async function preparePassage(
     vocabTab?: boolean;
     /** 워크북에서 고른 유형(tb_*). 주면 그 유형에 필요한 재료만 만들고 유형마다 값을 받는다 */
     tbTypes?: string[];
+    classView?: boolean;
   },
   kind: "test_book" | "workbook"
 ): Promise<
@@ -340,7 +343,10 @@ async function preparePassage(
     (typed && paidTypes.length === 0) ||
     (kind === "workbook" &&
       input.vocabTab === true &&
-      (await isAcademyFeatureOn(createAdminClient(), profile!.academy_id, "lesson_vocab_tab")));
+      (await isAcademyFeatureOn(createAdminClient(), profile!.academy_id, "lesson_vocab_tab"))) ||
+    (kind === "workbook" &&
+      input.classView === true &&
+      (await isAcademyFeatureOn(createAdminClient(), profile!.academy_id, "lesson_class_view")));
   if (!free) {
     const shortfall = await lessonCreditShortfall(profile!.academy_id!, FEATURE);
     if (shortfall) return { ok: false, message: shortfall };

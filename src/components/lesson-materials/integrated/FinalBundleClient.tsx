@@ -90,9 +90,9 @@ export type FinalBundleMaterials = {
 };
 
 /** 쪽으로 세는 요소(각 자료의 A4 쪽). 테스트 교재 쪽은 쪽 나눔 측정 틀 안의 것을 뺀다. */
-const PAGE_SELECTOR = ".lesson-pack-a4-sheet, .qg-print-page, .tb-sheet:not(.tb-measure .tb-sheet)";
+const PAGE_SELECTOR = ".lesson-pack-a4-sheet, .lc-page, .qg-print-page, .tb-sheet:not(.tb-measure .tb-sheet)";
 const PDF_PAGE_SELECTOR =
-  ":is(.final-bundle-sheet, .lesson-pack-a4-sheet, .qg-print-page, .tb-sheet:not(.tb-measure .tb-sheet))";
+  ":is(.final-bundle-sheet, .lesson-pack-a4-sheet, .lc-page, .qg-print-page, .tb-sheet:not(.tb-measure .tb-sheet))";
 
 /** 테스트 교재 묶음의 색(목차 번호·쪽 꼬리표) — 테스트 교재와 같다 */
 const EXTRA_COLOR: Record<IntegratedExtraKind, string> = {
@@ -121,7 +121,7 @@ const PRINT_CSS = `
    * 화면에 안 보이는 쪽은 배치·그리기를 미룬다(2026-10-29 속도: 700쪽 가까운 묶음을 한 번에 배치했다).
    * 쪽 높이는 A4로 잡아 두어 스크롤 막대가 흔들리지 않게. 인쇄·PDF에는 걸리지 않는다(화면에서만).
    */
-  #final-bundle-print-root :is(.final-bundle-sheet, .lesson-pack-a4-sheet, .qg-print-page, .tb-sheet):not(.tb-measure .tb-sheet) {
+  #final-bundle-print-root :is(.final-bundle-sheet, .lesson-pack-a4-sheet, .lc-page, .qg-print-page, .tb-sheet):not(.tb-measure .tb-sheet) {
     content-visibility: auto;
     contain-intrinsic-size: auto 210mm auto 297mm;
   }
@@ -181,6 +181,7 @@ export function FinalBundleClient({
   materials,
   logoSrc,
   academyName,
+  classView = false,
 }: {
   role: "admin" | "teacher";
   docId: string;
@@ -189,6 +190,8 @@ export function FinalBundleClient({
   materials: FinalBundleMaterials;
   logoSrc: string;
   academyName: string;
+  /** 새 수업용 자료(교사용·학생용 수업 화면)를 켠 학원 — 통합자료의 수업용 자료도 새 모양(교사용) */
+  classView?: boolean;
 }) {
   const base = role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials";
   const qgBase = role === "admin" ? "/admin/question-generator" : "/teacher/question-generator";
@@ -643,7 +646,7 @@ export function FinalBundleClient({
     }
     if (s.kind === "lesson_pack") {
       return materials.lessonPacks.map((m) => (
-        <LessonBookWorkbench key={m.docId} role={role} projects={m.projects} savedOptions={m.options} logoSrc={logoSrc} academyName={payload.cover.academy || academyName} design={payload.theme} embedded />
+        <LessonBookWorkbench key={m.docId} role={role} projects={m.projects} savedOptions={m.options} logoSrc={logoSrc} academyName={payload.cover.academy || academyName} design={payload.theme} embedded classView={classView} />
       ));
     }
     if (s.kind === "analysis_report") {

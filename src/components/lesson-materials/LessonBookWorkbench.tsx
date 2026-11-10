@@ -226,7 +226,8 @@ export function LessonBookWorkbench({
   // 처음 열면 재료가 없는 지문을 바로 만든다(확인 창을 한 번 띄운다)
   const askedRef = useRef(false);
   useEffect(() => {
-    if (embedded || askedRef.current || !missing.length) return;
+    // 새 수업용 자료(classView)는 그 화면이 재료·해설을 함께 묻는다(값 500 하나)
+    if (embedded || classView || askedRef.current || !missing.length) return;
     askedRef.current = true;
     void prepareMissing();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -334,8 +335,22 @@ export function LessonBookWorkbench({
   // 최종통합자료 안(embedded)에서는 통합자료가 한 번에 만든다 — 여기서도 돌면 가려진 채로 빈 PDF를 만들어 서버 일만 늘었다(2026-11-10)
   usePdfPrefetch("lesson-pack-print-root", PDF_SELECTOR, { enabled: !embedded });
   const [zoom, setZoom] = useState(70);
-  const [classOpen, setClassOpen] = useState(false);
 
+  // 새 수업용 자료(선생님 2026-11-10 「수업용 자료가 애초에 이렇게 나오게, 단어는 단어 탭으로」) — 기능을 켠 학원만
+  if (classView)
+    return embedded ? (
+      <LessonClassView role={role} projects={projects} title={docName ?? ready[0]?.title ?? "수업용 자료"} embedded design={md} brand={brand} />
+    ) : (
+      <LessonClassView
+        role={role}
+        projects={projects}
+        title={docName ?? ready[0]?.title ?? "수업용 자료"}
+        closeSlot={<CloseSaveButton base={base} className="rounded-md px-2 py-1 text-xs font-bold text-white/80 hover:bg-white/10" />}
+        design={md}
+        brand={brand}
+        onPrepared={reload}
+      />
+    );
   if (embedded) return sheets;
 
   return (
@@ -477,15 +492,6 @@ export function LessonBookWorkbench({
         </div>
 
         <div className="space-y-2 border-t border-slate-100 p-4">
-          {classView ? (
-            <button
-              type="button"
-              onClick={() => setClassOpen(true)}
-              className="w-full rounded-xl bg-emerald-700 py-3 text-sm font-bold text-white hover:bg-emerald-800"
-            >
-              교사용·학생용 수업 화면
-            </button>
-          ) : null}
           <button
             type="button"
             onClick={() => window.print()}
@@ -534,14 +540,6 @@ export function LessonBookWorkbench({
           </div>
         </div>
       </main>
-      {classView && classOpen ? (
-        <LessonClassView
-          role={role}
-          projects={projects}
-          title={docName ?? ready[0]?.title ?? "수업용 자료"}
-          onClose={() => setClassOpen(false)}
-        />
-      ) : null}
     </div>
   );
 }

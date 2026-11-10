@@ -1,3 +1,5 @@
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isAcademyFeatureOn } from "@/lib/academies/features";
 import { normalizeLessonBookOptions } from "@/lib/lesson-materials/lesson-book-options";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -144,6 +146,7 @@ export async function FinalBundlePage({ role, docId }: { role: "admin" | "teache
       materials={materials}
       logoSrc={branding.logoUrl}
       academyName={branding.name || ""}
+      classView={await isAcademyFeatureOn(createAdminClient(), profile?.academy_id, "lesson_class_view")}
     />
   );
 }

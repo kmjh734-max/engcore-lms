@@ -8,6 +8,7 @@ import { collectPrintPages } from "@/lib/pdf/download-sheets-pdf";
 import type { TestBookProjectInput } from "@/lib/lesson-materials/test-book";
 import type { TeacherNotes, TeacherSpotKind } from "@/lib/lesson-materials/teacher-notes";
 import type { ClassGrammarMark } from "@/lib/lesson-materials/test-book-actions";
+import { BlankNoteSheets, TEST_BOOK_CSS, TEST_BOOK_FONTS_HREF, TestBookBrand, partStyle } from "@/components/lesson-materials/test-book/TestBookSheets";
 
 /**
  * 교사용·학생용 수업 화면(선생님 2026-11-10, 정수학원 먼저 — lesson_class_view).
@@ -66,14 +67,17 @@ type Settings = {
   enFont: string;
   size: number;
   layers: Record<Layer, boolean>;
+  /** 지문마다 뒤에 백지노트(2쪽) */
+  blankNote: boolean;
 };
 const DEFAULT_SETTINGS: Settings = {
   mode: "teacher",
-  theme: "chalk",
+  theme: "white",
   koFont: "noto",
   enFont: "same",
   size: 14,
   layers: { grammar: true, vocab: true, spots: true, easy: true, ko: true, side: true },
+  blankNote: false,
 };
 
 // ---------------------------------------------------------------- 지문 위 표시 모으기
@@ -689,14 +693,29 @@ export function LessonClassView({
   projects,
   title,
   onClose,
+  closeSlot,
+  embedded = false,
+  design = "a",
+  brand = { logoSrc: null, academy: "" },
+  onPrepared,
 }: {
   role: "admin" | "teacher";
   projects: TestBookProjectInput[];
   title: string;
-  onClose: () => void;
+  onClose?: () => void;
+  /** 닫기 자리에 둘 것(수업용 자료 화면의 「닫기(저장)」) */
+  closeSlot?: ReactNode;
+  /** 최종통합자료 안 — 쪽만(교사용 · 흰 바탕 · 기본 글꼴) */
+  embedded?: boolean;
+  /** 백지노트(테스트 교재 쪽)의 디자인 */
+  design?: string;
+  brand?: { logoSrc: string | null; academy: string };
+  /** 재료(단어 정리·해석)를 새로 만든 뒤 지문 데이터를 다시 읽는다 */
+  onPrepared?: () => Promise<void>;
 }) {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   useEffect(() => {
+    if (embedded) return;
     try {
       const raw = window.localStorage.getItem(SETTINGS_KEY);
       if (raw) {
@@ -707,6 +726,7 @@ export function LessonClassView({
     } catch {
       /* 기본 */
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const update = (patch: Partial<Settings>) =>
     setSettings((s) => {
@@ -723,44 +743,45 @@ export function LessonClassView({
   const [error, setError] = useState<string | null>(null);
   const [extra, setExtra] = useState<Record<string, { notes: TeacherNotes | null; grammar: GrammarMark[] }>>({});
   const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    let alive = true;
-    void postJson<{ ok: true; data: Record<string, { notes: TeacherNotes | null; grammar: GrammarMark[] }> } | { ok: false; message: string }>(
+  const loadData = () =>
+    postJson<{ ok: true; data: Record<string, { notes: TeacherNotes | null; grammar: GrammarMark[] }> } | { ok: false; message: string }>(
       "/api/lesson-materials/test-book",
       { role, op: "classData", projectIds: projects.map((x) => x.id) }
     )
       .then((res) => {
-        if (!alive) return;
         if (res.ok) setExtra(res.data);
         else setError(res.message);
       })
-      .catch((e) => alive && setError(e instanceof Error ? e.message : "불러오지 못했습니다."))
-      .finally(() => alive && setLoaded(true));
-    return () => {
-      alive = false;
-    };
+      .catch((e) => setError(e instanceof Error ? e.message : "불러오지 못했습니다."))
+      .finally(() => setLoaded(true));
+  useEffect(() => {
+    void loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const notesOf = (id: string) => extra[id]?.notes ?? null;
-  const missing = loaded ? projects.filter((x) => !notesOf(x.id)) : [];
+  // 재료(단어 정리·해석)나 교사용 해설이 없는 지문
+  const missing = loaded ? projects.filter((x) => !notesOf(x.id) || !x.material || !x.content) : [];
 
   // 교사용 해설 만들기
   const [busy, setBusy] = useState<string | null>(null);
   async function makeNotes(targets: TestBookProjectInput[], regenerate = false) {
     if (busy || !targets.length) return;
-    const go = await askCreditConfirm({
-      title: "교사용 수업 해설",
-      description:
-        "지문마다 배경지식 · 강의 Tip · 주제/제목/요약문 · FLOW · 어휘(어원) · 비유와 함축 · 출제 유형 · 마무리 정리와, 지문 위 출제 자리 · 쉽게 말하면을 만듭니다. 학생용은 같은 재료로 나옵니다.",
-      subject: targets.length === 1 ? `「${targets[0]!.title}」` : `지문 ${targets.length}개`,
-      contents: ["교사용 해설 8칸", "출제 자리", "쉽게 말하면", "학생용"],
-      items: [{ feature: "lesson_teacher_notes", quantity: targets.length }],
-    });
+    const charged = targets.filter((t) => regenerate || !notesOf(t.id));
+    const go = charged.length
+      ? await askCreditConfirm({
+          title: "수업용 자료",
+          description:
+            "지문마다 해석 · 동반의어 · 문법 한 줄 · 출제 자리 · 쉽게 말하면 · 흐름과 교사용 해설(배경지식 · 강의 Tip · 주제/제목/요약문 · FLOW · 어휘 어원 · 비유와 함축 · 출제 유형 · 마무리)을 만듭니다. 학생용은 같은 재료로 나옵니다. 단어장 · 단어 시험지는 자료함 「단어」 탭에서 만듭니다.",
+          subject: charged.length === 1 ? `「${charged[0]!.title}」` : `지문 ${charged.length}개`,
+          contents: ["지문 쪽(교사용 · 학생용)", "교사용 해설", "PDF"],
+          items: [{ feature: "lesson_teacher_notes", quantity: charged.length }],
+        })
+      : true;
     if (!go) return;
     setError(null);
     let done = 0;
     const failed: string[] = [];
-    setBusy(`교사용 해설 만드는 중… 0/${targets.length}`);
+    setBusy(`수업용 자료 만드는 중… 0/${targets.length}`);
     let next = 0;
     const worker = async () => {
       for (;;) {
@@ -768,6 +789,20 @@ export function LessonClassView({
         if (i >= targets.length) return;
         const t = targets[i]!;
         try {
+          // 재료(단어 정리·해석)가 없으면 먼저 — 새 수업용 자료에서는 재료 값을 따로 받지 않는다
+          if (!t.material || !t.content) {
+            const prep = await postJson<{ ok: boolean; message?: string }>("/api/lesson-materials/test-book", {
+              role,
+              op: "prepareWorkbook",
+              projectId: t.id,
+              classView: true,
+            });
+            if (!prep.ok) {
+              failed.push(`「${t.title}」 ${prep.message ?? "재료를 만들지 못했습니다."}`);
+              continue;
+            }
+          }
+          if (!regenerate && notesOf(t.id)) continue;
           const res = await postJson<{ ok: true; notes: TeacherNotes } | { ok: false; message: string }>(
             "/api/lesson-materials/test-book",
             { role, op: "teacherNotes", projectId: t.id, forceRegenerate: regenerate }
@@ -777,14 +812,28 @@ export function LessonClassView({
         } catch (e) {
           failed.push(`「${t.title}」 ${e instanceof Error ? e.message : "실패"}`);
         }
-        done += 1;
-        setBusy(`교사용 해설 만드는 중… ${done}/${targets.length}`);
+        finally {
+          done += 1;
+          setBusy(`수업용 자료 만드는 중… ${done}/${targets.length}`);
+        }
       }
     };
     await Promise.all(Array.from({ length: Math.min(4, targets.length) }, worker));
+    if (targets.some((t) => !t.material || !t.content)) await onPrepared?.().catch(() => {});
+    // 문법 한 줄 요약은 해설과 같이 만들어지므로 다시 읽는다
+    await loadData();
     setBusy(null);
     if (failed.length) setError(failed.join(" · "));
   }
+
+  // 처음 열 때 재료·해설이 없는 지문이 있으면 한 번 묻는다
+  const askedRef = useRef(false);
+  useEffect(() => {
+    if (embedded || !loaded || askedRef.current || !missing.length) return;
+    askedRef.current = true;
+    void makeNotes(missing);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, missing.length, embedded]);
 
   // ------------------------------------------------ 덩어리 → A4 쪽
   const blocks = useMemo(
@@ -813,7 +862,9 @@ export function LessonClassView({
     const root = measureRef.current;
     if (!root) return;
     const els = Array.from(root.children) as HTMLElement[];
-    const heights = els.map((el) => el.getBoundingClientRect().height);
+    // 화면 전체가 확대·축소돼 있으면(최종통합자료 60% 등) 잰 높이도 그만큼 줄어 있다 — 틀 폭(쪽 안쪽 폭)으로 비율을 되돌린다
+    const scale = root.getBoundingClientRect().width / ((210 - (PAGE_PAD_MM + 1) * 2) * MM) || 1;
+    const heights = els.map((el) => el.getBoundingClientRect().height / scale);
     setPages({ key: layoutKey, list: paginate(heights, blocks) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, extra]);
@@ -877,7 +928,7 @@ export function LessonClassView({
     const label = pendingPdf === "teacher" ? "교사용" : "학생용";
     setPendingPdf(null);
     requestAnimationFrame(() => {
-      void pdf.save(label, collectPrintPages(pagesRef.current, ".lc-page"), [title], undefined, false);
+      void pdf.save(label, collectPrintPages(pagesRef.current, PAGE_SELECTOR), [title], undefined, false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingPdf, settings.mode, pages.key, layoutKey]);
@@ -895,6 +946,17 @@ export function LessonClassView({
     el?.scrollIntoView({ block: "start" });
   };
 
+  // 쪽마다 어느 지문인지(통합자료 목차·백지노트 자리)
+  const passageOfPage = useMemo(() => {
+    const ofBlock: number[] = [];
+    let curP = 0;
+    blocks.forEach((b, i) => {
+      if (b.passage !== undefined) curP = b.passage;
+      ofBlock[i] = curP;
+    });
+    return pages.list.map((pg) => ofBlock[pg[0] ?? 0] ?? 0);
+  }, [pages, blocks]);
+
   const ko = KO_FONTS.find((f) => f.id === settings.koFont) ?? KO_FONTS[0]!;
   const en = EN_FONTS.find((f) => f.id === settings.enFont) ?? EN_FONTS[0]!;
   const rootStyle = {
@@ -905,15 +967,79 @@ export function LessonClassView({
   const barBtn = (on: boolean) =>
     `rounded-md px-2.5 py-1 text-xs font-bold ${on ? "bg-white text-slate-900" : "text-white/80 hover:bg-white/10"}`;
   const curProject = projects[cur];
+  const tocOf = (pi: number) => {
+    const p = projects[pi];
+    return p ? { "data-toc-sub": `${String(pi + 1).padStart(2, "0")} ${p.title}`, "data-toc-note": p.source?.trim() || undefined } : {};
+  };
+
+  const pagesNode = (
+    <div ref={pagesRef} className={`flex flex-col items-center ${embedded ? "gap-6 print:gap-0" : "gap-6"}`} style={embedded ? undefined : { zoom: zoom / 100 }}>
+      {pages.list.map((pg, pi) => {
+        const passage = passageOfPage[pi] ?? 0;
+        const lastOfPassage = passageOfPage[pi + 1] !== passage;
+        const p = projects[passage];
+        return (
+          <div key={pi} className="contents">
+            <div className={`lc-page ${embedded ? "" : "shadow-2xl"}`} {...tocOf(passage)}>
+              {pg.map((bi) => {
+                const b = blocks[bi];
+                return b ? <div key={b.key}>{b.node}</div> : null;
+              })}
+              {embedded ? null : <div className="lc-pno">{pi + 1}</div>}
+            </div>
+            {settings.blankNote && lastOfPassage && p ? (
+              <div className={`contents tb-theme-${design}`} {...tocOf(passage)}>
+                <BlankNoteSheets index={passage} project={p} />
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+  const shared = (
+    <>
+      <link rel="stylesheet" href={FONTS_HREF} />
+      <style>{CSS}</style>
+      {settings.blankNote ? (
+        <>
+          <link rel="stylesheet" href={TEST_BOOK_FONTS_HREF} />
+          <style>{TEST_BOOK_CSS}</style>
+        </>
+      ) : null}
+      {/* 높이 재는 틀(쪽 폭과 같음) */}
+      <div ref={measureRef} className="lc-measure" aria-hidden>
+        {blocks.map((b) => (
+          <div key={b.key}>{b.node}</div>
+        ))}
+      </div>
+    </>
+  );
+  const withBrand = (node: ReactNode) => (
+    <TestBookBrand.Provider value={brand}>
+      <div className="contents" style={partStyle({ id: "lesson", no: "", en: "LESSON MATERIALS", ko: "수업용 자료", color: "#1d2a8f" })}>
+        {node}
+      </div>
+    </TestBookBrand.Provider>
+  );
+
+  // 최종통합자료 안: 쪽만(교사용 · 흰 바탕)
+  if (embedded)
+    return withBrand(
+      <div id="lesson-pack-print-root" className="lc-root relative" data-theme="white" style={rootStyle}>
+        {shared}
+        {pagesNode}
+      </div>
+    );
 
   return (
     <div className="fixed inset-0 z-[60] flex flex-col bg-slate-700 print:hidden">
-      <link rel="stylesheet" href={FONTS_HREF} />
-      <style>{CSS}</style>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 bg-slate-900 px-4 py-2 text-xs text-white">
-        <button type="button" onClick={onClose} className="rounded-md px-2 py-1 font-bold text-white/80 hover:bg-white/10">
-          ← 닫기
-        </button>
+        {closeSlot ?? (
+          <button type="button" onClick={onClose} className="rounded-md px-2 py-1 font-bold text-white/80 hover:bg-white/10">
+            ← 닫기
+          </button>
+        )}
         <span className="inline-flex overflow-hidden rounded-md border border-white/30">
           <button type="button" className={barBtn(settings.mode === "teacher")} onClick={() => update({ mode: "teacher" })}>
             교사용
@@ -973,6 +1099,10 @@ export function LessonClassView({
               {l.label}
             </label>
           ))}
+          <label className="flex items-center gap-1">
+            <input type="checkbox" checked={settings.blankNote} onChange={(e) => update({ blankNote: e.target.checked })} />
+            백지노트
+          </label>
         </span>
         <span className="ml-auto flex items-center gap-2">
           {missing.length ? (
@@ -982,7 +1112,7 @@ export function LessonClassView({
               onClick={() => void makeNotes(missing)}
               className="rounded-md bg-amber-400 px-3 py-1 font-bold text-slate-900 hover:bg-amber-300 disabled:opacity-60"
             >
-              교사용 해설 만들기 ({missing.length})
+              만들기 (지문 {missing.length}개)
             </button>
           ) : null}
           <button
@@ -1024,7 +1154,7 @@ export function LessonClassView({
           </button>
         ))}
         <span className="ml-auto shrink-0 self-center px-2 text-[11px] text-white/50">
-          {pages.list.length}쪽 · PDF는 보이는 그대로 저장됩니다
+          {pages.list.length}쪽 · PDF는 보이는 그대로 저장됩니다 · 단어장·단어 시험지는 자료함 「단어」 탭
         </span>
         {curProject && notesOf(curProject.id) ? (
           <button
@@ -1037,27 +1167,15 @@ export function LessonClassView({
           </button>
         ) : null}
       </div>
-      <div ref={scrollRef} className="lc-root min-h-0 flex-1 overflow-auto" data-theme={settings.theme} style={rootStyle}>
-        {/* 높이 재는 틀(쪽 폭과 같음) */}
-        <div ref={measureRef} className="lc-measure" aria-hidden>
-          {blocks.map((b) => (
-            <div key={b.key}>{b.node}</div>
-          ))}
+      {withBrand(
+        <div ref={scrollRef} className="lc-root relative min-h-0 flex-1 overflow-auto" data-theme={settings.theme} style={rootStyle}>
+          {shared}
+          <div className="flex justify-center py-6">{pagesNode}</div>
         </div>
-        <div className="flex justify-center py-6">
-          <div ref={pagesRef} className="flex flex-col gap-6" style={{ zoom: zoom / 100 }}>
-            {pages.list.map((pg, pi) => (
-              <div key={pi} className="lc-page shadow-2xl">
-                {pg.map((bi) => {
-                  const b = blocks[bi];
-                  return b ? <div key={b.key}>{b.node}</div> : null;
-                })}
-                <div className="lc-pno">{pi + 1}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
+
+/** PDF·통합자료가 세는 쪽: 수업 화면 쪽과 백지노트 쪽 */
+const PAGE_SELECTOR = ".lc-page, .tb-sheet:not(.tb-measure .tb-sheet)";
