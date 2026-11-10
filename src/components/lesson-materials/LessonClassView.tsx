@@ -229,10 +229,14 @@ function SentenceLine({
         </sup>
       );
     }
-    for (const m of s.filter((x) => x.end === b)) {
+    // 같은 어구의 꼬리표는 하나로(빈칸·함축) — 꼬리표만 다음 줄로 떨어지지 않게(선생님 2026-11-10 점검)
+    const ending = s.filter((x) => x.end === b);
+    const groups = new Map<number, SpotMark[]>();
+    for (const m of ending) groups.set(m.start, [...(groups.get(m.start) ?? []), m]);
+    for (const [st, ms] of groups) {
       parts.push(
-        <span key={`s${m.kind}${a}`} className={`lc-tag lc-tag-${m.kind}`}>
-          {SPOT_LABEL[m.kind]}
+        <span key={`s${st}-${b}`} className={`lc-tag lc-tag-${ms[0]!.kind}`}>
+          {ms.map((m) => SPOT_LABEL[m.kind]).join("·")}
         </span>
       );
     }
@@ -240,10 +244,28 @@ function SentenceLine({
   return <>{parts}</>;
 }
 
+/** 같은 자리(시작·끝)의 출제 표시를 한 묶음으로 */
+function groupSpots(list: SpotMark[]): SpotMark[][] {
+  const m = new Map<string, SpotMark[]>();
+  for (const x of list) m.set(`${x.start}-${x.end}`, [...(m.get(`${x.start}-${x.end}`) ?? []), x]);
+  return [...m.values()];
+}
+
 // ---------------------------------------------------------------- 쪽에 채울 덩어리
 
 /** 쪽에 하나씩 채우는 덩어리. keepNext는 제목처럼 다음 덩어리와 같은 쪽에 있어야 하는 것, newPage는 새 쪽에서 시작 */
-type Block = { key: string; node: ReactNode; keepNext?: boolean; newPage?: boolean; passage?: number };
+type Block = {
+  key: string;
+  node: ReactNode;
+  keepNext?: boolean;
+  newPage?: boolean;
+  /** 지문 시작 덩어리에만 */
+  passage?: number;
+  /** 몇 번째 지문인지(모든 덩어리) */
+  pi?: number;
+  /** 지문 쪽(문장·제목) — 한 쪽 맞추기에서 글자를 줄이는 대상 */
+  body?: boolean;
+};
 
 function passageBlocks(
   p: TestBookProjectInput,
@@ -315,10 +337,18 @@ function passageBlocks(
             ) : null}
             {layers.spots && ownSpots.length ? (
               <div className="lc-spots">
-                {ownSpots.map((m, i) => (
+                {groupSpots(ownSpots).map((ms, i) => (
                   <p key={i}>
-                    <span className={`lc-tag lc-tag-${m.kind}`}>{SPOT_LABEL[m.kind]}</span> <b>{m.q}</b>
-                    {m.note ? <> — {teacher || m.kind === "blank" || m.kind === "insert" ? m.note : blank}</> : null}
+                    <span className={`lc-tag lc-tag-${ms[0]!.kind}`}>{ms.map((m) => SPOT_LABEL[m.kind]).join("·")}</span> <b>{ms[0]!.q}</b>
+                    {ms.map((m, j) =>
+                      m.note ? (
+                        <span key={j}>
+                          {j ? " / " : " — "}
+                          {ms.length > 1 ? <b className="lc-dim">{SPOT_LABEL[m.kind]} </b> : null}
+                          {teacher || m.kind === "blank" || m.kind === "insert" ? m.note : blank}
+                        </span>
+                      ) : null
+                    )}
                   </p>
                 ))}
               </div>
@@ -356,10 +386,11 @@ function passageBlocks(
     for (const it of items) out.push({ key: k(`${key}-${it.key}`), node: <div className="lc-item">{it.node}</div> });
   };
 
-  if (!notes) return out;
+  if (!notes) return tagBlocks(out, index);
 
   // 교사용 해설 — A안(강의 노트형, 선생님 2026-11-10 「A안이 그나마 나음」), 새 쪽에서
-  if (!TSECS.some((t) => tsec[t.id])) return out;
+  if (!TSECS.some((t) => tsec[t.id])) return tagBlocks(out, index);
+  const bodyCount = out.length;
   let secNo = 0;
   const num = (_n: number, title: string) => (
     <h4 className="la-h">
@@ -546,12 +577,14 @@ function passageBlocks(
       node: <p className="la-note">별점은 평가원 출제 확률이 아니라 지문 구조를 보고 내린 교육적 판단입니다.</p>,
     });
     // 카드 두 장씩 한 줄 — 쪽은 줄 사이에서만 나뉜다
-    for (let i = 0; i < notes.questionTypes.length; i += 2) {
+    // 별점 높은 4개만 — 마지막 카드 하나 때문에 빈 쪽이 생기지 않게(선생님 2026-11-10 점검)
+    const qts = notes.questionTypes.slice(0, 4);
+    for (let i = 0; i < qts.length; i += 2) {
       out.push({
         key: k(`t-8-${i}`),
         node: (
           <div className="la-qt">
-            {notes.questionTypes.slice(i, i + 2).map((q, j) => (
+            {qts.slice(i, i + 2).map((q, j) => (
               <div key={j} className="la-q">
                 <div className="la-qh">
                   <b>{q.type}</b>
@@ -578,7 +611,12 @@ function passageBlocks(
       });
     }
   }
-  return out;
+  return tagBlocks(out, index, bodyCount);
+}
+
+/** 덩어리에 지문 번호와 「지문 쪽」 표시를 단다(앞의 bodyCount개가 지문 쪽) */
+function tagBlocks(out: Block[], pi: number, bodyCount = out.length): Block[] {
+  return out.map((b, i) => ({ ...b, pi, body: i < bodyCount }));
 }
 
 // ---------------------------------------------------------------- A4 쪽 나누기
@@ -624,6 +662,7 @@ const CSS = `
 .lc-root{font-family:var(--ff)}
 .lc-page{width:210mm;height:297mm;box-sizing:border-box;padding:${PAGE_PAD_MM}mm ${PAGE_PAD_MM + 1}mm;background:var(--bg);color:var(--ink);
   position:relative;overflow:hidden;font-size:var(--fs);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.lc-cont{position:absolute;top:5mm;left:${PAGE_PAD_MM + 1}mm;right:${PAGE_PAD_MM + 1}mm;font-size:9px;color:var(--sub);border-bottom:1px solid var(--line);padding-bottom:1mm}
 .lc-pno{position:absolute;bottom:6mm;left:0;right:0;text-align:center;font-size:9px;color:var(--sub)}
 .lc-measure{position:absolute;left:-100000px;top:0;width:${210 - (PAGE_PAD_MM + 1) * 2}mm;visibility:hidden;font-size:var(--fs)}
 .lc-headblock{padding-bottom:3mm}
@@ -891,6 +930,10 @@ export function LessonClassView({
     [projects, settings.mode, settings.layers, settings.tsec, settings.tsecS, extra]
   );
   const measureRef = useRef<HTMLDivElement>(null);
+  /** 지문마다 글자 비율 — 한 쪽을 조금 넘는 지문은 줄여서 한 쪽에(선생님 2026-11-10 점검: 마지막 문장 하나만 다음 쪽) */
+  const [fit, setFit] = useState<Record<number, number>>({});
+  const blockStyle = (b: Block): CSSProperties | undefined =>
+    b.body && b.pi !== undefined && fit[b.pi] ? { fontSize: `${fit[b.pi]}em` } : undefined;
   const pagesRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(100);
   const [fontsTick, setFontsTick] = useState(0);
@@ -905,7 +948,7 @@ export function LessonClassView({
       document.fonts.removeEventListener?.("loadingdone", bump);
     };
   }, []);
-  const layoutKey = `${settings.mode}|${settings.size}|${settings.koFont}|${settings.enFont}|${JSON.stringify(settings.layers)}|${JSON.stringify(settings.mode === "teacher" ? settings.tsec : settings.tsecS)}|${blocks.length}|${fontsTick}|${loaded}`;
+  const layoutKey = `${settings.mode}|${settings.size}|${settings.koFont}|${settings.enFont}|${JSON.stringify(settings.layers)}|${JSON.stringify(settings.mode === "teacher" ? settings.tsec : settings.tsecS)}|${blocks.length}|${fontsTick}|${loaded}|${JSON.stringify(fit)}`;
   const [pages, setPages] = useState<{ key: string; list: number[][] }>({ key: "", list: [] });
   useLayoutEffect(() => {
     const root = measureRef.current;
@@ -914,6 +957,24 @@ export function LessonClassView({
     // 화면 전체가 확대·축소돼 있으면(최종통합자료 60% 등) 잰 높이도 그만큼 줄어 있다 — 틀 폭(쪽 안쪽 폭)으로 비율을 되돌린다
     const scale = root.getBoundingClientRect().width / ((210 - (PAGE_PAD_MM + 1) * 2) * MM) || 1;
     const heights = els.map((el) => el.getBoundingClientRect().height / scale);
+    // 지문 쪽(제목·문장)이 한 쪽을 40% 안쪽으로 넘으면 그 지문만 글자를 줄인다(82%까지). 크게 넘는 긴 지문은 그대로 2쪽.
+    const sums = new Map<number, number>();
+    blocks.forEach((b, i) => {
+      if (b.body && b.pi !== undefined) sums.set(b.pi, (sums.get(b.pi) ?? 0) + (heights[i] ?? 0));
+    });
+    const nextFit: Record<number, number> = { ...fit };
+    let changed = false;
+    for (const [pi, h] of sums) {
+      const cur = fit[pi] ?? 1;
+      if (h > BODY_PX && h / cur <= BODY_PX * 1.4) {
+        const want = Math.max(0.82, Math.round(cur * (BODY_PX / h) * 0.97 * 100) / 100);
+        if (want < cur - 0.005) {
+          nextFit[pi] = want;
+          changed = true;
+        }
+      }
+    }
+    if (changed) setFit(nextFit);
     setPages({ key: layoutKey, list: paginate(heights, blocks) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, extra]);
@@ -1040,9 +1101,19 @@ export function LessonClassView({
         return (
           <div key={pi} className="contents">
             <div className={`lc-page ${embedded ? "" : "shadow-2xl"}`} {...tocOf(passage)}>
+              {/* 이어지는 쪽에는 위 여백에 지문 번호·제목 */}
+              {pg[0] !== undefined && !blocks[pg[0]]?.newPage && p ? (
+                <div className="lc-cont">
+                  {String(passage + 1).padStart(2, "0")} · {p.title} (이어서)
+                </div>
+              ) : null}
               {pg.map((bi) => {
                 const b = blocks[bi];
-                return b ? <div key={b.key}>{b.node}</div> : null;
+                return b ? (
+                  <div key={b.key} style={blockStyle(b)}>
+                    {b.node}
+                  </div>
+                ) : null;
               })}
               {embedded ? null : <div className="lc-pno">{pi + 1}</div>}
             </div>
@@ -1069,7 +1140,9 @@ export function LessonClassView({
       {/* 높이 재는 틀(쪽 폭과 같음) */}
       <div ref={measureRef} className="lc-measure" aria-hidden>
         {blocks.map((b) => (
-          <div key={b.key}>{b.node}</div>
+          <div key={b.key} style={blockStyle(b)}>
+            {b.node}
+          </div>
         ))}
       </div>
     </>
