@@ -652,7 +652,7 @@ const CSS = `
 .lc-v{position:relative}
 .lc-vl{position:absolute;left:0;top:-1.55em;white-space:nowrap;font-size:.46em;font-weight:600;line-height:1;pointer-events:none}
 .lc-vl.up{top:-2.95em}
-.lc-vl::after{content:"";position:absolute;left:var(--tick,3px);top:100%;height:var(--tickh,.5em);border-left:1px solid var(--syn);opacity:.75}.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
+.lc-vl::after{content:"";position:absolute;left:var(--tick,3px);top:100%;height:var(--tickh,.5em);border-left:1px dotted var(--syn);opacity:.8}.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
 .lc-syn{color:var(--syn)}.lc-ant{color:var(--ant)}
 .lc-s-blank{box-shadow:inset 0 -.42em 0 color-mix(in srgb,var(--t-blank) 42%,transparent)}
 .lc-s-implication{background:color-mix(in srgb,transparent 72%,var(--t-implication) 28%);border-radius:3px}
