@@ -61,7 +61,7 @@ const SYSTEM = `너는 대한민국 수능 영어 1타 강사이자, 초보 강�
 - spots: 지문 위에 표시할 출제 예상 자리. kind는
   blank(빈칸: 주제문 속 핵심 어구, 글 전체가 되풀이하는 말),
   insert(문장 삽입: However·By contrast·This·such처럼 앞 문장이 있어야 성립하는 연결어·지시어로 흐름이 끊기는 문장 — q는 그 연결어·지시어),
-  reference(지칭: 대상이 헷갈리는 대명사·지시어구 — note에 가리키는 대상),
+  reference(지칭: 대상이 헷갈리는 대명사·지시어구 — note에 가리키는 대상. who·which·that 같은 관계대명사는 지칭 추론으로 내지 않으므로 넣지 않는다),
   implication(함축: 21번 밑줄처럼 주제를 비유로 바꿔 말한 어구·글이 붙인 이름표·속담 — note에 그 뜻 한 줄. 글자 그대로의 설명 어구는 아니다. 없으면 넣지 않는다).
   sentence는 문장 번호에서 1을 뺀 값, q는 그 문장에 글자 그대로 있는 영어(대소문자·문장부호 포함). 각 kind는 0~3개, 확실한 자리만.
 
@@ -135,6 +135,7 @@ export function sanitizeTeacherNotes(
     .filter((s) => {
       const ok =
         kinds.has(s.kind) &&
+        !(s.kind === "reference" && /^(who|whom|whose|which|that|what|where|when)$/i.test(s.q.trim())) &&
         Number.isInteger(s.sentence) &&
         s.sentence >= 0 &&
         s.sentence < sentences.length &&

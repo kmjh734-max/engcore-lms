@@ -82,6 +82,7 @@ type GrammarMark = ClassGrammarMark;
 type VocabMark = { si: number; start: number; end: number; syn: string[]; ant: string[]; level: number };
 type SpotMark = { si: number; start: number; end: number; kind: TeacherSpotKind; q: string; note: string };
 
+const RELATIVE_PRONOUN = /^(who|whom|whose|which|that|what|where|when)$/i;
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 function findIn(sentence: string, q: string): number {
@@ -125,6 +126,8 @@ function vocabMarks(p: TestBookProjectInput): VocabMark[] {
 function spotMarks(p: TestBookProjectInput, notes: TeacherNotes | null | undefined): SpotMark[] {
   const out: SpotMark[] = [];
   for (const s of notes?.spots ?? []) {
+    // 관계대명사(who·which 등)는 지칭 추론으로 내지 않는다(선생님 2026-11-10)
+    if (s.kind === "reference" && RELATIVE_PRONOUN.test(s.q.trim())) continue;
     const sentence = p.sentences[s.sentence]?.english;
     if (!sentence) continue;
     const at = findIn(sentence, s.q);
@@ -329,176 +332,223 @@ function passageBlocks(
 
   if (!teacher || !notes) return out;
 
-  // 교사용 해설 8칸 — 새 쪽에서(선생님 2026-11-10 「별도 페이지에 깔끔하게」)
+  // 교사용 해설 — A안(강의 노트형, 선생님 2026-11-10 「A안이 그나마 나음」), 새 쪽에서
+  const num = (n: number, title: string) => (
+    <h4 className="la-h">
+      <i>{n}</i>
+      {title}
+    </h4>
+  );
   out.push({
     key: k("t-h"),
     newPage: true,
     keepNext: true,
     node: (
-      <div className="lc-thead">
+      <header className="la-band">
         <span>교사용 해설</span>
         <b>
           {String(index + 1).padStart(2, "0")} · {notes.title.en || p.title}
         </b>
+        <em>{notes.topic.ko}</em>
+      </header>
+    ),
+  });
+  out.push({
+    key: k("t-12"),
+    node: (
+      <div className="la-grid">
+        <div>
+          {num(1, "배경지식")}
+          {notes.background.map((b, i) => (
+            <div key={i} className="la-term">
+              <b>{b.term}</b>
+              {b.termEn ? <small>{b.termEn}</small> : null}
+              <p>{b.definition}</p>
+              {b.example ? <p className="lc-dim">예) {b.example}</p> : null}
+            </div>
+          ))}
+        </div>
+        <div>
+          {num(2, "강의 Tip")}
+          {notes.tip.hookTitle ? <p className="la-hook">🎬 {notes.tip.hookTitle}</p> : null}
+          {notes.tip.script ? <div className="la-bubble">{notes.tip.script.replace(/^“|”$/g, "")}</div> : null}
+          {notes.tip.analogy ? (
+            <p className="la-ana">
+              <b>비유</b> {notes.tip.analogy}
+            </p>
+          ) : null}
+          {notes.tip.points.length ? (
+            <ul className="la-pts">
+              {notes.tip.points.map((x, i) => (
+                <li key={i}>{x}</li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
       </div>
     ),
   });
-  const t = (key: string, title: string, items: ReactNode[]) =>
-    section(
-      key,
-      title,
-      items.map((node, i) => ({ key: String(i), node })),
-      "lc-sec-t"
-    );
-  t(
-    "bg",
-    "1. 배경지식",
-    notes.background.map((b, i) => (
-      <p key={i}>
-        {i + 1}.{" "}
-        <b>
-          {b.term}
-          {b.termEn ? `(${b.termEn})` : ""}
-        </b>{" "}
-        — {b.definition} <span className="lc-dim">예) {b.example}</span>
-      </p>
-    ))
-  );
-  t(
-    "tip",
-    "2. 이 지문을 효과적으로 강의할 수 있는 Tip",
-    [
-      notes.tip.hookTitle ? (
-        <p>
-          <b>도입부 썰</b> — {notes.tip.hookTitle}
-        </p>
-      ) : null,
-      notes.tip.script ? <p className="lc-script">“{notes.tip.script.replace(/^“|”$/g, "")}”</p> : null,
-      notes.tip.analogy ? (
-        <p>
-          <b>어려운 개념 비유</b> — {notes.tip.analogy}
-        </p>
-      ) : null,
-      ...notes.tip.points.map((x, i) => (
-        <p key={i}>
-          {i === 0 ? <b>강조 포인트 </b> : null}
-          {i + 1}. {x}
-        </p>
-      )),
-    ].filter(Boolean)
-  );
-  t("tts", "3. 주제 / 제목 / 요약문", [
-    <p key="a">
-      <b>Topic</b> {notes.topic.en}
-      <br />
-      <span className="lc-dim">{notes.topic.ko}</span>
-    </p>,
-    <p key="b">
-      <b>Title</b> {notes.title.en}
-      <br />
-      <span className="lc-dim">{notes.title.ko}</span>
-    </p>,
-    <p key="c">
-      <b>Summary</b> {notes.summary.en}
-      <br />
-      <span className="lc-dim">{notes.summary.ko}</span>
-    </p>,
-  ]);
-  t(
-    "fl",
-    "4. 지문 FLOW",
-    notes.flow.map((f, i) => (
-      <p key={i}>
-        <b>
-          {i + 1}. {f.label}
-        </b>
-        {f.sentences ? ` (${f.sentences}번)` : ""}
-        {f.lines.map((l, j) => (
-          <span key={j}>
-            <br />
-            {l}
-          </span>
-        ))}
-      </p>
-    ))
-  );
+  out.push({
+    key: k("t-3"),
+    node: (
+      <div>
+        {num(3, "주제 · 제목 · 요약문")}
+        <div className="la-tts">
+          {(
+            [
+              ["Topic", notes.topic],
+              ["Title", notes.title],
+              ["Summary", notes.summary],
+            ] as const
+          ).map(([h, v]) => (
+            <div key={h} className="la-ttsrow">
+              <b>{h}</b>
+              <div>
+                {v.en}
+                <span>{v.ko}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  });
+  if (notes.flow.length)
+    out.push({
+      key: k("t-4"),
+      node: (
+        <div>
+          {num(4, "지문 FLOW")}
+          {/* 칸 크기를 똑같이(선생님 2026-11-10) — 한 줄에 단계 수만큼 같은 폭 */}
+          <div className="la-flow" style={{ gridTemplateColumns: notes.flow.map(() => "minmax(0,1fr)").join(" auto ") }}>
+            {notes.flow.flatMap((f, i) => [
+              ...(i
+                ? [
+                    <span key={`a${i}`} className="la-arr">
+                      ➜
+                    </span>,
+                  ]
+                : []),
+              <div key={i} className="la-st">
+                <b>{f.label}</b>
+                {f.sentences ? <small>{f.sentences}번</small> : null}
+                {f.lines.map((l, j) => (
+                  <p key={j}>{l}</p>
+                ))}
+              </div>,
+            ])}
+          </div>
+        </div>
+      ),
+    });
   if (notes.vocab.length)
-    t("voc", "5. 핵심 어휘 분석", [
-      <div key="h" className="lc-row lc-row-v lc-row-head">
-        <span>단어</span>
-        <span>뜻</span>
-        <span>어원 분석</span>
-        <span>문맥상 동의어</span>
-      </div>,
-      ...notes.vocab.map((v, i) => (
-        <div key={i} className="lc-row lc-row-v">
-          <b>{v.word}</b>
-          <span>{v.meaning}</span>
-          <span>{v.etymology || "—"}</span>
-          <span>{v.synonyms.join(", ")}</span>
+    out.push({
+      key: k("t-5"),
+      node: (
+        <div>
+          {num(5, "핵심 어휘")}
+          <div className="la-voc">
+            <div className="la-vr la-vh">
+              <span>단어</span>
+              <span>뜻</span>
+              <span>어원</span>
+              <span>문맥상 동의어</span>
+            </div>
+            {notes.vocab.map((v, i) => (
+              <div key={i} className="la-vr">
+                <b>{v.word}</b>
+                <span>{v.meaning}</span>
+                <span>{v.etymology || "—"}</span>
+                <span>{v.synonyms.join(", ")}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      )),
-    ]);
-  t(
-    "fig",
-    "6. 비유와 함축 의미",
-    notes.figurative.length
-      ? notes.figurative.map((f, i) => (
-          <p key={i}>
-            <b>표현</b> {f.expression}
-            <br />
-            <b>함축 의미</b> {f.meaningEn}
-            <br />
-            <b>설명</b> {f.explainKo}
-          </p>
-        ))
-      : [<p key="0" className="lc-dim">이 지문에는 따로 짚을 비유적 표현이 없습니다.</p>]
-  );
-  if (notes.questionTypes.length)
-    t("qt", "7. 출제 가능성이 높은 문제 유형", [
-      <p key="n" className="lc-dim">
-        별점은 평가원 출제 확률이 아니라 지문 구조를 보고 내린 교육적 판단입니다.
-      </p>,
-      <div key="h" className="lc-row lc-row-q lc-row-head">
-        <span>유형</span>
-        <span>적합도</span>
-        <span>이유 · 출제 지점</span>
-        <span>함정</span>
-        <span>풀이 전략</span>
-      </div>,
-      ...notes.questionTypes.map((q, i) => (
-        <div key={i} className="lc-row lc-row-q">
-          <b>{q.type}</b>
-          <span className="lc-stars">{"★".repeat(q.stars) + "☆".repeat(5 - q.stars)}</span>
-          <span>
-            {q.reason}
-            {q.spot ? <span className="lc-dim"> · {q.spot}</span> : null}
-          </span>
-          <span>{q.trap}</span>
-          <span>{q.strategy}</span>
+      ),
+    });
+  out.push({
+    key: k("t-67"),
+    node: (
+      <div className="la-grid">
+        <div>
+          {num(6, "비유 · 함축")}
+          {notes.figurative.length ? (
+            notes.figurative.map((f, i) => (
+              <div key={i} className="la-fig">
+                <b>“{f.expression}”</b>
+                <p className="la-figen">= {f.meaningEn}</p>
+                <p>{f.explainKo}</p>
+              </div>
+            ))
+          ) : (
+            <p className="lc-dim">이 지문에는 따로 짚을 비유적 표현이 없습니다.</p>
+          )}
         </div>
-      )),
-    ]);
-  t("rv", "8. 강의 마무리 – 시험 대비 핵심 정리", [
-    <p key="1">
-      1️⃣ <b>Main Idea &amp; Claim</b> — {notes.review.mainIdea}
-      {notes.review.studentLine ? (
-        <>
-          <br />
-          학생 한 줄: “{notes.review.studentLine.replace(/^“|”$/g, "")}”
-        </>
-      ) : null}
-    </p>,
-    <p key="2">
-      2️⃣ <b>Key Vocabulary &amp; Synonyms</b> — {notes.review.vocabNote}
-    </p>,
-    <p key="3">
-      3️⃣ <b>Expected Question Types</b> — {notes.review.typesNote}
-    </p>,
-    <p key="4">
-      4️⃣ <b>Figurative Expressions</b> — {notes.review.figurativeNote}
-    </p>,
-  ]);
+        <div>
+          {num(7, "시험 직전 체크")}
+          <ul className="la-check">
+            <li>
+              ☐ <b>주제</b> {notes.review.mainIdea}
+            </li>
+            {notes.review.studentLine ? (
+              <li>
+                ☐ <b>한 줄</b> “{notes.review.studentLine.replace(/^“|”$/g, "")}”
+              </li>
+            ) : null}
+            <li>
+              ☐ <b>어휘</b> {notes.review.vocabNote}
+            </li>
+            <li>
+              ☐ <b>유형</b> {notes.review.typesNote}
+            </li>
+            <li>
+              ☐ <b>비유</b> {notes.review.figurativeNote}
+            </li>
+          </ul>
+        </div>
+      </div>
+    ),
+  });
+  if (notes.questionTypes.length) {
+    out.push({ key: k("t-8h"), keepNext: true, node: num(8, "출제 가능성") });
+    out.push({
+      key: k("t-8n"),
+      keepNext: true,
+      node: <p className="la-note">별점은 평가원 출제 확률이 아니라 지문 구조를 보고 내린 교육적 판단입니다.</p>,
+    });
+    // 카드 두 장씩 한 줄 — 쪽은 줄 사이에서만 나뉜다
+    for (let i = 0; i < notes.questionTypes.length; i += 2) {
+      out.push({
+        key: k(`t-8-${i}`),
+        node: (
+          <div className="la-qt">
+            {notes.questionTypes.slice(i, i + 2).map((q, j) => (
+              <div key={j} className="la-q">
+                <div className="la-qh">
+                  <b>{q.type}</b>
+                  <span>{"★".repeat(q.stars) + "☆".repeat(5 - q.stars)}</span>
+                </div>
+                <p>
+                  <em>왜</em> {q.reason}
+                </p>
+                {q.spot ? (
+                  <p>
+                    <em>어디</em> {q.spot}
+                  </p>
+                ) : null}
+                <p>
+                  <em>함정</em> {q.trap}
+                </p>
+                <p>
+                  <em>풀이</em> {q.strategy}
+                </p>
+              </div>
+            ))}
+          </div>
+        ),
+      });
+    }
+  }
   return out;
 }
 
@@ -603,6 +653,36 @@ const CSS = `
 .lc-row-q{grid-template-columns:6.5em 5.2em 1.3fr 1fr 1fr}
 .lc-row-head{font-weight:800;color:var(--sub)}
 .lc-stars{color:#e0a100;white-space:nowrap}
+/* 교사용 해설 A안 */
+.la-band{display:flex;align-items:baseline;gap:.8em;background:var(--ink);color:var(--bg);padding:.6em 1em;border-radius:8px}
+.la-band span{font-weight:800;color:var(--t-blank)}.la-band b{font-size:.92em}.la-band em{margin-left:auto;font-style:normal;opacity:.8;font-size:.68em}
+.la-h{display:flex;align-items:center;gap:.5em;font-size:.86em;margin:1em 0 .45em;color:var(--ink);border-bottom:2px solid var(--line);padding-bottom:.2em}
+.la-h i{font-style:normal;background:var(--ink);color:var(--bg);border-radius:50%;width:1.45em;height:1.45em;display:inline-flex;align-items:center;justify-content:center;font-size:.8em}
+.la-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;font-size:.72em;line-height:1.55}
+.la-grid .la-h{font-size:1.2em}
+.la-term{margin-bottom:.5em}.la-term small{color:var(--sub);margin-left:.4em}.la-term p{margin:0}
+.la-hook{font-weight:800;margin:0 0 .4em}
+.la-bubble{background:color-mix(in srgb,var(--bg) 88%,var(--t-implication) 12%);border:1.5px solid var(--t-implication);border-radius:12px 12px 12px 2px;padding:.5em .8em;margin-bottom:.5em}
+.la-ana{margin:0 0 .3em}.la-pts{margin:0;padding-left:1.2em}
+.la-tts{font-size:.72em;line-height:1.5}
+.la-ttsrow{display:grid;grid-template-columns:20mm 1fr;padding:.3em 0;border-bottom:1px solid var(--line)}
+.la-ttsrow b{color:var(--head)}.la-ttsrow span{display:block;color:var(--sub)}
+.la-flow{display:grid;align-items:stretch;gap:0 .3em;font-size:.66em;line-height:1.45}
+.la-st{border:1.5px solid var(--line);border-top:4px solid var(--ink);border-radius:6px;padding:.4em .55em;background:var(--panel)}
+.la-st small{color:var(--sub);margin-left:.3em}.la-st p{margin:0}
+.la-arr{align-self:center;color:var(--sub)}
+.la-voc{font-size:.68em;line-height:1.45}
+.la-vr{display:grid;grid-template-columns:24mm 34mm 1fr 34mm;gap:0 .6em;padding:.3em .45em;border-bottom:1px solid var(--line)}
+.la-vr:nth-child(even){background:var(--panel)}
+.la-vh{background:var(--ink) !important;color:var(--bg);font-weight:800;border-radius:4px 4px 0 0}
+.la-fig{border-left:4px solid var(--t-reference);background:color-mix(in srgb,var(--bg) 88%,var(--t-reference) 12%);padding:.45em .7em;border-radius:0 8px 8px 0;margin-bottom:.45em}
+.la-fig p{margin:0}.la-figen{color:var(--t-reference);font-style:italic}
+.la-check{list-style:none;padding:0;margin:0}.la-check li{padding:.3em 0;border-bottom:1px dashed var(--line)}
+.la-note{font-size:.62em;color:var(--sub);margin:0 0 .3em}
+.la-qt{display:grid;grid-template-columns:1fr 1fr;gap:.45em;font-size:.66em;line-height:1.5;padding-bottom:.45em}
+.la-q{border:1.5px solid var(--line);border-radius:8px;padding:.45em .7em}
+.la-q p{margin:0}.la-qh{display:flex;justify-content:space-between;margin-bottom:.2em}.la-qh span{color:#f59e0b;letter-spacing:1px}
+.la-q em{font-style:normal;font-weight:800;color:var(--head);margin-right:.25em}
 `;
 
 // ---------------------------------------------------------------- 화면
