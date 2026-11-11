@@ -288,8 +288,10 @@ export function FinalBundleClient({
     questions: materials.questions.length > 0,
     workbook: materials.workbooks.length > 0,
     plan: payload.extras.plan && extraProjects.length > 0,
-    // 전체 단어장·단어 정리는 수업용 자료 안으로 들어갔다(통합자료 묶음으로는 싣지 않는다)
-    vocab: false,
+    // 전체 단어장·단어 정리는 수업용 자료 안으로 들어갔다(통합자료 묶음으로는 싣지 않는다).
+    // 새 수업용 자료(classView)는 단어를 빼고 단어 탭으로 옮겨, 통합자료에 단어가 하나도 안 나왔다
+    // (선생님 2026-11-11) → 그때는 전체 단어장(단어 탭과 같은 단어 정리)을 수업용 자료 앞에 싣는다.
+    vocab: payload.extras.vocab && vocabReady.length > 0,
     word_note: false,
     blank_note: payload.extras.blank_note && extraProjects.length > 0,
     // 테스트지는 자료함에서 뽑는다(선생님 2026-10-21: 통합자료·워크북 미리보기에는 안 나오게)
@@ -364,7 +366,13 @@ export function FinalBundleClient({
 
   // 목차·본문 순서. 고른 자료가 없는 유형은 뺀다. 변형문제 정답은 맨 뒤에 모은다.
   const sections: SectionPlan[] = useMemo(() => {
-    const out: SectionPlan[] = payload.parts
+    // 저장된 묶음 순서에 단어장이 빠져 있을 수 있다(예전 통합자료) — 수업용 자료 앞(없으면 맨 앞)에 끼운다
+    const parts = [...payload.parts];
+    if (has.vocab && !parts.includes("vocab")) {
+      const at = parts.indexOf("lesson_pack");
+      parts.splice(at >= 0 ? at : Math.min(1, parts.length), 0, "vocab");
+    }
+    const out: SectionPlan[] = parts
       .filter((k) => has[k] && k !== "plan")
       .map((k) => ({ key: k, kind: k, ...integratedPartMeta(k) }));
     if (payload.answerKey && has.questions) {
@@ -518,7 +526,7 @@ export function FinalBundleClient({
     update({
       parts,
       order: parts.filter(isDocKind),
-      extras: { plan: true, vocab: false, word_note: false, blank_note: true, tests: false, tb_answers: false },
+      extras: { plan: true, vocab: true, word_note: false, blank_note: true, tests: false, tb_answers: false },
       dividers: true,
     });
   }
@@ -851,7 +859,7 @@ export function FinalBundleClient({
                   <input
                     type="checkbox"
                     checked={payload.extras[k]}
-                    onChange={(e) => update({ extras: { ...payload.extras, [k]: e.target.checked } })}
+                    onChange={(e) => update({ extras: { ...payload.extras, [k]: e.target.checked }, ...(k === "vocab" ? { vocabPicked: true } : {}) })}
                   />
                   {integratedPartMeta(k).title}
                   <span className="text-[11px] text-slate-400">{integratedPartMeta(k).sub}</span>

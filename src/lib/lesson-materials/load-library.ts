@@ -181,18 +181,18 @@ export async function loadLessonMaterialsLibraryData(
   const vocabTabOpen = await isAcademyFeatureOn(createAdminClient(), academyId, "lesson_vocab_tab");
   let lessonVocabSets: LessonVocabSetRow[] = [];
   if (vocabTabOpen && academyId) {
-    const { data: folder } = await supabase
+    // 단어 탭 단어장 + 테스트 교재·최종통합자료에서 등록한 「· 전체 단어」 단어장도 함께(선생님 2026-11-11 「단어 탭에 단어장이 다 사라졌다」)
+    const { data: folders } = await supabase
       .from("vocab_folders")
       .select("id")
       .eq("academy_id", academyId)
-      .eq("name", LESSON_VOCAB_FOLDER)
-      .limit(1)
-      .maybeSingle();
-    if (folder?.id) {
+      .in("name", [LESSON_VOCAB_FOLDER, "테스트 교재"]);
+    const folderIds = (folders ?? []).map((f) => f.id as string);
+    if (folderIds.length) {
       const { data: sets } = await supabase
         .from("vocab_sets")
         .select("id, title, created_at, vocab_items(count)")
-        .eq("folder_id", folder.id)
+        .in("folder_id", folderIds)
         .order("created_at", { ascending: false })
         .limit(200);
       lessonVocabSets = (sets ?? []).map((s) => ({

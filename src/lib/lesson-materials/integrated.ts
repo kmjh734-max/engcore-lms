@@ -34,7 +34,8 @@ export type IntegratedExtraKind = "plan" | "vocab" | "word_note" | "blank_note" 
  * 고를 수 있는 묶음. 전체 단어장·단어 정리·문장별 해석은 수업용 자료가 테스트 교재 모양이 되며(2026-10-21)
  * 수업용 자료 안에 들어가 여기서는 뺐다(두 번 들어가지 않게). 테스트지 자료·정답은 자료함 「테스트지 뽑기」로(선생님 2026-10-21).
  */
-export const INTEGRATED_EXTRA_KINDS: IntegratedExtraKind[] = ["plan", "blank_note"];
+// 전체 단어장을 다시 고를 수 있게(선생님 2026-11-11 「최종통합자료에도 단어장」) — 새 수업용 자료는 단어를 싣지 않는다
+export const INTEGRATED_EXTRA_KINDS: IntegratedExtraKind[] = ["plan", "vocab", "blank_note"];
 /** 목차·본문 순서에 놓이는 묶음(파일 묶음 + 테스트 교재 묶음) */
 export type IntegratedPartKind = IntegratedSectionKind | IntegratedExtraKind;
 
@@ -130,6 +131,8 @@ export type IntegratedPayload = {
   tests: IntegratedTestOptions;
   /** 단어학습에 등록한 단어장(다시 누르면 같은 단어장을 고친다) */
   vocabSetId?: string | null;
+  /** 전체 단어장을 선생님이 직접 켜고 끈 적이 있는지(없으면 기본 켬) */
+  vocabPicked?: boolean;
 };
 
 /** 파일 묶음 순서에 테스트 교재 묶음을 끼운다: 계획표 맨 앞, 단어장은 수업용 자료 앞, 백지노트는 뒤. */
@@ -159,7 +162,7 @@ export function emptyIntegratedPayload(title = ""): IntegratedPayload {
     dividers: true,
     answerKey: true,
     parts: partsFromOrder(INTEGRATED_SECTION_ORDER),
-    extras: { plan: false, vocab: false, word_note: false, blank_note: false, tests: false, tb_answers: false },
+    extras: { plan: false, vocab: true, word_note: false, blank_note: false, tests: false, tb_answers: false },
     theme: "b",
     tests: normalizeIntegratedTestOptions(null),
   };
@@ -198,15 +201,18 @@ export function normalizeIntegratedPayload(raw: unknown): IntegratedPayload {
       // 나중에 생긴 묶음: 단어 정리는 수업용 자료 뒤, 나머지는 끝에
       for (const k of all) {
         if (saved.includes(k)) continue;
-        const at = k === "word_note" ? saved.indexOf("lesson_pack") : -1;
-        if (at >= 0) saved.splice(at + 1, 0, k);
+        const at = k === "word_note" || k === "vocab" ? saved.indexOf("lesson_pack") : -1;
+        // 전체 단어장은 수업용 자료 앞, 단어 정리는 뒤
+        if (at >= 0) saved.splice(k === "vocab" ? at : at + 1, 0, k);
+        else if (k === "vocab") saved.splice(Math.min(1, saved.length), 0, k);
         else saved.push(k);
       }
       return [...new Set(saved)];
     })(),
     extras: {
       plan: p.extras?.plan === true,
-      vocab: p.extras?.vocab === true,
+      // 전체 단어장은 기본으로 켠다 — 예전 파일은 vocab:false로 저장돼 있어(그때는 고를 수 없었다) vocabPicked가 있을 때만 저장값을 따른다
+      vocab: (p as { vocabPicked?: boolean }).vocabPicked === true ? p.extras?.vocab === true : true,
       word_note: p.extras?.word_note === true,
       blank_note: p.extras?.blank_note === true,
       tests: p.extras?.tests === true,
@@ -214,6 +220,7 @@ export function normalizeIntegratedPayload(raw: unknown): IntegratedPayload {
     },
     tests: normalizeIntegratedTestOptions(p.tests ?? null),
     vocabSetId: typeof p.vocabSetId === "string" ? p.vocabSetId : null,
+    ...((p as { vocabPicked?: boolean }).vocabPicked === true ? { vocabPicked: true } : {}),
     theme: (["a", "b", "c", "d"] as const).includes(p.theme as IntegratedTheme) ? (p.theme as IntegratedTheme) : "b",
   };
 }
