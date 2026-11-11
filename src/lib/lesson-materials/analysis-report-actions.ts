@@ -21,6 +21,9 @@ import {
 import { generateSentenceMarkup } from "@/lib/lesson-materials/generate-analysis-markup";
 import { verifyAnalysisMarkups } from "@/lib/lesson-materials/analysis-markup-verify";
 import { hasAnyMarkup } from "@/lib/lesson-materials/analysis-markup";
+import { syncReportSpotsWithTeacherNotes } from "@/lib/lesson-materials/analysis-spot-sync";
+import type { TeacherNotes } from "@/lib/lesson-materials/teacher-notes";
+import { onePageSentences } from "@/lib/lesson-materials/one-page";
 
 function analysisSourceHash(lines: Array<string | null | undefined>): string {
   const joined = lines
@@ -69,7 +72,7 @@ export async function generateAndSaveAnalysisReportAction(
   const supabase = await createClient();
   let pq = supabase
     .from("lesson_material_projects")
-    .select("id,title,analysis_report_json")
+    .select("id,title,analysis_report_json,tn:lesson_pack_json->teacherNotes")
     .eq("id", projectId)
     .eq("academy_id", profile!.academy_id!)
     .is("deleted_at", null);
@@ -89,6 +92,13 @@ export async function generateAndSaveAnalysisReportAction(
   if (iErr) return { ok: false, message: iErr.message };
 
   const prev = (project.analysis_report_json ?? {}) as Partial<AnalysisReportData>;
+  // 빈칸 추론·함축 의미는 수업용 자료(교사용 해설)가 고른 자리와 같게 보여 준다(2026-11-11, 저장본은 그대로)
+  const withTeacherSpots = (r: AnalysisReportData) =>
+    syncReportSpotsWithTeacherNotes(
+      r,
+      (project as { tn?: TeacherNotes | null }).tn,
+      onePageSentences((items ?? []).filter((it) => String(it.english_text ?? "").trim())).map((x) => x.english)
+    );
   const headerLabel =
     input.headerLabel?.trim() ||
     prev.headerLabel ||
@@ -101,7 +111,7 @@ export async function generateAndSaveAnalysisReportAction(
     prev.sourceHash === sourceHash &&
     prev.formatVersion === ANALYSIS_REPORT_FORMAT_VERSION
   ) {
-    return { ok: true, report: { ...(prev as AnalysisReportData), headerLabel }, reused: true };
+    return { ok: true, report: withTeacherSpots({ ...(prev as AnalysisReportData), headerLabel }), reused: true };
   }
 
   // 새로 만들 때만 크레딧을 쓴다. 모자라면 만들지 않고 안내한다.
@@ -164,7 +174,7 @@ export async function generateAndSaveAnalysisReportAction(
     revalidatePath(`/${role}/lesson-materials`);
     revalidatePath(`/${role}/lesson-materials/analysis-report`);
     revalidatePath(`/${role}/lesson-materials/project/${projectId}`);
-    return { ok: true, report };
+    return { ok: true, report: withTeacherSpots(report) };
   } catch (e) {
     return {
       ok: false,

@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { LessonMaterialAnalysisCard } from "@/lib/lesson-materials/generate-organization";
 import type { LessonPackData, LessonPackVocabItem } from "@/lib/lesson-materials/generate-lesson-pack";
 import type { AnalysisReportData } from "@/lib/lesson-materials/generate-analysis-report";
+import { syncReportSpotsWithTeacherNotes } from "@/lib/lesson-materials/analysis-spot-sync";
 import type { LessonPackProjectInput } from "@/components/lesson-materials/LessonPackWorkbench";
 import type { AnalysisReportProjectInput } from "@/components/lesson-materials/AnalysisReportWorkbench";
 import {
@@ -120,7 +121,16 @@ export async function loadAnalysisReportProjects(
         titleEn: (p.title_en as string | null) ?? null,
         source: (p.source as string | null) ?? null,
         headerLabel: report?.headerLabel || "26년도 1학기 중간고사 대비",
-        report: hasSentences ? report : null,
+        // 빈칸 추론·함축 의미는 수업용 자료(교사용 해설)가 고른 자리와 같게(2026-11-11)
+        report: hasSentences
+          ? syncReportSpotsWithTeacherNotes(
+              report!,
+              pack.teacherNotes,
+              onePageSentences(
+                (itemsByProject.get(p.id as string) ?? []).filter((it) => String(it.english_text ?? "").trim()) as Array<{ english_text?: string | null; korean_text?: string | null }>
+              ).map((x) => x.english)
+            )
+          : null,
         onePageContent: isOnePageContentFresh(pack.onePageContent, english) ? pack.onePageContent : null,
       };
     });
