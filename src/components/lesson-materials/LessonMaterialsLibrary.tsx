@@ -1026,6 +1026,9 @@ export function LessonMaterialsLibrary({
             selectedIds={selectedInInputOrder}
             onMade={() => setSelected(new Set())}
             askSignal={vocabAsk}
+            lessonDocs={(data.documents ?? [])
+              .filter((d) => d.kind === "lesson_pack")
+              .map((d) => ({ name: d.name, project_ids: Array.isArray(d.project_ids) ? d.project_ids : [] }))}
           />
         ) : null}
         {(documentKind || libraryTab === "vocab") && showProjectList && !inTrash ? (

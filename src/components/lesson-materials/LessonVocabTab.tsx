@@ -32,6 +32,20 @@ function todayName(): string {
   return `단어장_${m}${day}`;
 }
 
+/** 목록에 보이는 이름 — 통합자료·테스트 교재에서 등록할 때 붙은 「 · 전체 단어」를 떼어 수업용 자료 이름과 같게 */
+function shownTitle(title: string): string {
+  return title.replace(/\s*·\s*전체 단어$/, "");
+}
+
+/** 고른 지문이 모두 들어 있는 수업용 자료 이름(가장 작은 것) — 단어장 이름을 수업용 자료와 같게(선생님 2026-11-11) */
+function lessonNameFor(selectedIds: string[], docs: Array<{ name: string; project_ids: string[] }>): string | null {
+  if (!selectedIds.length) return null;
+  const hit = docs
+    .filter((d) => selectedIds.every((id) => d.project_ids.includes(id)))
+    .sort((a, b) => a.project_ids.length - b.project_ids.length)[0];
+  return hit?.name?.trim() || null;
+}
+
 /**
  * 자료함 「단어」 탭(윌링어학원, 선생님 2026-10-27): 지문을 골라 단어장을 만들고, 만든 단어장의 목록을 보고
  * 단어 시험지를 출력한다. 단어장은 단어학습 「수업자료 단어장」 폴더에 들어가 단어학습 화면에서도 그대로 쓴다.
@@ -43,6 +57,7 @@ export function LessonVocabTab({
   selectedIds,
   onMade,
   askSignal = 0,
+  lessonDocs = [],
 }: {
   role: "admin" | "teacher";
   sets: LessonVocabSetRow[];
@@ -50,6 +65,8 @@ export function LessonVocabTab({
   onMade: () => void;
   /** 다른 탭 아래 바에서 「단어장 만들기」를 눌렀다(늘어날 때마다 이름 창을 띄운다) */
   askSignal?: number;
+  /** 수업용 자료 파일(이름·지문) — 새 단어장 이름을 수업용 자료 이름으로 */
+  lessonDocs?: Array<{ name: string; project_ids: string[] }>;
 }) {
   const router = useRouter();
   const [naming, setNaming] = useState<string | null>(null);
@@ -89,7 +106,7 @@ export function LessonVocabTab({
     }
   }
   useEffect(() => {
-    if (askSignal > 0 && selectedIds.length) setNaming(todayName());
+    if (askSignal > 0 && selectedIds.length) setNaming(lessonNameFor(selectedIds, lessonDocs) ?? todayName());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [askSignal]);
 
@@ -143,7 +160,7 @@ export function LessonVocabTab({
         <button
           type="button"
           disabled={!selectedIds.length || !!busy}
-          onClick={() => setNaming(todayName())}
+          onClick={() => setNaming(lessonNameFor(selectedIds, lessonDocs) ?? todayName())}
           className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
           title={selectedIds.length ? "고른 지문의 단어로 단어장을 만듭니다" : "아래 지문 목록에서 지문을 먼저 고르세요"}
         >
@@ -185,7 +202,7 @@ export function LessonVocabTab({
                     rel="noreferrer"
                     className="min-w-0 truncate text-[13px] font-semibold text-slate-900 hover:text-violet-700 hover:underline"
                   >
-                    {s.title}
+                    {shownTitle(s.title)}
                   </a>
                 )}
                 <span className="shrink-0 text-[11px] text-slate-400">
@@ -243,7 +260,7 @@ export function LessonVocabTab({
             </span>
             <button
               type="button"
-              onClick={() => setNaming(todayName())}
+              onClick={() => setNaming(lessonNameFor(selectedIds, lessonDocs) ?? todayName())}
               className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-bold text-violet-700 shadow-sm hover:bg-violet-50"
             >
               📗 단어장 만들기
