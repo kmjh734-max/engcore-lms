@@ -93,7 +93,7 @@ const DEFAULT_SETTINGS: Settings = {
   theme: "white",
   koFont: "noto",
   enFont: "same",
-  size: 14,
+  size: 15,
   layers: { grammar: true, vocab: true, spots: true, easy: true, ko: true, side: true },
   blankNote: false,
   tsec: ALL_TSEC,
@@ -698,7 +698,7 @@ const CSS = `
 .lc-root{--bg:#2f4a3a;--panel:#35523f;--ink:#f3f1e7;--sub:#c9d3c4;--line:#5d7a66;--gram:#ffe27a;--syn:#9fd8ff;--ant:#ffadad;--head:#ffe27a;
   --t-blank:#ffb84d;--t-insert:#7ee0a8;--t-reference:#c7a6ff;--t-implication:#ff8fc8;--easy:#7ee0a8;--shadow:0 0 1px rgba(255,255,255,.35)}
 .lc-root[data-theme="navy"]{--bg:#1d2a44;--panel:#24345a;--ink:#f1f4fb;--sub:#b8c3dc;--line:#3d5180;--shadow:none}
-.lc-root[data-theme="cream"],.lc-root[data-theme="white"]{--ink:#1d1d1f;--sub:#5f5a50;--gram:#a66b00;--syn:#1f6fb2;--ant:#c0392b;--head:#8a5a00;
+.lc-root[data-theme="cream"],.lc-root[data-theme="white"]{--ink:#1d1d1f;--sub:#48443b;--gram:#a66b00;--syn:#1f6fb2;--ant:#c0392b;--head:#8a5a00;
   --t-blank:#d9780a;--t-insert:#1e8a4c;--t-reference:#7240c9;--t-implication:#c2307a;--easy:#1e8a4c;--shadow:none}
 .lc-root[data-theme="cream"]{--bg:#f8f1df;--panel:#fffaf0;--line:#e2d6b8}
 .lc-root[data-theme="white"]{--bg:#fff;--panel:#f7f7f5;--line:#dedede}
@@ -713,35 +713,35 @@ const CSS = `
 .lc-meta{color:var(--sub);font-size:.72em;margin:2px 0 0}
 .lc-row2{display:grid;grid-template-columns:3fr 1fr;gap:0 4mm;padding-top:.85em}
 .lc-main{min-width:0}
-.lc-aside{font-size:calc(var(--fs) * .68);line-height:1.5;border-left:1px dashed var(--line);padding:.6em 0 0 2.5mm;color:var(--ink)}
+.lc-aside{font-size:calc(var(--fs) * .74);line-height:1.5;border-left:1px dashed var(--line);padding:.6em 0 0 2.5mm;color:var(--ink)}
 .lc-aside p{margin:0 0 .5em}
 .lc-astep{border:1.5px solid var(--line);border-left:4px solid var(--head);border-radius:6px;padding:.45em .65em;margin-bottom:.5em;background:var(--panel)}
 .lc-astep b{color:var(--head)}
 .lc-aeasy{border-left:3px solid var(--easy);padding:.2em 0 .2em .55em;background:color-mix(in srgb,var(--bg) 86%,var(--easy) 14%);border-radius:0 6px 6px 0}
 .lc-aeasy b{color:var(--easy)}
-.lc-glines{font-size:.64em;line-height:1.5;margin:.25em 0 0 1.6em}
+.lc-glines{font-size:.72em;line-height:1.5;margin:.25em 0 0 1.6em}
 .lc-glines p{margin:.15em 0}
 .lc-gterm{color:var(--head)}
 .lc-gq{font-style:italic;color:var(--sub)}
-.lc-spots{font-size:.64em;line-height:1.5;margin:.3em 0 0 1.6em}
+.lc-spots{font-size:.72em;line-height:1.5;margin:.3em 0 0 1.6em}
 .lc-spots p{margin:.15em 0}
 .lc-blank-s{min-width:100%;display:block;margin-top:.9em}
 .lc-thead{display:flex;align-items:baseline;gap:.8em;padding:.6em .9em;border-radius:8px;background:color-mix(in srgb,var(--bg) 80%,var(--head) 20%);margin-bottom:.2em}
 .lc-thead span{font-size:1.05em;font-weight:800;color:var(--head)}
 .lc-thead b{font-size:.8em}
 .lc-sec-t{border-bottom:none;border-left:4px solid var(--head);padding:1em 0 .3em .6em;margin-top:.4em}
-.lc-en{font-family:var(--fe,var(--ff));font-size:1em;line-height:3.15;margin:0;text-shadow:var(--shadow)}
+.lc-en{font-family:var(--fe,var(--ff));font-size:1em;line-height:2.85;margin:0;text-shadow:var(--shadow)}
 .lc-sn{display:inline-block;min-width:1.4em;color:var(--sub);font-size:.62em;font-weight:800}
-.lc-ko{font-size:.68em;color:var(--sub);margin:0 0 .2em 1.6em;line-height:1.55}
-.lc-easy{font-size:.68em;line-height:1.55;margin:.3em 0 .2em 1.6em;padding:.35em .8em;border-left:4px solid var(--easy);
+.lc-ko{font-size:.76em;color:var(--sub);margin:0 0 .2em 1.6em;line-height:1.55}
+.lc-easy{font-size:.76em;line-height:1.55;margin:.3em 0 .2em 1.6em;padding:.35em .8em;border-left:4px solid var(--easy);
   background:color-mix(in srgb,var(--bg) 84%,var(--easy) 16%);border-radius:0 6px 6px 0}
 .lc-easy b{color:var(--easy)}
 .lc-g{border-bottom:2px solid var(--gram)}
 .lc-gn{color:var(--gram);font-weight:800;font-size:.6em;margin-left:1px}
 .lc-v{position:relative}
 .lc-nowrap{white-space:nowrap}
-.lc-vl{position:absolute;left:0;top:-1.55em;white-space:nowrap;font-size:.46em;font-weight:600;line-height:1;pointer-events:none}
-.lc-vl.up{top:-2.95em}
+.lc-vl{position:absolute;left:0;top:-1.3em;white-space:nowrap;font-size:.6em;font-weight:700;line-height:1;pointer-events:none}
+.lc-vl.up{top:-2.38em}
 .lc-vl::after{content:"";position:absolute;left:var(--tick,3px);top:100%;height:var(--tickh,.5em);border-left:1px dotted var(--syn);opacity:.8}.lc-short{display:none}.lc-vl.cmp .lc-full{display:none}.lc-vl.cmp .lc-short{display:inline}
 .lc-syn{color:var(--syn)}.lc-ant{color:var(--ant)}
 .lc-s-blank{box-shadow:inset 0 -.42em 0 color-mix(in srgb,var(--t-blank) 42%,transparent)}
@@ -773,21 +773,21 @@ const CSS = `
 .la-band span{font-weight:800;color:var(--t-blank)}.la-band b{font-size:.92em}.la-band em{margin-left:auto;font-style:normal;opacity:.8;font-size:.68em}
 .la-h{display:flex;align-items:center;gap:.5em;font-size:.86em;margin:1em 0 .45em;color:var(--ink);border-bottom:2px solid var(--line);padding-bottom:.2em}
 .la-h i{font-style:normal;background:var(--ink);color:var(--bg);border-radius:50%;width:1.45em;height:1.45em;display:inline-flex;align-items:center;justify-content:center;font-size:.8em}
-.la-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;font-size:.72em;line-height:1.55}
+.la-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 7mm;font-size:.8em;line-height:1.55}
 .la-grid .la-h{font-size:1.2em}
 .la-one{grid-template-columns:1fr}
 .la-term{margin-bottom:.5em}.la-term small{color:var(--sub);margin-left:.4em}.la-term p{margin:0}
 .la-hook{font-weight:800;margin:0 0 .4em}
 .la-bubble{background:color-mix(in srgb,var(--bg) 88%,var(--t-implication) 12%);border:1.5px solid var(--t-implication);border-radius:12px 12px 12px 2px;padding:.5em .8em;margin-bottom:.5em}
 .la-ana{margin:0 0 .3em}.la-pts{margin:0;padding-left:1.2em}
-.la-tts{font-size:.72em;line-height:1.5}
+.la-tts{font-size:.8em;line-height:1.5}
 .la-ttsrow{display:grid;grid-template-columns:20mm 1fr;padding:.3em 0;border-bottom:1px solid var(--line)}
 .la-ttsrow b{color:var(--head)}.la-ttsrow span{display:block;color:var(--sub)}
-.la-flow{display:grid;align-items:stretch;gap:0 .3em;font-size:.66em;line-height:1.45}
+.la-flow{display:grid;align-items:stretch;gap:0 .3em;font-size:.74em;line-height:1.45}
 .la-st{border:1.5px solid var(--line);border-top:4px solid var(--ink);border-radius:6px;padding:.4em .55em;background:var(--panel)}
 .la-st small{color:var(--sub);margin-left:.3em}.la-st p{margin:0}
 .la-arr{align-self:center;color:var(--sub)}
-.la-voc{font-size:.68em;line-height:1.45}
+.la-voc{font-size:.76em;line-height:1.45}
 .la-vr{display:grid;grid-template-columns:24mm 34mm 1fr 34mm;gap:0 .6em;padding:.3em .45em;border-bottom:1px solid var(--line)}
 .la-vr:nth-child(even){background:var(--panel)}
 .la-vh{background:var(--ink) !important;color:var(--bg);font-weight:800;border-radius:4px 4px 0 0}
@@ -795,7 +795,7 @@ const CSS = `
 .la-fig p{margin:0}.la-figen{color:var(--t-reference);font-style:italic}
 .la-check{list-style:none;padding:0;margin:0}.la-check li{padding:.3em 0;border-bottom:1px dashed var(--line)}
 .la-note{font-size:.62em;color:var(--sub);margin:0 0 .3em}
-.la-qt{display:grid;grid-template-columns:1fr 1fr;gap:.45em;font-size:.66em;line-height:1.5;padding-bottom:.45em}
+.la-qt{display:grid;grid-template-columns:1fr 1fr;gap:.45em;font-size:.74em;line-height:1.5;padding-bottom:.45em}
 .la-q{border:1.5px solid var(--line);border-radius:8px;padding:.45em .7em}
 .la-q p{margin:0}.la-qh{display:flex;justify-content:space-between;margin-bottom:.2em}.la-qh span{color:#f59e0b;letter-spacing:1px}
 .la-q em{font-style:normal;font-weight:800;color:var(--head);margin-right:.25em}
@@ -1023,7 +1023,7 @@ export function LessonClassView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, extra]);
   // 동반의어 이름표 자리 잡기 — 늘 자기 낱말 위에(선생님 2026-11-10 「동반의어가 그 자리에 안 맞는다」: 옆으로 비키면 어느 낱말 것인지 모른다).
-  // 같은 줄 앞 이름표와 겹치면 한 칸 위층으로, 거기도 겹치면 동의어 하나만. 칸 오른쪽을 넘으면 낱말 오른쪽 끝에 맞춘다.
+  // 왼쪽 맞춤 → 오른쪽 맞춤(둘 다 낱말 위) → 동의어 하나만 → 위층. 앞 이름표·윗줄 글자에 닿지 않는 첫 자리.
   useLayoutEffect(() => {
     const root = pagesRef.current;
     if (!root) return;
@@ -1033,33 +1033,61 @@ export function LessonClassView({
       const labels = Array.from(main.querySelectorAll<HTMLElement>(".lc-vl"));
       let placed: DOMRect[] = [];
       let lineTop = Number.NaN;
+      // 글자·밑줄도 장애물로(윗줄 글자에 닿지 않게) — 이름표 안 글자는 빼고
+      const textRects: DOMRect[] = [];
+      const walk = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+      for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+        if (n.parentElement?.closest(".lc-vl, .lc-ko, .lc-glines, .lc-spots, .lc-easy")) continue;
+        const range = document.createRange();
+        range.selectNodeContents(n);
+        for (const b of Array.from(range.getClientRects())) textRects.push(new DOMRect(b.left, b.top, b.width, b.height + 3));
+      }
+      // 꼬리표 칩·문법 번호는 글자보다 위로 솟는다
+      main.querySelectorAll<HTMLElement>(".lc-en .lc-tag, .lc-en .lc-gn, .lc-en .lc-g, .lc-en [class*='lc-s-']").forEach((e) => {
+        for (const b of Array.from(e.getClientRects())) textRects.push(new DOMRect(b.left, b.top, b.width, b.height + 2));
+      });
       for (const el of labels) {
-        const set = (level: 0 | 1, compact: boolean) => {
+        const set = (level: 0 | 1, compact: boolean, right: boolean) => {
           el.classList.toggle("cmp", compact);
           el.classList.toggle("up", level === 1);
           el.style.left = "";
           el.style.right = "";
-          if (el.getBoundingClientRect().right > box.right) {
+          if (right || el.getBoundingClientRect().right > box.right) {
             el.style.left = "auto";
             el.style.right = "0";
           }
           return el.getBoundingClientRect();
         };
-        let r = set(0, false);
+        let r = set(0, false, false);
         const hostTop = el.parentElement?.getBoundingClientRect().top ?? r.top;
         if (Math.abs(hostTop - lineTop) > 4) {
           lineTop = hostTop;
           placed = [];
         }
-        const tries: Array<[0 | 1, boolean]> = [
-          [0, false],
-          [1, false],
-          [0, true],
-          [1, true],
+        const blocked = (q: DOMRect) => placed.some((p) => hit(p, q)) || textRects.some((t) => hit(t, q));
+        // 늘 자기 낱말 위: 왼쪽 맞춤 → 오른쪽 맞춤 → 짧게(동의어 하나) → 위층(줄 간격이 좁아 마지막)
+        const tries: Array<[0 | 1, boolean, boolean]> = [
+          [0, false, false],
+          [0, false, true],
+          [0, true, false],
+          [0, true, true],
+          [1, false, false],
+          [1, true, false],
+          [1, true, true],
         ];
-        for (const [lv, cp] of tries) {
-          r = set(lv, cp);
-          if (!placed.some((q) => hit(q, r))) break;
+        el.style.display = "";
+        let free = false;
+        for (const [lv, cp, rt] of tries) {
+          r = set(lv, cp, rt);
+          if (!blocked(r)) {
+            free = true;
+            break;
+          }
+        }
+        // 어느 자리도 비지 않으면(옆 이름표·윗줄 글자) 겹쳐 두지 않고 뺀다
+        if (!free) {
+          el.style.display = "none";
+          continue;
         }
         // 이름표 → 낱말 잇는 선(선생님 2026-11-10 「동반의어가 그 단어랑 선이라도」): 아래층 이름표를 지나가지 않는 자리로
         const host = el.parentElement?.getBoundingClientRect();
@@ -1067,7 +1095,8 @@ export function LessonClassView({
           const scale = main.offsetWidth ? box.width / main.offsetWidth : 1;
           let x = host.left + Math.min(4, host.width / 2);
           for (const q of placed) if (q.bottom <= host.top && q.top > r.bottom - 1 && x >= q.left - 2 && x <= q.right + 2) x = q.right + 3;
-          x = Math.min(Math.max(x, host.left + 1), host.right - 1);
+          // 낱말 안이면서 이름표 아래인 자리(오른쪽 맞춤 이름표도)
+          x = Math.min(Math.max(x, host.left + 1, r.left + 2), host.right - 1, r.right - 2);
           el.style.setProperty("--tick", `${(x - r.left) / scale}px`);
           el.style.setProperty("--tickh", `${Math.max(0, host.top - r.bottom + 2) / scale}px`);
         }
