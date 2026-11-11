@@ -184,18 +184,23 @@ export async function loadLessonMaterialsLibraryData(
     // 단어 탭 단어장 + 테스트 교재·최종통합자료에서 등록한 「· 전체 단어」 단어장도 함께(선생님 2026-11-11 「단어 탭에 단어장이 다 사라졌다」)
     const { data: folders } = await supabase
       .from("vocab_folders")
-      .select("id")
+      .select("id, name")
       .eq("academy_id", academyId)
       .in("name", [LESSON_VOCAB_FOLDER, "테스트 교재"]);
     const folderIds = (folders ?? []).map((f) => f.id as string);
+    const tbFolder = new Set((folders ?? []).filter((f) => f.name !== LESSON_VOCAB_FOLDER).map((f) => f.id as string));
+    // 테스트 교재·통합자료 폴더 단어장은 수업용 자료와 이름이 같은 것만(선생님 2026-11-11 「수업용 자료랑 단어장 제목이 안 맞다」)
+    const lessonNames = new Set(visibleDocuments.filter((d) => d.kind === "lesson_pack").map((d) => String(d.name).trim()));
     if (folderIds.length) {
       const { data: sets } = await supabase
         .from("vocab_sets")
-        .select("id, title, created_at, vocab_items(count)")
+        .select("id, title, folder_id, created_at, vocab_items(count)")
         .in("folder_id", folderIds)
         .order("created_at", { ascending: false })
         .limit(200);
-      lessonVocabSets = (sets ?? []).map((s) => ({
+      lessonVocabSets = (sets ?? [])
+        .filter((s) => !tbFolder.has(s.folder_id as string) || lessonNames.has(String(s.title).trim()))
+        .map((s) => ({
         id: s.id as string,
         title: s.title as string,
         created_at: s.created_at as string,

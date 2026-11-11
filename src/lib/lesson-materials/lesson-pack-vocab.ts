@@ -60,7 +60,9 @@ export async function generateAndSaveLessonPackVocab(
   role: Role,
   input: { projectId: string },
   /** false: 부르는 쪽이 값을 따로 받는다(수업용 자료 재료 — 한 번만 받게, 선생님 2026-10-26) */
-  charge: boolean
+  charge: boolean,
+  /** 단어장만 만들 때: 워크북 빈칸 후보(gpt-5.6, 지문당 ~50초)는 건너뛴다 — 워크북이 없으면 그때 만든다(2026-11-11) */
+  opts: { skipBlankPool?: boolean } = {}
 ): Promise<
   | {
       ok: true;
@@ -233,7 +235,7 @@ export async function generateAndSaveLessonPackVocab(
     let blankCandidatePool: StoredBlankCandidatePool | null =
       (prev.blankCandidatePool as StoredBlankCandidatePool) ?? null;
 
-    if (!isBlankPoolFresh(blankCandidatePool, projectId, sourceHash) && sentences.length) {
+    if (!opts.skipBlankPool && !isBlankPoolFresh(blankCandidatePool, projectId, sourceHash) && sentences.length) {
       try {
         const vocabSet = new Set(vocab.map((v) => v.word.toLowerCase()));
         let raw = await callBlankOpenAI({

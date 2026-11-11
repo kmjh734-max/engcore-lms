@@ -357,7 +357,7 @@ async function preparePassage(
   const missingKorean = loaded.items.some((it) => String(it.english_text ?? "").trim() && !String(it.korean_text ?? "").trim());
   if (missingKorean || (needMaterial && !(pack0.vocab ?? []).length)) {
     // 단어·해석 값은 따로 받지 않는다 — 이 재료 값(지문당 한 번)에 들어 있다(선생님 2026-10-26: 두 번 뜬다)
-    const res = await generateAndSaveLessonPackVocab(role, { projectId }, false);
+    const res = await generateAndSaveLessonPackVocab(role, { projectId }, false, { skipBlankPool: vocabOnly });
     if (!res.ok) return { ok: false, message: res.message };
     loaded = await loadProject(role, profile!, projectId);
     if (!loaded) return { ok: false, message: "지문을 찾을 수 없습니다." };
@@ -418,7 +418,8 @@ async function preparePassage(
       material.chunkGloss.filter((chunks) => chunks?.length).length * 2 < sentences.length;
     // 워크북에서 재료가 필요 없는 유형만 골랐으면 만들지 않는다(있는 것은 쓴다)
     if (!needMaterial && !isTestBookMaterialFresh(material, english)) material = null;
-    if (needMaterial && (again.size || missingChunkGloss || !isTestBookMaterialFresh(material, english))) {
+    // 단어 탭(단어장만): 직독직해 끊기가 비어 있어도 다시 만들지 않는다 — 단어 정리만 쓴다(워크북·교재가 쓸 때 그쪽에서 채운다)
+    if (needMaterial && (again.size || (missingChunkGloss && !vocabOnly) || !isTestBookMaterialFresh(material, english))) {
       // 원문이 그대로면(재료 버전만 바뀌었으면) 단어 정리는 다시 쓰고 규칙으로 만드는 것만 새로
       const reuseVocab =
         !again.has("vocab") && isTestBookMaterialSameSource(material, english) && material.vocabVersion === TEST_BOOK_VOCAB_VERSION;
@@ -449,9 +450,12 @@ async function preparePassage(
         material && isTestBookMaterialSameSource(material, english) && !again.has("gloss") && !missingChunkGloss
           ? material.chunkGloss
           : undefined;
+      // 단어장만 만들 때는 직독직해 끊기·어순 덩어리(gpt-5.6)를 건너뛴다 — 저장이 지문당 1분 50초 걸렸다(선생님 2026-11-11 「단어가 별것도 아닌데」)
       const glossP = oldGloss?.length
         ? Promise.resolve(oldGloss)
-        : withAiUsage(usage, () => glossTestBookChunks({ title: project.title as string, sentences })).catch(() => undefined);
+        : vocabOnly
+          ? Promise.resolve(material?.chunkGloss)
+          : withAiUsage(usage, () => glossTestBookChunks({ title: project.title as string, sentences })).catch(() => undefined);
 
       // 중요문장: 워크북 「중요문장 어순배열」과 같은 규칙(분석서 주제문 → 빈칸 후보 핵심 문장 → 규칙)
       const report = (project.analysis_report_json ?? null) as AnalysisReportData | null;
@@ -510,7 +514,7 @@ async function preparePassage(
       };
       const bilingual = generateWorkbookLineTranslation({ passages: [passageInput] });
       const chunksP = (async () => {
-        if (bilingual.blocking.length === 0 && keyIndexes.length) {
+        if (!vocabOnly && bilingual.blocking.length === 0 && keyIndexes.length) {
           const keySet = chunkKeySet;
           const wo = await withAiUsage(usage, () =>
             generateWorkbookWordOrderWriting({
