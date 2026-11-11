@@ -22,6 +22,8 @@ import {
   splitPassageIntoLinePairs,
 } from "@/lib/lesson-materials/split-sentences";
 import { runWithConcurrency } from "@/lib/run-with-concurrency";
+import { postJson } from "@/lib/lesson-materials/post-json";
+import { PASSAGE_PREP_CONCURRENCY } from "@/lib/lesson-materials/test-book";
 import { askCreditConfirm } from "@/lib/credits/confirm-store";
 import { MockPassagePickerModal, type PickedMockPassage } from "@/components/mock-passages/MockPassagePickerModal";
 import { PassageSheet } from "@/components/passages/PassageSheet";
@@ -91,6 +93,7 @@ export function LessonMaterialsInputWizard({
   folderLabel = null,
   textbookOpen = false,
   outsideOpen = false,
+  vocabAuto = false,
 }: {
   role: "admin" | "teacher";
   /** 자료함에서 고른 폴더("unfiled"는 미분류). 없으면 미분류에 넣는다. */
@@ -101,8 +104,12 @@ export function LessonMaterialsInputWizard({
   textbookOpen?: boolean;
   /** 외부지문(수능특강 등)을 열어 준 학원인지 */
   outsideOpen?: boolean;
+  /** 저장 때 같은 이름의 단어장도 만든다(단어 탭을 켠 학원) */
+  vocabAuto?: boolean;
 }) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  /** 저장 뒤 수업용 자료·단어장을 자동으로 만드는 중 */
+  const [autoMsg, setAutoMsg] = useState<string | null>(null);
   const [passages, setPassages] = useState<PassageDraft[]>([
     { english: "", korean: "", source: "" },
   ]);
@@ -593,6 +600,49 @@ export function LessonMaterialsInputWizard({
       // 저장 완료 화면과 이어지는 링크는 입력 순서(1번부터)를 쓴다.
       // 위에서 이미 1번 지문부터 저장했으므로 그대로 둔다. 예전에 거꾸로 저장하던
       // 때의 뒤집기가 남아 있어, 「지문 1 프로젝트 열기」가 마지막 지문을 열었다.
+      // 지문을 넣으면 수업용 자료 파일과 같은 이름의 단어장을 바로 만든다(선생님 2026-11-11).
+      // 수업용 자료는 파일만 만들고(값은 열 때 묻는다), 단어장은 단어 정리를 만들어 등록한다(값 없음 — 단어 탭과 같음).
+      const autoName =
+        (folderId && folderId !== "unfiled" && folderLabel?.trim()) ||
+        workbenches.find((b) => b.title.trim())?.title.trim() ||
+        `수업자료_${new Date().toLocaleDateString("ko-KR", { month: "2-digit", day: "2-digit" }).replace(/\D/g, "")}`;
+      const autoErrors: string[] = [];
+      try {
+        setAutoMsg("수업용 자료 파일을 만들고 있습니다…");
+        const doc = await postJson<{ ok: true; id: string; name: string } | { ok: false; message: string }>(
+          "/api/lesson-materials/documents/open",
+          { op: "create", role, kind: "lesson_pack", projectIds: createdIds, name: autoName }
+        );
+        if (!doc.ok) autoErrors.push(`수업용 자료: ${doc.message}`);
+        const setName = doc.ok ? doc.name : autoName;
+        let done = 0;
+        if (!vocabAuto) throw null;
+        setAutoMsg(`단어장을 만들고 있습니다… (0/${createdIds.length})`);
+        await runWithConcurrency(createdIds, PASSAGE_PREP_CONCURRENCY, async (id) => {
+          try {
+            const r = await postJson<{ ok: boolean; message?: string }>("/api/lesson-materials/test-book", { role, op: "prepareWorkbook", projectId: id, lessonTab: true });
+            if (!r.ok) autoErrors.push(`단어 정리: ${r.message ?? ""}`);
+          } catch (e) {
+            autoErrors.push(`단어 정리: ${e instanceof Error ? e.message : "실패"}`);
+          }
+          setAutoMsg(`단어장을 만들고 있습니다… (${++done}/${createdIds.length})`);
+        });
+        const reg = await postJson<{ ok: boolean; message?: string }>("/api/lesson-materials/test-book", {
+          role,
+          op: "registerVocab",
+          id: doc.ok ? doc.id : undefined,
+          title: setName,
+          projectIds: createdIds,
+          lessonTab: true,
+        });
+        if (!reg.ok) autoErrors.push(`단어장: ${reg.message ?? ""}`);
+      } catch (e) {
+        if (e !== null) autoErrors.push(e instanceof Error ? e.message : "자동 만들기 실패");
+      } finally {
+        setAutoMsg(null);
+      }
+      if (autoErrors.length) setError(`지문은 저장했습니다. 다만 ${autoErrors.join(" · ")}`);
+
       setSavedProjectIds(createdIds);
       setSavedProjectId(createdIds[0] ?? null);
       setSavedItemsCount(totalItems);
@@ -1101,7 +1151,7 @@ export function LessonMaterialsInputWizard({
                 onClick={() => void handleSave()}
                 className="min-w-[220px]"
               >
-                {saving ? "저장 중…" : "자료 저장 완료 →"}
+                {saving ? (autoMsg ?? "저장 중…") : "자료 저장 완료 →"}
               </Button>
             </div>
           </div>

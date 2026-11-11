@@ -244,6 +244,9 @@ export function LessonMaterialsLibrary({
   ]);
 
   const totalActive = activeProjects.length;
+  // 만든 파일(수업용 자료 등)을 고르면 그 파일의 지문으로 아래 바를 띄운다(선생님 2026-11-11)
+  const [docPickIds, setDocPickIds] = useState<string[]>([]);
+  useEffect(() => setDocPickIds([]), [libraryTab]);
   const selectedIds = [...selected];
   const selectedCount = selectedIds.length;
   /**
@@ -275,6 +278,8 @@ export function LessonMaterialsLibrary({
       return ar - br || ao - bo || ac - bc;
     });
   })();
+  /** 아래 바가 쓰는 지문 — 지문을 고르지 않았으면 고른 파일(수업용 자료 등)의 지문 */
+  const barIds = selectedInInputOrder.length > 0 ? selectedInInputOrder : docPickIds;
   const inTrash = folderFilter === "trash";
   const tabComingSoon = false;
   /** 만든 파일을 보여 주는 탭. 워크북 탭은 파일만 있고 지문별 목록이 없다. */
@@ -1006,6 +1011,10 @@ export function LessonMaterialsLibrary({
             role={role}
             kind={documentKind}
             documents={tabDocuments}
+            onSelectedChange={(docs) => {
+              const alive = new Set(activeProjects.map((p) => p.id));
+              setDocPickIds([...new Set(docs.flatMap((d) => (Array.isArray(d.project_ids) ? d.project_ids : [])))].filter((id) => alive.has(id)));
+            }}
           />
         ) : null}
         {documentKind === "workbook" && !inTrash && (data.documents ?? []).some((d) => d.kind === "test_draw") ? (
@@ -1255,10 +1264,10 @@ export function LessonMaterialsLibrary({
       {!inTrash && libraryTab !== "vocab" ? (
         <LessonMaterialsSelectionBar
           role={role}
-          selectedCount={selectedCount}
-          selectedIds={selectedInInputOrder}
+          selectedCount={barIds.length}
+          selectedIds={barIds}
           testBookOpen={false}
-          onIntegrated={() => setIntegratedOpen({ preselected: selectedInInputOrder })}
+          onIntegrated={() => setIntegratedOpen({ preselected: barIds })}
           onVocab={
             data.vocabTabOpen
               ? () => {

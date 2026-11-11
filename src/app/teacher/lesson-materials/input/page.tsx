@@ -1,6 +1,7 @@
 import { LessonMaterialsInputWizard } from "@/components/lesson-materials/LessonMaterialsInputWizard";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isAcademyFeatureOn } from "@/lib/academies/features";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { isTextbookPassageOpen } from "@/lib/textbooks/shared-passages";
 import { isOutsidePassageOpen } from "@/lib/outside-passages/access";
@@ -30,9 +31,11 @@ export default async function TeacherLessonMaterialsInputPage({
   // 교과서 본문은 열어 준 학원에서만 불러올 수 있다.
   const profile = await getCurrentProfile();
   const admin = createAdminClient();
-  const [textbookOpen, outsideOpen] = await Promise.all([
+  const [textbookOpen, outsideOpen, vocabAuto] = await Promise.all([
     isTextbookPassageOpen(admin, profile?.academy_id),
-    isOutsidePassageOpen(admin, profile?.academy_id),
+    isOutsidePassageOpen(admin, profile?.academy_id),,
+    // 단어 탭을 켠 학원만 지문 저장 때 단어장을 자동으로 만든다(단어 정리 값이 없는 학원) — 선생님 2026-11-11
+    isAcademyFeatureOn(admin, profile?.academy_id, "lesson_vocab_tab"),
   ]);
   return (
     <LessonMaterialsInputWizard
@@ -41,6 +44,7 @@ export default async function TeacherLessonMaterialsInputPage({
       folderLabel={folderLabel}
       textbookOpen={textbookOpen}
       outsideOpen={outsideOpen}
+      vocabAuto={vocabAuto}
     />
   );
 }

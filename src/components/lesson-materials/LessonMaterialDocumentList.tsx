@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TestDrawDialog } from "@/components/lesson-materials/test-book/TestDrawDialog";
 import { WorkbookCreateModal } from "@/components/lesson-materials/WorkbookCreateModal";
 import { postJson } from "@/lib/lesson-materials/post-json";
@@ -61,10 +61,13 @@ export function LessonMaterialDocumentList({
   role,
   kind,
   documents,
+  onSelectedChange,
 }: {
   role: "admin" | "teacher";
   kind: LessonMaterialDocumentKind;
   documents: LessonMaterialDocumentRow[];
+  /** 고른 파일이 바뀔 때(수업용 자료 파일을 골라도 아래 바로 워크북·분석서를 만들게 — 선생님 2026-11-11) */
+  onSelectedChange?: (docs: LessonMaterialDocumentRow[]) => void;
 }) {
   const [rows, setRows] = useState(documents);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -84,6 +87,11 @@ export function LessonMaterialDocumentList({
   }
 
   const allChecked = rows.length > 0 && rows.every((r) => selected.has(r.id));
+  const onSelectedRef = useRef(onSelectedChange);
+  onSelectedRef.current = onSelectedChange;
+  useEffect(() => {
+    onSelectedRef.current?.(rows.filter((r) => selected.has(r.id)));
+  }, [selected, rows]);
 
   function toggleSelect(id: string, shiftKey: boolean) {
     setSelected((prev) => {
