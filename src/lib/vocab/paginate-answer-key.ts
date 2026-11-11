@@ -40,9 +40,11 @@ function fillColumns(lines: number[], cap: number): number[][] {
 
 export function paginateAnswerKey(
   questions: PrintExamQuestion[],
-  size: "a4" | "b5"
+  size: "a4" | "b5",
+  /** 화면에서 단이 넘친 만큼 줄여 다시 나눌 줄 수(어림이 빗나간 답·머리 높이를 실측으로 바로잡음) */
+  shrinkLines = 0
 ): PrintExamQuestion[][][] {
-  const budget = LINES_PER_COLUMN[size];
+  const budget = Math.max(8, LINES_PER_COLUMN[size] - shrinkLines);
   const lines = questions.map((q) => answerLines(q.answer, UNITS_PER_LINE[size]));
 
   // 1) 쪽 나누기: 한 단 budget 줄로 세 단을 차례로 채운다

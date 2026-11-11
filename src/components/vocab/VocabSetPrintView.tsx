@@ -8,6 +8,7 @@ import {
   useCallback,
   useDeferredValue,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -454,11 +455,27 @@ export function VocabSetPrintView({
   const examBasicQuestions = examPagination.basic;
   const examExampleQuestions = examPagination.examples;
 
+  // 정답지 단이 실제로 넘치면(답 길이 어림이 빗나감) 한 단 줄 수를 줄여 다시 나눈다 — 잘림 방지(2026-11-11)
+  const [answerShrink, setAnswerShrink] = useState(0);
+  useEffect(() => {
+    setAnswerShrink(0);
+  }, [showAnswerKey, examGenerated.questions, size, fontScale, studentName]);
+
   const answerKeyPages = useMemo(() => {
     if (!showAnswerKey) return [];
     // 3단 밀집 배치 — 답 길이로 쪽을 채우고 세 단을 고르게
-    return paginateAnswerKey(examGenerated.questions, size);
-  }, [showAnswerKey, examGenerated.questions, size]);
+    return paginateAnswerKey(examGenerated.questions, size, answerShrink);
+  }, [showAnswerKey, examGenerated.questions, size, answerShrink]);
+
+  useLayoutEffect(() => {
+    if (answerKeyPages.length === 0) return;
+    const bodies = document.querySelectorAll<HTMLElement>(".vocab-answer-key-body");
+    let overflow = false;
+    bodies.forEach((el) => {
+      if (el.clientHeight > 0 && el.scrollHeight > el.clientHeight + 1) overflow = true;
+    });
+    if (overflow && answerShrink < 40) setAnswerShrink((n) => n + 2);
+  }, [answerKeyPages, answerShrink]);
 
   const bodyPageCount =
     mode === "exam"
