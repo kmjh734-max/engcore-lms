@@ -18,4 +18,7 @@ export interface VocabPassageGroup {
   label: string;
   from: number;
   to: number;
+  /** 지문 출처·제목(단어 탭 전체 단어장·지문별 시험지에 — 2026-11-11) */
+  source?: string | null;
+  title?: string | null;
 }

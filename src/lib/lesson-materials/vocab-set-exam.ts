@@ -20,12 +20,14 @@ function splitList(raw: string | null | undefined): string[] {
  * 단어 시험지는 material.vocab만 읽으므로 나머지 재료는 빈 값이다.
  */
 export function vocabSetAsProject(
-  set: { id: string; title: string },
-  items: VocabItem[]
+  set: { id: string; title: string; source?: string | null },
+  items: VocabItem[],
+  /** 지문별로 나눠 넘길 때 이 조각의 첫 단어 번호 - 1(번호는 단어장 전체 차례 그대로) */
+  offset = 0
 ): TestBookProjectInput {
   // 번호는 단어장 인쇄(단어 탭 「인쇄」)와 같게 — 빼는 단어가 있어도 뒤 번호가 당겨지지 않는다
   const vocab: TestBookVocabRow[] = items
-    .map((i, n) => ({ i, listNo: n + 1 }))
+    .map((i, n) => ({ i, listNo: offset + n + 1 }))
     .filter(({ i }) => i.word?.trim() && i.meaning?.trim() && !isProperNounVocabStrict(i.word, i.meaning))
     .map(({ i, listNo }) => ({
       word: fixVocabWord(i.word.trim()),
@@ -44,10 +46,29 @@ export function vocabSetAsProject(
     id: set.id,
     title: set.title,
     titleEn: null,
-    source: null,
+    source: set.source ?? null,
     sentences: [],
     // 「재료가 있는 지문」으로 세도록 비어 있지 않은 값을 둔다(단어 시험지는 읽지 않는다)
     content: {} as OnePageContent,
     material,
   };
+}
+
+/**
+ * 단어장이 수업용 자료에서 만든 것이면 지문마다 나눠 넘긴다(선생님 2026-11-11 「전체 단어장도 지문마다 출처·제목으로」,
+ * 「단어 시험지도 지문마다 뽑게」). 지문 구간을 못 찾으면 예전처럼 한 덩어리.
+ */
+export function vocabSetAsProjects(
+  set: { id: string; title: string },
+  items: VocabItem[],
+  groups: Array<{ from: number; to: number; source?: string | null; title?: string | null; label: string }> | undefined
+): TestBookProjectInput[] {
+  if (!groups || groups.length < 2) return [vocabSetAsProject(set, items)];
+  return groups.map((g, gi) =>
+    vocabSetAsProject(
+      { id: `${set.id}#${gi + 1}`, title: g.title?.trim() || g.label, source: g.source ?? null },
+      items.slice(g.from - 1, g.to),
+      g.from - 1
+    )
+  );
 }

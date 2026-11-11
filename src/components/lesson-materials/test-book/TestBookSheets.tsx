@@ -1107,7 +1107,29 @@ export const AllVocabSheets = memo(function AllVocabSheets({
       <div>{showForms ? "파생어" : null}</div>
     </div>
   );
-  const blocks: Block[] = rows.map((r) => ({
+  // 지문이 둘 이상이면 지문이 바뀔 때마다 「01 · 출처 · 제목」 줄(선생님 2026-11-11 「전체 단어장도 지문마다 구분」)
+  const byPassage = new Map(projects.map((p) => [indexOf(p.id) + 1, p] as const));
+  const split = byPassage.size > 1;
+  const blocks: Block[] = rows.flatMap((r, i) => {
+    const out: Block[] = [];
+    if (split && (i === 0 || rows[i - 1]!.passage !== r.passage)) {
+      const p = byPassage.get(r.passage);
+      out.push({
+        key: `allp${r.passage}-${r.no}`,
+        node: (
+          <div style={{ display: "flex", gap: "2mm", alignItems: "baseline", margin: i === 0 ? "1mm 0 0.8mm" : "3mm 0 0.8mm", padding: "0.8mm 2mm", background: "#eef0f6", borderLeft: "1.2mm solid var(--tb-accent,#15171c)", fontSize: "9pt", fontWeight: 700 }}>
+            <span>{String(r.passage).padStart(2, "0")}</span>
+            {p?.source?.trim() ? <span style={{ color: "#4b515c" }}>{p.source.trim()}</span> : null}
+            <span>{p?.title?.trim() || "지문"}</span>
+          </div>
+        ),
+      });
+    }
+    out.push(row(r));
+    return out;
+  });
+  function row(r: AllRow): Block {
+    return {
     key: `all${r.no}`,
     node: (
       <div className="tb-row tb-vrow" style={{ gridTemplateColumns: grid }}>
@@ -1124,7 +1146,8 @@ export const AllVocabSheets = memo(function AllVocabSheets({
         {showForms ? <div className={r.row.forms.length ? "tb-en" : "tb-nil"}>{r.row.forms.length ? <FormList forms={r.row.forms} /> : "—"}</div> : <div />}
       </div>
     ),
-  }));
+    };
+  }
   return (
     <PagedSheet
       blocks={blocks}

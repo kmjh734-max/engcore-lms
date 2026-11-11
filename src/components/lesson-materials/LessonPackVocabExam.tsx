@@ -109,6 +109,23 @@ export function LessonPackVocabExam({
   const [saved, setSaved] = useState<SavedVocabExam | null>(savedExam);
   const [pinned, setPinned] = useState(!!savedExam);
   const range = useMemo(() => vocabExamRange(rangeFrom, rangeTo, wordCount), [rangeFrom, rangeTo, wordCount]);
+  /** 지문마다 단어 번호 구간(출처 · 제목) — 지문별로 뽑기 */
+  const passageRanges = useMemo(() => {
+    const out: Array<{ passage: number; label: string; from: number; to: number }> = [];
+    for (const r of allVocabRows(ready, indexOf)) {
+      const last = out.at(-1);
+      if (last && last.passage === r.passage) {
+        last.from = Math.min(last.from, r.no);
+        last.to = Math.max(last.to, r.no);
+      } else {
+        const p = projects[r.passage - 1];
+        const label = [p?.source?.trim(), p?.title?.trim()].filter(Boolean).join(" · ") || `지문 ${r.passage}`;
+        out.push({ passage: r.passage, label, from: r.no, to: r.no });
+      }
+    }
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, projects]);
   const caps = useMemo(() => vocabExamCaps(projects, range), [projects, range]);
 
   // 유형별 문항 수 · 정답지 · 번호순 · 단어장 — 이 브라우저에 기억한다
@@ -343,6 +360,38 @@ export function LessonPackVocabExam({
             }}
             onInOrder={chooseInOrder}
           />
+
+          {passageRanges.length > 1 ? (
+            // 지문마다 뽑기(선생님 2026-11-11) — 누르면 그 지문 단어 번호로 출제 범위를 맞춘다
+            <div className="space-y-1">
+              <p className="text-xs font-bold text-slate-500">지문별로 뽑기</p>
+              <div className="flex max-h-48 flex-col gap-1 overflow-y-auto">
+                {passageRanges.map((g) => {
+                  const on = range != null && range.from === g.from && range.to === g.to;
+                  return (
+                    <button
+                      key={g.passage}
+                      type="button"
+                      onClick={() => {
+                        setPinned(false);
+                        if (on) {
+                          setRangeFrom(0);
+                          setRangeTo(0);
+                        } else {
+                          setRangeFrom(g.from);
+                          setRangeTo(g.to);
+                        }
+                      }}
+                      className={`rounded-md border px-2 py-1 text-left text-[11px] leading-snug ${on ? "border-violet-500 bg-violet-50 font-bold text-violet-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
+                      title={`${g.from}~${g.to}번`}
+                    >
+                      {String(g.passage).padStart(2, "0")} · {g.label} <span className="text-slate-400">({g.from}~{g.to})</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
 
           <VocabExamControls value={counts} onChange={chooseCounts} caps={caps} />
           {short.length ? (

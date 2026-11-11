@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { LessonPackVocabExam } from "@/components/lesson-materials/LessonPackVocabExam";
 import { loadVocabSetPrintData } from "@/lib/vocab/load-vocab-set-print";
-import { vocabSetAsProject } from "@/lib/lesson-materials/vocab-set-exam";
+import { vocabSetAsProjects } from "@/lib/lesson-materials/vocab-set-exam";
 import { getAcademyBrandingForCurrentUser } from "@/lib/tenant/academy-branding";
 import Link from "next/link";
 
@@ -31,7 +31,7 @@ export default async function AdminVocabSetExamPage({
     <LessonPackVocabExam
       role="admin"
       docName={loaded.set.title}
-      projects={[vocabSetAsProject(loaded.set, loaded.items)]}
+      projects={vocabSetAsProjects(loaded.set, loaded.items, loaded.passageGroups)}
       fromWordSet
       listOnly={view === "list"}
       editHref={`/admin/vocab/set/${loaded.set.id}`}

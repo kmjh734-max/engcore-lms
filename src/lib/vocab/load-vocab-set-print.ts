@@ -39,10 +39,12 @@ export async function loadVocabPassageGroups(
   const byId = new Map((projects ?? []).map((p) => [p.id as string, p] as const));
   const owner = new Map<string, string>();
   const labelOf = new Map<string, string>();
+  const metaOf = new Map<string, { source: string | null; title: string | null }>();
   for (const id of ids) {
     const p = byId.get(id);
     if (!p) continue;
     labelOf.set(id, String(p.source || p.title || "지문"));
+    metaOf.set(id, { source: (p.source as string | null) ?? null, title: (p.title as string | null) ?? null });
     for (const row of (Array.isArray(p.words) ? p.words : []) as Array<{ word?: unknown }>) {
       const k = String(row?.word ?? "").trim().toLowerCase();
       if (k && !owner.has(k)) owner.set(k, id);
@@ -60,10 +62,10 @@ export async function loadVocabPassageGroups(
   });
   if (groups.length < 2) return [];
   const seen = new Map<string, number>();
-  return groups.map(({ label, from, to }) => {
+  return groups.map(({ id, label, from, to }) => {
     const n = (seen.get(label) ?? 0) + 1;
     seen.set(label, n);
-    return { label: n > 1 ? `${label} (${n})` : label, from, to };
+    return { label: n > 1 ? `${label} (${n})` : label, from, to, ...(metaOf.get(id) ?? {}) };
   });
 }
 
