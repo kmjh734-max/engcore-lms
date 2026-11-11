@@ -828,7 +828,8 @@ export function LessonClassView({
   /** 재료(단어 정리·해석)를 새로 만든 뒤 지문 데이터를 다시 읽는다 */
   onPrepared?: () => Promise<void>;
 }) {
-  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
+  // 최종통합자료 안(embedded)은 학생 교재라 학생용으로(선생님 2026-11-11 「교사용이 들어가면 안 된다」)
+  const [settings, setSettings] = useState<Settings>(embedded ? { ...DEFAULT_SETTINGS, mode: "student" } : DEFAULT_SETTINGS);
   useEffect(() => {
     if (embedded) return;
     try {
