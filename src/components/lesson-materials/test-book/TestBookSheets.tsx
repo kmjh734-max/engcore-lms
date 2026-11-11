@@ -2308,22 +2308,30 @@ export const VocabExamAnswerSheets = memo(function VocabExamAnswerSheets({
 }) {
   const student = useContext(TestBookStudent);
   if (!exam.total) return null;
-  const blocks: Block[] = exam.sections.map((sec) => ({
-    key: `va-${sec.kind}`,
-    node: (
-      <dl className={sec.items[0]?.choices ? "tb-arow" : "tb-arow tb-arow-v"}>
-        <dt>{sec.title}</dt>
-        <dd>
-          {sec.items.map((it) => (
-            <span key={it.no}>
-              <b>{it.no}</b>
-              {it.answer}
-            </span>
-          ))}
-        </dd>
-      </dl>
-    ),
-  }));
+  // 한 유형을 통째로 한 덩어리로 넣으면 60·80문항에서 한 쪽보다 길어져 아래가 잘렸다(선생님 2026-11-11)
+  // → 정답을 몇 개씩 잘라 덩어리마다 쪽을 넘길 수 있게 한다. 유형 이름은 첫 덩어리에만.
+  const blocks: Block[] = exam.sections.flatMap((sec) => {
+    const mc = !!sec.items[0]?.choices;
+    const size = mc ? 24 : 6;
+    const chunks: VocabExamItem[][] = [];
+    for (let i = 0; i < sec.items.length; i += size) chunks.push(sec.items.slice(i, i + size));
+    return chunks.map((chunk, ci) => ({
+      key: `va-${sec.kind}-${ci}`,
+      node: (
+        <dl className={mc ? "tb-arow" : "tb-arow tb-arow-v"} style={ci < chunks.length - 1 ? { marginBottom: 0 } : undefined}>
+          <dt>{ci === 0 ? sec.title : ""}</dt>
+          <dd>
+            {chunk.map((it) => (
+              <span key={it.no}>
+                <b>{it.no}</b>
+                {it.answer}
+              </span>
+            ))}
+          </dd>
+        </dl>
+      ),
+    }));
+  });
   return (
     <PagedSheet
       blocks={blocks}
