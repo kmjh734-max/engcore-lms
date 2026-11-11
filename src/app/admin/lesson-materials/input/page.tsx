@@ -33,7 +33,7 @@ export default async function AdminLessonMaterialsInputPage({
   const admin = createAdminClient();
   const [textbookOpen, outsideOpen, vocabAuto] = await Promise.all([
     isTextbookPassageOpen(admin, profile?.academy_id),
-    isOutsidePassageOpen(admin, profile?.academy_id),,
+    isOutsidePassageOpen(admin, profile?.academy_id),
     // 단어 탭을 켠 학원만 지문 저장 때 단어장을 자동으로 만든다(단어 정리 값이 없는 학원) — 선생님 2026-11-11
     isAcademyFeatureOn(admin, profile?.academy_id, "lesson_vocab_tab"),
   ]);
