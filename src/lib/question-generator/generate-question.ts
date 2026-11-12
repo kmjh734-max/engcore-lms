@@ -1086,6 +1086,46 @@ export function blankedAbbreviation(raw: Record<string, unknown>, passage: strin
 }
 
 /**
+ * 2026-11-12 점검(1d076c9f C57): 지문의 마지막 문장 「The following story illustrates how these different voting methods work.」를
+ * 빈칸으로 지웠다 — 뒤에 올 글을 예고하는 문장이라 학생 지문에는 근거가 없고, 앞 문장에 이어지는 오답이 정답처럼 읽혔다.
+ * 빈칸이 지문 맨 끝이고 지운 원문 문장이 「다음에 올 내용」을 가리키면 다시 만든다.
+ */
+export function blankedForwardPointer(raw: Record<string, unknown>, passage: string): string | null {
+  const modified = String(raw.passageModified ?? "").replace(/<[^>]+>/g, "").trim();
+  if (!/_{3,}[\s.?!"”’)]*$/.test(modified)) return null;
+  const sentences = passage.replace(/\s+/g, " ").trim().split(/(?<=[.?!]["”’)]?)\s+(?=[A-Z"“‘(])/);
+  const last = sentences[sentences.length - 1] ?? "";
+  if (/\b(following|below|as follows)\b|\bnext (story|example|section|part|passage|paragraph)\b/i.test(last)) {
+    return "빈칸으로 지운 마지막 문장이 뒤에 이어질 글을 예고하는 문장이라(following·below) 학생 지문 안에 근거가 없습니다. 글의 내용을 담은 다른 문장을 빈칸으로 합니다.";
+  }
+  return null;
+}
+
+/**
+ * 2026-11-12 점검(1d076c9f B48): 문장삽입 ⑤가 지문 맨 끝(마지막 문장 뒤)에 놓였다 — 삽입문을 뺀 지문이 5문장뿐이라
+ * 번호가 끝까지 밀린 것. 시험에서는 자리 번호가 문장 사이(또는 첫 문장 앞)에만 온다.
+ * 맨 끝 ⑤를 지우고 ①을 첫 문장 앞에 두어 한 칸씩 민다(정답·해설 번호도 함께). 버리지 않고 고친다.
+ * 정답이 맨 끝 자리면(삽입문이 글의 마지막 문장) 고칠 수 없어 까닭을 돌려준다.
+ */
+export function moveEndInsertionSlot(payload: { passageModified?: string | null; correctAnswer?: unknown; explanation?: string | null }): string | null {
+  const text = String(payload.passageModified ?? "");
+  const m = text.match(/\s*\(?\s*⑤\s*\)?\s*$/);
+  if (!m) return null;
+  const marks = [...text.matchAll(/[①②③④⑤]/g)].map((x) => x[0]).join("");
+  if (marks !== "①②③④⑤") return null;
+  const key = Number(String(payload.correctAnswer ?? "").replace(/[^0-9]/g, ""));
+  if (key === 5) return "삽입문이 글의 마지막 문장이라 ⑤가 지문 맨 끝에 놓입니다. 글 가운데 문장을 삽입문으로 고릅니다.";
+  if (!(key >= 1 && key <= 4)) return null;
+  const paren = /\(\s*①\s*\)/.test(text);
+  const next: Record<string, string> = { "①": "②", "②": "③", "③": "④", "④": "⑤" };
+  const body = text.slice(0, m.index).replace(/[①②③④]/g, (c) => next[c]!);
+  payload.passageModified = `${paren ? "( ① )" : "①"} ${body.trimStart()}`;
+  payload.correctAnswer = typeof payload.correctAnswer === "number" ? key + 1 : String(key + 1);
+  if (payload.explanation) payload.explanation = String(payload.explanation).replace(/[①②③④]/g, (c) => next[c]!);
+  return null;
+}
+
+/**
  * 2026-10-12 점검(a27935eb A18): 「This is the Bronx in the New York of the early 1970s, …」를 빈칸으로 지웠는데
  * 정답 보기가 「among diverse Bronx residents」였다 — Bronx는 학생 지문 어디에도 없다.
  * 정답 보기의 고유명사(문장 가운데 대문자 낱말)·연도가 원문에는 있고 빈칸 뚫린 지문에는 없으면 다시 만든다.
@@ -3509,6 +3549,8 @@ ${opts.setNote.slice(0, 1800)}`] : []),
     if (abbr) throw new Error(abbr);
     const blankedName = blankedOnlyNameInKey(raw, passage);
     if (blankedName) throw new Error(blankedName);
+    const forward = blankedForwardPointer(raw, passage);
+    if (forward) throw new Error(forward);
   }
   if (option.aingkaCode === "함축의미추론") {
     const dual = dualFunctionLeak(raw, passage);
@@ -3525,6 +3567,10 @@ ${opts.setNote.slice(0, 1800)}`] : []),
     passage,
     forcedInstruction
   );
+  if (option.type === "sentence_insertion") {
+    const endSlot = moveEndInsertionSlot(payload as { passageModified?: string | null; correctAnswer?: unknown; explanation?: string | null });
+    if (endSlot) throw new Error(endSlot);
+  }
   // 보기 계획을 근거로 남긴다(해설·점검에서 쓴다). 보기를 섞어도 문장으로 찾을 수 있게 보기 글을 함께 적는다
   if (planTypes && Array.isArray(raw.choicePlan)) {
     const rawChoices = Array.isArray(raw.choices) ? (raw.choices as Array<{ number?: unknown; text?: unknown }>) : [];
