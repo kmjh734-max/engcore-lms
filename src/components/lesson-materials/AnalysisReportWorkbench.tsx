@@ -490,6 +490,15 @@ export function AnalysisReportWorkbench({
     let m = notesCache.get(p.id);
     if (!m) {
       m = sentenceNotesFor(sentences.map((s) => s.enChunks.map((c) => c.text).join(" ").trim()), p.onePageContent);
+      // 함축은 문장마다 한 곳에만(선생님 2026-11-13 「함축이 두 개가 들어가 있어」): 분석서 표시(수업용 자료 출제 자리와 맞춘 것)가
+      // 이미 「함축 의미 → 뜻」을 찍는 문장에서는 1장 자료 재료의 함축 주석을 뺀다. 지칭 주석은 그대로.
+      for (const [i, list] of [...m]) {
+        const tagged = (sentences[i]?.markup?.tagSpans ?? []).some((t) => t.tag === "함축 의미" && t.paraphrase);
+        if (!tagged) continue;
+        const kept = list.filter((n) => n.kind !== "imp");
+        if (kept.length) m.set(i, kept);
+        else m.delete(i);
+      }
       notesCache.set(p.id, m);
     }
     return m;
