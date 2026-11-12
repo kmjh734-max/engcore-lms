@@ -1197,6 +1197,14 @@ function checkTitleSubject(raw: Record<string, unknown>, key: number, passage: s
   if (inPassage.length === 0) return `글감 낱말(${tokens.join(", ")})이 지문에 없습니다. 지문에 실제로 쓰인 글감 낱말을 고릅니다.`;
   const choices = Array.isArray(raw.choices) ? (raw.choices as Array<{ number?: unknown; text?: unknown }>) : [];
   const keyText = String(choices.find((c) => Number(c.number) === key)?.text ?? "");
+  /*
+   * 정답 제목 「From X to Y」(2026-11-12 시험): 비교·주장하는 글인데 변화처럼 읽히거나 무엇에서 무엇으로인지 흐렸다
+   * ("From Intense Happiness to Frequent Small Joys", "From Mine Stairs To Everyday Innovations That Ease Work").
+   * 저장된 제목 정답 70개 중 5개가 이 꼴이고 그중 3개가 조건부였다.
+   */
+  if (/^\s*from\b/i.test(keyText)) {
+    return `정답 제목 「${keyText.slice(0, 80)}」이 「From X to Y」 꼴이라 뜻이 흐립니다. 글감과 필자가 하는 말을 그대로 드러내는 꼴(How/Why …, 「글감: 하는 말」, 명사구)로 씁니다.`;
+  }
   const keyWords = planNorm(keyText).split(" ");
   if (!inPassage.some((t) => keyWords.some((k) => k.startsWith(stem(t))))) {
     return `정답 제목 「${keyText.slice(0, 80)}」에 글감(${inPassage.join(", ")})이 없어 무슨 글인지 드러나지 않습니다. 글감을 쉬운 말 그대로 넣고 필자의 말을 붙입니다(비유 금지).`;
