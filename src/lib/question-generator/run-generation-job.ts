@@ -8,6 +8,8 @@ import {
   blankChoicesCheckable,
   verifyBlankChoices,
   repairDistractors,
+  polishTitleChoices,
+  titlePolishable,
   checkSubjectiveQuestion,
   PER_CHOICE_TYPES,
   verifyChoicesIndependently,
@@ -339,6 +341,12 @@ async function generateWithValidation(opts: {
             );
             return perChoice.verdict === "drop" ? perChoice : first;
           };
+          // 영어 제목 보기는 판정 전에 영어만 한 번 다듬는다(뜻은 그대로, 2026-11-12)
+          if (opts.option.type === "title" && titlePolishable(payload)) {
+            await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
+              polishTitleChoices({ passage: cleanSourcePassage(opts.passage), payload })
+            );
+          }
           let solved = await runChecks();
           /*
            * 낯선 낱말 때문에만 걸렸으면 문항 전체를 다시 만들지 않고 그 낱말만 쉬운 말로 바꾼 뒤 한 번 더 본다

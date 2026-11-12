@@ -422,6 +422,61 @@ export async function verifyBlankChoices(opts: { payload: GeneratedQuestionPaylo
 }
 
 /*
+ * 영어 제목 보기 다듬기(2026-11-12). 시험 작업 두 번에서 영어 제목 15문항 중 6문항이 「영어가 어색·뜻이 흐림」 조건부였다 —
+ * "Extending Tools To Reveal …", "Tools Converting Signals Only Beyond Senses", "Fighting in the OED Signaling …".
+ * 만들기 지시에 규칙을 넣어도 그대로 나왔고(8문항 중 4문항) 보기별 판정도 지나쳤다. 그래서 걸러 내지 않고,
+ * 영어 제목은 늘 한 번 다듬는다(뜻·참거짓은 그대로, 자연스러운 보기는 그대로 돌려준다). 같은 15문항에 돌려 보니
+ * 지적된 보기를 모두 고치고 나머지 60여 개는 손대지 않았다. 호출 하나(low) — 시험 scripts/tmp-rv/qg-1112/_polish-try.mts
+ */
+const POLISH_TITLE_SYSTEM = `You are a native-English editor of Korean high-school exam items. You get five English TITLE choices for a passage. Rewrite each one ONLY as far as needed so that it reads as a natural, clear English title (like a book chapter or magazine headline) that a student understands at first reading.
+Keep each choice's meaning, claim, scope and truth value exactly: a correct title stays correct, a wrong title stays wrong in the same way. Do not add or remove information, do not make choices more alike, keep the capitalization style and about the same length.
+Fix these patterns: a gerund opening that makes the topic noun look like its object ("Extending Tools To Reveal Signals" → "Tools That Reveal Signals"); a relative clause reduced to a bare participle ("Tools Converting Signals Only Beyond Senses" → "Tools That Convert Only Imperceptible Signals"; "Fighting in the OED Signaling X" → "How 'Fighting' in the OED Signals X"); misplaced only/even/alone; a verb left without its object ("Leaving Out Lets Readers Infer"); vague tails ("Without Lasting Control"); a "because/as" clause that contradicts its own main clause.
+If a choice is already natural, return it unchanged.
+Return ONE JSON object: {"choices":[{"number":1,"text":"..."}]}`;
+
+export function titlePolishable(payload: GeneratedQuestionPayload): boolean {
+  if (process.env.QG_POLISH_TITLE === "0") return false;
+  const texts = (payload.choices ?? []).map((c) => String(c.text ?? ""));
+  return texts.length === 5 && texts.every((t) => /[A-Za-z]/.test(t) && !/[가-힣]/.test(t));
+}
+
+/** 고친 보기가 하나라도 있으면 true */
+export async function polishTitleChoices(opts: { passage: string; payload: GeneratedQuestionPayload }): Promise<boolean> {
+  const { payload } = opts;
+  if (!titlePolishable(payload)) return false;
+  const lines = (payload.choices ?? []).map((c) => `${c.number}. ${c.text}`).join("\n");
+  let raw: Record<string, unknown>;
+  try {
+    raw = (await questionGeneratorChatJsonWithRetry({
+      system: POLISH_TITLE_SYSTEM,
+      user: `PASSAGE:\n${compact(opts.passage)}\n\nTITLE CHOICES:\n${lines}`,
+      temperature: 0,
+      maxTokens: 1500,
+      reasoningEffort: "low",
+      preferredModels: [SOLVE_MODEL],
+      cacheKey: "qg-polish-title",
+    })) as Record<string, unknown>;
+  } catch {
+    return false;
+  }
+  const rows = Array.isArray(raw.choices) ? (raw.choices as Array<{ number?: unknown; text?: unknown }>) : [];
+  if (rows.length !== 5) return false;
+  const words = (t: string) => t.trim().split(/\s+/).length;
+  let changed = 0;
+  const next = (payload.choices ?? []).map((c) => {
+    const r = rows.find((x) => Number(x.number) === Number(c.number));
+    const text = typeof r?.text === "string" ? r.text.trim() : "";
+    // 뜻을 바꿨을 법한 큰 변화(낱말 수 ±5 초과)나 한글이 섞인 답은 받지 않는다
+    if (!text || text === c.text || /[가-힣]/.test(text) || Math.abs(words(text) - words(String(c.text))) > 5) return c;
+    changed += 1;
+    return { ...c, text };
+  });
+  if (!changed) return false;
+  payload.choices = next;
+  return true;
+}
+
+/*
  * 정답처럼 읽히는 오답만 다시 쓴다(2026-11-12, 선생님 「조건부도 안 나왔으면」 + 10-13 「버릴 것 대신 고친다」).
  * 문항 전체를 다시 만들면 값이 열 배쯤 들고 같은 흠이 또 나온다. 걸린 보기 한둘과 해설의 그 대목만 바꾸고,
  * 부른 쪽이 같은 판정을 한 번 더 돌린다. 정답·다른 보기·지문은 건드리지 않는다.

@@ -99,7 +99,15 @@ export function titleChoiceCraft(en: boolean): string {
 - 정답: 글감(무엇에 관한 글인지)을 쉬운 말로 밝히고 + 그에 대해 필자가 하는 말. 정답만 읽어도 무슨 글인지 알 수 있어야 한다. 원문 문장 복사 금지(글감 낱말은 그대로 써도 된다). ${en ? "Title Case" : "자연스러운 한국어"}.
 - 비유·수수께끼·시적 표현 금지, 글감을 막연한 말로 가리기 금지 (전수조사 2026-10-04: 제목 정답 17%가 무슨 글인지 드러나지 않았다 —
   'A Pledge Still Out of Reach', 'When Planned Reserves Meet Present Lures', 'A Leaner Method That Opened New Visual Possibilities').
-- 강한 오답: 글감은 같되 메시지 빗나감 / 범위 오류. 오답도 직설적으로 쓴다(정답과 톤을 맞추되 모두 분명하게).`;
+- 강한 오답: 글감은 같되 메시지 빗나감 / 범위 오류. 오답도 직설적으로 쓴다(정답과 톤을 맞추되 모두 분명하게).
+${
+    en
+      ? `- 영어 제목은 줄여 쓰다 뜻이 흐려지지 않게 완전한 말로 쓴다(2026-11-12 시험: 제목 7문항 중 2문항이 영어가 어색했다).
+  · 동명사로 시작해 글감 명사를 목적어처럼 붙이지 않는다: "Extending Tools To Reveal Signals"(도구를 늘린다?) → "Tools That Reveal Signals Beyond Human Senses" / "How Tools Reveal …".
+  · 관계절을 분사로 줄이지 않는다: "Scientific Tools Converting Signals Only Beyond Senses" → "Scientific Tools That Convert Only Imperceptible Signals". only·even·mainly 는 꾸미는 말 바로 앞에 둔다.
+  · 다섯 보기 모두 소리 내어 읽었을 때 신문·책 제목으로 자연스러워야 한다.`
+      : ""
+  }`;
 }
 
 export function summaryChoiceCraft(en: boolean): string {
