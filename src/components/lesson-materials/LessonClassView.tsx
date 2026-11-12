@@ -47,6 +47,16 @@ const EN_FONTS: Array<{ id: string; label: string; css: string | null }> = [
   { id: "georgia", label: "Georgia", css: "Georgia, serif" },
   { id: "arial", label: "Arial", css: "Arial, sans-serif" },
 ];
+/**
+ * 글씨 굵기(선생님 2026-11-12 「본문 글씨가 얇다 — 강의 촬영 때 쨍하게 뚜렷하게」).
+ * body = 해석·해설 등 바탕 글씨, en = 영어 본문. 기본은 「굵게」. 최종통합자료 안(인쇄 교재)은 「보통」 그대로.
+ */
+type Weight = "normal" | "bold" | "heavy";
+const WEIGHTS: Array<{ id: Weight; label: string; body: number; en: number }> = [
+  { id: "normal", label: "보통", body: 400, en: 400 },
+  { id: "bold", label: "굵게", body: 500, en: 600 },
+  { id: "heavy", label: "더 굵게", body: 600, en: 700 },
+];
 const LAYERS: Array<{ id: Layer; label: string }> = [
   { id: "grammar", label: "문법" },
   { id: "vocab", label: "동반의어" },
@@ -69,7 +79,7 @@ const TSECS: Array<{ id: TSec; label: string }> = [
 ];
 const ALL_TSEC = Object.fromEntries(TSECS.map((t) => [t.id, true])) as Record<TSec, boolean>;
 const FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=Noto+Serif+KR:wght@400;700&family=Nanum+Gothic:wght@400;700;800&family=Gowun+Dodum&family=Nanum+Pen+Script&family=Gaegu:wght@400;700&family=Merriweather:wght@400;700&family=Lora:wght@400;700&display=swap";
+  "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&family=Noto+Serif+KR:wght@400;500;600;700&family=Nanum+Gothic:wght@400;700;800&family=Gowun+Dodum&family=Nanum+Pen+Script&family=Gaegu:wght@400;700&family=Merriweather:wght@400;700&family=Lora:wght@400;500;600;700&display=swap";
 const SETTINGS_KEY = "lesson-class-view";
 const SPOT_LABEL: Record<TeacherSpotKind, string> = { blank: "빈칸", insert: "삽입", reference: "지칭", implication: "함축" };
 const CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳";
@@ -80,6 +90,7 @@ type Settings = {
   koFont: string;
   enFont: string;
   size: number;
+  weight: Weight;
   layers: Record<Layer, boolean>;
   /** 지문마다 뒤에 백지노트(2쪽) */
   blankNote: boolean;
@@ -94,6 +105,7 @@ const DEFAULT_SETTINGS: Settings = {
   koFont: "noto",
   enFont: "same",
   size: 15,
+  weight: "bold",
   layers: { grammar: true, vocab: true, spots: true, easy: true, ko: true, side: true },
   blankNote: false,
   tsec: ALL_TSEC,
@@ -704,10 +716,10 @@ const CSS = `
 .lc-root[data-theme="white"]{--bg:#fff;--panel:#f7f7f5;--line:#dedede}
 .lc-root{font-family:var(--ff)}
 .lc-page{width:210mm;height:297mm;box-sizing:border-box;padding:${PAGE_PAD_MM}mm ${PAGE_PAD_MM + 1}mm;background:var(--bg);color:var(--ink);
-  position:relative;overflow:hidden;font-size:var(--fs);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  position:relative;overflow:hidden;font-size:var(--fs);font-weight:var(--fw,400);-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .lc-cont{position:absolute;top:5mm;left:${PAGE_PAD_MM + 1}mm;right:${PAGE_PAD_MM + 1}mm;font-size:9px;color:var(--sub);border-bottom:1px solid var(--line);padding-bottom:1mm}
 .lc-pno{position:absolute;bottom:6mm;left:0;right:0;text-align:center;font-size:9px;color:var(--sub)}
-.lc-measure{position:absolute;left:-100000px;top:0;width:${210 - (PAGE_PAD_MM + 1) * 2}mm;visibility:hidden;font-size:var(--fs)}
+.lc-measure{position:absolute;left:-100000px;top:0;width:${210 - (PAGE_PAD_MM + 1) * 2}mm;visibility:hidden;font-size:var(--fs);font-weight:var(--fw,400)}
 .lc-headblock{padding-bottom:3mm}
 .lc-h1{font-size:1.35em;font-weight:800;margin:0;line-height:1.3}
 .lc-meta{color:var(--sub);font-size:.72em;margin:2px 0 0}
@@ -730,7 +742,7 @@ const CSS = `
 .lc-thead span{font-size:1.05em;font-weight:800;color:var(--head)}
 .lc-thead b{font-size:.8em}
 .lc-sec-t{border-bottom:none;border-left:4px solid var(--head);padding:1em 0 .3em .6em;margin-top:.4em}
-.lc-en{font-family:var(--fe,var(--ff));font-size:1em;line-height:2.85;margin:0;text-shadow:var(--shadow)}
+.lc-en{font-family:var(--fe,var(--ff));font-size:1em;font-weight:var(--fwe,400);line-height:2.85;margin:0;text-shadow:var(--shadow)}
 .lc-sn{display:inline-block;min-width:1.4em;color:var(--sub);font-size:.62em;font-weight:800}
 .lc-ko{font-size:.76em;color:var(--sub);margin:0 0 .2em 1.6em;line-height:1.55}
 .lc-easy{font-size:.76em;line-height:1.55;margin:.3em 0 .2em 1.6em;padding:.35em .8em;border-left:4px solid var(--easy);
@@ -747,7 +759,7 @@ const CSS = `
 .lc-s-blank{box-shadow:inset 0 -.42em 0 color-mix(in srgb,var(--t-blank) 42%,transparent)}
 .lc-s-implication{background:color-mix(in srgb,transparent 72%,var(--t-implication) 28%);border-radius:3px}
 .lc-s-reference{border-bottom:3px dotted var(--t-reference)}
-.lc-s-insert{color:var(--t-insert);font-weight:700}
+.lc-s-insert{color:var(--t-insert);font-weight:800}
 .lc-tag{display:inline-block;font-family:var(--ff);font-size:.55em;font-weight:800;padding:0 .55em;border-radius:999px;margin:0 2px;vertical-align:middle;line-height:1.7;color:#111;text-shadow:none}
 .lc-tag-blank{background:var(--t-blank)}.lc-tag-insert{background:var(--t-insert)}.lc-tag-reference{background:var(--t-reference)}.lc-tag-implication{background:var(--t-implication)}
 .lc-root[data-theme="cream"] .lc-tag:not(.lc-tag-blank),.lc-root[data-theme="white"] .lc-tag:not(.lc-tag-blank){color:#fff}
@@ -829,7 +841,7 @@ export function LessonClassView({
   onPrepared?: () => Promise<void>;
 }) {
   // 최종통합자료 안(embedded)은 학생 교재라 학생용으로(선생님 2026-11-11 「교사용이 들어가면 안 된다」)
-  const [settings, setSettings] = useState<Settings>(embedded ? { ...DEFAULT_SETTINGS, mode: "student" } : DEFAULT_SETTINGS);
+  const [settings, setSettings] = useState<Settings>(embedded ? { ...DEFAULT_SETTINGS, mode: "student", weight: "normal" } : DEFAULT_SETTINGS);
   useEffect(() => {
     if (embedded) return;
     try {
@@ -841,6 +853,7 @@ export function LessonClassView({
           ...DEFAULT_SETTINGS,
           ...saved,
           size,
+          weight: WEIGHTS.some((w) => w.id === saved.weight) ? (saved.weight as Weight) : DEFAULT_SETTINGS.weight,
           layers: { ...DEFAULT_SETTINGS.layers, ...(saved.layers ?? {}) },
           tsec: { ...ALL_TSEC, ...(saved.tsec ?? {}) },
           tsecS: { ...DEFAULT_SETTINGS.tsecS, ...(saved.tsecS ?? {}) },
@@ -993,7 +1006,7 @@ export function LessonClassView({
       document.fonts.removeEventListener?.("loadingdone", bump);
     };
   }, []);
-  const layoutKey = `${settings.mode}|${settings.size}|${settings.koFont}|${settings.enFont}|${JSON.stringify(settings.layers)}|${JSON.stringify(settings.mode === "teacher" ? settings.tsec : settings.tsecS)}|${blocks.length}|${fontsTick}|${loaded}|${JSON.stringify(fit)}`;
+  const layoutKey = `${settings.mode}|${settings.size}|${settings.weight}|${settings.koFont}|${settings.enFont}|${JSON.stringify(settings.layers)}|${JSON.stringify(settings.mode === "teacher" ? settings.tsec : settings.tsecS)}|${blocks.length}|${fontsTick}|${loaded}|${JSON.stringify(fit)}`;
   const [pages, setPages] = useState<{ key: string; list: number[][] }>({ key: "", list: [] });
   useLayoutEffect(() => {
     const root = measureRef.current;
@@ -1153,10 +1166,13 @@ export function LessonClassView({
 
   const ko = KO_FONTS.find((f) => f.id === settings.koFont) ?? KO_FONTS[0]!;
   const en = EN_FONTS.find((f) => f.id === settings.enFont) ?? EN_FONTS[0]!;
+  const wt = WEIGHTS.find((w) => w.id === settings.weight) ?? WEIGHTS[1]!;
   const rootStyle = {
     ["--ff" as string]: ko.css,
     ...(en.css ? { ["--fe" as string]: en.css } : {}),
     ["--fs" as string]: `${settings.size}px`,
+    ["--fw" as string]: String(wt.body),
+    ["--fwe" as string]: String(wt.en),
   } as CSSProperties;
   const barBtn = (on: boolean) =>
     `rounded-md px-2.5 py-1 text-xs font-bold ${on ? "bg-white text-slate-900" : "text-white/80 hover:bg-white/10"}`;
@@ -1289,6 +1305,14 @@ export function LessonClassView({
           <b className="text-white/60">글자</b>
           <input type="range" min={11} max={24} value={settings.size} onChange={(e) => update({ size: Number(e.target.value) })} />
         </label>
+        <span className="flex items-center gap-1">
+          <b className="text-white/60">굵기</b>
+          {WEIGHTS.map((w) => (
+            <button key={w.id} type="button" onClick={() => update({ weight: w.id })} className={barBtn(settings.weight === w.id)}>
+              {w.label}
+            </button>
+          ))}
+        </span>
         <label className="flex items-center gap-1">
           <b className="text-white/60">확대</b>
           <input type="range" min={50} max={200} step={10} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} />

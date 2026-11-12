@@ -238,6 +238,7 @@ questionText empty.`;
 - Do NOT change the passage; omit passageModified.
 - explanation: list which numbers are false and why (Korean, brief).
 - Every statement must be clearly true or clearly false from the passage alone: no vague references ("the opposite direction" of what?), no comparisons the passage never makes, no paraphrase that could be read either way. A false statement changes one checkable fact.
+- A FALSE statement must be false in its main claim. Do not keep the true claim and only reverse the order of the numbers: when the passage says B beat C 11 to 9, "B prevailed over C by a count of 9 to 11" still reads as true to a student (2026-11-12) — write "C prevailed over B by a count of 11 to 9".
 - A TRUE statement must stay true against the WHOLE passage: do not drop a limit the passage adds later (원문 "keeps increasing … but both begin to fall after a peak" → 「계속 늘어난다」는 거짓으로도 읽힌다 — 「늘어나는 동안 …도 함께 늘어난다」). Keep the exact relation word: "is offset by" = 상쇄된다(not 줄인다), "may" ≠ 「한다」, "some" ≠ 「모두」.
 - A TRUE statement adds nothing the passage does not say: no new agent ("it is estimated" → "archaeologists estimated"), form ("a short assessment" → "a questionnaire"), listener, or swapped word (pollen → nectar). One added detail makes it unverifiable, and the item is rejected.
 ${craft}
