@@ -108,7 +108,37 @@ function mapItems(
       };
     }
   }
-  return { ok: true, items };
+  return { ok: true, items: shuffleTfOrder(items) };
+}
+
+/** 정답이 T·F 번갈아(TFTFTF) 또는 한쪽으로 몰려(TTTFFF) 나오는 차례인가. */
+function isPredictableTfOrder(items: WorkbookTfItem[]): boolean {
+  if (items.length < 4) return false;
+  let changes = 0;
+  for (let i = 1; i < items.length; i++) {
+    if (items[i].answer !== items[i - 1].answer) changes++;
+  }
+  // 매번 바뀌면 번갈아, 한 번만 바뀌면 앞뒤로 몰린 것
+  return changes === items.length - 1 || changes <= 1;
+}
+
+/**
+ * 모델은 지시와 달리 T, F, T, F… 차례로 내놓는다(선생님 2026-11-12 「계속 TFTFTF로 정답이 나온다」).
+ * 문항끼리 독립이라 차례를 코드에서 섞고, 뻔한 차례가 나오면 다시 섞는다.
+ * 만들 때 한 번만 섞어 저장하므로 이미 만든 워크북은 달라지지 않는다.
+ */
+function shuffleTfOrder(items: WorkbookTfItem[]): WorkbookTfItem[] {
+  let out = items;
+  for (let attempt = 0; attempt < 30; attempt++) {
+    const next = [...items];
+    for (let i = next.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [next[i], next[j]] = [next[j], next[i]];
+    }
+    out = next;
+    if (!isPredictableTfOrder(out)) break;
+  }
+  return out.map((item, i) => ({ ...item, index: i + 1 }));
 }
 
 async function callTfOpenAI(input: {
