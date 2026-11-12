@@ -922,6 +922,7 @@ word1 / word2 / … (6~10개, 정답 ⓐ+ⓑ를 섞은 핵심 단어. 동사는 
 | Building | Her uncle said a school would be built for village children. | Her eyes (B) with joy. |
 | Distance | The nearest school was (C) away on foot. | She imagined learning to read and write. |
 
+- 줄 이름과 빈칸이 아닌 칸에는 (A)(B)(C)의 정답 낱말을 쓰지 않는다(정답이 capacity 인데 줄 이름이 Capacity 이거나 옆 칸에 "no such capacity" 가 있으면 표만 보고 답한다).
 - 표는 <b>정확히 세 칸</b>이다. 첫 줄이 머리글이고, 그 아래 세 줄이 내용이다.
   줄마다 | 로 칸을 나눈다.
 - 머리글 첫 칸은 <b>비워 둔다</b>. 뒤 두 칸에 갈래 이름을 쓴다
@@ -1080,6 +1081,22 @@ export function blankedAbbreviation(raw: Record<string, unknown>, passage: strin
     if (inChoices.length > 0 && inChoices.every((c) => c.includes(`(${ab}`))) continue;
     if (used.test(modified) || inChoices.length > 0) {
       return `약어 ${ab}를 풀어 쓴 문장이 빈칸에 들어가 학생 지문 어디에도 ${ab}의 뜻이 없습니다. 그 문장 말고 다른 문장을 빈칸으로 하거나, 보기에 풀어 쓴 말을 함께 씁니다.`;
+    }
+  }
+  return null;
+}
+
+/**
+ * 2026-11-12 시험 작업(de0a4775 B36): 요약표 정답 capacity 가 같은 표의 줄 이름 「Capacity」와 옆 칸 「no such capacity」에
+ * 그대로 있었다 — 표만 보고 답을 쓴다. 정답 낱말이 표의 다른 자리에 같은 꼴로 있으면 다시 만든다.
+ */
+export function summaryTableAnswerLeak(rows: string[][], correctAnswer: string): string | null {
+  const answers = [...correctAnswer.matchAll(/\(([A-C])\)\s*:?\s*([A-Za-z'’-]+)/g)].map((m) => ({ mark: m[1]!, word: m[2]!.toLowerCase() }));
+  const text = rows.map((r) => r.join(" | ")).join("\n").toLowerCase();
+  for (const a of answers) {
+    if (a.word.length < 4) continue;
+    if (new RegExp(`\\b${a.word.replace(/[^a-z'’-]/g, "")}\\b`).test(text)) {
+      return `요약표 (${a.mark})의 정답 「${a.word}」가 표의 다른 칸이나 줄 이름에 그대로 적혀 있어 표만 보고 답할 수 있습니다. 줄 이름과 다른 칸에서는 그 낱말을 쓰지 않습니다.`;
     }
   }
   return null;
@@ -2110,6 +2127,8 @@ export function assertBasicQuestionShape(
     if (keys.some((k) => !k.trim() || /견줄\s*점|비교\s*점/.test(k) || k.trim().length > 20)) {
       return "표 첫 칸에는 그 줄을 가리키는 짧은 이름이 필요합니다(예: Land, Building, Distance).";
     }
+    const leaked = summaryTableAnswerLeak(blocks.rows, String(q.correctAnswer ?? ""));
+    if (leaked) return leaked;
     /*
      * 빈칸이 한쪽 칸에만 몰리면 표를 가로로 읽을 일이 없어진다
      * (선생님 지적 2026-09-29: 보기가 한쪽 열에만 들어간다).
@@ -2741,6 +2760,8 @@ export async function generateOneQuestion(opts: {
    * 「questionText는 비운다」「passageModified는 빼라」로 나가 유형 규칙과 부딪혔다(2026-10-13).
    */
   const isGrammarWriting = option.type === "writing" && (option.aingkaCode || meta?.aingkaCode) === "문법조건영작";
+  // 요약표도 <조건>·<표>를 questionText에 쓰는데 공통 규칙은 「questionText는 비운다」였다(10-08~13 첫 시도 통과 40%)
+  const isSummaryTable = option.type === "summary_short" && (option.aingkaCode || meta?.aingkaCode) === "요약표빈칸단어";
 
   const referenceCodes = new Set(["지칭대명사서술", "특정표현의미서술"]);
   const isReferenceWriting =
@@ -2805,6 +2826,7 @@ export async function generateOneQuestion(opts: {
     isWordOrder ||
     isGrammarWriting ||
     isSummaryBlank ||
+    isSummaryTable ||
     isReferenceWriting ||
     isGrammarFix ||
     (option.type === "writing" && option.aingkaCode === "서술형영작");
@@ -2996,6 +3018,8 @@ export async function generateOneQuestion(opts: {
       ? "Fill questionText with the ENGLISH given sentence to insert."
       : isGrammarWriting
         ? "Fill questionText with <조건>, <보기>, <해석> exactly as the ITEM RULES show (each tag on its own line)."
+      : isSummaryTable
+        ? "Fill questionText with <조건> and <표> exactly as the ITEM RULES show (each tag on its own line, one table row per line)."
       : isWordOrder
         ? "Fill questionText with <조건>, <보기>, <해석>. Blank = IMPORTANT passage sentence reflecting the sampled GRAMMAR POINT (not a trivial SVO)."
         : isSummaryBlank
@@ -3450,13 +3474,23 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
                     choices: [{ number: 1, text: "string" }],
                     correctAnswer: "integer 1-5 (vary; not always 1)",
                     ...(needsModified ? { passageModified: "string" } : {}),
+                    /*
+                     * 일치개수 틀(진술 (1)~(6)·틀린 개수)이 questionText를 쓰는 서술형 모두에 나가고 있었다 —
+                     * 제시어 배열·요약문·어법 수정이 유형 규칙과 다른 틀을 받았다(2026-10-13 점검).
+                     */
                     ...(needsQuestionText
-                      ? {
-                          questionText:
-                            "(1) ...\\n(2) ...\\n(3) ...\\n(4) ...\\n(5) ...\\n(6) ...",
-                          correctAnswer: "integer count of FALSE statements",
-                          choices: [],
-                        }
+                      ? option.type === "content_count"
+                        ? {
+                            questionText:
+                              "(1) ...\\n(2) ...\\n(3) ...\\n(4) ...\\n(5) ...\\n(6) ...",
+                            correctAnswer: "integer count of FALSE statements",
+                            choices: [],
+                          }
+                        : {
+                            questionText: "string — exactly the blocks the ITEM RULES show, each tag on its own line",
+                            correctAnswer: "string — the answer in the form the ITEM RULES describe",
+                            choices: [],
+                          }
                       : {}),
                   }),
       explanation: "ko",
