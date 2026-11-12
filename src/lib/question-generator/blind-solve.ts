@@ -350,6 +350,64 @@ export async function verifyChoicesIndependently(opts: {
 }
 
 /*
+ * 빈칸 보기별 판정(2026-11-12, 선생님 「전부 조건부가 안 나오게」). 직접 풀기는 보기를 서로 견주어 「가장 나은 것」을 고르므로
+ * 정답처럼 읽히는 오답(may로 약해져 참이 된 보기, 앞 문장에 그대로 이어지는 보기)을 지나친다.
+ * 보기를 하나씩 빈칸에 넣어 따로 판정하게 하고, 들어맞는 보기가 정답 하나뿐인지 코드가 본다.
+ * 고정 시험지 빈칸 36문항: 불량·조건부 12개 중 10개 잡음(직접 풀기 2개), 합격 24개 중 4개 버림 —
+ * 버린 4개를 풀어 보니 2개는 실제 흠(학생 지문에 근거 없는 정답, 정답처럼 읽히는 오답)이었다.
+ * 「unclear」로는 버리지 않는다(그것까지 버리면 합격 7개를 버렸다). 시험 scripts/tmp-rv/qg-1112/_blank-perchoice.mts
+ */
+const BLANK_CHOICE_SYSTEM = `You verify ONE Korean high-school English blank-inference item, choice by choice. You see the passage with a blank (___) and the choices. You are NOT told the answer.
+Judge EACH choice on its own: put it in the blank and reread the whole passage. Do not rank the choices against each other and do not pass a choice just because another is better.
+Verdict per choice:
+- "fits": with this choice in the blank the passage reads coherently and says what the surrounding sentences support. A weaker, hedged (may/can/some) or less exact wording that is still true to the passage is "fits".
+- "defeated": specific words in the passage contradict it, or it claims something the passage clearly does not support (quote the defeating words in "evidence").
+- "unclear": you cannot tell; its truth depends on how it is read.
+Return ONE JSON object: {"choices":[{"n":<number>,"verdict":"fits|defeated|unclear","evidence":"<short quote>"}],"reason":"<Korean, one sentence>"}`;
+
+export function blankChoicesCheckable(payload: GeneratedQuestionPayload): boolean {
+  if (process.env.QG_BLANK_PER_CHOICE === "0") return false;
+  const key = Number(payload.correctAnswer);
+  return hasChoices(payload) && (payload.choices?.length ?? 0) === 5 && Number.isInteger(key) && /_{3,}/.test(String(payload.passageModified ?? ""));
+}
+
+export async function verifyBlankChoices(opts: { payload: GeneratedQuestionPayload }): Promise<BlindSolveResult> {
+  const { payload } = opts;
+  const key = Number(payload.correctAnswer);
+  const choiceLines = (payload.choices ?? [])
+    .map((c) => `${"①②③④⑤"[(c.number ?? 1) - 1] ?? c.number} ${c.text}`)
+    .join("\n");
+  const user = `PASSAGE:\n${compact(payload.passageModified)}\n\nCHOICES:\n${choiceLines}`;
+  let raw: Record<string, unknown>;
+  try {
+    raw = (await questionGeneratorChatJsonWithRetry({
+      system: BLANK_CHOICE_SYSTEM,
+      user,
+      temperature: 0,
+      maxTokens: 2600,
+      reasoningEffort: (process.env.QG_SOLVE_EFFORT as "low" | "medium" | undefined) || "medium",
+      preferredModels: [SOLVE_MODEL],
+      cacheKey: "qg-verify-blank",
+    })) as Record<string, unknown>;
+  } catch {
+    return { verdict: "pass", answer: null, reason: "빈칸 보기별 판정 호출 실패 — 통과로 둔다" };
+  }
+  const rows = (Array.isArray(raw.choices) ? raw.choices : []) as Array<Record<string, unknown>>;
+  if (rows.length < 5) return { verdict: "pass", answer: null, reason: "빈칸 보기별 판정을 못 읽어 통과" };
+  const fits = rows.filter((r) => String(r.verdict ?? "").toLowerCase() === "fits").map((r) => Number(r.n));
+  const reason = compact(raw.reason, 300);
+  if (fits.length === 1 && fits[0] === key) return { verdict: "pass", answer: key, reason };
+  const others = fits.filter((n) => n !== key);
+  return {
+    verdict: "drop",
+    answer: null,
+    reason: others.length
+      ? `오답 ${others.join("·")}번도 빈칸에 넣으면 지문과 어긋나지 않음(정답 ${key}번) — 그 보기를 지문의 말과 분명히 어긋나게 다시 쓴다. ${reason}`
+      : `정답 ${key}번이 빈칸에 들어맞는다고 볼 근거가 학생 지문에 없음 — ${reason}`,
+  };
+}
+
+/*
  * 낯선 낱말만 쉬운 말로 바꾼다(2026-10-04, 12차 시험: 다시 만든 17번 가운데 절반 이상이 상 문항의 낯선 낱말 때문이었고,
  * 그때마다 문항 전체를 다시 만들어 원가가 1.3배까지 떨어졌다). 보기·진술의 그 낱말만 바꾸고 뜻·참거짓·정답은 그대로 둔다.
  * 바꾼 뒤에는 부른 쪽이 같은 검수를 한 번 더 돌린다.

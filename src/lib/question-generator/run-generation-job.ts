@@ -5,6 +5,8 @@ import {
   blindSolvable,
   blindSolveEnabled,
   blindSolveQuestion,
+  blankChoicesCheckable,
+  verifyBlankChoices,
   checkSubjectiveQuestion,
   PER_CHOICE_TYPES,
   verifyChoicesIndependently,
@@ -337,6 +339,13 @@ async function generateWithValidation(opts: {
               rewriteRareWords({ payload, words: solved.rareWords! })
             );
             if (rewrote) solved = await runSolve();
+          }
+          // 빈칸추론은 풀이를 지난 뒤 보기를 하나씩 빈칸에 넣어 한 번 더 본다(정답처럼 읽히는 오답, 2026-11-12)
+          if (solved.verdict === "pass" && opts.option.type === "sentence_blank" && blankChoicesCheckable(payload)) {
+            const perChoice = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
+              verifyBlankChoices({ payload })
+            );
+            if (perChoice.verdict === "drop") solved = perChoice;
           }
           validation.solve = solved;
           if (solved.verdict === "drop") {
