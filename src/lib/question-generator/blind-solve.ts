@@ -97,6 +97,8 @@ export type BlindSolveResult = {
   fixed?: string[];
   /** 낯선 낱말 때문에만 버릴 때 그 낱말들 — 문항 전체 대신 그 낱말만 바꿔 쓸 수 있다 */
   rareWords?: string[];
+  /** 정답은 맞는데 이 오답들도 정답처럼 읽혀 버릴 때 — 문항 전체 대신 그 보기만 다시 쓸 수 있다(2026-11-12) */
+  repairChoices?: number[];
 };
 
 export async function blindSolveQuestion(opts: {
@@ -262,7 +264,11 @@ export async function checkSubjectiveQuestion(opts: {
  *   내용일치·불일치·일치개수: supported / refuted / unverifiable / ambiguous
  *   제목·주제: valid / not_representative / conflicts / unclear
  */
-export const PER_CHOICE_TYPES = new Set(["content_true", "content_false", "content_count", "title", "topic"]);
+/*
+ * 요지(summary_mcq)도 보기별로 본다(2026-11-12). 고정 시험지 요지 28문항: 조건부 3개 중 2개 잡고 합격 25개는
+ * 낯선 낱말 1건 말고 버린 것 없음(직접 풀기는 조건부를 못 잡았다). 낯선 낱말은 낱말만 바꿔 쓴다.
+ */
+export const PER_CHOICE_TYPES = new Set(["content_true", "content_false", "content_count", "title", "topic", "summary_mcq"]);
 
 const PER_CHOICE_SYSTEM = `You verify ONE Korean high-school English exam item, choice by choice. You see the passage, the instruction and the choices (or numbered statements). You are NOT told the answer or why anything was written.
 Judge EACH choice/statement on its own, from the passage alone. Do not pass a choice just because another choice is better.
@@ -286,7 +292,7 @@ export async function verifyChoicesIndependently(opts: {
 }): Promise<BlindSolveResult> {
   const { payload, type } = opts;
   const isCount = type === "content_count";
-  const isGist = type === "title" || type === "topic";
+  const isGist = type === "title" || type === "topic" || type === "summary_mcq";
   const shown = payload.passageModified?.trim() ? payload.passageModified : opts.passage;
   const items = isCount
     ? String(payload.questionText ?? "")
@@ -328,7 +334,14 @@ export async function verifyChoicesIndependently(opts: {
     const unclear = rows.filter((r) => v(r) === "unclear").map((r) => r.n);
     if (unclear.length) return { verdict: "drop", answer: null, reason: `보기 ${unclear.join("·")}이 모호함 — ${reason}` };
     if (valid.length !== 1 || valid[0] !== key) {
-      return { verdict: "drop", answer: null, reason: `제목·주제로 성립하는 보기가 ${valid.length ? valid.join("·") + "번" : "없음"}(정답 ${key}번) — ${reason}` };
+      const extra = valid.filter((n) => n !== key);
+      return {
+        verdict: "drop",
+        answer: null,
+        reason: `제목·주제로 성립하는 보기가 ${valid.length ? valid.join("·") + "번" : "없음"}(정답 ${key}번) — ${reason}`,
+        // 정답은 성립하고 오답 한둘이 함께 성립할 때만 그 보기를 고쳐 쓴다
+        ...(valid.includes(key) && extra.length >= 1 && extra.length <= 2 ? { repairChoices: extra } : {}),
+      };
     }
     return { verdict: "pass", answer: key, reason };
   }
@@ -404,7 +417,72 @@ export async function verifyBlankChoices(opts: { payload: GeneratedQuestionPaylo
     reason: others.length
       ? `오답 ${others.join("·")}번도 빈칸에 넣으면 지문과 어긋나지 않음(정답 ${key}번) — 그 보기를 지문의 말과 분명히 어긋나게 다시 쓴다. ${reason}`
       : `정답 ${key}번이 빈칸에 들어맞는다고 볼 근거가 학생 지문에 없음 — ${reason}`,
+    ...(fits.includes(key) && others.length >= 1 && others.length <= 2 ? { repairChoices: others } : {}),
   };
+}
+
+/*
+ * 정답처럼 읽히는 오답만 다시 쓴다(2026-11-12, 선생님 「조건부도 안 나왔으면」 + 10-13 「버릴 것 대신 고친다」).
+ * 문항 전체를 다시 만들면 값이 열 배쯤 들고 같은 흠이 또 나온다. 걸린 보기 한둘과 해설의 그 대목만 바꾸고,
+ * 부른 쪽이 같은 판정을 한 번 더 돌린다. 정답·다른 보기·지문은 건드리지 않는다.
+ */
+const REPAIR_SYSTEM = `You edit ONE Korean high-school English multiple-choice item. The keyed answer is correct, but the listed wrong choices can also be defended as correct, so the item has more than one answer.
+Rewrite ONLY the listed wrong choices so that each is clearly wrong for a reader of the passage: it must state a relation the passage contradicts (reverse a cause, direction, subject or outcome that the passage states), so a teacher can point to the passage words that defeat it. A hedge (may, can, some) must not make it true. Do not make it absurd or off-topic: keep the passage's subject matter, the same language, grammatical form and about the same length as the other choices, and do not copy the keyed answer's idea.
+Make it a GOOD distractor, not a giveaway. Do NOT simply negate the old choice or swap one word for its opposite (Cheering → Discouraging, can → cannot, Create → Eliminate): a student would cross that out without reading. Instead:
+- title / topic / main-idea items: narrow it to one detail or example of the passage, shift the focus to a side point, or state a different relation between the passage's own concepts (wrong cause, purpose or result). It must clearly fail to cover the passage's main point.
+- blank items: give a different outcome or reason that sounds natural after the sentence before the blank but conflicts with what the passage says around or after the blank.
+The new choice must read as natural English/Korean on its own.
+Also return the explanation with ONLY the parts about the rewritten choices updated (same language, same shape, 평서형 "~다"); keep every other sentence as it is.
+Return ONE JSON object: {"choices":[{"number":<n>,"text":"<new text>"}],"explanation":"<full explanation>"}`;
+
+export async function repairDistractors(opts: {
+  passage: string;
+  payload: GeneratedQuestionPayload;
+  numbers: number[];
+}): Promise<boolean> {
+  const { payload, numbers } = opts;
+  const key = Number(payload.correctAnswer);
+  const targets = numbers.filter((n) => n !== key && (payload.choices ?? []).some((c) => Number(c.number) === n));
+  if (!targets.length || !hasChoices(payload)) return false;
+  const shown = payload.passageModified?.trim() ? payload.passageModified : opts.passage;
+  const choiceLines = (payload.choices ?? []).map((c) => `${c.number}. ${c.text}`).join("\n");
+  const user = [
+    `INSTRUCTION: ${compact(payload.instruction, 400)}`,
+    `\nPASSAGE (___ = blank):\n${compact(shown)}`,
+    `\nCHOICES:\n${choiceLines}`,
+    `\nKEYED ANSWER: ${key}`,
+    `\nWRONG CHOICES TO REWRITE: ${targets.join(", ")}`,
+    `\nEXPLANATION:\n${compact(payload.explanation, 1600)}`,
+  ].join("\n");
+  let raw: Record<string, unknown>;
+  try {
+    raw = (await questionGeneratorChatJsonWithRetry({
+      system: REPAIR_SYSTEM,
+      user,
+      temperature: 0,
+      maxTokens: 2000,
+      reasoningEffort: "low",
+      preferredModels: [SOLVE_MODEL],
+      cacheKey: "qg-repair-distractor",
+    })) as Record<string, unknown>;
+  } catch {
+    return false;
+  }
+  const rows = Array.isArray(raw.choices) ? (raw.choices as Array<{ number?: unknown; text?: unknown }>) : [];
+  let changed = 0;
+  const next = (payload.choices ?? []).map((c) => {
+    if (!targets.includes(Number(c.number))) return c;
+    const r = rows.find((x) => Number(x.number) === Number(c.number));
+    const text = typeof r?.text === "string" ? r.text.trim() : "";
+    if (!text || text === c.text) return c;
+    changed += 1;
+    return { ...c, text };
+  });
+  if (changed !== targets.length) return false;
+  payload.choices = next;
+  const expl = typeof raw.explanation === "string" ? raw.explanation.trim() : "";
+  if (expl.length >= 10) payload.explanation = expl;
+  return true;
 }
 
 /*

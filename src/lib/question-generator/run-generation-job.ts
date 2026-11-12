@@ -7,6 +7,7 @@ import {
   blindSolveQuestion,
   blankChoicesCheckable,
   verifyBlankChoices,
+  repairDistractors,
   checkSubjectiveQuestion,
   PER_CHOICE_TYPES,
   verifyChoicesIndependently,
@@ -329,7 +330,16 @@ async function generateWithValidation(opts: {
                 ? blindSolveQuestion({ passage: cleanSourcePassage(opts.passage), payload })
                 : checkSubjectiveQuestion({ passage: cleanSourcePassage(opts.passage), payload, code: opts.option.aingkaCode })
             );
-          let solved = await runSolve();
+          // 빈칸추론은 풀이를 지난 뒤 보기를 하나씩 빈칸에 넣어 한 번 더 본다(정답처럼 읽히는 오답, 2026-11-12)
+          const runChecks = async () => {
+            const first = await runSolve();
+            if (first.verdict !== "pass" || opts.option.type !== "sentence_blank" || !blankChoicesCheckable(payload)) return first;
+            const perChoice = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
+              verifyBlankChoices({ payload })
+            );
+            return perChoice.verdict === "drop" ? perChoice : first;
+          };
+          let solved = await runChecks();
           /*
            * 낯선 낱말 때문에만 걸렸으면 문항 전체를 다시 만들지 않고 그 낱말만 쉬운 말로 바꾼 뒤 한 번 더 본다
            * (12차 시험: 다시 만든 17번 중 절반 이상이 이 까닭이었고 원가가 1.3배까지 떨어졌다).
@@ -338,14 +348,20 @@ async function generateWithValidation(opts: {
             const rewrote = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
               rewriteRareWords({ payload, words: solved.rareWords! })
             );
-            if (rewrote) solved = await runSolve();
+            if (rewrote) solved = await runChecks();
           }
-          // 빈칸추론은 풀이를 지난 뒤 보기를 하나씩 빈칸에 넣어 한 번 더 본다(정답처럼 읽히는 오답, 2026-11-12)
-          if (solved.verdict === "pass" && opts.option.type === "sentence_blank" && blankChoicesCheckable(payload)) {
-            const perChoice = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
-              verifyBlankChoices({ payload })
+          /*
+           * 정답은 맞는데 오답 한둘이 정답처럼 읽혀 걸렸으면 그 보기만 다시 쓰고 한 번 더 본다(2026-11-12).
+           * 다시 봐도 걸리면 그때 문항을 다시 만든다.
+           */
+          if (solved.verdict === "drop" && solved.repairChoices?.length) {
+            const repaired = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
+              repairDistractors({ passage: cleanSourcePassage(opts.passage), payload, numbers: solved.repairChoices! })
             );
-            if (perChoice.verdict === "drop") solved = perChoice;
+            if (repaired) {
+              const again = await runChecks();
+              solved = again.verdict === "pass" ? { ...again, fixed: [...(again.fixed ?? []), "choices"] } : again;
+            }
           }
           validation.solve = solved;
           if (solved.verdict === "drop") {
