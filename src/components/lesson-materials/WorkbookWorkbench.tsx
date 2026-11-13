@@ -1717,8 +1717,11 @@ export function WorkbookWorkbench({
   embeddedDocId,
   design,
   byPassageFlow = false,
+  defaultByPassage = false,
 }: {
   role: "admin" | "teacher";
+  /** 새로 만드는 워크북의 배치를 「지문별」로 시작한다(정수학원, 선생님 2026-11-13). 이미 저장된 워크북은 그대로. */
+  defaultByPassage?: boolean;
   /** 최종통합자료 안에 끼워 넣을 워크북 파일. 저장된 결과만 보여 주고 만들거나 고치지 않는다. */
   embeddedDocId?: string;
   /**
@@ -2856,6 +2859,7 @@ export function WorkbookWorkbench({
           workbook.vocabExam = tb.vocabExam;
         }
         // 유형 추가: 더한 유형의 문항만 저장된 워크북에 얹는다(제목·차례·단 수·고친 내용은 그대로).
+        if (!addBase && defaultByPassage && !workbook.layoutOrder) workbook.layoutOrder = "passage";
         const finished = addBase ? mergeAddedWorkbookTypes(addBase, workbook, types) : workbook;
         setSourceNote(
           addBase ? (types.every((t) => addBase!.selectedTypes.includes(t)) ? "regen" : "added") : creatingNew ? "new" : "existing"
