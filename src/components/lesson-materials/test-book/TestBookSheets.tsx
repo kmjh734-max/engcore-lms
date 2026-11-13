@@ -2352,9 +2352,9 @@ export const VocabExamAnswerSheets = memo(function VocabExamAnswerSheets({
   // → 정답을 몇 개씩 잘라 덩어리마다 쪽을 넘길 수 있게 한다. 유형 이름은 첫 덩어리에만.
   const blocks: Block[] = exam.sections.flatMap((sec) => {
     const mc = !!sec.items[0]?.choices;
-    // 쓰기 정답은 종이를 아끼게 여러 단으로(선생님 2026-11-11 「4단이나 3단으로」) — 답이 길면 3단, 짧으면 4단.
+    // 쓰기 정답은 문제지와 같은 2단·같은 자리(1·2 / 3·4)로 — 문제지와 모양이 일치하게(선생님 2026-11-13).
     // 한 덩어리는 두 줄씩이라 쪽 끝에서도 넘겨진다.
-    const cols = mc ? 1 : sec.items.some((it) => it.answer.length > 12) ? 3 : 4;
+    const cols = mc ? 1 : 2;
     const size = mc ? 24 : cols * 2;
     const chunks: VocabExamItem[][] = [];
     for (let i = 0; i < sec.items.length; i += size) chunks.push(sec.items.slice(i, i + size));
