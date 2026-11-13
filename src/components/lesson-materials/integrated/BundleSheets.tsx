@@ -117,20 +117,49 @@ export type ContentsEntry = {
   children?: Array<{ label: string; note?: string; from: number; to: number }>;
 };
 
+/**
+ * 목차를 몇 쪽에 나눠 실을지: 묶음마다 높이를 어림해(세부 항목 줄 수·출처 줄) 한 쪽에 안 들어가면 다음 쪽으로 넘긴다
+ * (선생님 2026-11-13 「지문이 많으면 목차가 깨진다 — 두 쪽으로」). 돌려주는 값은 쪽마다 실을 묶음 수.
+ */
+export function contentsPageSplit(shape: Array<{ children: number; notes: boolean }>): number[] {
+  const ROOM_MM = 200; // 제목·바닥글을 뺀 자리
+  const out: number[] = [];
+  let used = 0;
+  let n = 0;
+  for (const e of shape) {
+    const cols = e.children > 16 ? 3 : 2;
+    const rows = Math.ceil(e.children / cols);
+    const h = 21 + (rows ? 2.5 + rows * (e.notes ? 8.4 : 5.2) : 0);
+    if (n > 0 && used + h > ROOM_MM) {
+      out.push(n);
+      used = 0;
+      n = 0;
+    }
+    used += h;
+    n += 1;
+  }
+  if (n > 0 || !out.length) out.push(n);
+  return out;
+}
+
 /** 목차 */
 export function ContentsPage({
   entries,
   cover,
   accent,
+  continued = false,
 }: {
   entries: ContentsEntry[];
   cover: IntegratedCover;
   accent: string;
+  /** 둘째 쪽부터 */
+  continued?: boolean;
 }) {
   return (
     <Sheet style={{ padding: "22mm 20mm" }}>
       <h2 className="text-[40pt] font-black leading-none tracking-tight text-slate-900" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
         CONTENTS
+        {continued ? <span className="ml-[4mm] align-middle text-[12pt] font-bold tracking-normal text-slate-400">이어서</span> : null}
       </h2>
       <div className="mt-[4mm] h-[1.6mm] w-[22mm] bg-slate-900" />
       <ol className={`mt-[14mm] ${entries.some((e) => e.children?.length) ? "space-y-[5mm]" : "space-y-[7mm]"}`}>

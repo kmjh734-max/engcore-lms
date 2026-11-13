@@ -32,6 +32,7 @@ import {
 import {
   BackCover,
   ContentsPage,
+  contentsPageSplit,
   CoverThumb,
   DividerPage,
   FrontCover,
@@ -488,7 +489,14 @@ export function FinalBundleClient({
 
   // 쪽 번호: 앞표지 1, (학습 계획표), 목차, 그다음 간지와 자료 쪽을 차례로 센다.
   const contents: ContentsEntry[] = [];
-  let page = 3 + (has.plan ? (pageCounts.plan ?? 0) : 0);
+  // 목차가 길면 여러 쪽(지문이 많은 자료) — 쪽 수만큼 뒤 번호가 밀린다
+  const tocSplit = contentsPageSplit(
+    sections.map((s) => {
+      const subs = (subCounts[s.key] ?? []).filter((x) => x.label);
+      return { children: subs.length, notes: subs.some((x) => x.note) };
+    })
+  );
+  let page = 3 + (tocSplit.length - 1) + (has.plan ? (pageCounts.plan ?? 0) : 0);
   sections.forEach((s, i) => {
     if (payload.dividers) page += 1;
     const n = pageCounts[s.key] ?? 0;
@@ -1079,7 +1087,10 @@ export function FinalBundleClient({
           >
             <FrontCover preset={preset} cover={payload.cover} logoSrc={logoSrc} />
             {planBody}
-            <ContentsPage entries={contents} cover={payload.cover} accent={preset.accent} />
+            {tocSplit.map((n, i) => {
+              const from = tocSplit.slice(0, i).reduce((a, b) => a + b, 0);
+              return <ContentsPage key={`toc-${i}`} entries={contents.slice(from, from + n)} cover={payload.cover} accent={preset.accent} continued={i > 0} />;
+            })}
             {sections.map((s, i) => (
               <div key={s.key} className="bundle-section flex flex-col items-center gap-6 print:gap-0">
                 {payload.dividers ? (
