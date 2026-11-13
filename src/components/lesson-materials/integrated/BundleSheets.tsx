@@ -127,9 +127,9 @@ export function contentsPageSplit(shape: Array<{ children: number; notes: boolea
   let used = 0;
   let n = 0;
   for (const e of shape) {
-    const cols = e.children > 16 ? 3 : 2;
-    const rows = Math.ceil(e.children / cols);
-    const h = 21 + (rows ? 2.5 + rows * (e.notes ? 8.4 : 5.2) : 0);
+    // 세부 항목은 늘 2단(출처·제목이 잘리지 않게, 선생님 2026-11-13) — 긴 출처·제목이 두 줄로 접히는 것까지 넉넉히
+    const rows = Math.ceil(e.children / 2);
+    const h = 21 + (rows ? 2.5 + rows * (e.notes ? 10.5 : 5.6) : 0);
     if (n > 0 && used + h > ROOM_MM) {
       out.push(n);
       used = 0;
@@ -183,7 +183,8 @@ export function ContentsPage({
                   className="mt-[2.5mm] grid gap-x-[6mm] gap-y-[1.2mm] text-[8.5pt] leading-tight text-slate-700"
                   // 위에서 아래로 읽고 다음 단으로(지문 번호 차례대로)
                   style={(() => {
-                    const cols = e.children.length > 16 ? 3 : 2;
+                    // 늘 2단 — 3단은 출처·제목이 잘렸다(선생님 2026-11-13 「워크북 목차가 짤려서 나온다」)
+                    const cols = 2;
                     return {
                       gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
                       gridTemplateRows: `repeat(${Math.ceil(e.children.length / cols)}, auto)`,
@@ -195,14 +196,14 @@ export function ContentsPage({
                     <li key={`${ci}-${c.label}`} className="min-w-0">
                       <div className="flex min-w-0 items-baseline gap-[1.5mm]">
                         {/* 출처가 있으면 출처를 앞세운다(선생님 2026-11-13 「목차도 제목보다 출처가 더 중요」): 「01 출처」, 제목은 아랫줄 */}
-                        <span className={`min-w-0 truncate ${c.note ? "font-semibold text-slate-800" : ""}`}>
+                        <span className={`min-w-0 break-words ${c.note ? "font-semibold text-slate-800" : ""}`}>
                           {c.note ? `${c.label.match(/^\d+\s/)?.[0] ?? ""}${c.note}` : c.label}
                         </span>
                         <span className="min-w-[4mm] flex-1 border-b border-dotted border-slate-300" />
                         <span className="shrink-0 tabular-nums text-slate-500">{c.from === c.to ? c.from : `${c.from}~${c.to}`}</span>
                       </div>
                       {/* 출처(수업용 자료 지문) */}
-                      {c.note ? <div className="truncate pl-[5mm] text-[7.5pt] text-slate-500">{c.label.replace(/^\d+\s/, "")}</div> : null}
+                      {c.note ? <div className="break-words pl-[5mm] text-[7.5pt] text-slate-500">{c.label.replace(/^\d+\s/, "")}</div> : null}
                     </li>
                   ))}
                 </ul>
