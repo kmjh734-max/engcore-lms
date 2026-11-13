@@ -1067,6 +1067,8 @@ export function allVocabRows(projects: TestBookProjectInput[], indexOf: (id: str
       out.push({ no: row.listNo ?? out.length + 1, passage: indexOf(p.id) + 1, row });
     }
   }
+  // 이어진 단어장 번호를 받은 수업용 자료는 지문 차례와 번호 차례가 다를 수 있다 — 늘 번호 차례로 싣는다
+  if (out.some((r, i) => i > 0 && r.no < out[i - 1]!.no)) out.sort((a, b) => a.no - b.no);
   return out;
 }
 
@@ -1109,7 +1111,9 @@ export const AllVocabSheets = memo(function AllVocabSheets({
   );
   // 지문이 둘 이상이면 지문이 바뀔 때마다 「01 · 출처 · 제목」 줄(선생님 2026-11-11 「전체 단어장도 지문마다 구분」)
   const byPassage = new Map(projects.map((p) => [indexOf(p.id) + 1, p] as const));
-  const split = byPassage.size > 1;
+  // 지문 줄은 지문마다 한 번만 — 단어장 차례를 따르느라 한 지문이 여러 토막으로 흩어지면 줄을 넣지 않는다
+  const runs = rows.filter((r, i) => i === 0 || rows[i - 1]!.passage !== r.passage).length;
+  const split = byPassage.size > 1 && runs === new Set(rows.map((r) => r.passage)).size;
   const blocks: Block[] = rows.flatMap((r, i) => {
     const out: Block[] = [];
     if (split && (i === 0 || rows[i - 1]!.passage !== r.passage)) {

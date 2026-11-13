@@ -265,7 +265,7 @@ export function LessonBookWorkbench({
 
   // ---------------------------------------------------------------- 단어 시험지(맨 뒤, 정답 포함 — 선생님 2026-10-27 「단어장·시험지·구성을 한 탭에서」)
   const [vocabRound, setVocabRound] = useState(0);
-  const vocabWordCount = useMemo(() => allVocabRows(ready, () => 0).length, [ready]);
+  const vocabWordCount = useMemo(() => allVocabRows(ready, () => 0).at(-1)?.no ?? 0, [ready]);
   const vocabRange = useMemo(() => vocabExamRange(opts.vocabFrom, opts.vocabTo, vocabWordCount), [opts.vocabFrom, opts.vocabTo, vocabWordCount]);
   const vocabCaps = useMemo(() => vocabExamCaps(projects, vocabRange), [projects, vocabRange]);
   const vocabExam = useMemo(

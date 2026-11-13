@@ -806,6 +806,18 @@ export async function registerTestBookVocabAction(
     setId = set.id as string;
   } else {
     await supabase.from("vocab_sets").update({ title }).eq("id", setId);
+    // 이미 있는 단어장은 낱말 차례(=인쇄한 번호)를 지킨다 — 새로 생긴 낱말만 맨 뒤에 붙인다(선생님 2026-11-13)
+    const { data: old } = await supabase.from("vocab_items").select("word").eq("set_id", setId).order("order_index").order("created_at").limit(5000);
+    const at = new Map<string, number>();
+    for (const o of old ?? []) {
+      const k = String(o.word ?? "").trim().toLowerCase();
+      if (k && !at.has(k)) at.set(k, at.size);
+    }
+    if (at.size) {
+      const rank = (w: string) => at.get(w.trim().toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
+      const sorted = items.map((it, i) => ({ it, i })).sort((a, b) => rank(a.it.word) - rank(b.it.word) || a.i - b.i);
+      items.splice(0, items.length, ...sorted.map(({ it }, i) => ({ ...it, order_index: i })));
+    }
   }
 
   const saved = await persistVocabItems(supabase, setId, items);

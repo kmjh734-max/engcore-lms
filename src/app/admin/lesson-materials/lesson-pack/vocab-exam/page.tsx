@@ -4,6 +4,7 @@ import { LessonPackVocabExam } from "@/components/lesson-materials/LessonPackVoc
 import { lessonPackLegacyPick, lessonPackSavedExam } from "@/lib/lesson-materials/vocab-exam-saved";
 import { loadBundleExtraProjects } from "@/lib/lesson-materials/load-material-payloads";
 import { getAcademyBrandingForCurrentUser } from "@/lib/tenant/academy-branding";
+import { numberByLinkedVocabSet } from "@/lib/lesson-materials/linked-vocab-numbers";
 import Link from "next/link";
 
 /** 수업용 자료 파일의 단어로 단어 시험지(자료함 「단어 시험지」 버튼) */
@@ -27,7 +28,8 @@ export default async function AdminLessonPackVocabExamPage({
   }
 
   const supabase = await createClient();
-  const projects = await loadBundleExtraProjects(supabase, ids);
+  // 단어 번호는 이어진 단어장 차례로(없으면 지문 차례 그대로)
+  const projects = await numberByLinkedVocabSet(supabase, params.doc, await loadBundleExtraProjects(supabase, ids));
   const branding = await getAcademyBrandingForCurrentUser();
   const { data: doc } = await supabase
     .from("lesson_material_documents")

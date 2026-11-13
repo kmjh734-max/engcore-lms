@@ -123,6 +123,8 @@ export function LessonPackVocabExam({
         out.push({ passage: r.passage, label, from: r.no, to: r.no });
       }
     }
+    // 단어장 차례를 따르느라 한 지문이 여러 토막으로 흩어지면 지문별 뽑기는 내지 않는다
+    if (new Set(out.map((g) => g.passage)).size !== out.length) return [];
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, projects]);

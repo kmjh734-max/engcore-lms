@@ -55,6 +55,46 @@ export function vocabSetAsProject(
 }
 
 /**
+ * 수업용 자료의 단어 번호를 이어진 단어장(파일 payload.vocabSetId) 차례에 맞춘다 — 번호는 단어장 한 곳에서만 센다
+ * (선생님 2026-11-13 윌링 「단어장·수업용 자료·인쇄한 것이 따로 논다」: 단어장은 나중에 더한 낱말이 맨 뒤에 붙는데
+ * 수업용 자료는 지문 차례로 다시 세어 번호가 밀렸다). 단어장에 없는 낱말은 단어장 끝 번호 뒤에 잇는다.
+ * 차례가 이미 같으면(대부분의 파일) 아무것도 바꾸지 않는다. 단어장과 낱말이 절반도 안 겹치면 손대지 않는다.
+ */
+export function numberProjectsByVocabSet(projects: TestBookProjectInput[], setWords: string[]): TestBookProjectInput[] {
+  const pos = new Map<string, number>();
+  setWords.forEach((w, i) => {
+    for (const k of [w, fixVocabWord(w ?? "")]) {
+      const key = (k ?? "").trim().toLowerCase();
+      if (key && !pos.has(key)) pos.set(key, i + 1);
+    }
+  });
+  if (!pos.size) return projects;
+  const no = new Map<string, number>();
+  let next = setWords.length;
+  let natural = 0;
+  let matched = 0;
+  let same = true;
+  for (const p of projects) {
+    for (const row of p.material?.vocab ?? []) {
+      const k = row.word.toLowerCase();
+      if (no.has(k)) continue;
+      natural++;
+      const hit = pos.get(k.trim()) ?? pos.get(fixVocabWord(row.word.trim()).toLowerCase());
+      if (hit) matched++;
+      const n = hit ?? ++next;
+      no.set(k, n);
+      if (n !== natural) same = false;
+    }
+  }
+  if (same || matched * 2 < natural) return projects;
+  return projects.map((p) =>
+    p.material
+      ? { ...p, material: { ...p.material, vocab: p.material.vocab.map((row) => ({ ...row, listNo: no.get(row.word.toLowerCase()) })) } }
+      : p
+  );
+}
+
+/**
  * 단어장이 수업용 자료에서 만든 것이면 지문마다 나눠 넘긴다(선생님 2026-11-11 「전체 단어장도 지문마다 출처·제목으로」,
  * 「단어 시험지도 지문마다 뽑게」). 지문 구간을 못 찾으면 예전처럼 한 덩어리.
  */

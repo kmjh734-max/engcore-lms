@@ -1875,6 +1875,8 @@ export function buildVocabExam(
       rows.push({ ...r, passage: p.passage, wordNo });
     }
   }
+  // 이어진 단어장 번호를 받은 자료는 번호 차례로(번호순 출제가 단어장 차례를 따르게). 보통은 이미 차례대로다.
+  if (rows.some((r, i) => i > 0 && r.wordNo < rows[i - 1]!.wordNo)) rows.sort((a, b) => a.wordNo - b.wordNo);
   const mcq = (r: TestBookVocabRow, correct: string, key: string) => {
     const wrong = choiceDistractors(rows, r, correct, `${opts.seed}|vx|${key}`);
     if (wrong.length < 3) return null;

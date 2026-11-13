@@ -7,6 +7,7 @@ import { LessonBookWorkbench } from "@/components/lesson-materials/LessonBookWor
 import { loadBundleExtraProjects } from "@/lib/lesson-materials/load-material-payloads";
 import { getAcademyBrandingForCurrentUser } from "@/lib/tenant/academy-branding";
 import { normalizeLessonBookOptions } from "@/lib/lesson-materials/lesson-book-options";
+import { numberByLinkedVocabSet } from "@/lib/lesson-materials/linked-vocab-numbers";
 import Link from "next/link";
 
 export default async function AdminLessonPackPage({
@@ -34,7 +35,8 @@ export default async function AdminLessonPackPage({
 
   const supabase = await createClient();
   // 수업용 자료는 테스트 교재의 수업용 자료 모양으로 만든다(선생님 2026-10-21) — 단어 정리·해석 재료를 읽는다
-  const projects = await loadBundleExtraProjects(supabase, ids);
+  // 단어 번호는 이어진 단어장 차례로(없으면 지문 차례 그대로)
+  const projects = await numberByLinkedVocabSet(supabase, params.doc, await loadBundleExtraProjects(supabase, ids));
   const branding = await getAcademyBrandingForCurrentUser();
   // 파일에 저장된 설정(해석 등)
   const docId = params.doc?.trim();

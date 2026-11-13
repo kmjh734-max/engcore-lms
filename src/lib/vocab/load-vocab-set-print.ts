@@ -61,6 +61,8 @@ export async function loadVocabPassageGroups(
     else groups.push({ id, label: labelOf.get(id) ?? "지문", from: i + 1, to: i + 1 });
   });
   if (groups.length < 2) return [];
+  // 한 지문이 여러 토막으로 흩어진 단어장(나중에 더한 낱말이 뒤에 붙은 옛 단어장)은 나누지 않고 한 덩어리로
+  if (new Set(groups.map((g) => g.id)).size !== groups.length) return [];
   const seen = new Map<string, number>();
   return groups.map(({ id, label, from, to }) => {
     const n = (seen.get(label) ?? 0) + 1;
