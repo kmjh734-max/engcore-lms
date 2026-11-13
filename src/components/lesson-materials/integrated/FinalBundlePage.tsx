@@ -147,6 +147,7 @@ export async function FinalBundlePage({ role, docId }: { role: "admin" | "teache
       logoSrc={branding.logoUrl}
       academyName={branding.name || ""}
       classView={await isAcademyFeatureOn(createAdminClient(), profile?.academy_id, "lesson_class_view")}
+      workbookByPassage={await isAcademyFeatureOn(createAdminClient(), profile?.academy_id, "bundle_workbook_by_passage")}
     />
   );
 }

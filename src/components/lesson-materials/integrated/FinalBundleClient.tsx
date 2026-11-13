@@ -182,6 +182,7 @@ export function FinalBundleClient({
   logoSrc,
   academyName,
   classView = false,
+  workbookByPassage = false,
 }: {
   role: "admin" | "teacher";
   docId: string;
@@ -192,6 +193,8 @@ export function FinalBundleClient({
   academyName: string;
   /** 새 수업용 자료(교사용·학생용 수업 화면)를 켠 학원 — 통합자료의 수업용 자료도 새 모양(교사용) */
   classView?: boolean;
+  /** 워크북을 지문별로 이어 싣는 학원(정수학원, 2026-11-11) */
+  workbookByPassage?: boolean;
 }) {
   const base = role === "admin" ? "/admin/lesson-materials" : "/teacher/lesson-materials";
   const qgBase = role === "admin" ? "/admin/question-generator" : "/teacher/question-generator";
@@ -663,7 +666,7 @@ export function FinalBundleClient({
       ));
     }
     if (s.kind === "workbook") {
-      return materials.workbooks.map((m) => <WorkbookWorkbench key={m.docId} role={role} embeddedDocId={m.docId} design={payload.theme} />);
+      return materials.workbooks.map((m) => <WorkbookWorkbench key={m.docId} role={role} embeddedDocId={m.docId} design={payload.theme} byPassageFlow={workbookByPassage} />);
     }
     const mode = s.kind === "answers" ? "answers" : "exam";
     return materials.questions.map((q) => (
@@ -686,7 +689,7 @@ export function FinalBundleClient({
     for (const s of sections) out[s.key] = renderSection(s);
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sections, materials, role, logoSrc, academyName, base, qgBase, book, vocabExam, tOpt.translation, tOpt.wordTest, tOpt.allWordTest, fontsTick, payload.theme]);
+  }, [sections, materials, role, logoSrc, academyName, base, qgBase, book, vocabExam, tOpt.translation, tOpt.wordTest, tOpt.allWordTest, fontsTick, payload.theme, workbookByPassage]);
 
   /**
    * 이수표 칸 — 고른 워크북의 유형(원래 테스트 교재처럼 워크북을 보고, 선생님 2026-10-21) + 켠 테스트지 자료의 유형.

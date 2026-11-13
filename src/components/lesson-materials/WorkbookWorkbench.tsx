@@ -128,6 +128,15 @@ import {
 type WorkbookDesignStyle = "a" | "b" | "c" | "d";
 /** 쪽번호를 넣을지 (선생님이 자료마다 고른다) */
 const PAGE_NUMBER_KEY = "workbook-page-numbers";
+/*
+ * PDF로 저장할 쪽. 백지노트는 테스트 교재 쪽(.tb-sheet)이라 따로 적어 줘야 한다 — 빠뜨리면 화면·인쇄에는 나오고
+ * PDF에서만 사라진다(윌링어학원 2026-11-02). 백지노트는 정답지 앞에 붙으므로 문제지에 든다.
+ */
+const WB_PDF_SELECTORS = {
+  all: ".workbook-a4-sheet, .wb-blank-notes .tb-sheet",
+  questions: '.workbook-a4-sheet[data-wb-part="questions"], .wb-blank-notes .tb-sheet',
+  answers: '.workbook-a4-sheet[data-wb-part="answers"]',
+} as const;
 /** A·B·C가 쓰는 글꼴. */
 const DESIGN_FONTS_HREF =
   "/fonts/print/fonts.css";
@@ -538,9 +547,12 @@ function PageShell({
   windowIndex,
   windowCount,
   answers,
+  noAutoContinued = false,
 }: {
   /** 정답 쪽이면 true — PDF 저장에서 문제지·정답지를 가른다 */
   answers?: boolean;
+  /** 창 쪽이어도 제목에 「(계속)」을 저절로 붙이지 않는다(지문별 이어 싣기는 제목이 알아서 단다) */
+  noAutoContinued?: boolean;
   /** 쪽 아래 가운데 쪽번호를 찍는지(「쪽번호 넣기」, 최종통합자료에 끼울 때는 통합자료가 센다) */
   showPageNo?: boolean;
   children: ReactNode;
@@ -591,7 +603,7 @@ function PageShell({
         workbookTitle={workbookTitle}
         typeTitle={showTypeTitle && typeTitle ? typeTitle : undefined}
         suffix={
-          win && windowIndex > 0 && typeTitle && !typeTitle.endsWith("(계속)") ? " (계속)" : ""
+          win && !noAutoContinued && windowIndex > 0 && typeTitle && !typeTitle.endsWith("(계속)") ? " (계속)" : ""
         }
       />
       {win ? (
@@ -1659,6 +1671,11 @@ const FLOW_PART_GAP_PX = 34;
 type WorkbookPage =
   | ColumnPage
   | {
+      /** 지문별 이어 싣기(최종통합자료): 모든 유형을 지문 차례로 한 흐름에 싣고 쪽마다 창 하나 */
+      kind: "stream_q";
+      window: { index: number; count: number };
+    }
+  | {
       kind: "flow_q";
       flow: FlowKind;
       parts: FlowPart[];
@@ -1699,10 +1716,16 @@ export function WorkbookWorkbench({
   role,
   embeddedDocId,
   design,
+  byPassageFlow = false,
 }: {
   role: "admin" | "teacher";
   /** 최종통합자료 안에 끼워 넣을 워크북 파일. 저장된 결과만 보여 주고 만들거나 고치지 않는다. */
   embeddedDocId?: string;
+  /**
+   * 최종통합자료에서 지문별로(선생님 2026-11-11 정수학원): 유형별이 아니라 지문 차례로 싣고, 유형이 바뀌어도
+   * 새 쪽으로 넘기지 않고 이어 싣는다. 정답지도 지문 차례.
+   */
+  byPassageFlow?: boolean;
   /** 최종통합자료가 고른 디자인(주면 이것을 쓴다) */
   design?: MaterialDesign;
 }) {
@@ -1731,7 +1754,7 @@ export function WorkbookWorkbench({
   // 미리 PDF를 만들어 두어 「PDF로 저장」을 누르면 바로 받아진다
   usePdfPrefetch(
     "workbook-print-root",
-    [".workbook-a4-sheet", '.workbook-a4-sheet[data-wb-part="questions"]', '.workbook-a4-sheet[data-wb-part="answers"]'],
+    [WB_PDF_SELECTORS.all, WB_PDF_SELECTORS.questions, WB_PDF_SELECTORS.answers],
     { enabled: !embeddedDocId }
   );
   const [zoom, setZoom] = useState(85);
@@ -1801,6 +1824,8 @@ export function WorkbookWorkbench({
    * "answer:블록 key". 재기 전에는 없고, 그동안은 예전처럼 한 쪽에 싣는다.
    */
   const [windowCounts, setWindowCounts] = useState<Record<string, number>>({});
+  /** 지문별 이어 싣기: 지문 머리가 몇 번째 창(쪽)에서 시작하는지(쪽 머리글·목차용). top은 창 위에서 px */
+  const [streamHeads, setStreamHeads] = useState<Array<{ pid: string; col: number; top: number }>>([]);
   /** 정답지 쪽마다 실을 블록(key). 재기 전에는 null(한 쪽에 전부). */
   const [answerPages, setAnswerPages] = useState<string[][] | null>(null);
   /** 한 쪽보다 긴 정답 블록(key). 쪽 수를 재어 여러 쪽에 이어 싣는다. */
@@ -2227,6 +2252,24 @@ export function WorkbookWorkbench({
   }, [workbook]);
 
   /**
+   * 지문별 이어 싣기의 지문 차례: 워크북 칸 지문 + 테스트 교재에서 옮긴 유형의 지문, 파일의 지문 차례(폴더 차례)로.
+   */
+  const streamPassages = useMemo(() => {
+    if (!workbook) return [] as Array<{ projectId: string; title: string; source: string }>;
+    const seen = new Map(editablePassages.map((p) => [p.projectId, p] as const));
+    for (const list of Object.values(workbook.tbSections ?? {})) {
+      for (const one of list ?? []) {
+        if (!seen.has(one.projectId)) seen.set(one.projectId, { projectId: one.projectId, title: one.title, source: one.source ?? "" });
+      }
+    }
+    const at = new Map(docProjectIds.map((id, i) => [id, i] as const));
+    return [...seen.values()]
+      .map((p, i) => ({ p, k: at.get(p.projectId) ?? 1_000_000 + i }))
+      .sort((a, b) => a.k - b.k)
+      .map((x) => x.p);
+  }, [workbook, editablePassages, docProjectIds]);
+
+  /**
    * 지문 번호(1부터). 지문이 하나뿐이면 번호를 붙이지 않는다 — 가를 것이 없는데
    * '지문 1'만 붙으면 군더더기다. 그때는 출처만 나온다.
    */
@@ -2295,7 +2338,8 @@ export function WorkbookWorkbench({
           setGenerating(false);
           return;
         }
-        setWorkbook(withWorkbookDefaults(doc.payload as WorkbookData));
+        const saved = doc.payload as WorkbookData;
+        setWorkbook(withWorkbookDefaults(byPassageFlow ? { ...saved, layoutOrder: "passage" } : saved));
         setGenerating(false);
         return;
       }
@@ -2840,7 +2884,7 @@ export function WorkbookWorkbench({
       if (timers.elapsed) clearInterval(timers.elapsed);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- requestKey captures query
-  }, [role, requestKey, embeddedDocId]);
+  }, [role, requestKey, embeddedDocId, byPassageFlow]);
 
   const ensureWorkbookPrintStyles = () => {
     const id = "workbook-print-page-size-style";
@@ -3164,6 +3208,41 @@ export function WorkbookWorkbench({
   break-inside: avoid;
   page-break-inside: avoid;
 }
+.workbook-stream-block {
+  margin-bottom: 16px;
+}
+.workbook-stream-psg {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 6px 0 10px;
+  padding: 6px 0 5px;
+  border-top: 2px solid #1e293b;
+  border-bottom: 1px solid #cbd5e1;
+  break-after: avoid;
+  page-break-after: avoid;
+  break-inside: avoid;
+}
+.workbook-stream-psg b { font-size: 15px; font-weight: 900; color: #1e293b; }
+.workbook-stream-psg span { font-size: 14px; font-weight: 800; color: #1e293b; }
+.workbook-stream-psg small { margin-left: auto; font-size: 11px; font-weight: 600; color: #64748b; }
+.workbook-stream-block .wb-passage-meta {
+  display: none;
+}
+.workbook-stream-type {
+  margin: 4px 0 8px;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+.workbook-window-flow .line-translation-item,
+.workbook-window-flow .full-writing-item,
+.workbook-window-flow .word-order-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
 .workbook-flow-part + .workbook-flow-part {
   margin-top: 18px;
   border-top: 1px dashed #cbd5e1;
@@ -3384,6 +3463,12 @@ export function WorkbookWorkbench({
       tagged.sort((a, b) => a.r - b.r || a.i - b.i);
       out.length = 0;
       for (const t of tagged) out.push(t.page);
+      // 지문별 이어 싣기: 잰 쪽 수만큼 창을 둔다(재기 전에는 위의 지문·유형마다 쪽)
+      const streamWindows = byPassageFlow ? (windowCounts["passage:stream"] ?? 0) : 0;
+      if (streamWindows > 0) {
+        out.length = 0;
+        for (let k = 0; k < streamWindows; k++) out.push({ kind: "stream_q", window: { index: k, count: streamWindows } });
+      }
     }
     if (types.length > 0) {
       // 정답지도 A4 쪽으로 나눈다. 예전에는 한 장에 전부 실어 인쇄에서 여러 쪽으로
@@ -3408,7 +3493,7 @@ export function WorkbookWorkbench({
       });
     }
     return out;
-  }, [workbook, typeOrders, flowPages, columnPacks, answerPages, windowCounts, editablePassages]);
+  }, [workbook, typeOrders, flowPages, columnPacks, answerPages, windowCounts, editablePassages, byPassageFlow]);
   // (흐름 쪽 수는 columnBodyMm이 정해진 뒤 probe가 재므로 windowCounts만 보면 된다)
 
   useLayoutEffect(() => {
@@ -3630,6 +3715,18 @@ export function WorkbookWorkbench({
       next[el.dataset.wbProbe!] = Math.max(1, Math.ceil(cols / perPage));
     });
     setWindowCounts((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
+    const flow = root.querySelector<HTMLElement>('[data-wb-probe="passage:stream"]');
+    const heads: Array<{ pid: string; col: number; top: number }> = [];
+    if (flow) {
+      const box = flow.getBoundingClientRect();
+      const gap = parseFloat(getComputedStyle(flow).columnGap) || 0;
+      const stride = (flow.clientWidth || 1) + gap;
+      flow.querySelectorAll<HTMLElement>("[data-wb-stream-psg]").forEach((h) => {
+        const r = h.getBoundingClientRect();
+        heads.push({ pid: h.dataset.wbStreamPsg!, col: Math.round((r.left - box.left) / stride), top: Math.round(r.top - box.top) });
+      });
+    }
+    setStreamHeads((prev) => (JSON.stringify(prev) === JSON.stringify(heads) ? prev : heads));
   }, [workbook, columnPacks, answerOversize, columnBodyMm, fontsReady, designStyle, fontsTick, loadedPassages]);
 
   // 그린 2단 쪽이 오른쪽 단 밖으로 넘치면(재 둔 높이와 실제가 다를 때) 그 쪽에 싣는 지문을 하나 줄인다.
@@ -4079,7 +4176,7 @@ export function WorkbookWorkbench({
     }
   }
   if (workbook.layoutOrder === "passage") {
-    const rank = passageRankOf(workbook, editablePassages.map((x) => x.projectId));
+    const rank = passageRankOf(workbook, (byPassageFlow ? streamPassages : editablePassages).map((x) => x.projectId));
     const ranked = answerBlocks.map((b, i) => ({ b, i, r: rank(answerBlockPassageId(workbook, b.key)) }));
     ranked.sort((a, b) => a.r - b.r || a.b.order - b.b.order || a.i - b.i);
     answerBlocks.length = 0;
@@ -4203,6 +4300,120 @@ export function WorkbookWorkbench({
   /** 배치를 잴 유형(고른 유형 전부). 1단은 쪽 너비, 2단은 단 너비로 잰다. */
   const columnTypesOn = WORKBOOK_COLUMN_TYPES.filter((t) => workbook.selectedTypes.includes(t));
 
+  /** 한줄해석·영작 등 흐름 유형의 지문 하나(문항 전부) */
+  const renderFlowSection = (flow: FlowKind, si: number): ReactNode =>
+    flow === "line_ko" ? (
+      <LineTranslationQuestionBody section={ltSections[si]!} />
+    ) : flow === "gist" ? (
+      <GistQuestionBody section={giSections[si]!} passage={passageOf(giSections[si]!)} />
+    ) : flow === "full_en" ? (
+      <FullEnWritingQuestionBody section={feSections[si]!} />
+    ) : (
+      <WordOrderQuestionBody section={(flow === "key_word_order" ? kwSections : woSections)[si]!} />
+    );
+
+  /*
+   * 지문별 이어 싣기(최종통합자료, 선생님 2026-11-11 정수학원): 지문 차례 → 그 안에서 유형 차례로 한 흐름에 싣는다.
+   * 지문이 바뀌는 곳에 지문 머리, 유형이 바뀌는 곳에 유형 제목을 넣고, 쪽은 흐름을 창으로 잘라 이어 간다.
+   */
+  const streamOn = byPassageFlow && workbook.layoutOrder === "passage";
+  const streamPassageRank = passageRankOf(workbook, streamPassages.map((x) => x.projectId));
+  const streamPassageInfo = new Map(
+    streamPassages.map((x, i) => [x.projectId, { no: i + 1, title: x.title, source: x.source }] as const)
+  );
+  const streamContent: ReactNode = (() => {
+    if (!streamOn) return null;
+    const flowLists: Record<FlowKind, Array<{ projectId: string }>> = {
+      line_ko: ltSections,
+      gist: giSections,
+      full_en: feSections,
+      word_order: woSections,
+      key_word_order: kwSections,
+    };
+    type StreamBlock = {
+      key: string;
+      pid: string | null;
+      type: WorkbookTypeId;
+      title: string;
+      order: number;
+      seq: number;
+      node: ReactNode;
+    };
+    const blocks: StreamBlock[] = [];
+    let seq = 0;
+    for (const t of orderWorkbookTypes(workbook.selectedTypes, workbook.typeOrder)) {
+      const order = typeOrders.get(t) ?? 1;
+      if ((WORKBOOK_COLUMN_TYPES as readonly string[]).includes(t)) {
+        const ct = t as WorkbookColumnTypeId;
+        for (let i = 0; i < columnCountFor(ct); i++) {
+          blocks.push({
+            key: `c-${ct}-${i}`,
+            pid: columnPassageId(workbook, ct, i),
+            type: t,
+            title: COLUMN_TYPE_TITLE[ct],
+            order,
+            seq: seq++,
+            node: renderColumnSection(ct, i),
+          });
+        }
+        continue;
+      }
+      const flow = FLOW_KIND_BY_TYPE[t];
+      if (!flow) continue;
+      flowLists[flow].forEach((sec, si) => {
+        blocks.push({
+          key: `f-${flow}-${si}`,
+          pid: sec.projectId ?? null,
+          type: t,
+          title: FLOW_TITLE[flow],
+          order,
+          seq: seq++,
+          node: renderFlowSection(flow, si),
+        });
+      });
+    }
+    blocks.sort((a, b) => streamPassageRank(a.pid) - streamPassageRank(b.pid) || a.seq - b.seq);
+    const out: ReactNode[] = [];
+    let prevPid: string | null | undefined;
+    let prevType: WorkbookTypeId | undefined;
+    for (const b of blocks) {
+      const newPassage = b.pid !== prevPid;
+      const info = b.pid ? streamPassageInfo.get(b.pid) : undefined;
+      out.push(
+        <div key={b.key} className="workbook-stream-block">
+          {newPassage && b.pid === "__all" ? <span data-wb-stream-psg="__all" /> : null}
+          {newPassage && info ? (
+            <div className="workbook-stream-psg" data-wb-stream-psg={b.pid!}>
+              <b>{String(info.no).padStart(2, "0")}</b>
+              <span>{info.title}</span>
+              {info.source ? <small>{info.source}</small> : null}
+            </div>
+          ) : null}
+          {newPassage || b.type !== prevType ? (
+            <h3 className="workbook-stream-type" style={{ color: ACCENT }}>
+              {b.order}. {b.title}
+            </h3>
+          ) : null}
+          {b.node}
+        </div>
+      );
+      prevPid = b.pid;
+      prevType = b.type;
+    }
+    return out;
+  })();
+  /** 지문별 이어 싣기 k번째 쪽의 머리글: 그 쪽 맨 위에 걸친 지문(새로 시작하지 않으면 「(계속)」) */
+  const streamTitleAt = (k: number): string | undefined => {
+    const atTop = (h: { col: number; top: number }) => h.col === k && h.top < 12;
+    let cur: { pid: string; col: number; top: number } | undefined;
+    for (const h of streamHeads) if (h.col < k || atTop(h)) cur = h;
+    if (!cur) return undefined;
+    const more = streamHeads.some(atTop) ? "" : " (계속)";
+    if (cur.pid === "__all") return `단어 시험${more}`;
+    const info = streamPassageInfo.get(cur.pid);
+    return info ? `${info.no}. ${info.title}${more}` : undefined;
+  };
+
   /** 인쇄할 쪽들과 쪽 나눔 측정 영역. 최종통합자료에 끼워 넣을 때(embedded)도 같은 모양을 쓴다. */
   /* 백지노트(선생님 2026-10-27): 켜면 정답지 앞(정답지가 없으면 맨 뒤)에 지문마다 2쪽 */
   const blankNoteSheets =
@@ -4210,7 +4421,7 @@ export function WorkbookWorkbench({
       <Fragment key="blank-notes">
         <link rel="stylesheet" href={TEST_BOOK_FONTS_HREF} />
         <style>{TEST_BOOK_CSS}</style>
-        <div className={`tb-theme-${md} contents`} style={partStyle({ id: "blank", no: "", en: "BLANK NOTE", ko: "백지노트", color: "#1d2a8f" })}>
+        <div className={`wb-blank-notes tb-theme-${md} contents`} style={partStyle({ id: "blank", no: "", en: "BLANK NOTE", ko: "백지노트", color: "#1d2a8f" })}>
           {blankNoteProjects.map((p, i) => (
             <BlankNoteSheets key={p.id} index={i} project={p} />
           ))}
@@ -4268,6 +4479,28 @@ export function WorkbookWorkbench({
                         {renderColumnSection(page.type, i)}
                       </div>
                     ))}
+                  </PageShell>
+                );
+              }
+
+              if (page.kind === "stream_q") {
+                return (
+                  <PageShell
+                    key={`stream-${page.window.index}`}
+                    pageNo={pageNo}
+                    total={partTotal}
+                    showPageNo={showPageNo}
+                    workbookTitle={title}
+                    showTypeTitle
+                    typeTitle={streamTitleAt(page.window.index)}
+                    noAutoContinued
+                    isLast={isLast}
+                    columns={1}
+                    columnHeightMm={columnBodyMm ?? undefined}
+                    windowIndex={page.window.index}
+                    windowCount={page.window.count}
+                  >
+                    {streamContent}
                   </PageShell>
                 );
               }
@@ -4390,6 +4623,11 @@ export function WorkbookWorkbench({
           </div>
           {columnBodyMm != null ? (
             <div className="workbook-a4-body" style={{ height: 0, overflow: "hidden" }}>
+              {streamOn ? (
+                <WindowFlow columns={1} heightMm={columnBodyMm} index={0} probe="passage:stream">
+                  {streamContent}
+                </WindowFlow>
+              ) : null}
               {columnTypesOn
                 .filter((t) => streamColumnType(workbook, t, columnCountOf(workbook, t)))
                 .map((t) => (
@@ -4692,7 +4930,7 @@ export function WorkbookWorkbench({
                     part === "all" ? "워크북" : `워크북 ${label}`,
                     collectPrintPages(
                       document.getElementById("workbook-print-root"),
-                      part === "all" ? ".workbook-a4-sheet" : `.workbook-a4-sheet[data-wb-part="${part}"]`
+                      WB_PDF_SELECTORS[part]
                     ),
                     [title]
                   )
