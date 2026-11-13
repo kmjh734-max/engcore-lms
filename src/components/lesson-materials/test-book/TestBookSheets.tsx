@@ -2363,7 +2363,8 @@ export const VocabExamAnswerSheets = memo(function VocabExamAnswerSheets({
       node: (
         <dl className={mc ? "tb-arow" : "tb-arow tb-arow-v"} style={ci < chunks.length - 1 ? { marginBottom: 0 } : undefined}>
           <dt>{ci === 0 ? sec.title : ""}</dt>
-          <dd>
+          {/* 번호는 문제지처럼 가로로 읽는다(1 2 3 4 / 5 6 7 8) — 문제는 가로, 정답은 세로라 어색했다(선생님 2026-11-13) */}
+          <dd style={mc ? undefined : { display: "grid", gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, columnGap: "3mm" }}>
             {chunk.map((it) => (
               <span key={it.no}>
                 <b>{it.no}</b>
