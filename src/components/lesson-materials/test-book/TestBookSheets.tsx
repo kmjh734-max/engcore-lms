@@ -798,6 +798,7 @@ export const PlanSheets = memo(function PlanSheets({
   measureKey,
   columns,
   extraTodo = [],
+  workbookPages,
 }: {
   projects: TestBookProjectInput[];
   options: TestBookOptions;
@@ -806,6 +807,8 @@ export const PlanSheets = memo(function PlanSheets({
   columns?: string[];
   /** 「해 올 것」에 더할 것(워크북 등) */
   extraTodo?: string[];
+  /** 지문마다 워크북 쪽(지문별로 싣는 최종통합자료) — 「워크북」 뒤에 「p.12~19」를 붙인다 */
+  workbookPages?: Record<string, { from: number; to: number }>;
 }) {
   const tests = options.tests;
   const cols = columns ?? [
@@ -819,7 +822,8 @@ export const PlanSheets = memo(function PlanSheets({
     ...(options.analysis ? ["분석 자료"] : []),
     ...extraTodo,
   ];
-  const checkGrid = `24mm repeat(${cols.length}, minmax(0,1fr)) 12mm 15mm`;
+  // 지문 칸에 번호만이 아니라 출처·제목을 적는다(선생님 2026-11-13) — 칸이 많을수록 지문 칸을 좁힌다
+  const checkGrid = `${cols.length > 10 ? 38 : cols.length > 5 ? 52 : 78}mm repeat(${cols.length}, minmax(0,1fr)) 12mm 15mm`;
   const allWordTestOn = tests && options.allWordTest;
   const checkOn = cols.length > 0 || allWordTestOn;
   const blocks: Block[] = [
@@ -866,9 +870,10 @@ export const PlanSheets = memo(function PlanSheets({
           </div>
           <div>
             <span className="tb-todo">
-              {todo.map((t) => (
-                <span key={t}>{t}</span>
-              ))}
+              {todo.map((t) => {
+                const pg = t === "워크북" ? workbookPages?.[p.id] : undefined;
+                return <span key={t}>{pg ? `워크북 p.${pg.from}${pg.to > pg.from ? `~${pg.to}` : ""}` : t}</span>;
+              })}
             </span>
           </div>
           <div className="tb-date">&nbsp;&nbsp;월 &nbsp;&nbsp;&nbsp;일</div>
@@ -911,7 +916,13 @@ export const PlanSheets = memo(function PlanSheets({
                 key: `check-${p.id}`,
                 node: (
                   <div className="tb-row tb-crow" style={{ gridTemplateColumns: checkGrid }}>
-                    <div>{String(i + 1).padStart(2, "0")}</div>
+                    <div style={{ gap: "1.5mm", minWidth: 0, padding: "0.6mm 0" }}>
+                      <span>{String(i + 1).padStart(2, "0")}</span>
+                      <span style={{ display: "flex", flexDirection: "column", minWidth: 0, lineHeight: 1.25 }}>
+                        {p.source?.trim() ? <b style={{ fontSize: "7pt", color: "#4b515c" }}>{p.source.trim()}</b> : null}
+                        <span style={{ fontSize: "7pt" }}>{p.title}</span>
+                      </span>
+                    </div>
                     {cols.map((c) => (
                       <div key={c}>/</div>
                     ))}

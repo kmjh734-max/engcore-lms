@@ -165,12 +165,15 @@ export function ContentsPage({
                   {e.children.map((c, ci) => (
                     <li key={`${ci}-${c.label}`} className="min-w-0">
                       <div className="flex min-w-0 items-baseline gap-[1.5mm]">
-                        <span className="min-w-0 truncate">{c.label}</span>
+                        {/* 출처가 있으면 출처를 앞세운다(선생님 2026-11-13 「목차도 제목보다 출처가 더 중요」): 「01 출처」, 제목은 아랫줄 */}
+                        <span className={`min-w-0 truncate ${c.note ? "font-semibold text-slate-800" : ""}`}>
+                          {c.note ? `${c.label.match(/^\d+\s/)?.[0] ?? ""}${c.note}` : c.label}
+                        </span>
                         <span className="min-w-[4mm] flex-1 border-b border-dotted border-slate-300" />
                         <span className="shrink-0 tabular-nums text-slate-500">{c.from === c.to ? c.from : `${c.from}~${c.to}`}</span>
                       </div>
                       {/* 출처(수업용 자료 지문) */}
-                      {c.note ? <div className="truncate pl-[5mm] text-[7.5pt] text-slate-400">{c.note}</div> : null}
+                      {c.note ? <div className="truncate pl-[5mm] text-[7.5pt] text-slate-500">{c.label.replace(/^\d+\s/, "")}</div> : null}
                     </li>
                   ))}
                 </ul>

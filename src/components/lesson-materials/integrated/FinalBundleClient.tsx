@@ -436,9 +436,55 @@ export function FinalBundleClient({
    */
   useEffect(() => {
     return watchPageNumbers(rootRef.current, true, {
+      // 교사용·학생용 수업 화면 쪽도 센다 — 빠져서 그 뒤 자료의 쪽번호가 목차보다 수업 화면 쪽 수만큼 앞섰다(2026-11-13)
+      extraSelector: ".lc-page",
       skip: (el, i) => i === 0 || el.classList.contains("final-bundle-sheet--last"),
     });
   }, []);
+
+  /**
+   * 워크북을 지문별로 실을 때 지문마다 워크북 쪽(시작~끝) — 학습 계획표 지문 줄에 적는다(선생님 2026-11-13
+   * 「계획표도 지문별로」). 쪽이 다 나뉜 뒤 화면에서 읽는다: 지문 머리가 그 쪽 창 안에 보이는 첫 쪽이 시작 쪽.
+   */
+  const [wbPassagePages, setWbPassagePages] = useState<Record<string, { from: number; to: number }>>({});
+  const wbPagesOn = workbookByPassage && has.plan && has.workbook;
+  useEffect(() => {
+    if (!wbPagesOn) return;
+    const read = () => {
+      const root = rootRef.current;
+      if (!root) return;
+      const sheets = [...root.querySelectorAll<HTMLElement>(".workbook-a4-sheet[data-page-no]")].filter((s) => s.querySelector(".workbook-stream-block"));
+      const starts: Array<{ pid: string; page: number; top: boolean }> = [];
+      const seen = new Set<string>();
+      let last = 0;
+      for (const sheet of sheets) {
+        const page = Number(sheet.getAttribute("data-page-no"));
+        if (!page) continue;
+        last = Math.max(last, page);
+        const box = sheet.getBoundingClientRect();
+        if (!box.width) continue;
+        sheet.querySelectorAll<HTMLElement>("[data-wb-stream-psg]").forEach((h) => {
+          const pid = h.dataset.wbStreamPsg!;
+          if (seen.has(pid)) return;
+          const r = h.getBoundingClientRect();
+          const mid = r.left + r.width / 2;
+          if (mid < box.left || mid > box.right || r.top < box.top || r.top > box.bottom) return;
+          seen.add(pid);
+          starts.push({ pid, page, top: r.top - box.top < box.height * 0.2 });
+        });
+      }
+      starts.sort((a, b) => a.page - b.page);
+      const next: Record<string, { from: number; to: number }> = {};
+      starts.forEach((s, i) => {
+        const n = starts[i + 1];
+        const to = n ? Math.max(s.page, n.top ? n.page - 1 : n.page) : last;
+        if (s.pid !== "__all") next[s.pid] = { from: s.page, to };
+      });
+      setWbPassagePages((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
+    };
+    const tick = setInterval(read, 2000);
+    return () => clearInterval(tick);
+  }, [wbPagesOn]);
 
   // 쪽 번호: 앞표지 1, (학습 계획표), 목차, 그다음 간지와 자료 쪽을 차례로 센다.
   const contents: ContentsEntry[] = [];
@@ -697,7 +743,8 @@ export function FinalBundleClient({
    */
   const planColumns = [
     ...new Set([
-      ...(has.workbook ? materials.workbooks.flatMap((w) => w.types.map((t) => WORKBOOK_TYPE_SHORT[t] ?? t)) : []),
+      // 워크북을 지문별로 싣는 학원은 유형 칸 대신 지문마다 「워크북」 한 칸(선생님 2026-11-13)
+      ...(has.workbook ? (workbookByPassage ? ["워크북"] : materials.workbooks.flatMap((w) => w.types.map((t) => WORKBOOK_TYPE_SHORT[t] ?? t))) : []),
       ...(has.tests ? [...(tOpt.wordTest ? ["동반의어"] : []), ...tOpt.types.map((t) => TYPE_SHORT[t])] : []),
     ]),
   ];
@@ -724,11 +771,12 @@ export function FinalBundleClient({
             }}
             columns={planColumns}
             extraTodo={[...(has.workbook ? ["워크북"] : []), ...(has.tests ? ["테스트지"] : [])]}
+            workbookPages={wbPagesOn ? wbPassagePages : undefined}
           />
         </div>
       ) : null,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [has.plan, has.tests, has.lesson_pack, has.word_note, has.blank_note, has.analysis_report, has.workbook, extraProjects, tOpt, fontsTick, planColumns.join("|")]
+    [has.plan, has.tests, has.lesson_pack, has.word_note, has.blank_note, has.analysis_report, has.workbook, extraProjects, tOpt, fontsTick, planColumns.join("|"), wbPagesOn, wbPassagePages]
   );
 
   /** 단어학습 단어장 등록(테스트 교재와 같다 — 다시 누르면 같은 단어장을 고친다) */

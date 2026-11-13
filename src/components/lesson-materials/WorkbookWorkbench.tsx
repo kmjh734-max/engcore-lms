@@ -548,7 +548,12 @@ function PageShell({
   windowCount,
   answers,
   noAutoContinued = false,
+  tocSub,
+  tocNote,
 }: {
+  /** 최종통합자료 목차 세부 항목 이름·출처(지문별 묶음 쪽: 「01 제목」과 출처). 없으면 유형 제목 */
+  tocSub?: string;
+  tocNote?: string;
   /** 정답 쪽이면 true — PDF 저장에서 문제지·정답지를 가른다 */
   answers?: boolean;
   /** 창 쪽이어도 제목에 「(계속)」을 저절로 붙이지 않는다(지문별 이어 싣기는 제목이 알아서 단다) */
@@ -587,7 +592,8 @@ function PageShell({
     <article
       data-wb-part={answers ? "answers" : "questions"}
       // 최종통합자료 목차의 세부 항목(유형별 쪽 범위)
-      data-toc-sub={answers ? "정답" : typeTitle ? typeTitle.replace(/^\d+\.\s*/, "").replace(/\s*\(계속\)$/, "") : undefined}
+      data-toc-sub={answers ? "정답" : tocSub ?? (typeTitle ? typeTitle.replace(/^\d+\.\s*/, "").replace(/\s*\(계속\)$/, "") : undefined)}
+      data-toc-note={answers ? undefined : tocNote || undefined}
       className={`workbook-a4-sheet lesson-pack-a4-sheet relative box-border bg-white shadow-xl print:shadow-none ${
         isLast ? "lesson-pack-a4-sheet--last" : ""
       }`}
@@ -1673,6 +1679,8 @@ type WorkbookPage =
   | {
       /** 지문별 이어 싣기(최종통합자료): 모든 유형을 지문 차례로 한 흐름에 싣고 쪽마다 창 하나 */
       kind: "stream_q";
+      /** 몇 번째 지문 묶음인지(단어 시험이 있으면 그것이 먼저) — 묶음마다 새 쪽에서 시작한다 */
+      group: number;
       window: { index: number; count: number };
     }
   | {
@@ -1827,8 +1835,6 @@ export function WorkbookWorkbench({
    * "answer:블록 key". 재기 전에는 없고, 그동안은 예전처럼 한 쪽에 싣는다.
    */
   const [windowCounts, setWindowCounts] = useState<Record<string, number>>({});
-  /** 지문별 이어 싣기: 지문 머리가 몇 번째 창(쪽)에서 시작하는지(쪽 머리글·목차용). top은 창 위에서 px */
-  const [streamHeads, setStreamHeads] = useState<Array<{ pid: string; col: number; top: number }>>([]);
   /** 정답지 쪽마다 실을 블록(key). 재기 전에는 null(한 쪽에 전부). */
   const [answerPages, setAnswerPages] = useState<string[][] | null>(null);
   /** 한 쪽보다 긴 정답 블록(key). 쪽 수를 재어 여러 쪽에 이어 싣는다. */
@@ -3468,10 +3474,18 @@ export function WorkbookWorkbench({
       out.length = 0;
       for (const t of tagged) out.push(t.page);
       // 지문별 이어 싣기: 잰 쪽 수만큼 창을 둔다(재기 전에는 위의 지문·유형마다 쪽)
-      const streamWindows = byPassageFlow ? (windowCounts["passage:stream"] ?? 0) : 0;
-      if (streamWindows > 0) {
+      // 지문마다 흐름을 따로 둔다 — 한 흐름에 다 실으면 쪽마다 워크북 전체를 다시 그려 여는 데 몇 분이 걸렸다(2026-11-13)
+      const streamGroupCounts = byPassageFlow
+        ? Object.keys(windowCounts)
+            .filter((k) => k.startsWith("passage:stream:"))
+            .map((k) => ({ g: Number(k.slice("passage:stream:".length)), n: windowCounts[k] ?? 0 }))
+            .sort((a, b) => a.g - b.g)
+        : [];
+      if (streamGroupCounts.length > 0) {
         out.length = 0;
-        for (let k = 0; k < streamWindows; k++) out.push({ kind: "stream_q", window: { index: k, count: streamWindows } });
+        for (const { g, n } of streamGroupCounts) {
+          for (let k = 0; k < n; k++) out.push({ kind: "stream_q", group: g, window: { index: k, count: n } });
+        }
       }
     }
     if (types.length > 0) {
@@ -3719,18 +3733,6 @@ export function WorkbookWorkbench({
       next[el.dataset.wbProbe!] = Math.max(1, Math.ceil(cols / perPage));
     });
     setWindowCounts((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
-    const flow = root.querySelector<HTMLElement>('[data-wb-probe="passage:stream"]');
-    const heads: Array<{ pid: string; col: number; top: number }> = [];
-    if (flow) {
-      const box = flow.getBoundingClientRect();
-      const gap = parseFloat(getComputedStyle(flow).columnGap) || 0;
-      const stride = (flow.clientWidth || 1) + gap;
-      flow.querySelectorAll<HTMLElement>("[data-wb-stream-psg]").forEach((h) => {
-        const r = h.getBoundingClientRect();
-        heads.push({ pid: h.dataset.wbStreamPsg!, col: Math.round((r.left - box.left) / stride), top: Math.round(r.top - box.top) });
-      });
-    }
-    setStreamHeads((prev) => (JSON.stringify(prev) === JSON.stringify(heads) ? prev : heads));
   }, [workbook, columnPacks, answerOversize, columnBodyMm, fontsReady, designStyle, fontsTick, loadedPassages]);
 
   // 그린 2단 쪽이 오른쪽 단 밖으로 넘치면(재 둔 높이와 실제가 다를 때) 그 쪽에 싣는 지문을 하나 줄인다.
@@ -4325,8 +4327,8 @@ export function WorkbookWorkbench({
   const streamPassageInfo = new Map(
     streamPassages.map((x, i) => [x.projectId, { no: i + 1, title: x.title, source: x.source }] as const)
   );
-  const streamContent: ReactNode = (() => {
-    if (!streamOn) return null;
+  const streamGroups: Array<{ pid: string | null; nodes: ReactNode[] }> = (() => {
+    if (!streamOn) return [];
     const flowLists: Record<FlowKind, Array<{ projectId: string }>> = {
       line_ko: ltSections,
       gist: giSections,
@@ -4377,13 +4379,14 @@ export function WorkbookWorkbench({
       });
     }
     blocks.sort((a, b) => streamPassageRank(a.pid) - streamPassageRank(b.pid) || a.seq - b.seq);
-    const out: ReactNode[] = [];
+    const out: Array<{ pid: string | null; nodes: ReactNode[] }> = [];
     let prevPid: string | null | undefined;
     let prevType: WorkbookTypeId | undefined;
     for (const b of blocks) {
       const newPassage = b.pid !== prevPid;
       const info = b.pid ? streamPassageInfo.get(b.pid) : undefined;
-      out.push(
+      if (newPassage || !out.length) out.push({ pid: b.pid, nodes: [] });
+      out.at(-1)!.nodes.push(
         <div key={b.key} className="workbook-stream-block">
           {newPassage && b.pid === "__all" ? <span data-wb-stream-psg="__all" /> : null}
           {newPassage && info ? (
@@ -4406,15 +4409,12 @@ export function WorkbookWorkbench({
     }
     return out;
   })();
-  /** 지문별 이어 싣기 k번째 쪽의 머리글: 그 쪽 맨 위에 걸친 지문(새로 시작하지 않으면 「(계속)」) */
-  const streamTitleAt = (k: number): string | undefined => {
-    const atTop = (h: { col: number; top: number }) => h.col === k && h.top < 12;
-    let cur: { pid: string; col: number; top: number } | undefined;
-    for (const h of streamHeads) if (h.col < k || atTop(h)) cur = h;
-    if (!cur) return undefined;
-    const more = streamHeads.some(atTop) ? "" : " (계속)";
-    if (cur.pid === "__all") return `단어 시험${more}`;
-    const info = streamPassageInfo.get(cur.pid);
+  /** 지문별 묶음 g의 k번째 쪽 머리글: 그 지문 번호·제목(둘째 쪽부터 「(계속)」) */
+  const streamTitleAt = (g: number, k: number): string | undefined => {
+    const pid = streamGroups[g]?.pid;
+    const more = k > 0 ? " (계속)" : "";
+    if (pid === "__all") return `단어 시험${more}`;
+    const info = pid ? streamPassageInfo.get(pid) : undefined;
     return info ? `${info.no}. ${info.title}${more}` : undefined;
   };
 
@@ -4490,13 +4490,18 @@ export function WorkbookWorkbench({
               if (page.kind === "stream_q") {
                 return (
                   <PageShell
-                    key={`stream-${page.window.index}`}
+                    key={`stream-${page.group}-${page.window.index}`}
                     pageNo={pageNo}
                     total={partTotal}
                     showPageNo={showPageNo}
                     workbookTitle={title}
                     showTypeTitle
-                    typeTitle={streamTitleAt(page.window.index)}
+                    typeTitle={streamTitleAt(page.group, page.window.index)}
+                    {...(() => {
+                      const pid = streamGroups[page.group]?.pid;
+                      const info = pid ? streamPassageInfo.get(pid) : undefined;
+                      return info ? { tocSub: `${String(info.no).padStart(2, "0")} ${info.title}`, tocNote: info.source || undefined } : {};
+                    })()}
                     noAutoContinued
                     isLast={isLast}
                     columns={1}
@@ -4504,7 +4509,7 @@ export function WorkbookWorkbench({
                     windowIndex={page.window.index}
                     windowCount={page.window.count}
                   >
-                    {streamContent}
+                    {streamGroups[page.group]?.nodes ?? null}
                   </PageShell>
                 );
               }
@@ -4627,11 +4632,11 @@ export function WorkbookWorkbench({
           </div>
           {columnBodyMm != null ? (
             <div className="workbook-a4-body" style={{ height: 0, overflow: "hidden" }}>
-              {streamOn ? (
-                <WindowFlow columns={1} heightMm={columnBodyMm} index={0} probe="passage:stream">
-                  {streamContent}
+              {streamGroups.map((g, gi) => (
+                <WindowFlow key={`probe-passage-stream-${gi}`} columns={1} heightMm={columnBodyMm} index={0} probe={`passage:stream:${gi}`}>
+                  {g.nodes}
                 </WindowFlow>
-              ) : null}
+              ))}
               {columnTypesOn
                 .filter((t) => streamColumnType(workbook, t, columnCountOf(workbook, t)))
                 .map((t) => (

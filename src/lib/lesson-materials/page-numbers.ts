@@ -12,6 +12,8 @@ export const PAGE_SHEET_SELECTOR =
   ".lesson-pack-a4-sheet, .qg-print-page, .final-bundle-sheet, .tb-sheet:not(.tb-measure .tb-sheet)";
 
 export interface PageNumberOptions {
+  /** 장으로 셀 요소를 더한다(최종통합자료: 수업 화면 쪽 .lc-page — 빠지면 그 뒤 쪽번호가 목차와 어긋난다) */
+  extraSelector?: string;
   /** 첫 쪽에 적을 번호 (기본 1) */
   startAt?: number;
   /** 번호를 적지 않을 장 (표지·뒤표지). 번호 자체는 세되 적지만 않는다 */
@@ -46,7 +48,7 @@ export function stampPageNumbers(
     }
     return true;
   };
-  const sheets = Array.from(root.querySelectorAll<HTMLElement>(PAGE_SHEET_SELECTOR)).filter(printed);
+  const sheets = Array.from(root.querySelectorAll<HTMLElement>(opts.extraSelector ? `${PAGE_SHEET_SELECTOR}, ${opts.extraSelector}` : PAGE_SHEET_SELECTOR)).filter(printed);
   if (!enabled) {
     for (const el of sheets) el.removeAttribute("data-page-no");
     return;
