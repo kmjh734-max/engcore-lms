@@ -14,7 +14,9 @@ import {
   type TestSeg,
   type TestSheet,
   type WordTest,
+  inVocabRange,
   type VocabExam,
+  type VocabRange,
   type VocabExamItem,
 } from "@/lib/lesson-materials/test-book";
 import { AnalysisMarkupSentence } from "@/components/lesson-materials/AnalysisMarkupSentence";
@@ -1088,7 +1090,7 @@ export const AllVocabSheets = memo(function AllVocabSheets({
   /** 쪽 제목(선생님이 넣은 이름) */
   title?: string;
   /** 번호 범위만 싣는다(단어 시험지 화면의 출제 범위) — 번호는 전체 차례 그대로 */
-  range?: { from: number; to: number } | null;
+  range?: VocabRange | null;
   /** 지문 번호 칸을 뺀다(자료함 「단어」 탭 단어장은 지문 정보가 없다) */
   noPassage?: boolean;
 }) {
@@ -1096,7 +1098,7 @@ export const AllVocabSheets = memo(function AllVocabSheets({
   // 단어 탭 단어장은 지문이 없고, 옛 단어장은 파생어도 없다 — 없는 칸을 빼고 뜻 칸을 넓힌다
   const showForms = !noPassage || allRows.some((r) => r.row.forms.length);
   const grid = !noPassage ? ALL_GRID : showForms ? "9mm 0 31mm 8mm 37mm 1fr 1fr 1fr" : "9mm 0 32mm 8mm 46mm 1fr 1fr 0";
-  const rows = range ? allRows.filter((r) => r.no >= range.from && r.no <= range.to) : allRows;
+  const rows = range ? allRows.filter((r) => inVocabRange(range, r.no)) : allRows;
   const head = (
     <div className="tb-row tb-th tb-vrow" style={{ gridTemplateColumns: grid }}>
       <div />
@@ -1160,7 +1162,7 @@ export const AllVocabSheets = memo(function AllVocabSheets({
         <>
           <DocHead
             title={title}
-            sub={page > 0 ? "(이어서)" : range && rows.length < allRows.length ? `${range.from}~${range.to}번 · ${rows.length}단어` : noPassage ? `${rows.length}단어` : `지문 ${projects.length}개 · ${rows.length}단어`}
+            sub={page > 0 ? "(이어서)" : range && rows.length < allRows.length ? `${range.parts?.length ? range.parts.map((x) => `${x.from}~${x.to}`).join(", ") : `${range.from}~${range.to}`}번 · ${rows.length}단어` : noPassage ? `${rows.length}단어` : `지문 ${projects.length}개 · ${rows.length}단어`}
             label="ALL WORDS"
             right={noPassage ? "VOCABULARY" : "지문 번호는 계획표 차례"}
           />

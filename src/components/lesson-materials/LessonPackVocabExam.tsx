@@ -14,6 +14,7 @@ import {
   vocabExamRange,
   type TestBookProjectInput,
   type VocabExamOptions,
+  type VocabRange,
 } from "@/lib/lesson-materials/test-book";
 import {
   TEST_BOOK_CSS,
@@ -108,7 +109,8 @@ export function LessonPackVocabExam({
   /** 파일에 남긴 시험지(인쇄·PDF 때 저장)와, 그것을 그대로 보여 주는 중인지 */
   const [saved, setSaved] = useState<SavedVocabExam | null>(savedExam);
   const [pinned, setPinned] = useState(!!savedExam);
-  const range = useMemo(() => vocabExamRange(rangeFrom, rangeTo, wordCount), [rangeFrom, rangeTo, wordCount]);
+  /** 지문별로 뽑기에서 고른 지문 번호들 — 여러 개를 함께 고를 수 있다(선생님 2026-11-13) */
+  const [picked, setPicked] = useState<number[]>(savedExam?.passages ?? []);
   /** 지문마다 단어 번호 구간(출처 · 제목) — 지문별로 뽑기 */
   const passageRanges = useMemo(() => {
     const out: Array<{ passage: number; label: string; from: number; to: number }> = [];
@@ -128,6 +130,12 @@ export function LessonPackVocabExam({
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, projects]);
+  const range = useMemo<VocabRange | null>(() => {
+    const parts = passageRanges.filter((g) => picked.includes(g.passage)).map((g) => ({ from: g.from, to: g.to }));
+    if (!parts.length) return vocabExamRange(rangeFrom, rangeTo, wordCount);
+    const whole = { from: Math.min(...parts.map((x) => x.from)), to: Math.max(...parts.map((x) => x.to)) };
+    return parts.length > 1 ? { ...whole, parts } : whole;
+  }, [rangeFrom, rangeTo, wordCount, passageRanges, picked]);
   const caps = useMemo(() => vocabExamCaps(projects, range), [projects, range]);
 
   // 유형별 문항 수 · 정답지 · 번호순 · 단어장 — 이 브라우저에 기억한다
@@ -234,7 +242,7 @@ export function LessonPackVocabExam({
   async function keepExam() {
     if (!docId || !exam.total) return;
     if (pinned && saved && saved.title === sheetTitle && saved.answers === answers && saved.wordList === wordList) return;
-    const next: SavedVocabExam = { exam, counts, inOrder, rangeFrom, rangeTo, round, title: sheetTitle, answers, wordList };
+    const next: SavedVocabExam = { exam, counts, inOrder, rangeFrom, rangeTo, passages: picked, round, title: sheetTitle, answers, wordList };
     const res = await postJson<{ ok: true } | { ok: false; message: string }>("/api/lesson-materials/documents/open", {
       op: "saveVocabExam",
       role,
@@ -336,6 +344,7 @@ export function LessonPackVocabExam({
                       setInOrder(saved.inOrder);
                       setRangeFrom(saved.rangeFrom);
                       setRangeTo(saved.rangeTo);
+                      setPicked(saved.passages ?? []);
                       setRound(saved.round);
                       setSheetTitle(saved.title);
                       setPinned(true);
@@ -357,6 +366,7 @@ export function LessonPackVocabExam({
             inOrder={inOrder}
             onRange={(from, to) => {
               setPinned(false);
+              setPicked([]);
               setRangeFrom(from);
               setRangeTo(to);
             }}
@@ -364,25 +374,37 @@ export function LessonPackVocabExam({
           />
 
           {passageRanges.length > 1 ? (
-            // 지문마다 뽑기(선생님 2026-11-11) — 누르면 그 지문 단어 번호로 출제 범위를 맞춘다
+            // 지문마다 뽑기(선생님 2026-11-11) — 누른 지문들의 단어로 낸다. 여러 지문을 함께 고를 수 있다(2026-11-13)
             <div className="space-y-1">
-              <p className="text-xs font-bold text-slate-500">지문별로 뽑기</p>
+              <p className="flex items-center justify-between text-xs font-bold text-slate-500">
+                <span>
+                  지문별로 뽑기 <span className="font-normal text-slate-400">· 여러 개 고를 수 있어요</span>
+                </span>
+                {picked.length ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPinned(false);
+                      setPicked([]);
+                    }}
+                    className="rounded px-1 text-[11px] font-bold text-violet-700 hover:bg-violet-50"
+                  >
+                    {picked.length}개 고름 · 모두 풀기
+                  </button>
+                ) : null}
+              </p>
               <div className="flex max-h-48 flex-col gap-1 overflow-y-auto">
                 {passageRanges.map((g) => {
-                  const on = range != null && range.from === g.from && range.to === g.to;
+                  const on = picked.includes(g.passage);
                   return (
                     <button
                       key={g.passage}
                       type="button"
                       onClick={() => {
                         setPinned(false);
-                        if (on) {
-                          setRangeFrom(0);
-                          setRangeTo(0);
-                        } else {
-                          setRangeFrom(g.from);
-                          setRangeTo(g.to);
-                        }
+                        setRangeFrom(0);
+                        setRangeTo(0);
+                        setPicked((cur) => (on ? cur.filter((n) => n !== g.passage) : [...cur, g.passage].sort((a, b) => a - b)));
                       }}
                       className={`rounded-md border px-2 py-1 text-left text-[11px] leading-snug ${on ? "border-violet-500 bg-violet-50 font-bold text-violet-800" : "border-slate-200 text-slate-600 hover:bg-slate-50"}`}
                       title={`${g.from}~${g.to}번`}

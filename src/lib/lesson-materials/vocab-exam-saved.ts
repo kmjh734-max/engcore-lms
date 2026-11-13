@@ -11,6 +11,8 @@ export type SavedVocabExam = {
   inOrder: boolean;
   rangeFrom: number;
   rangeTo: number;
+  /** 지문을 여러 개 골라 뽑았으면 그 지문 번호들(2026-11-13) */
+  passages?: number[];
   round: number;
   title: string;
   answers: boolean;
@@ -35,6 +37,7 @@ export function lessonPackSavedExam(doc: DocRow): SavedVocabExam | null {
     inOrder: raw.inOrder === true,
     rangeFrom: Number(raw.rangeFrom) || 0,
     rangeTo: Number(raw.rangeTo) || 0,
+    passages: Array.isArray(raw.passages) ? raw.passages.map(Number).filter((n) => Number.isInteger(n) && n > 0) : [],
     round: Number(raw.round) || 0,
     title: typeof raw.title === "string" ? raw.title : "",
     answers: raw.answers !== false,

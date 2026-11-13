@@ -9,6 +9,7 @@ import {
   isTestBookProjectReady,
   type TestBookProjectInput,
   type VocabExamKind,
+  type VocabRange,
 } from "@/lib/lesson-materials/test-book";
 
 type LoadResult = Awaited<ReturnType<typeof loadDrawProjectsAction>>;
@@ -24,7 +25,7 @@ export type VocabExamCaps = {
 /** 이미 받은 지문으로 센다(값·호출 없음). 지문 단어를 합쳐 같은 낱말은 한 번만. */
 export function vocabExamCaps(
   projects: TestBookProjectInput[],
-  range: { from: number; to: number } | null = null
+  range: VocabRange | null = null
 ): VocabExamCaps {
   const ready = projects.filter(isTestBookProjectReady);
   const all = Object.fromEntries(VOCAB_EXAM_KINDS.map((k) => [k.key, 9999])) as Record<VocabExamKind, number>;

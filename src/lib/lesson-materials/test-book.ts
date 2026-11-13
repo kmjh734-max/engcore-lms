@@ -1797,6 +1797,18 @@ export const VOCAB_EXAM_KIND_COUNTS = [0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 80,
 export type VocabExamOptions = { counts: Record<VocabExamKind, number> };
 
 /** 칸에 적은 출제 범위(0은 비움)를 전체 단어장 번호 안으로 맞춘다. 전체면 null. */
+/**
+ * 출제 범위. parts가 있으면 떨어진 구간 여럿(지문을 여러 개 골라 뽑기, 선생님 2026-11-13 「여러 지문을 선택하게」) —
+ * from·to는 그 전체의 처음과 끝이다.
+ */
+export type VocabRange = { from: number; to: number; parts?: Array<{ from: number; to: number }> };
+
+export function inVocabRange(range: VocabRange | null | undefined, no: number): boolean {
+  if (!range) return true;
+  if (range.parts?.length) return range.parts.some((p) => no >= p.from && no <= p.to);
+  return no >= range.from && no <= range.to;
+}
+
 export function vocabExamRange(from: number, to: number, wordCount: number): { from: number; to: number } | null {
   if (!wordCount) return null;
   const a = Math.min(Math.max(from || 1, 1), wordCount);
@@ -1850,7 +1862,7 @@ const CHOICE_NO = "①②③④";
  */
 export type VocabExamBuildOptions = VocabExamOptions & {
   seed: string;
-  range?: { from: number; to: number } | null;
+  range?: VocabRange | null;
   inOrder?: boolean;
   /** 유형별 최대 수를 셀 때만: 영→한·한→영 단어 나누기를 하지 않는다 */
   shareWords?: boolean;
@@ -1871,7 +1883,7 @@ export function buildVocabExam(
       seen.add(k);
       wordNo = r.listNo ?? wordNo + 1;
       if (!r.word || !r.meaning) continue;
-      if (opts.range && (wordNo < opts.range.from || wordNo > opts.range.to)) continue;
+      if (!inVocabRange(opts.range, wordNo)) continue;
       rows.push({ ...r, passage: p.passage, wordNo });
     }
   }
