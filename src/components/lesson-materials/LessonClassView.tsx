@@ -25,7 +25,7 @@ import { BlankNoteSheets, TEST_BOOK_CSS, TEST_BOOK_FONTS_HREF, TestBookBrand, pa
 
 type Mode = "teacher" | "student";
 type Theme = "chalk" | "navy" | "cream" | "white";
-type Layer = "grammar" | "vocab" | "spots" | "easy" | "ko" | "side" | "fig";
+type Layer = "grammar" | "vocab" | "spots" | "easy" | "ko" | "side" | "fig" | "concept";
 
 const THEMES: Array<{ id: Theme; label: string; swatch: string }> = [
   { id: "chalk", label: "칠판", swatch: "#2f4a3a" },
@@ -66,6 +66,7 @@ const LAYERS: Array<{ id: Layer; label: string }> = [
   { id: "ko", label: "해석" },
   { id: "side", label: "흐름" },
   { id: "fig", label: "사진" },
+  { id: "concept", label: "개념" },
 ];
 /** 교사용 해설에서 보여 줄 항목(선생님 2026-11-10 「시안처럼 보여 줄 수 있는 걸 선택」) */
 type TSec = "bg" | "tip" | "tts" | "flow" | "voc" | "fig" | "check" | "qt";
@@ -108,7 +109,7 @@ const DEFAULT_SETTINGS: Settings = {
   enFont: "same",
   size: 15,
   weight: "bold",
-  layers: { grammar: true, vocab: true, spots: true, easy: true, ko: true, side: true, fig: true },
+  layers: { grammar: true, vocab: true, spots: true, easy: true, ko: true, side: true, fig: true, concept: true },
   blankNote: false,
   tsec: ALL_TSEC,
   tsecS: Object.fromEntries(TSECS.map((t) => [t.id, false])) as Record<TSec, boolean>,
@@ -324,6 +325,30 @@ type Block = {
   body?: boolean;
 };
 
+/**
+ * 배경지식(특이하거나 중요한 개념)을 그 개념이 처음 나오는 문장 옆 오른쪽 칸에(선생님 2026-11-15
+ * 「배경지식 표현들이 도식화가 들어가는 오른쪽에 같이」). 영어 이름(termEn)으로 찾고, 못 찾으면 낱말 앞머리로, 그래도 없으면 1번 문장 옆.
+ */
+function conceptsBySentence(sentences: string[], bg: TeacherNotes["background"] | undefined): Map<number, TeacherNotes["background"]> {
+  const out = new Map<number, TeacherNotes["background"]>();
+  const low = sentences.map((s) => s.toLowerCase().replace(/-/g, " "));
+  for (const b of bg ?? []) {
+    const en = (b.termEn ?? "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+    let si = en ? low.findIndex((s) => s.includes(en)) : -1;
+    if (si < 0 && en) {
+      const words = en.split(/\s+/).filter((w) => w.length >= 5);
+      for (const w of words) {
+        const stem = w.slice(0, Math.max(5, w.length - 3));
+        si = low.findIndex((s) => s.includes(stem));
+        if (si >= 0) break;
+      }
+    }
+    if (si < 0) si = 0;
+    out.set(si, [...(out.get(si) ?? []), b]);
+  }
+  return out;
+}
+
 function FigureMedia({ f }: { f: LessonFigure }) {
   if (f.svg) return <span className="lc-figsvg" dangerouslySetInnerHTML={{ __html: f.svg }} />;
   // eslint-disable-next-line @next/next/no-img-element
@@ -341,6 +366,7 @@ function passageBlocks(
   figures: LessonFigure[] = [],
   figBand: ReadonlySet<string> = new Set()
 ): Block[] {
+  const conceptAt = layers.concept ? conceptsBySentence(p.sentences.map((s) => s.english), notes?.background) : new Map<number, TeacherNotes["background"]>();
   const figAt = layers.fig ? placeFigures(p.sentences.map((s) => s.english), figures) : new Map<number, LessonFigure[]>();
   const teacher = mode === "teacher";
   const vocab = vocabMarks(p, notes);
@@ -448,6 +474,16 @@ function passageBlocks(
                 </div>
               );
             })}
+            {(conceptAt.get(si) ?? []).map((b, i) => (
+              <div key={`c${i}`} className="lc-acon">
+                <b>
+                  {b.term}
+                  {b.termEn ? <span className="lc-acon-en"> {b.termEn}</span> : null}
+                </b>
+                <div>{b.definition}</div>
+                {teacher && b.example ? <div className="lc-acon-ex">예) {b.example}</div> : null}
+              </div>
+            ))}
             {easy ? (
               <p className="lc-aeasy">
                 <b>쉽게 말하면</b>
@@ -762,6 +798,10 @@ const CSS = `
 .lc-astep{margin-bottom:.8em}
 .lc-astep b{color:var(--head);display:block;border-bottom:1px solid var(--line);padding-bottom:.1em;margin-bottom:.2em}
 .lc-aeasy b{color:var(--easy)}
+.lc-acon{margin-bottom:.8em}
+.lc-acon b{color:var(--syn);display:block;border-bottom:1px solid var(--line);padding-bottom:.1em;margin-bottom:.2em}
+.lc-acon-en{font-weight:600;color:var(--sub);font-size:.88em}
+.lc-acon-ex{color:var(--sub);margin-top:.15em}
 .lc-fig{margin:.2em 0 .7em}
 .lc-fig img,.lc-fig .lc-figsvg svg{width:100%;display:block;border-radius:3px}
 .lc-fig img{height:34mm;object-fit:cover}
