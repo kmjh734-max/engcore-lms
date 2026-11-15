@@ -9,6 +9,7 @@ import type { TestBookProjectInput } from "@/lib/lesson-materials/test-book";
 import type { TeacherNotes, TeacherSpotKind } from "@/lib/lesson-materials/teacher-notes";
 import { isUsableAntonym } from "@/lib/lesson-materials/teacher-notes-shared";
 import type { ClassGrammarMark } from "@/lib/lesson-materials/test-book-actions";
+import { placeFigures, type LessonFigure } from "@/lib/lesson-materials/lesson-figures";
 import { BlankNoteSheets, TEST_BOOK_CSS, TEST_BOOK_FONTS_HREF, TestBookBrand, partStyle } from "@/components/lesson-materials/test-book/TestBookSheets";
 
 /**
@@ -24,7 +25,7 @@ import { BlankNoteSheets, TEST_BOOK_CSS, TEST_BOOK_FONTS_HREF, TestBookBrand, pa
 
 type Mode = "teacher" | "student";
 type Theme = "chalk" | "navy" | "cream" | "white";
-type Layer = "grammar" | "vocab" | "spots" | "easy" | "ko" | "side";
+type Layer = "grammar" | "vocab" | "spots" | "easy" | "ko" | "side" | "fig";
 
 const THEMES: Array<{ id: Theme; label: string; swatch: string }> = [
   { id: "chalk", label: "칠판", swatch: "#2f4a3a" },
@@ -64,6 +65,7 @@ const LAYERS: Array<{ id: Layer; label: string }> = [
   { id: "easy", label: "쉽게 말하면" },
   { id: "ko", label: "해석" },
   { id: "side", label: "흐름" },
+  { id: "fig", label: "사진" },
 ];
 /** 교사용 해설에서 보여 줄 항목(선생님 2026-11-10 「시안처럼 보여 줄 수 있는 걸 선택」) */
 type TSec = "bg" | "tip" | "tts" | "flow" | "voc" | "fig" | "check" | "qt";
@@ -106,7 +108,7 @@ const DEFAULT_SETTINGS: Settings = {
   enFont: "same",
   size: 15,
   weight: "bold",
-  layers: { grammar: true, vocab: true, spots: true, easy: true, ko: true, side: true },
+  layers: { grammar: true, vocab: true, spots: true, easy: true, ko: true, side: true, fig: true },
   blankNote: false,
   tsec: ALL_TSEC,
   tsecS: Object.fromEntries(TSECS.map((t) => [t.id, false])) as Record<TSec, boolean>,
@@ -322,6 +324,12 @@ type Block = {
   body?: boolean;
 };
 
+function FigureMedia({ f }: { f: LessonFigure }) {
+  if (f.svg) return <span className="lc-figsvg" dangerouslySetInnerHTML={{ __html: f.svg }} />;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={f.src} alt={f.caption} />;
+}
+
 function passageBlocks(
   p: TestBookProjectInput,
   index: number,
@@ -329,8 +337,11 @@ function passageBlocks(
   layers: Record<Layer, boolean>,
   notes: TeacherNotes | null,
   grammar: GrammarMark[],
-  tsec: Record<TSec, boolean> = ALL_TSEC
+  tsec: Record<TSec, boolean> = ALL_TSEC,
+  figures: LessonFigure[] = [],
+  figBand: ReadonlySet<string> = new Set()
 ): Block[] {
+  const figAt = layers.fig ? placeFigures(p.sentences.map((s) => s.english), figures) : new Map<number, LessonFigure[]>();
   const teacher = mode === "teacher";
   const vocab = vocabMarks(p, notes);
   const spots = spotMarks(p, notes);
@@ -369,10 +380,15 @@ function passageBlocks(
     const own = grammar.filter((m) => m.si === si);
     const ownSpots = spots.filter((m) => m.si === si);
     const steps = layers.side ? (flowAt.get(si) ?? []) : [];
+    // 사진: 오른쪽 칸이 기본, 가로로 길거나 오른쪽 칸이 문장보다 길어지면(재어 보고) 문장 아래 띠
+    const figs = figAt.get(si) ?? [];
+    const toBand = figBand.has(k(`s${si}`));
+    const sideFigs = figs.filter((f) => !f.wide && !toBand);
+    const bandFigs = figs.filter((f) => f.wide || toBand);
     out.push({
       key: k(`s${si}`),
       node: (
-        <div className="lc-row2">
+        <div className="lc-row2" data-figrow={sideFigs.length ? k(`s${si}`) : undefined}>
           <div className="lc-main">
             <p className="lc-en">
               <span className="lc-sn">{si + 1}</span>
@@ -408,6 +424,15 @@ function passageBlocks(
                 ))}
               </div>
             ) : null}
+            {bandFigs.map((f, i) => (
+              <div key={i} className="lc-fband">
+                <FigureMedia f={f} />
+                <div>
+                  <div className="lc-figcap">{f.caption}</div>
+                  {f.credit ? <div className="lc-figcr">{f.credit}</div> : null}
+                </div>
+              </div>
+            ))}
           </div>
           <div className="lc-aside">
             {steps.map(({ f, i }) => {
@@ -430,6 +455,13 @@ function passageBlocks(
                 {easy.text}
               </p>
             ) : null}
+            {sideFigs.map((f, i) => (
+              <div key={`f${i}`} className="lc-fig">
+                <FigureMedia f={f} />
+                <div className="lc-figcap">{f.caption}</div>
+                {f.credit ? <div className="lc-figcr">{f.credit}</div> : null}
+              </div>
+            ))}
           </div>
         </div>
       ),
@@ -727,10 +759,17 @@ const CSS = `
 .lc-main{min-width:0}
 .lc-aside{font-size:calc(var(--fs) * .74);line-height:1.5;border-left:1px dashed var(--line);padding:.6em 0 0 2.5mm;color:var(--ink)}
 .lc-aside p{margin:0 0 .5em}
-.lc-astep{border:1.5px solid var(--line);border-left:4px solid var(--head);border-radius:6px;padding:.45em .65em;margin-bottom:.5em;background:var(--panel)}
-.lc-astep b{color:var(--head)}
-.lc-aeasy{border-left:3px solid var(--easy);padding:.2em 0 .2em .55em;background:color-mix(in srgb,var(--bg) 86%,var(--easy) 14%);border-radius:0 6px 6px 0}
+.lc-astep{margin-bottom:.8em}
+.lc-astep b{color:var(--head);display:block;border-bottom:1px solid var(--line);padding-bottom:.1em;margin-bottom:.2em}
 .lc-aeasy b{color:var(--easy)}
+.lc-fig{margin:.2em 0 .7em}
+.lc-fig img,.lc-fig .lc-figsvg svg{width:100%;display:block;border-radius:3px}
+.lc-fig img{height:34mm;object-fit:cover}
+.lc-figcap{font-weight:700;color:var(--head);margin-top:.25em;line-height:1.35}
+.lc-figcr{font-size:.72em;color:var(--sub);line-height:1.3}
+.lc-fband{display:flex;gap:3mm;align-items:center;margin:.45em 0 .2em 1.6em;font-size:.8em}
+.lc-fband img,.lc-fband .lc-figsvg svg{height:32mm;width:auto;max-width:62%;display:block;border-radius:3px}
+.lc-fband .lc-figsvg svg{height:42mm}
 .lc-glines{font-size:.72em;line-height:1.5;margin:.25em 0 0 1.6em}
 .lc-glines p{margin:.15em 0}
 .lc-gterm{color:var(--head)}
@@ -877,10 +916,12 @@ export function LessonClassView({
 
   // 해설·문법 번호는 이 화면을 열 때 따로 읽는다
   const [error, setError] = useState<string | null>(null);
-  const [extra, setExtra] = useState<Record<string, { notes: TeacherNotes | null; grammar: GrammarMark[] }>>({});
+  const [extra, setExtra] = useState<Record<string, { notes: TeacherNotes | null; grammar: GrammarMark[]; figures?: LessonFigure[] }>>({});
   const [loaded, setLoaded] = useState(false);
   const loadData = () =>
-    postJson<{ ok: true; data: Record<string, { notes: TeacherNotes | null; grammar: GrammarMark[] }> } | { ok: false; message: string }>(
+    postJson<
+      { ok: true; data: Record<string, { notes: TeacherNotes | null; grammar: GrammarMark[]; figures?: LessonFigure[] }> } | { ok: false; message: string }
+    >(
       "/api/lesson-materials/test-book",
       { role, op: "classData", projectIds: projects.map((x) => x.id) }
     )
@@ -943,7 +984,7 @@ export function LessonClassView({
             "/api/lesson-materials/test-book",
             { role, op: "teacherNotes", projectId: t.id, forceRegenerate: regenerate }
           );
-          if (res.ok) setExtra((x) => ({ ...x, [t.id]: { grammar: x[t.id]?.grammar ?? [], notes: res.notes } }));
+          if (res.ok) setExtra((x) => ({ ...x, [t.id]: { ...x[t.id], grammar: x[t.id]?.grammar ?? [], notes: res.notes } }));
           else failed.push(`「${t.title}」 ${res.message}`);
         } catch (e) {
           failed.push(`「${t.title}」 ${e instanceof Error ? e.message : "실패"}`);
@@ -972,6 +1013,8 @@ export function LessonClassView({
   }, [loaded, missing.length, embedded]);
 
   // ------------------------------------------------ 덩어리 → A4 쪽
+  /** 오른쪽 칸에 넣었더니 문장보다 길어진 사진 줄 — 문장 아래 띠로 내린다 */
+  const [figBand, setFigBand] = useState<ReadonlySet<string>>(new Set());
   const blocks = useMemo(
     () =>
       projects.flatMap((p, i) =>
@@ -982,16 +1025,17 @@ export function LessonClassView({
           settings.layers,
           extra[p.id]?.notes ?? null,
           extra[p.id]?.grammar ?? [],
-          settings.mode === "teacher" ? settings.tsec : settings.tsecS
+          settings.mode === "teacher" ? settings.tsec : settings.tsecS,
+          extra[p.id]?.figures ?? [],
+          figBand
         )
       ),
-    [projects, settings.mode, settings.layers, settings.tsec, settings.tsecS, extra]
+    [projects, settings.mode, settings.layers, settings.tsec, settings.tsecS, extra, figBand]
   );
   const measureRef = useRef<HTMLDivElement>(null);
-  /** 지문마다 글자 비율 — 한 쪽을 조금 넘는 지문은 줄여서 한 쪽에(선생님 2026-11-10 점검: 마지막 문장 하나만 다음 쪽) */
-  const [fit, setFit] = useState<Record<number, number>>({});
-  const blockStyle = (b: Block): CSSProperties | undefined =>
-    b.body && b.pi !== undefined && fit[b.pi] ? { fontSize: `${fit[b.pi]}em` } : undefined;
+  // 지문마다 글자를 줄여 한 쪽에 맞추던 것은 뺐다 — 지문마다 글씨 크기가 달라 보였다(선생님 2026-11-15 「통일시켜줘」「큰게 좋아」).
+  // 한 쪽을 조금 넘는 지문은 그대로 다음 쪽으로 넘어간다.
+  const blockStyle = (_b: Block): CSSProperties | undefined => undefined;
   const pagesRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(100);
   const [fontsTick, setFontsTick] = useState(0);
@@ -1006,7 +1050,7 @@ export function LessonClassView({
       document.fonts.removeEventListener?.("loadingdone", bump);
     };
   }, []);
-  const layoutKey = `${settings.mode}|${settings.size}|${settings.weight}|${settings.koFont}|${settings.enFont}|${JSON.stringify(settings.layers)}|${JSON.stringify(settings.mode === "teacher" ? settings.tsec : settings.tsecS)}|${blocks.length}|${fontsTick}|${loaded}|${JSON.stringify(fit)}`;
+  const layoutKey = `${settings.mode}|${settings.size}|${settings.weight}|${settings.koFont}|${settings.enFont}|${JSON.stringify(settings.layers)}|${JSON.stringify(settings.mode === "teacher" ? settings.tsec : settings.tsecS)}|${blocks.length}|${fontsTick}|${loaded}|${figBand.size}`;
   const [pages, setPages] = useState<{ key: string; list: number[][] }>({ key: "", list: [] });
   useLayoutEffect(() => {
     const root = measureRef.current;
@@ -1015,24 +1059,22 @@ export function LessonClassView({
     // 화면 전체가 확대·축소돼 있으면(최종통합자료 60% 등) 잰 높이도 그만큼 줄어 있다 — 틀 폭(쪽 안쪽 폭)으로 비율을 되돌린다
     const scale = root.getBoundingClientRect().width / ((210 - (PAGE_PAD_MM + 1) * 2) * MM) || 1;
     const heights = els.map((el) => el.getBoundingClientRect().height / scale);
-    // 지문 쪽(제목·문장)이 한 쪽을 40% 안쪽으로 넘으면 그 지문만 글자를 줄인다(82%까지). 크게 넘는 긴 지문은 그대로 2쪽.
-    const sums = new Map<number, number>();
-    blocks.forEach((b, i) => {
-      if (b.body && b.pi !== undefined) sums.set(b.pi, (sums.get(b.pi) ?? 0) + (heights[i] ?? 0));
+    // 사진이 든 오른쪽 칸이 문장보다 길면(빈 줄이 생김) 그 사진은 문장 아래 띠로
+    const longer: string[] = [];
+    root.querySelectorAll<HTMLElement>("[data-figrow]").forEach((row) => {
+      const main = row.querySelector<HTMLElement>(".lc-main");
+      const aside = row.querySelector<HTMLElement>(".lc-aside");
+      // 칸은 줄 높이로 늘어나 있으니 안에 든 것의 끝으로 잰다
+      const end = (el: HTMLElement) => {
+        const last = el.lastElementChild as HTMLElement | null;
+        return last ? last.getBoundingClientRect().bottom - el.getBoundingClientRect().top : 0;
+      };
+      if (main && aside && end(aside) > end(main) + 6) longer.push(row.dataset.figrow!);
     });
-    const nextFit: Record<number, number> = { ...fit };
-    let changed = false;
-    for (const [pi, h] of sums) {
-      const cur = fit[pi] ?? 1;
-      if (h > BODY_PX && h / cur <= BODY_PX * 1.4) {
-        const want = Math.max(0.82, Math.round(cur * (BODY_PX / h) * 0.97 * 100) / 100);
-        if (want < cur - 0.005) {
-          nextFit[pi] = want;
-          changed = true;
-        }
-      }
+    if (longer.some((x) => !figBand.has(x))) {
+      setFigBand(new Set([...figBand, ...longer]));
+      return;
     }
-    if (changed) setFit(nextFit);
     setPages({ key: layoutKey, list: paginate(heights, blocks) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, extra]);

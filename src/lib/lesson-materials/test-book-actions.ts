@@ -1,5 +1,6 @@
 "use server";
 
+import type { LessonFigure } from "@/lib/lesson-materials/lesson-figures";
 import { revalidatePath } from "next/cache";
 import { LESSON_VOCAB_FOLDER } from "@/lib/lesson-materials/load-library";
 import { defaultDocumentName, uniqueDocumentName } from "@/lib/lesson-materials/documents";
@@ -1023,18 +1024,25 @@ function pickClassGrammar(english: string[], analysisSentences: AnalysisReportDa
 export async function loadClassViewDataAction(
   role: Role,
   input: { projectIds: string[] }
-): Promise<{ ok: true; data: Record<string, { notes: TeacherNotes | null; grammar: ClassGrammarMark[] }> } | Fail> {
+): Promise<
+  { ok: true; data: Record<string, { notes: TeacherNotes | null; grammar: ClassGrammarMark[]; figures: LessonFigure[] }> } | Fail
+> {
   const { profile, error } = await requireLessonRole(role);
   if (error) return { ok: false, message: error };
   if (!(await isAcademyFeatureOn(createAdminClient(), profile!.academy_id, "lesson_class_view")))
     return { ok: false, message: "이 학원에서는 아직 쓸 수 없는 기능입니다." };
+  const figuresOn = await isAcademyFeatureOn(createAdminClient(), profile!.academy_id, "lesson_figures");
   const ids = [...new Set((input.projectIds ?? []).map(String).filter(Boolean))].slice(0, 80);
   if (!ids.length) return { ok: true, data: {} };
   const supabase = await createClient();
   const [{ data: rows }, { data: items }] = await Promise.all([
     supabase
       .from("lesson_material_projects")
-      .select("id, tn:lesson_pack_json->teacherNotes, ar:analysis_report_json->sentences")
+      .select(
+        figuresOn
+          ? "id, tn:lesson_pack_json->teacherNotes, ar:analysis_report_json->sentences, fig:lesson_pack_json->figures"
+          : "id, tn:lesson_pack_json->teacherNotes, ar:analysis_report_json->sentences"
+      )
       .in("id", ids)
       .is("deleted_at", null),
     supabase
@@ -1043,8 +1051,13 @@ export async function loadClassViewDataAction(
       .in("project_id", ids)
       .order("order_index", { ascending: true }),
   ]);
-  const out: Record<string, { notes: TeacherNotes | null; grammar: ClassGrammarMark[] }> = {};
-  for (const r of (rows ?? []) as unknown as Array<{ id: string; tn: TeacherNotes | null; ar: AnalysisReportData["sentences"] | null }>) {
+  const out: Record<string, { notes: TeacherNotes | null; grammar: ClassGrammarMark[]; figures: LessonFigure[] }> = {};
+  for (const r of (rows ?? []) as unknown as Array<{
+    id: string;
+    tn: TeacherNotes | null;
+    ar: AnalysisReportData["sentences"] | null;
+    fig?: LessonFigure[] | null;
+  }>) {
     const english = onePageSentences((items ?? []).filter((it) => it.project_id === r.id && String(it.english_text ?? "").trim())).map(
       (s) => s.english
     );
@@ -1053,6 +1066,7 @@ export async function loadClassViewDataAction(
     const short = new Map((notes?.grammarShort ?? []).map((g) => [`${g.label}|${g.q}`, g] as const));
     out[r.id] = {
       notes,
+      figures: Array.isArray(r.fig) ? r.fig : [],
       grammar: picked.map((g, i) => {
         const s = short.get(`${g.label}|${g.q}`);
         // 요약이 없으면 분석서 설명 앞 두 문장

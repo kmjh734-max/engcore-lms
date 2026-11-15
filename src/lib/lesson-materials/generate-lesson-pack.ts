@@ -51,6 +51,8 @@ export type LessonPackData = {
   vocabAntonymChecked?: boolean;
   /** 교사용 수업 화면 해설(teacher-notes.ts, 2026-11-10) */
   teacherNotes?: import("@/lib/lesson-materials/teacher-notes").TeacherNotes | null;
+  /** 문장 옆 사진·그림(lesson-figures.ts, 2026-11-15, 정수학원만) */
+  figures?: import("@/lib/lesson-materials/lesson-figures").LessonFigure[] | null;
 };
 
 function parseJsonSafe<T>(text: string): T | null {
