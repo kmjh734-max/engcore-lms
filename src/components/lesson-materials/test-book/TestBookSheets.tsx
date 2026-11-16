@@ -1703,10 +1703,13 @@ export const FlowTestSheets = memo(function FlowTestSheets({
   entries,
   title,
   measureKey,
+  noContinued = false,
 }: {
   entries: Array<{ index: number; project: TestBookProjectInput; sheet: TestSheet }>;
   title: string;
   measureKey: string;
+  /** 다음 쪽 머리에 「(이어서)」를 달지 않는다(중학교 테스트지 — 선생님 2026-11-16 「이어서는 필요없어」) */
+  noContinued?: boolean;
 }) {
   const total = entries.reduce((n, e) => n + sheetTotal(e.sheet), 0);
   const sources = [...new Set(entries.map((e) => e.project.source?.trim()).filter(Boolean))];
@@ -1729,7 +1732,7 @@ export const FlowTestSheets = memo(function FlowTestSheets({
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label={sources.length === 1 ? sources[0]! : title} />}
+      head={(page) => <DocHead title={title} sub={page > 0 && !noContinued ? "(이어서)" : undefined} label={sources.length === 1 ? sources[0]! : title} />}
       foot={(page, n) => (
         <>
           <span>{title}</span>
@@ -1892,10 +1895,13 @@ export const AnswerSheets = memo(function AnswerSheets({
   entries,
   measureKey,
   title = "정답",
+  noContinued = false,
 }: {
   entries: Array<{ index: number; project: TestBookProjectInput; word?: WordTest; sheet?: TestSheet; heading?: string }>;
   measureKey: string;
   title?: string;
+  /** 다음 쪽 머리에 「(이어서)」를 달지 않는다(중학교 테스트지 — 선생님 2026-11-16 「이어서는 필요없어」) */
+  noContinued?: boolean;
 }) {
   // 테스트지에 학생 이름을 넣었으면 정답지 머리에도 찍는다(선생님 2026-11-06)
   const student = useContext(TestBookStudent);
@@ -1993,7 +1999,7 @@ export const AnswerSheets = memo(function AnswerSheets({
     <PagedSheet
       blocks={blocks}
       measureKey={measureKey}
-      head={(page) => <DocHead title={title} sub={page > 0 ? "(이어서)" : undefined} label="ANSWERS" right="정답만 싣습니다" name={student || undefined} />}
+      head={(page) => <DocHead title={title} sub={page > 0 && !noContinued ? "(이어서)" : undefined} label="ANSWERS" right="정답만 싣습니다" name={student || undefined} />}
     />
   );
 });

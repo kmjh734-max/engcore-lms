@@ -13,12 +13,12 @@ import {
   AnalysisSheets,
   AnswerSheets,
   DocHead,
+  FlowTestSheets,
   LessonSheets,
   PagedSheet,
   TEST_BOOK_CSS,
   TEST_BOOK_FONTS_HREF,
   TestBookBrand,
-  TestSheets,
   type Block,
 } from "@/components/lesson-materials/test-book/TestBookSheets";
 
@@ -300,7 +300,7 @@ export function MsReadingSheets({ unit, translation, measureKey }: { unit: MsUni
           )}
           translation={translation}
           measureKey={measureKey}
-          lead={i === 0 ? <MsLectureQr unit={unit} slug="reading" /> : undefined}
+          lead={i === 0 && unit.lectureSections.includes("reading") ? <MsLectureQr unit={unit} slug="reading" /> : undefined}
         />
       ))}
     </>
@@ -320,16 +320,19 @@ export function MsLessonSheets({ unit, options }: { unit: MsUnit; options: MsLes
   );
 }
 
-/** 워크북·뽑은 테스트지: 지문마다 테스트지 + 정답 */
+/**
+ * 워크북·뽑은 테스트지 + 정답. 지문마다 새 쪽으로 나누지 않고 쭉 이어 싣는다(선생님 2026-11-11 「중학교 테스트지도
+ * 지문마다 페이지를 나눠서 종이 낭비가 심해」) — 고등 뽑기 테스트지와 같은 부품, 지문이 바뀌는 곳에 지문 제목 줄.
+ */
 export function MsWorkbookSheets({ sheets, answers, title, measureKey }: { sheets: MsWbSheet[]; answers: boolean; title: string; measureKey: string }) {
   const proj = (s: MsWbSheet) => asProject(s.key, s.title, s.titleEn, s.source, []);
   return (
     <>
-      {sheets.map((s) => (
-        <TestSheets key={s.key} index={s.index} project={proj(s)} sheet={s.sheet} title={title} measureKey={measureKey} />
-      ))}
+      {sheets.length ? (
+        <FlowTestSheets title={title} entries={sheets.map((s) => ({ index: s.index, project: proj(s), sheet: s.sheet }))} measureKey={measureKey} noContinued />
+      ) : null}
       {answers && sheets.length ? (
-        <AnswerSheets title={`${title} 정답`} entries={sheets.map((s) => ({ index: s.index, project: proj(s), sheet: s.sheet }))} measureKey={measureKey} />
+        <AnswerSheets title={`${title} 정답`} entries={sheets.map((s) => ({ index: s.index, project: proj(s), sheet: s.sheet }))} measureKey={measureKey} noContinued />
       ) : null}
     </>
   );
@@ -372,6 +375,7 @@ export function MsWorkbookAnswerSheets({ sheets, title, measureKey }: { sheets: 
       title={title}
       entries={sheets.map((s) => ({ index: s.index, project: asProject(s.key, s.title, s.titleEn, s.source, []), sheet: s.sheet }))}
       measureKey={measureKey}
+      noContinued
     />
   );
 }
