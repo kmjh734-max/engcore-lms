@@ -48,6 +48,7 @@ export async function POST(request: Request) {
           title: String(body.title ?? ""),
           projectIds: Array.isArray(body.projectIds) ? body.projectIds.map(String) : [],
           lessonTab: body.lessonTab === true,
+          ensureOnly: (body as { ensureOnly?: unknown }).ensureOnly === true,
         })
       );
     }

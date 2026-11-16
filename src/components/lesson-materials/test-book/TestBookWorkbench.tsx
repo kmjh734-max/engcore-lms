@@ -93,7 +93,7 @@ type Mode = "book" | "draw";
 type AnalysisResult = Awaited<ReturnType<typeof generateAndSaveAnalysisReportAction>>;
 type GrammarChoiceResult = Awaited<ReturnType<typeof generateGrammarChoicePassageAction>>;
 type PrepareResult = Awaited<ReturnType<typeof prepareTestBookPassageAction>>;
-type RegisterResult = Awaited<ReturnType<typeof registerTestBookVocabAction>>;
+type RegisterResult = Exclude<Awaited<ReturnType<typeof registerTestBookVocabAction>>, { skipped: true }>;
 
 const CONCURRENCY = PASSAGE_PREP_CONCURRENCY;
 const BOOK_SEED = "book";

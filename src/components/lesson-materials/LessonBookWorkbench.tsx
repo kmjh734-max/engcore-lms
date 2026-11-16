@@ -90,11 +90,15 @@ export function LessonBookWorkbench({
   const docIdRef = useRef<string | null>(null);
   /** PDF 저장 이름은 자료 이름으로(선생님 2026-11-06) */
   const docName = useDocumentName(role);
+  /** 파일 id가 정해지면 바뀐다(단어장 자동 만들기가 기다린다) */
+  const [docTick, setDocTick] = useState(0);
   useEffect(() => {
     docIdRef.current = new URLSearchParams(window.location.search).get("doc");
+    setDocTick((t) => t + 1);
   }, []);
   useCreateDocumentFromUrl(role, "lesson_pack", ids, (id) => {
     docIdRef.current = id;
+    setDocTick((t) => t + 1);
     // 새 파일에도 지금 설정을 적어 둔다(통합자료가 파일 설정을 읽는다)
     if (!embedded) void saveLessonPackOptions(role, { id, options: optsRef.current }).catch(() => {});
   });
@@ -262,6 +266,25 @@ export function LessonBookWorkbench({
       setVocabReg({ busy: false, msg: e instanceof Error ? e.message : "등록하지 못했습니다.", error: true, href: null });
     }
   }
+
+  // 지문 재료가 모두 있으면 단어 탭에 같은 이름 단어장을 만든다 — 이어진 단어장이 있으면 손대지 않는다.
+  // 지문 입력 화면을 거치지 않고 만든 수업용 자료도 단어 탭에 들어가게(선생님 2026-11-16). 값 없음.
+  const vocabEnsuredRef = useRef(false);
+  useEffect(() => {
+    if (embedded || vocabEnsuredRef.current || !docIdRef.current) return;
+    if (!projects.length || ready.length !== projects.length) return;
+    vocabEnsuredRef.current = true;
+    void postJson("/api/lesson-materials/test-book", {
+      op: "registerVocab",
+      role,
+      id: docIdRef.current,
+      title: ready[0]?.title ?? "수업용 자료",
+      projectIds: ids,
+      lessonTab: true,
+      ensureOnly: true,
+    }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docTick, ready.length, projects.length, embedded]);
 
   // ---------------------------------------------------------------- 단어 시험지(맨 뒤, 정답 포함 — 선생님 2026-10-27 「단어장·시험지·구성을 한 탭에서」)
   const [vocabRound, setVocabRound] = useState(0);

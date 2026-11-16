@@ -713,13 +713,62 @@ export async function registerTestBookVocabAction(
     projectIds: string[];
     /** 자료함 「단어」 탭: 적은 이름 그대로 「수업자료 단어장」 폴더에 늘 새로 만든다(2026-10-27) */
     lessonTab?: boolean;
+    /**
+     * 수업용 자료 파일을 열었을 때: 이어진 단어장이 없을 때만 만든다(이미 있으면 손대지 않음).
+     * 지문 입력 화면을 거치지 않고 만든 자료도 단어 탭에 들어가게(선생님 2026-11-16 「자료입력을 하면 자동으로 단어탭에」)
+     */
+    ensureOnly?: boolean;
   }
-): Promise<{ ok: true; setId: string; count: number; created: boolean } | Fail> {
+): Promise<{ ok: true; setId: string; count: number; created: boolean } | { ok: true; skipped: true } | Fail> {
   const { profile, error } = await requireLessonRole(role);
   if (error) return { ok: false, message: error };
   const projectIds = [...new Set((input.projectIds ?? []).map((s) => String(s).trim()).filter(Boolean))];
   if (!projectIds.length) return { ok: false, message: "선택된 지문이 없습니다." };
   const supabase = await createClient();
+  if (input.ensureOnly) {
+    const docId = input.docId?.trim();
+    if (!docId) return { ok: true, skipped: true };
+    if (!(await isAcademyFeatureOn(createAdminClient(), profile!.academy_id, "lesson_vocab_tab"))) return { ok: true, skipped: true };
+    const { data: doc } = await supabase
+      .from("lesson_material_documents")
+      .select("name,payload")
+      .eq("id", docId)
+      .eq("kind", "lesson_pack")
+      .maybeSingle();
+    if (!doc) return { ok: true, skipped: true };
+    const docPayload = (doc.payload as Record<string, unknown> | null) ?? {};
+    const linked = typeof docPayload.vocabSetId === "string" ? docPayload.vocabSetId : null;
+    if (linked) {
+      const { data } = await supabase.from("vocab_sets").select("id").eq("id", linked).maybeSingle();
+      if (data) return { ok: true, skipped: true };
+    }
+    // 같은 이름 단어장이 이미 있으면(예전 등록) 잇기만 한다
+    const name = String(doc.name ?? "").trim();
+    const { data: folders } = await supabase
+      .from("vocab_folders")
+      .select("id")
+      .eq("academy_id", profile!.academy_id!)
+      .in("name", [LESSON_VOCAB_FOLDER, "테스트 교재"]);
+    const fids = (folders ?? []).map((f) => f.id as string);
+    if (name && fids.length) {
+      const { data: same } = await supabase
+        .from("vocab_sets")
+        .select("id")
+        .in("folder_id", fids)
+        .in("title", [name, `${name} · 전체 단어`])
+        .limit(1)
+        .maybeSingle();
+      if (same) {
+        await supabase
+          .from("lesson_material_documents")
+          .update({ payload: { ...docPayload, vocabSetId: same.id } })
+          .eq("id", docId)
+          .eq("kind", "lesson_pack");
+        return { ok: true, skipped: true };
+      }
+    }
+    input = { ...input, title: name || input.title, lessonTab: true };
+  }
   const projects = await loadBundleExtraProjects(supabase, projectIds);
 
   const seen = new Set<string>();
