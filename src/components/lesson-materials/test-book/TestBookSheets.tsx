@@ -490,6 +490,29 @@ export function PagedSheet({
       document.fonts.removeEventListener("loadingdone", bump);
     };
   }, []);
+  // 재는 층의 높이가 바뀌면(글꼴이 늦게 바뀌어 줄 높이가 달라짐 등) 다시 잰다 — 옛 높이로 나눈 쪽은 끝이 넘쳐 글줄이
+  // 바닥줄 밑으로 잘렸다(선생님 2026-11-17 모의고사 테스트지 「페이지가 짤린다」)
+  const [sizeTick, setSizeTick] = useState(0);
+  useEffect(() => {
+    const root = measureRef.current?.querySelector<HTMLElement>(".tb-sheet");
+    if (!root || typeof ResizeObserver === "undefined") return;
+    let last = -1;
+    let raf = 0;
+    const ro = new ResizeObserver(() => {
+      const h = root.offsetHeight;
+      if (h === last || h === 0) return;
+      const first = last < 0;
+      last = h;
+      if (first || isPrinting()) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setSizeTick((t) => t + 1));
+    });
+    ro.observe(root);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [mounted]);
   useLayoutEffect(() => {
     const root = measureRef.current;
     if (!root) return;
@@ -547,7 +570,7 @@ export function PagedSheet({
     setPages((prev) => (JSON.stringify(prev) === JSON.stringify(out) ? prev : out));
     // blocks 는 열쇠(blockKeys)로 본다
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockKeys, measureKey, mounted, fontTick]);
+  }, [blockKeys, measureKey, mounted, fontTick, sizeTick]);
   if (!mounted) return null;
   return (
     <>

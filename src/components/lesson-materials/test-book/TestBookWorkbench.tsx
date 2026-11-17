@@ -541,7 +541,8 @@ export function TestBookWorkbench({
     }
   }
 
-  const measureKey = `${fontsTick}|${options.translation}|${options.types.join(",")}|${mode}|${draw?.seed ?? ""}`;
+  // 뽑은 뒤 꾸밈·수준·빈칸·영작·줄 설정을 바꾸면 내용 높이가 달라지므로 다시 잰다(선생님 2026-11-17 「페이지가 짤린다」)
+  const measureKey = `${fontsTick}|${options.translation}|${options.types.join(",")}|${options.theme}|${mode}|${draw?.seed ?? ""}|${drawTheme}|${blankMode}|${drawWriting}|${drawLineMode}|${drawLevel}`;
   const previewStyle = useMemo((): CSSProperties => ({ transform: `scale(${zoom / 100})`, transformOrigin: "top center" }), [zoom]);
   const indexOf = (id: string) => projects.findIndex((p) => p.id === id);
   const busy = pendingIds.size > 0;
