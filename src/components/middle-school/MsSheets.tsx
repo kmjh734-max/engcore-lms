@@ -415,28 +415,68 @@ export type MsLessonOptions = {
   wordExamples: boolean;
 };
 
-/** 본문: 본문마다 문장별 해석(고등 수업용 자료 부품) */
+/**
+ * 본문: 문장별 해석(고등 수업용 자료와 같은 줄 모양). 본문마다 새 쪽으로 나누지 않고 쭉 이어 싣고, 본문이 바뀌는 곳에
+ * 본문 제목 줄을 넣는다(선생님 2026-11-17 「본문도 이어서 나오게 — 페이지 구분하지 말고」). 문장 번호는 본문마다 1부터.
+ */
 export function MsReadingSheets({ unit, translation, measureKey }: { unit: MsUnit; translation: "show" | "hide"; measureKey: string }) {
-  const source = msSource(unit);
+  const sub = translation === "show" ? "해석 있음" : "해석 쓰기";
+  const blocks: Block[] = unit.passages.flatMap((t: MsText, pi) =>
+    t.lines.map((l, i) => {
+      const english = l.speaker ? `${l.speaker}: ${l.en}` : l.en;
+      const row = (
+        <div className="tb-ss">
+          <span className="tb-i">{String(i + 1).padStart(2, "0")}</span>
+          <div>
+            <div className="tb-en">{english}</div>
+            {translation === "show" ? (
+              <div className="tb-ko">{l.ko}</div>
+            ) : (
+              <>
+                <div className="tb-line" />
+                {english.split(/\s+/).length > 22 ? <div className="tb-line" /> : null}
+              </>
+            )}
+          </div>
+        </div>
+      );
+      // 본문 제목 줄이 쪽 끝에 홀로 남지 않게 첫 문장과 붙인다
+      // 문장 하나(영어·해석)는 쪽에서 가르지 않는다
+      return {
+        key: `r${pi}-${i}`,
+        node:
+          i === 0 ? (
+            <>
+              <div className="tb-flow-psg" style={pi === 0 ? { marginTop: 0 } : undefined}>
+                <b>
+                  {String(pi + 1).padStart(2, "0")} · {`${t.part} ${t.title ?? ""}`.trim()}
+                </b>
+              </div>
+              {row}
+            </>
+          ) : (
+            row
+          ),
+      };
+    })
+  );
+  const qr = unit.lectureSections.includes("reading");
   return (
-    <>
-      {unit.passages.map((t: MsText, i) => (
-        <LessonSheets
-          key={t.id}
-          index={i}
-          project={asProject(
-            t.id,
-            `${t.part} ${t.title ?? ""}`.trim(),
-            i === 0 ? unit.title : null,
-            source,
-            t.lines.map((l) => ({ english: l.speaker ? `${l.speaker}: ${l.en}` : l.en, korean: l.ko })),
-          )}
-          translation={translation}
-          measureKey={measureKey}
-          lead={i === 0 && unit.lectureSections.includes("reading") ? <MsLectureQr unit={unit} slug="reading" /> : undefined}
-        />
-      ))}
-    </>
+    <PagedSheet
+      blocks={blocks}
+      measureKey={measureKey}
+      head={(page) => (
+        <>
+          <DocHead
+            title="본문 · 문장별 해석"
+            sub={page > 0 ? "(이어서)" : sub}
+            label={page === 0 && qr ? "" : "READING"}
+            right={page === 0 && qr ? undefined : unitLabel(unit)}
+          />
+          {page === 0 ? <MsLectureQr unit={unit} slug="reading" /> : null}
+        </>
+      )}
+    />
   );
 }
 
