@@ -25,7 +25,25 @@ export type MsGrammar = {
   examples: { en: string; ko: string; fromText: boolean }[];
 };
 
-export type MsLine = { en: string; ko: string; speaker: string };
+export type MsLine = {
+  en: string;
+  ko: string;
+  speaker: string;
+  /** 대화문 핵심표현(줄 안 글자 그대로) — 족보닷컴 STEP2 커뮤니케이션의 「핵심표현」 */
+  key?: string[];
+  /** 만점공략: q 앞에 번호를 달고 대화 아래에 설명 */
+  tips?: { q: string; note: string }[];
+};
+
+/** 과의 의사소통 기능 정리(STEP2 Communication 1·2 상자) — ms_units.workbook.communication 에 둔다 */
+export type MsCommunication = {
+  no: number;
+  title: string;
+  example: { speaker: string; en: string; ko: string }[];
+  /** 예시 대화에서 강조할 표현 */
+  key: string[];
+  groups: { title: string; gloss: string; items: string[] }[];
+};
 
 export type MsText = {
   id: string;
@@ -52,6 +70,8 @@ export type MsUnit = MsUnitSummary & {
   grammar: MsGrammar[];
   dialogues: MsText[];
   passages: MsText[];
+  /** 대화문 앞 의사소통 기능 정리(선생님 2026-11-17 「대화문 표현 설명이 필요」). 없으면 빈 배열 */
+  communication: MsCommunication[];
   /** 미리 정해 둔 워크북 문항(족보닷컴 본문 10단계 워크북) */
   workbook: MsWorkbook;
   /** 강의가 올라가 있는 영역 — 이 영역만 쪽에 강의 QR을 찍는다 */
@@ -162,6 +182,7 @@ export async function loadMsUnit(academyId: string, unitId: string): Promise<MsU
     dialogues: all.filter((t) => t.kind === "대화문"),
     passages: all.filter((t) => t.kind === "본문"),
     workbook: r.workbook ?? {},
+    communication: ((r.workbook as { communication?: MsCommunication[] } | null)?.communication ?? []) as MsCommunication[],
     lectureSections: (Object.keys(lectures) as MsLectureSlug[]).filter((k) => lectures[k].length > 0),
   };
 }

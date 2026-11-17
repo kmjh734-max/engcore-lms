@@ -5,7 +5,7 @@ import QRCode from "qrcode";
 import { msLectureUrl, msVocabUrl, type MsLectureSlug } from "@/lib/middle-school/qr-url";
 import type { TestBookProjectInput } from "@/lib/lesson-materials/test-book";
 import type { MaterialDesign } from "@/lib/lesson-materials/material-design";
-import type { MsGrammar, MsText, MsUnit, MsWord } from "@/lib/middle-school/queries";
+import type { MsCommunication, MsGrammar, MsText, MsUnit, MsWord } from "@/lib/middle-school/queries";
 import type { MsWbSheet } from "@/lib/middle-school/workbook";
 import type { AnalysisReportData } from "@/lib/lesson-materials/generate-analysis-report";
 import { DESIGN_FONTS_HREF, designClass, type AnalysisDesignStyle } from "@/lib/lesson-materials/analysis-design";
@@ -232,31 +232,164 @@ export function MsGrammarSheets({ unit, measureKey }: { unit: MsUnit; measureKey
   );
 }
 
-/** 대화문: 대화마다 소제목 + 말차례별 해석(짧은 대화가 한 쪽씩 차지하지 않게 이어 싣는다) */
-export function MsDialogueSheets({ unit, translation, measureKey }: { unit: MsUnit; translation: "show" | "hide"; measureKey: string }) {
-  const blocks: Block[] = unit.dialogues.flatMap((t, ti) => [
-    {
-      key: `dh${ti}`,
-      node: (
-        <div className="tb-q" style={{ marginTop: ti ? "4mm" : 0 }}>
-          <span className="tb-qn">{ti + 1}</span>
-          {t.title ?? t.part}
-        </div>
-      ),
-    },
-    ...t.lines.map((l, i) => ({
-      key: `d${ti}-${i}`,
-      node: (
-        <div className="tb-ss">
-          <span className="tb-i">{l.speaker}</span>
-          <div>
-            <div className="tb-en">{l.en}</div>
-            {translation === "show" ? <div className="tb-ko">{l.ko}</div> : <div className="tb-line" />}
+const CIRCLED = "❶❷❸❹❺❻❼❽❾";
+const KEY_BG = "#fde4e8";
+const KEY_FG = "#c0264a";
+
+/** 대화 한 줄: 핵심표현은 분홍 바탕, 만점공략 자리 앞에 번호(족보닷컴 STEP2 커뮤니케이션과 같은 표시) */
+function markDialogueLine(en: string, keys: string[], tips: Array<{ q: string; no: number }>): ReactNode {
+  type Ev = { at: number; end?: number; kind: "key" | "tip"; no?: number };
+  const evs: Ev[] = [];
+  for (const k of keys) {
+    const at = en.indexOf(k);
+    if (at >= 0) evs.push({ at, end: at + k.length, kind: "key" });
+  }
+  for (const t of tips) {
+    const at = en.indexOf(t.q);
+    if (at >= 0) evs.push({ at, kind: "tip", no: t.no });
+  }
+  if (!evs.length) return en;
+  const out: ReactNode[] = [];
+  const ranges = evs.filter((e) => e.kind === "key").sort((a, b) => a.at - b.at);
+  const marks = evs.filter((e) => e.kind === "tip");
+  const tipAt = (from: number, to: number, keyPrefix: string) => {
+    // from~to 글자를 그리며 그 사이 만점공략 번호를 끼운다
+    const inner: ReactNode[] = [];
+    let c = from;
+    for (const m of marks.filter((m) => m.at >= from && m.at < to).sort((a, b) => a.at - b.at)) {
+      if (m.at > c) inner.push(en.slice(c, m.at));
+      inner.push(
+        <sup key={`${keyPrefix}t${m.no}`} style={{ color: "#6a4bd8", fontWeight: 800, fontSize: "8pt", margin: "0 .6mm 0 .2mm" }}>
+          {CIRCLED[(m.no ?? 1) - 1] ?? m.no}
+        </sup>
+      );
+      c = m.at;
+    }
+    inner.push(en.slice(c, to));
+    return inner;
+  };
+  let cur = 0;
+  ranges.forEach((r, i) => {
+    if (r.at < cur) return;
+    if (r.at > cur) out.push(...tipAt(cur, r.at, `p${i}`));
+    out.push(
+      <span key={`k${i}`} style={{ background: KEY_BG, color: KEY_FG, fontWeight: 700, borderRadius: "1mm", padding: "0 .6mm" }}>
+        {tipAt(r.at, r.end!, `k${i}`)}
+      </span>
+    );
+    cur = r.end!;
+  });
+  if (cur < en.length) out.push(...tipAt(cur, en.length, "z"));
+  return out;
+}
+
+/** 의사소통 기능 정리 상자(STEP2 Communication 1·2): 기능 이름 · 예시 대화 · 표현 / 답하기 목록 */
+function MsCommunicationBox({ c }: { c: MsCommunication }) {
+  return (
+    <div style={{ margin: "0 0 4mm", breakInside: "avoid" }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: "2.5mm", margin: "0 0 1.6mm" }}>
+        <b style={{ fontSize: "10.5pt", color: "#6a4bd8" }}>Communication {c.no}</b>
+        <b style={{ fontSize: "11pt" }}>{c.title}</b>
+      </div>
+      <div style={{ border: ".8pt solid #c9cdd6", borderRadius: "2.5mm", padding: "2mm 3.5mm", fontSize: "9.8pt", lineHeight: 1.75 }}>
+        {c.example.map((l, i) => (
+          <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "4mm" }}>
+            <span className="tb-en">
+              {l.speaker}: {markDialogueLine(l.en, c.key, [])}
+            </span>
+            <span style={{ color: "#5b6170", fontSize: "8.8pt" }}>{l.ko}</span>
           </div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.max(1, c.groups.length)}, minmax(0,1fr))`, gap: "4mm", marginTop: "2mm" }}>
+        {c.groups.map((g, gi) => (
+          <div key={gi}>
+            <div style={{ fontWeight: 800, fontSize: "9.4pt", borderBottom: ".6pt solid #c9cdd6", paddingBottom: ".6mm", marginBottom: "1mm" }}>
+              {g.title}
+              {g.gloss ? <span style={{ fontWeight: 500, color: "#5b6170", marginLeft: "1.5mm", fontSize: "8.6pt" }}>({g.gloss})</span> : null}
+            </div>
+            <ul style={{ margin: 0, paddingLeft: "4mm", listStyle: "disc", fontSize: "9.4pt", lineHeight: 1.65 }}>
+              {g.items.map((it, ii) => (
+                <li key={ii} className="tb-en">
+                  {it}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 대화문: 의사소통 기능 정리 → 대화마다 소제목 + 말차례별 해석(핵심표현 표시) + 만점공략
+ * (선생님 2026-11-17 「대화문에 해당 표현 설명이 필요」 — 족보닷컴 STEP2 커뮤니케이션). 짧은 대화가 한 쪽씩 차지하지 않게 이어 싣는다.
+ */
+export function MsDialogueSheets({ unit, translation, measureKey }: { unit: MsUnit; translation: "show" | "hide"; measureKey: string }) {
+  const comm: Block[] = (unit.communication ?? []).map((c) => ({ key: `cm${c.no}`, node: <MsCommunicationBox c={c} /> }));
+  if (comm.length)
+    comm.push({
+      key: "cm-legend",
+      node: (
+        <div style={{ fontSize: "8.4pt", color: "#5b6170", margin: "0 0 3mm" }}>
+          <span style={{ background: KEY_BG, color: KEY_FG, fontWeight: 700, borderRadius: "1mm", padding: "0 .8mm" }}>핵심표현</span> 위 기능의 표현 ·{" "}
+          <b style={{ color: "#6a4bd8" }}>❶</b> 만점공략(대화 아래 설명)
         </div>
       ),
-    })),
-  ]);
+    });
+  const blocks: Block[] = [
+    ...comm,
+    ...unit.dialogues.flatMap((t, ti) => {
+      let n = 0;
+      const numbered = t.lines.map((l) => (l.tips ?? []).map((tp) => ({ ...tp, no: ++n })));
+      const notes = numbered.flat();
+      return [
+        {
+          key: `dh${ti}`,
+          node: (
+            <div className="tb-q" style={{ marginTop: ti || comm.length ? "4mm" : 0 }}>
+              <span className="tb-qn">{ti + 1}</span>
+              {t.title ?? t.part}
+            </div>
+          ),
+        },
+        ...t.lines.map((l, i) => ({
+          key: `d${ti}-${i}`,
+          node: (
+            <div className="tb-ss">
+              <span className="tb-i">{l.speaker}</span>
+              <div>
+                <div className="tb-en">{markDialogueLine(l.en, l.key ?? [], numbered[i] ?? [])}</div>
+                {translation === "show" ? <div className="tb-ko">{l.ko}</div> : <div className="tb-line" />}
+              </div>
+            </div>
+          ),
+        })),
+        ...(notes.length
+          ? [
+              {
+                key: `dn${ti}`,
+                node: (
+                  <div style={{ margin: "1.5mm 0 0 7mm", padding: "1.6mm 2.6mm", borderTop: ".6pt dashed #c9b8f2", fontSize: "8.8pt", lineHeight: 1.6 }}>
+                    <b style={{ color: "#6a4bd8", marginRight: "1.5mm" }}>만점공략</b>
+                    {notes.map((tp) => (
+                      <div key={tp.no}>
+                        <b style={{ color: "#6a4bd8", marginRight: "1mm" }}>{CIRCLED[tp.no - 1] ?? tp.no}</b>
+                        <span className="tb-en" style={{ fontStyle: "italic" }}>
+                          {tp.q}
+                        </span>{" "}
+                        — {tp.note}
+                      </div>
+                    ))}
+                  </div>
+                ),
+              },
+            ]
+          : []),
+      ];
+    }),
+  ];
   return (
     <PagedSheet
       blocks={blocks}
