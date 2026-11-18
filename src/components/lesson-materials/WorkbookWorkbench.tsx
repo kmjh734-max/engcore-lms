@@ -399,6 +399,8 @@ function answerBlockPassageId(w: WorkbookData, key: string): string | null {
       return w.wordOrderWritingSections?.[n(parts[0])]?.projectId ?? null;
     case "kwa":
       return w.keyWordOrderSections?.[n(parts[0])]?.projectId ?? null;
+    case "soa":
+      return w.sentenceOrderQuestions?.[n(parts[0])]?.passageId ?? null;
     case "tb": {
       // tb-<유형>-<i> (유형 이름에 _가 있어 -로만 나눈다)
       const i = n(parts[parts.length - 1]);
@@ -4078,7 +4080,26 @@ export function WorkbookWorkbench({
       );
     }
     const oso = typeOrders.get("sentence_order");
-    if (oso != null) {
+    if (oso != null && workbook.layoutOrder === "passage") {
+      // 지문 차례로 싣는 정답지: 지문마다 그 지문 순서 배열 정답을 둔다. 한 덩어리로 두면 지문이 없어
+      // 정답지 맨 끝으로 밀려 지문별 정답 사이에서 빠진 것처럼 보였다(대원국제중, 선생님 2026-11-18).
+      soQuestions.forEach((q, i) =>
+        answerBlocks.push({
+          key: `soa-${i}`,
+          order: oso,
+          node: (
+            <>
+              <h3 className="wb-ak-title mb-1 text-[12.5px] font-black" style={{ color: ACCENT }}>
+                <TitleNo no={oso} /> 문장 순서 배열
+                <AnswerTag projectId={q.passageId} source={q.source} />
+              </h3>
+              <SentenceOrderAnswerBody question={q} all={soQuestions} />
+            </>
+          ),
+        })
+      );
+      addSkipped("sos", oso, soSkipped);
+    } else if (oso != null) {
       answerBlocks.push({
         key: "so",
         order: oso,
