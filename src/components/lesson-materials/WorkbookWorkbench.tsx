@@ -4225,7 +4225,39 @@ export function WorkbookWorkbench({
     const ranked = answerBlocks.map((b, i) => ({ b, i, r: rank(answerBlockPassageId(workbook, b.key)) }));
     ranked.sort((a, b) => a.r - b.r || a.b.order - b.b.order || a.i - b.i);
     answerBlocks.length = 0;
-    for (const x of ranked) answerBlocks.push(x.b);
+    /*
+     * 지문이 바뀌는 첫 정답 위에 지문 소제목(「01 · 제목」)을 단다 — 지문마다 정답이 구분되게(선생님
+     * 2026-11-18). 소제목만 쪽 끝에 남지 않게 첫 블록과 한 덩어리로 묶는다.
+     */
+    const plist = byPassageFlow ? streamPassages : editablePassages;
+    const pIndex = new Map(plist.map((p, i) => [p.projectId, i] as const));
+    let prevPid: string | null | undefined;
+    for (const x of ranked) {
+      const pid = answerBlockPassageId(workbook, x.b.key);
+      const at = pid ? pIndex.get(pid) : undefined;
+      if (pid !== prevPid && at != null && plist.length > 1) {
+        const p = plist[at]!;
+        answerBlocks.push({
+          ...x.b,
+          gap: prevPid === undefined ? x.b.gap : 14,
+          node: (
+            <>
+              <div className="wb-ak-passage mb-1.5 flex items-baseline gap-2 border-b pb-1" style={{ borderColor: ACCENT }}>
+                <span className="text-[13px] font-black tabular-nums" style={{ color: ACCENT }}>
+                  {String(at + 1).padStart(2, "0")}
+                </span>
+                <span className="text-[13px] font-black text-slate-900">{p.title}</span>
+                {p.source ? <span className="ml-auto truncate text-[10px] font-semibold text-slate-500">{p.source}</span> : null}
+              </div>
+              {x.b.node}
+            </>
+          ),
+        });
+      } else {
+        answerBlocks.push(x.b);
+      }
+      prevPid = pid;
+    }
   } else {
     answerBlocks.sort((a, b) => a.order - b.order);
   }
