@@ -260,9 +260,27 @@ async function runPassagesInParallel<S>(input: {
 }
 
 /** 저장된 워크북(브라우저 세션·워크북 파일)은 옛 형식일 수 있어 빠진 목록을 채운다. */
+/**
+ * 해석 적기는 문장마다(one_line_ko)·끊어 읽기(tb_chunk_line) 두 칸 중 하나다. 고른 쪽이 비고 다른 쪽에
+ * 내용이 있으면 내용 있는 쪽으로 보여 준다 — 유형 목록이 끊어 읽기로 덮여 해석 적기가 통째로 빠졌다(2026-11-18).
+ */
+function lineTypeWithContent(w: WorkbookData): Pick<WorkbookData, "selectedTypes" | "typeOrder"> {
+  const st = w.selectedTypes ?? [];
+  const hasLine = (w.lineTranslationSections?.length ?? 0) > 0;
+  const hasChunk = (w.tbSections?.tb_chunk_line?.length ?? 0) > 0;
+  let from: WorkbookTypeId | null = null;
+  let to: WorkbookTypeId | null = null;
+  if (st.includes("tb_chunk_line") && !st.includes("one_line_ko") && !hasChunk && hasLine) [from, to] = ["tb_chunk_line", "one_line_ko"];
+  else if (st.includes("one_line_ko") && !st.includes("tb_chunk_line") && !hasLine && hasChunk) [from, to] = ["one_line_ko", "tb_chunk_line"];
+  if (!from || !to) return { selectedTypes: w.selectedTypes, typeOrder: w.typeOrder };
+  const swap = (a: WorkbookTypeId[]) => a.map((t) => (t === from ? to! : t));
+  return { selectedTypes: swap(st), typeOrder: w.typeOrder ? swap(w.typeOrder) : w.typeOrder };
+}
+
 function withWorkbookDefaults(w: WorkbookData): WorkbookData {
   return {
     ...w,
+    ...lineTypeWithContent(w),
     blankSections: w.blankSections ?? [],
     blankOptions: w.blankOptions ?? DEFAULT_WORKBOOK_BLANK_OPTIONS,
     grammarChoiceSections: w.grammarChoiceSections ?? [],
