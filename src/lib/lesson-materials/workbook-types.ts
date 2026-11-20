@@ -836,6 +836,11 @@ export type WorkbookData = {
    * 없거나 "type"이면 유형별(지금까지 방식). 선생님 2026-10-26.
    */
   layoutOrder?: "type" | "passage";
+  /**
+   * 지문별일 때 지문(유형)마다 새 쪽에서 시작하지 않고, 단 수가 같은 유형(2단 도식화·T/F 등)을 지문 차례대로
+   * 이어 실어 한 쪽에 둘 이상 나오게 한다(Jayden 선생님 2026-11-20). 해석 적기 같은 쓰기 유형은 그대로 새 쪽.
+   */
+  passageJoin?: boolean;
   timing?: WorkbookGenerationTiming;
   /** 테스트 교재에서 옮긴 유형의 문항(유형마다 지문 목록). 단어 시험지는 vocabExam. */
   tbSections?: Partial<Record<TbWorkbookTypeId, WorkbookTbSection[]>>;

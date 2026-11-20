@@ -671,8 +671,9 @@ export function OnePageSummarySheet({
       <header className="op-head">
         <SheetNo index={index} />
         <div className="op-head-m">
-          <span className="op-kicker">{source ? `${source} · ` : ""}1장 요약자료</span>
-          <h1 className="op-en">{title}</h1>
+          {/* 출처를 넣었으면 출처가 큰 제목, 지문 제목은 위 작은 줄(선생님 2026-11-20 「출처가 더 중요」) */}
+          <span className="op-kicker">{source ? `${title} · ` : ""}1장 요약자료</span>
+          <h1 className="op-en">{source || title}</h1>
         </div>
         {logoSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -944,8 +945,8 @@ export function OnePageTestSheet({
       <header className="op-head op-head--test">
         <SheetNo index={index} />
         <div className="op-head-m">
-          <span className="op-kicker">{source ? `${source} · ` : ""}1장 테스트지</span>
-          <h1 className="op-en">{passage.titleEn || passage.title}</h1>
+          <span className="op-kicker">{source ? `${passage.titleEn || passage.title} · ` : ""}1장 테스트지</span>
+          <h1 className="op-en">{source || passage.titleEn || passage.title}</h1>
         </div>
         <div className="op-head-r">
           <span className="op-nm">

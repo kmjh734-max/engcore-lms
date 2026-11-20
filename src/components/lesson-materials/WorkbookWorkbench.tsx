@@ -1549,12 +1549,12 @@ function WordOrderQuestionBody({
   return (
     <div className="word-order-sheet">
       <p className="word-order-passage-title mb-1 font-semibold text-slate-500">
-        {section.title}
+        {section.source?.trim() || section.title}
         {continued ? " (계속)" : ""}
       </p>
       {section.source?.trim() ? (
         <p className="word-order-source mb-2 font-semibold text-slate-500">
-          · {section.source.trim()}
+          · {section.title}
         </p>
       ) : (
         <div className="mb-2" />
@@ -1694,8 +1694,16 @@ const FLOW_TITLE: Record<FlowKind, string> = {
 /** 한 쪽에서 앞 지문과 다음 지문 사이 간격(.workbook-flow-part 여백·선과 같게). */
 const FLOW_PART_GAP_PX = 34;
 
+/** 지문별 + 「빈 자리에 이어서」: 지문 차례로 늘어놓은 유형 묶음 중 단 수가 같아 한 흐름에 싣는 줄 */
+type JoinRun = { key: string; columns: 1 | 2; blocks: Array<{ t: WorkbookColumnTypeId; i: number }> };
+
 type WorkbookPage =
   | ColumnPage
+  | {
+      kind: "join_q";
+      run: number;
+      window: { index: number; count: number };
+    }
   | {
       /** 지문별 이어 싣기(최종통합자료): 모든 유형을 지문 차례로 한 흐름에 싣고 쪽마다 창 하나 */
       kind: "stream_q";
@@ -3354,6 +3362,59 @@ export function WorkbookWorkbench({
     return map;
   }, [workbook?.selectedTypes, workbook?.typeOrder]);
 
+  /**
+   * 지문별 + 「빈 자리에 이어서」(Jayden 선생님 2026-11-20 「지문별로 배열할 때도 한 페이지에 2개가 다 나올 수
+   * 없을까요」): 지문 차례 → 유형 차례로 늘어놓고, 단 수가 같은 유형 묶음이 잇달아 나오면 한 흐름으로 묶는다.
+   * 쓰기 유형(해석 적기 등)·단어 시험·단 수가 다른 유형이 끼면 거기서 끊는다.
+   */
+  const joinRuns = useMemo((): JoinRun[] => {
+    if (!workbook || byPassageFlow || workbook.layoutOrder !== "passage" || !workbook.passageJoin) return [];
+    const rank = passageRankOf(workbook, editablePassages.map((x) => x.projectId));
+    const flowLists: Record<FlowKind, Array<{ projectId?: string }>> = {
+      line_ko: workbook.lineTranslationSections ?? [],
+      gist: workbook.gistSections ?? [],
+      full_en: workbook.fullEnWritingSections ?? [],
+      word_order: workbook.wordOrderWritingSections ?? [],
+      key_word_order: workbook.keyWordOrderSections ?? [],
+    };
+    type B = { t: WorkbookColumnTypeId | null; i: number; columns: 1 | 2; pid: string | null; seq: number };
+    const blocks: B[] = [];
+    let seq = 0;
+    for (const t of orderWorkbookTypes(workbook.selectedTypes, workbook.typeOrder)) {
+      if ((WORKBOOK_COLUMN_TYPES as readonly string[]).includes(t)) {
+        const ct = t as WorkbookColumnTypeId;
+        const columns = workbook.columnLayout?.[ct] === 2 ? 2 : 1;
+        for (let i = 0; i < columnCountOf(workbook, ct); i++) {
+          blocks.push({ t: ct === "tb_vocab_exam" ? null : ct, i, columns, pid: columnPassageId(workbook, ct, i), seq: seq++ });
+        }
+        continue;
+      }
+      const flow = FLOW_KIND_BY_TYPE[t];
+      if (!flow) continue;
+      for (const sec of flowLists[flow]) blocks.push({ t: null, i: 0, columns: 1, pid: sec.projectId ?? null, seq: seq++ });
+    }
+    blocks.sort((a, b) => rank(a.pid) - rank(b.pid) || a.seq - b.seq);
+    const runs: JoinRun[] = [];
+    let cur: JoinRun | null = null;
+    const close = () => {
+      if (cur && cur.blocks.length > 1) runs.push(cur);
+      cur = null;
+    };
+    for (const b of blocks) {
+      if (!b.t) {
+        close();
+        continue;
+      }
+      if (!cur || cur.columns !== b.columns) {
+        close();
+        cur = { key: `${b.t}:${b.i}`, columns: b.columns, blocks: [] };
+      }
+      cur.blocks.push({ t: b.t, i: b.i });
+    }
+    close();
+    return runs;
+  }, [workbook, byPassageFlow, editablePassages]);
+
   const pages = useMemo(() => {
     if (!workbook) return [] as WorkbookPage[];
     const out: WorkbookPage[] = [];
@@ -3493,6 +3554,29 @@ export function WorkbookWorkbench({
       tagged.sort((a, b) => a.r - b.r || a.i - b.i);
       out.length = 0;
       for (const t of tagged) out.push(t.page);
+      // 「빈 자리에 이어서」: 한 흐름으로 묶인 지문들의 쪽을 잰 쪽 수만큼의 창으로 바꾼다(재기 전에는 그대로)
+      if (joinRuns.length > 0) {
+        const runOf = new Map<string, number>();
+        joinRuns.forEach((r, ri) => r.blocks.forEach((b) => runOf.set(`${b.t}:${b.i}`, ri)));
+        const done = new Set<number>();
+        const joined: WorkbookPage[] = [];
+        for (const page of out) {
+          if (page.kind === "columns_q") {
+            const ri = page.indices.map((i) => runOf.get(`${page.type}:${i}`)).find((x) => x != null);
+            const n = ri != null ? (windowCounts[`join:${joinRuns[ri]!.key}`] ?? 0) : 0;
+            if (ri != null && n > 0) {
+              if (!done.has(ri)) {
+                done.add(ri);
+                for (let k = 0; k < n; k++) joined.push({ kind: "join_q", run: ri, window: { index: k, count: n } });
+              }
+              continue;
+            }
+          }
+          joined.push(page);
+        }
+        out.length = 0;
+        out.push(...joined);
+      }
       // 지문별 이어 싣기: 잰 쪽 수만큼 창을 둔다(재기 전에는 위의 지문·유형마다 쪽)
       // 지문마다 흐름을 따로 둔다 — 한 흐름에 다 실으면 쪽마다 워크북 전체를 다시 그려 여는 데 몇 분이 걸렸다(2026-11-13)
       const streamGroupCounts = byPassageFlow
@@ -3531,7 +3615,7 @@ export function WorkbookWorkbench({
       });
     }
     return out;
-  }, [workbook, typeOrders, flowPages, columnPacks, answerPages, windowCounts, editablePassages, byPassageFlow]);
+  }, [workbook, typeOrders, flowPages, columnPacks, answerPages, windowCounts, editablePassages, byPassageFlow, joinRuns]);
   // (흐름 쪽 수는 columnBodyMm이 정해진 뒤 probe가 재므로 windowCounts만 보면 된다)
 
   useLayoutEffect(() => {
@@ -4246,8 +4330,9 @@ export function WorkbookWorkbench({
                 <span className="text-[13px] font-black tabular-nums" style={{ color: ACCENT }}>
                   {String(at + 1).padStart(2, "0")}
                 </span>
-                <span className="text-[13px] font-black text-slate-900">{p.title}</span>
-                {p.source ? <span className="ml-auto truncate text-[10px] font-semibold text-slate-500">{p.source}</span> : null}
+                {/* 출처를 넣었으면 출처가 큰 제목, 지문 제목은 뒤에 작게(선생님 2026-11-20) */}
+                <span className="text-[13px] font-black text-slate-900">{p.source || p.title}</span>
+                {p.source ? <span className="ml-auto truncate text-[10px] font-semibold text-slate-500">{p.title}</span> : null}
               </div>
               {x.b.node}
             </>
@@ -4374,6 +4459,18 @@ export function WorkbookWorkbench({
           : isTbWorkbookType(type)
             ? tbCount(workbook, type)
             : soQuestions.length;
+  /** 「빈 자리에 이어서」 흐름: 유형이 바뀌는 곳마다 유형 제목을 단다(쪽 머리에는 유형 제목을 두지 않는다) */
+  const renderJoinRun = (run: JoinRun): ReactNode =>
+    run.blocks.map((b, k) => (
+      <div key={`join-${b.t}-${b.i}`} className="workbook-col-section">
+        {k === 0 || run.blocks[k - 1]!.t !== b.t ? (
+          <h3 className="workbook-stream-type" style={{ color: ACCENT }}>
+            {typeOrders.get(b.t) ?? 1}. {COLUMN_TYPE_TITLE[b.t]}
+          </h3>
+        ) : null}
+        {renderColumnSection(b.t, b.i)}
+      </div>
+    ));
   /** 배치를 잴 유형(고른 유형 전부). 1단은 쪽 너비, 2단은 단 너비로 잰다. */
   const columnTypesOn = WORKBOOK_COLUMN_TYPES.filter((t) => workbook.selectedTypes.includes(t));
 
@@ -4463,8 +4560,8 @@ export function WorkbookWorkbench({
           {newPassage && info ? (
             <div className="workbook-stream-psg" data-wb-stream-psg={b.pid!}>
               <b>{String(info.no).padStart(2, "0")}</b>
-              <span>{info.title}</span>
-              {info.source ? <small>{info.source}</small> : null}
+              <span>{info.source || info.title}</span>
+              {info.source ? <small>{info.title}</small> : null}
             </div>
           ) : null}
           {newPassage || b.type !== prevType ? (
@@ -4486,7 +4583,7 @@ export function WorkbookWorkbench({
     const more = k > 0 ? " (계속)" : "";
     if (pid === "__all") return `단어 시험${more}`;
     const info = pid ? streamPassageInfo.get(pid) : undefined;
-    return info ? `${info.no}. ${info.title}${more}` : undefined;
+    return info ? `${info.no}. ${info.source || info.title}${more}` : undefined;
   };
 
   /** 인쇄할 쪽들과 쪽 나눔 측정 영역. 최종통합자료에 끼워 넣을 때(embedded)도 같은 모양을 쓴다. */
@@ -4554,6 +4651,26 @@ export function WorkbookWorkbench({
                         {renderColumnSection(page.type, i)}
                       </div>
                     ))}
+                  </PageShell>
+                );
+              }
+
+              if (page.kind === "join_q") {
+                const run = joinRuns[page.run];
+                return (
+                  <PageShell
+                    key={`join-${run?.key}-${page.window.index}`}
+                    pageNo={pageNo}
+                    total={partTotal}
+                    showPageNo={showPageNo}
+                    workbookTitle={title}
+                    isLast={isLast}
+                    columns={run?.columns ?? 2}
+                    columnHeightMm={columnBodyMm ?? undefined}
+                    windowIndex={page.window.index}
+                    windowCount={page.window.count}
+                  >
+                    {run ? renderJoinRun(run) : null}
                   </PageShell>
                 );
               }
@@ -4706,6 +4823,11 @@ export function WorkbookWorkbench({
               {streamGroups.map((g, gi) => (
                 <WindowFlow key={`probe-passage-stream-${gi}`} columns={1} heightMm={columnBodyMm} index={0} probe={`passage:stream:${gi}`}>
                   {g.nodes}
+                </WindowFlow>
+              ))}
+              {joinRuns.map((r) => (
+                <WindowFlow key={`probe-join-${r.key}`} columns={r.columns} heightMm={columnBodyMm} index={0} probe={`join:${r.key}`}>
+                  {renderJoinRun(r)}
                 </WindowFlow>
               ))}
               {columnTypesOn
@@ -5066,9 +5188,33 @@ export function WorkbookWorkbench({
                     );
                   })}
                 </div>
+                {workbook.layoutOrder === "passage" && !byPassageFlow ? (
+                  <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1">
+                    {(
+                      [
+                        [false, "지문마다 새 쪽"],
+                        [true, "빈 자리에 이어서"],
+                      ] as const
+                    ).map(([join, label]) => {
+                      const on = !!workbook.passageJoin === join;
+                      return (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => editWorkbook((w) => ({ ...w, passageJoin: join || undefined }))}
+                          className={`rounded-md py-1.5 text-xs font-bold transition ${on ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
                 <p className="text-[10.5px] leading-snug text-slate-400">
                   {workbook.layoutOrder === "passage"
-                    ? "지문 하나에 고른 유형을 다 풀고 다음 지문으로 갑니다. 지문마다 새 쪽에서 시작합니다."
+                    ? workbook.passageJoin && !byPassageFlow
+                      ? "지문 하나에 고른 유형을 다 풀고 다음 지문으로 갑니다. 쪽에 빈 자리가 있으면 다음 유형·지문을 이어 싣습니다(해석 적기 같은 쓰기 유형은 새 쪽)."
+                      : "지문 하나에 고른 유형을 다 풀고 다음 지문으로 갑니다. 지문마다 새 쪽에서 시작합니다."
                     : "한 유형을 지문 전부 하고 다음 유형으로 갑니다."}
                 </p>
               </div>

@@ -361,6 +361,37 @@ function ReportHeader({
   pageNo: string;
   accent: string;
 }) {
+  // 출처를 넣었으면 출처가 큰 제목, 지문 제목(한·영)은 그 아래 작게(선생님 2026-11-20 「출처가 더 중요」)
+  const src = source?.trim();
+  if (src) {
+    return (
+      <header className="ar-head mb-4" data-analysis-block="header">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="ar-head-label text-sm font-semibold" style={{ color: accent }}>
+              {headerLabel}
+            </p>
+            <h1 className="ar-head-title mt-1 text-[22px] font-black leading-snug text-slate-900">{src}</h1>
+            <p className="ar-head-title-en mt-0.5 text-[14px] font-bold leading-snug text-slate-600">{title}</p>
+            {titleEn?.trim() ? (
+              <p className="ar-head-title-en text-[13px] font-semibold leading-snug text-slate-500">{titleEn.trim()}</p>
+            ) : null}
+          </div>
+          <div className="ar-head-no shrink-0 text-4xl font-black tabular-nums" style={{ color: accent }}>
+            {pageNo}
+          </div>
+        </div>
+        <div className="ar-head-rule mt-3 h-1 w-full" style={{ backgroundColor: accent }} />
+        {topicEn?.trim() ? (
+          <div className="ar-topic">
+            <span className="ar-topic-key">Topic</span>
+            <span className="ar-topic-en">{topicEn.trim()}</span>
+            {topicKo?.trim() ? <span className="ar-topic-ko">{topicKo.trim()}</span> : null}
+          </div>
+        ) : null}
+      </header>
+    );
+  }
   return (
     <header className="ar-head mb-4" data-analysis-block="header">
       <div className="flex items-start justify-between gap-3">

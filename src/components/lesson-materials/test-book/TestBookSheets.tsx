@@ -773,8 +773,13 @@ function FormList({ forms }: { forms: Array<{ word: string; pos: string; ko?: st
   );
 }
 
+/** 지문 머리 큰 글자: 출처를 넣었으면 출처, 없으면 지문 제목(선생님 2026-11-20 「출처가 더 중요」) */
 function passageLabel(index: number, p: { title: string; source: string | null }): string {
-  return `${String(index + 1).padStart(2, "0")} · ${p.title}`;
+  return `${String(index + 1).padStart(2, "0")} · ${p.source?.trim() || p.title}`;
+}
+/** 큰 글자가 출처일 때 그 옆(작게)에 지문 제목, 아니면 fallback */
+function passageSub(p: { title: string; source: string | null }, fallback: string): string {
+  return p.source?.trim() ? p.title : fallback;
 }
 
 // ---------------------------------------------------------------- 학습 계획표·이수표
@@ -1075,7 +1080,7 @@ export const VocabSheets = memo(function VocabSheets({
       measureKey={measureKey}
       head={(page) => (
         <>
-          <DocHead title="단어 정리" sub={page > 0 ? "(이어서)" : undefined} label={passageLabel(index, project)} right={project.source?.trim() || "VOCABULARY"} />
+          <DocHead title="단어 정리" sub={page > 0 ? "(이어서)" : undefined} label={passageLabel(index, project)} right={passageSub(project, "VOCABULARY")} />
           {head}
         </>
       )}
@@ -1379,7 +1384,7 @@ export const WordTestSheets = memo(function WordTestSheets({
       blocks={blocks}
       measureKey={measureKey}
       head={(page) => (
-        <DocHead title="동반의어 TEST" sub={page > 0 ? "(이어서)" : undefined} label={passageLabel(index, project)} right={project.source?.trim() || "WORD TEST"} />
+        <DocHead title="동반의어 TEST" sub={page > 0 ? "(이어서)" : undefined} label={passageLabel(index, project)} right={passageSub(project, "WORD TEST")} />
       )}
     />
   );
@@ -1455,7 +1460,7 @@ export const LessonSheets = memo(function LessonSheets({
             {lead}
           </>
         ) : (
-          <DocHead title="수업용 자료 · 문장별 해석" sub={page > 0 ? "(이어서)" : sub} label={passageLabel(index, project)} right={project.source?.trim() || "수업용 자료"} />
+          <DocHead title="수업용 자료 · 문장별 해석" sub={page > 0 ? "(이어서)" : sub} label={passageLabel(index, project)} right={passageSub(project, "수업용 자료")} />
         )
       }
     />
@@ -1470,7 +1475,8 @@ export const TranslationBackSheets = memo(function TranslationBackSheets({ proje
       node: (
         <div className="tb-q" style={{ marginTop: "1mm" }}>
           <span className="tb-qn">{String(pi + 1).padStart(2, "0")}</span>
-          {p.title}
+          {p.source?.trim() || p.title}
+          {p.source?.trim() ? <small style={{ marginLeft: "2mm", fontWeight: 500, opacity: 0.75 }}>{p.title}</small> : null}
         </div>
       ),
     },
@@ -1702,7 +1708,7 @@ export const TestSheets = memo(function TestSheets({
         <DocHead
           title={passageLabel(index, project)}
           sub={page > 0 ? `${title} (이어서)` : title}
-          label={project.source?.trim() || title}
+          label={project.source?.trim() ? project.title : title}
           right={project.titleEn?.trim() || undefined}
         />
       )}
@@ -1744,7 +1750,7 @@ export const FlowTestSheets = memo(function FlowTestSheets({
       const head = (
         <div className="tb-flow-psg">
           <b>{passageLabel(e.index, e.project)}</b>
-          {e.project.source?.trim() ? <span>{e.project.source.trim()}</span> : null}
+          {e.project.source?.trim() ? <span>{e.project.title}</span> : null}
         </div>
       );
       // 지문 제목 줄이 쪽 끝에 홀로 남지 않게 첫 덩어리와 붙인다
@@ -1818,7 +1824,7 @@ export const BlankNoteSheets = memo(function BlankNoteSheets({ index, project }:
     <>
       <div className="tb-sheet tb-part">
         <div className="tb-note">
-          <DocHead title="백지노트" sub="1/2" label={label} right={project.source?.trim() || "BLANK NOTE"} />
+          <DocHead title="백지노트" sub="1/2" label={label} right={passageSub(project, "BLANK NOTE")} />
           <div className="tb-psgbox tb-bn-psg">
             <div className="tb-lb">
               <span>원문</span>
@@ -1853,7 +1859,7 @@ export const BlankNoteSheets = memo(function BlankNoteSheets({ index, project }:
       </div>
       <div className="tb-sheet tb-part">
         <div className="tb-note">
-          <DocHead title="백지노트" sub="2/2" label={label} right={project.source?.trim() || "BLANK NOTE"} />
+          <DocHead title="백지노트" sub="2/2" label={label} right={passageSub(project, "BLANK NOTE")} />
           <div className="tb-lb">
             <b>4단 정리</b>
             <span>글의 흐름을 네 단계로 · 단계마다 문장 번호</span>
@@ -1936,7 +1942,8 @@ export const AnswerSheets = memo(function AnswerSheets({
         <div className="tb-ans" style={{ marginTop: k ? "2.6mm" : 0 }}>
           <h3>
             <span>{String(e.index + 1).padStart(2, "0")}</span>
-            {e.project.title}
+            {e.project.source?.trim() || e.project.title}
+            {e.project.source?.trim() ? <small style={{ marginLeft: "2mm", fontWeight: 500, opacity: 0.75 }}>{e.project.title}</small> : null}
             {e.heading ? <span style={{ marginLeft: "2mm" }}>{e.heading}</span> : null}
           </h3>
           {e.word ? (
@@ -2136,8 +2143,8 @@ export const DividerSheet = memo(function DividerSheet({
               <div key={it.id}>
                 <i>{String(it.index + 1).padStart(2, "0")}</i>
                 <span>
-                  {it.title}
-                  {it.source?.trim() ? <small>{it.source.trim()}</small> : null}
+                  {it.source?.trim() || it.title}
+                  {it.source?.trim() ? <small>{it.title}</small> : null}
                 </span>
                 <em>{it.page ?? ""}</em>
               </div>
@@ -2218,7 +2225,7 @@ export const AnalysisSheets = memo(function AnalysisSheets({
       blocks={blocks}
       measureKey={measureKey}
       head={(page) => (
-        <DocHead title="분석 자료" sub={page > 0 ? "(이어서)" : undefined} label={passageLabel(index, project)} right={project.source?.trim() || "ANALYSIS"} />
+        <DocHead title="분석 자료" sub={page > 0 ? "(이어서)" : undefined} label={passageLabel(index, project)} right={passageSub(project, "ANALYSIS")} />
       )}
     />
   );
@@ -2252,8 +2259,8 @@ export const PassageDividerSheet = memo(function PassageDividerSheet({
         </div>
       </div>
       <div className="tb-pin">
-        {project.source?.trim() ? <div className="tb-psrc">{project.source.trim()}</div> : null}
-        <h2>{project.title}</h2>
+        {project.source?.trim() ? <div className="tb-psrc">{project.title}</div> : null}
+        <h2>{project.source?.trim() || project.title}</h2>
         {project.titleEn?.trim() ? <div className="tb-pen">{project.titleEn.trim()}</div> : null}
         <div className="tb-pbar" />
         {next.length ? (

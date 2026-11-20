@@ -382,11 +382,12 @@ function passageBlocks(
     node: (
       <div className="lc-headblock">
         <h2 className="lc-h1">
-          {String(index + 1).padStart(2, "0")} · {notes?.title.en || p.titleEn || p.title}
+          {/* 출처를 넣었으면 출처가 큰 제목, 지문 제목은 아래 작게(선생님 2026-11-20) */}
+          {String(index + 1).padStart(2, "0")} · {p.source?.trim() || notes?.title.en || p.titleEn || p.title}
         </h2>
         <p className="lc-meta">
-          {p.source ? `${p.source} · ` : ""}
-          {notes ? `주제: ${notes.topic.ko}` : p.title}
+          {p.source?.trim() ? `${notes?.title.en || p.titleEn || p.title} · ` : ""}
+          {notes ? `주제: ${notes.topic.ko}` : p.source?.trim() ? "" : p.title}
         </p>
       </div>
     ),

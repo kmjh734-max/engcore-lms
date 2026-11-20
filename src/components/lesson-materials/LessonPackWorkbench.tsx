@@ -888,10 +888,9 @@ export function LessonPackWorkbench({
   function renderRunHeader(pi: number): ReactNode {
     const board = projects[pi];
     const right = board
-      ? [
-          `${String(pi + 1).padStart(2, "0")} ${board.title}`,
-          board.source?.trim() || null,
-        ]
+      ? (board.source?.trim()
+          ? [`${String(pi + 1).padStart(2, "0")} ${board.source.trim()}`, board.title]
+          : [`${String(pi + 1).padStart(2, "0")} ${board.title}`])
           .filter(Boolean)
           .join(" · ")
       : "";
@@ -932,6 +931,23 @@ export function LessonPackWorkbench({
     const pi = parsed.pi;
 
     if (parsed.kind === "passage-bar") {
+      // 출처를 넣었으면 출처가 큰 제목, 지문 제목은 그 아래 작게(선생님 2026-11-20 「출처가 더 중요」)
+      const src = board.source?.trim();
+      if (src) {
+        return (
+          <div className="lp-pbar">
+            <span className="lp-pno">{String(pi + 1).padStart(2, "0")}</span>
+            <div className="min-w-0">
+              <p className="lp-ptitle">{src}</p>
+              <p className="lp-ptitle-en">
+                {board.title}
+                {board.titleEn?.trim() ? ` · ${board.titleEn.trim()}` : ""}
+              </p>
+            </div>
+            <span />
+          </div>
+        );
+      }
       return (
         <div className="lp-pbar">
           <span className="lp-pno">{String(pi + 1).padStart(2, "0")}</span>

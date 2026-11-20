@@ -667,8 +667,10 @@ export function readAnalysisMarkup(
     });
   }
 
-  const translation = String(o.translation ?? "").trim();
-  const chunks = verifiedChunks(text, o.chunks);
+  // 명령문 해석은 「~하라」(선생님 규칙 4). 교재 해석이 「~하세요」체면 해석·직독직해가 그 말투를 따라갔다(2026-11-20 점검 14문장)
+  const haraOn = o.translationEdited !== true && looksImperative(text);
+  const translation = haraOn ? toHaraStyle(String(o.translation ?? "").trim()) : String(o.translation ?? "").trim();
+  const chunks = haraOn ? verifiedChunks(text, o.chunks)?.map((c) => ({ ...c, ko: toHaraStyle(c.ko) })) : verifiedChunks(text, o.chunks);
   // 같은 자리에 같은 이름의 번호 설명이 있으면 이름표는 겹쳐 찍지 않는다(이름 묶기로 같아진 것 포함)
   const notesKept = notes.filter((n) => !points.some((p) => p.span.start === n.span.start && p.label === n.label));
   // 제목·구호 줄(짧고 마침표 없음)은 성분·이름표를 찍지 않는다(The First Period (2003~2009)에 2형식이 붙던 것)
@@ -689,6 +691,23 @@ export function readAnalysisMarkup(
     tags: heading ? [] : tags,
   };
   return hasAnyMarkup(markup) ? markup : null;
+}
+
+/** 문장 첫머리(First, Now, Or 같은 말 다음)가 주어 꼴이 아니면 명령문으로 본다. 해석이 「~세요」로 끝날 때만 쓰므로 넓게 잡는다. */
+const IMPERATIVE_LEAD = /^(?:first|second|third|finally|lastly|next|now|then|so|and|or|but|also|please|just|instead|simply|always|never|don['’]t|do)$/i;
+const SUBJECT_WORDS = new Set(["i", "you", "we", "they", "he", "she", "it", "this", "that", "these", "those", "there", "the", "a", "an", "my", "your", "our", "their", "his", "her", "its", "some", "many", "most", "all", "people", "what", "how", "why", "when", "where", "who", "which", "if", "as", "because", "although", "though", "while", "in", "on", "at", "for", "with", "after", "before", "since", "to"]);
+export function looksImperative(en: string): boolean {
+  const ws = en.replace(/[“”"‘'(),:;!?.]/g, " ").split(/\s+/).filter(Boolean);
+  let i = 0;
+  while (i < ws.length - 1 && IMPERATIVE_LEAD.test(ws[i]!)) i++;
+  const w = (ws[i] ?? "").toLowerCase();
+  if (!w || SUBJECT_WORDS.has(w)) return false;
+  // 복수 명사 주어(Tigers ~)는 빼고, 동사원형(Stop·Take·Allow·Stress)은 받는다
+  return !/s$/.test(w) || /ss$/.test(w);
+}
+/** 「~하세요」「~해 보세요」로 끝나는 해석을 「~하라」「~해 보라」로(물음표로 끝나는 권유·질문은 그대로) */
+export function toHaraStyle(ko: string): string {
+  return ko.replace(/(?<!이)세요([.!,]?["”’']?)\s*$/, "라$1");
 }
 
 /** 제목에서 소문자로 두는 낱말(관사·짧은 전치사·접속사) */
