@@ -29,7 +29,8 @@ export function MsQuestionTab({
   base: string;
 }) {
   const sources = useMemo(() => sortMsSources(questions.map((q) => q.source)), [questions]);
-  const [src, setSrc] = useState<string[]>(sources);
+  // 처음에는 아무 출처도 고르지 않는다 — 고른 것만 출력(선생님 2026-11-20 「선택이 다 되어있게 하지 말고」)
+  const [src, setSrc] = useState<string[]>([]);
   const [areas, setAreas] = useState<string[]>([...AREAS]);
   const [kinds, setKinds] = useState<("mc" | "sa")[]>(["mc", "sa"]);
   const [withReview, setWithReview] = useState(false);
@@ -58,7 +59,16 @@ export function MsQuestionTab({
       <aside className="no-print w-full shrink-0 space-y-4 rounded-xl border border-slate-200 bg-white p-4 text-sm print:hidden lg:sticky lg:top-4 lg:w-64 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
         <MaterialDesignPicker value={design} onChange={setDesign} compact />
         <div>
-          <div className="mb-1 font-bold text-slate-800">출처</div>
+          <div className="mb-1 flex items-center justify-between">
+            <span className="font-bold text-slate-800">출처</span>
+            <button
+              type="button"
+              onClick={() => setSrc(src.length === sources.length ? [] : sources)}
+              className="text-[11px] font-semibold text-violet-700 hover:underline"
+            >
+              {src.length === sources.length ? "모두 해제" : "모두 고르기"}
+            </button>
+          </div>
           {sources.map((s) => (
             <label key={s} className="flex items-center gap-2 py-0.5">
               <input type="checkbox" checked={src.includes(s)} onChange={(e) => setSrc(toggle(src, s, e.target.checked))} />
@@ -152,7 +162,9 @@ export function MsQuestionTab({
             </MsPrintFrame>
           </div>
         ) : (
-          <p className="p-6 text-sm text-slate-500">고른 조건에 맞는 문항이 없습니다.</p>
+          <p className="p-6 text-sm text-slate-500">
+            {src.length ? "고른 조건에 맞는 문항이 없습니다." : "왼쪽에서 출력할 출처를 고르세요."}
+          </p>
         )}
       </div>
     </div>
