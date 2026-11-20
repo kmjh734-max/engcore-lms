@@ -277,14 +277,42 @@ function lineTypeWithContent(w: WorkbookData): Pick<WorkbookData, "selectedTypes
   return { selectedTypes: swap(st), typeOrder: w.typeOrder ? swap(w.typeOrder) : w.typeOrder };
 }
 
+/**
+ * 문항이 하나도 없는 지문 칸은 문제지·정답지에 싣지 않고 「못 만든 지문」으로 옮긴다. 검수에서 다 떨어져 0개로
+ * 저장된 어법 선택 칸이 고르기 없는 지문만 찍히고 정답은 빈칸이었다(전수 대조 2026-11-19, 호원고2 천재 4·5과 등).
+ */
+function dropEmptySections<S extends { projectId: string; title: string }>(
+  sections: S[] | undefined,
+  skipped: ReadonlyArray<{ projectId: string; title: string; reason: string }> | undefined,
+  label: string,
+  count: (s: S) => number
+): { sections: S[]; skipped: { projectId: string; title: string; reason: string }[] } {
+  const all = sections ?? [];
+  const kept = all.filter((s) => count(s) > 0);
+  const gone = all.filter((s) => count(s) === 0);
+  return {
+    sections: kept,
+    skipped: [
+      ...(skipped ?? []),
+      ...gone.map((s) => ({ projectId: s.projectId, title: s.title, reason: `${label} 문항으로 만들 자리를 찾지 못했습니다.` })),
+    ],
+  };
+}
+
 function withWorkbookDefaults(w: WorkbookData): WorkbookData {
+  const choiceCount = (s: { items?: unknown[] }) => s.items?.length ?? 0;
+  const fixCount = (s: { answers?: unknown[] }) => s.answers?.length ?? 0;
+  const gc = dropEmptySections(w.grammarChoiceSections, w.grammarChoiceSkipped, "어법 선택", choiceCount);
+  const gf = dropEmptySections(w.grammarFixSections, w.grammarFixSkipped, "어법 수정", fixCount);
+  const vc = dropEmptySections(w.vocabChoiceSections, w.vocabChoiceSkipped, "어휘 선택", choiceCount);
+  const vf = dropEmptySections(w.vocabFixSections, w.vocabFixSkipped, "어휘 수정", fixCount);
   return {
     ...w,
     ...lineTypeWithContent(w),
     blankSections: w.blankSections ?? [],
     blankOptions: w.blankOptions ?? DEFAULT_WORKBOOK_BLANK_OPTIONS,
-    grammarChoiceSections: w.grammarChoiceSections ?? [],
-    grammarChoiceSkipped: w.grammarChoiceSkipped ?? [],
+    grammarChoiceSections: gc.sections,
+    grammarChoiceSkipped: gc.skipped,
     sentenceOrderQuestions: w.sentenceOrderQuestions ?? [],
     sentenceOrderSkipped: w.sentenceOrderSkipped ?? [],
     lineTranslationSections: w.lineTranslationSections ?? [],
@@ -296,12 +324,12 @@ function withWorkbookDefaults(w: WorkbookData): WorkbookData {
     wordOrderWritingSections: w.wordOrderWritingSections ?? [],
     wordOrderWritingSkipped: w.wordOrderWritingSkipped ?? [],
     keyWordOrderSections: w.keyWordOrderSections ?? [],
-    grammarFixSections: w.grammarFixSections ?? [],
-    grammarFixSkipped: w.grammarFixSkipped ?? [],
-    vocabChoiceSections: w.vocabChoiceSections ?? [],
-    vocabChoiceSkipped: w.vocabChoiceSkipped ?? [],
-    vocabFixSections: w.vocabFixSections ?? [],
-    vocabFixSkipped: w.vocabFixSkipped ?? [],
+    grammarFixSections: gf.sections,
+    grammarFixSkipped: gf.skipped,
+    vocabChoiceSections: vc.sections,
+    vocabChoiceSkipped: vc.skipped,
+    vocabFixSections: vf.sections,
+    vocabFixSkipped: vf.skipped,
     tbSections: w.tbSections ?? {},
     vocabExam: w.vocabExam ?? null,
     tbSkipped: w.tbSkipped ?? {},
