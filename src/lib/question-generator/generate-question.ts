@@ -170,6 +170,60 @@ function factWordingRule(lang: "english" | "korean" | null | undefined, difficul
  */
 const GRAMMAR_FOR_WRITING = WRITING_GRAMMAR_LIST;
 
+/**
+ * 앞 글자만 맞대서는 한 뿌리인 줄 모르는 파생어 묶음(요약표 빈칸 「지문에 뿌리가 있는지」 검사).
+ * 다섯 글자 이상은 그 글자로 시작하면, 짧은 것은 그 말과 -s·-d·-ed·-es 꼴만 같은 뿌리로 본다
+ * (see → seem 처럼 짧은 말이 엉뚱한 낱말에 붙지 않게).
+ */
+const IRREGULAR_DERIVATIVES: string[][] = [
+  ["lose", "loses", "losing", "lost", "loss", "losses"],
+  ["choose", "chose", "chosen", "choosing", "choice"],
+  ["think", "thought"],
+  ["deep", "depth"],
+  ["long", "length", "lengthen"],
+  ["strong", "strength"],
+  ["wide", "width", "widen"],
+  ["broad", "breadth"],
+  ["high", "height", "heighten"],
+  ["true", "truth", "truly"],
+  ["speak", "spoke", "spoken", "speech"],
+  ["believe", "belief"],
+  ["prove", "proof"],
+  ["sell", "sold", "sale"],
+  ["live", "living", "life", "lives"],
+  ["die", "dying", "dead", "death", "deadly"],
+  ["fly", "flies", "flight"],
+  ["see", "seen", "sight"],
+  ["able", "ability", "abilities"],
+  ["poor", "poverty"],
+  ["proud", "pride"],
+  ["wise", "wisdom"],
+  ["decide", "decision"],
+  ["divide", "division"],
+  ["explain", "explanation"],
+  ["describe", "description"],
+  ["receive", "reception"],
+  ["perceive", "perception"],
+  ["pronounce", "pronunciation"],
+  ["maintain", "maintenance"],
+  ["sustain", "sustenance"],
+  ["retain", "retention"],
+  ["intend", "intention", "intent"],
+  ["extend", "extension", "extent"],
+  ["respond", "response", "responsive"],
+  ["defend", "defense", "defensive"],
+  ["pursue", "pursuit"],
+  ["fail", "failure"],
+  ["please", "pleasure", "pleasant"],
+  ["hot", "heat"],
+  ["bear", "born", "birth"],
+];
+
+function isFormOf(word: string, form: string): boolean {
+  if (form.length >= 5) return word.startsWith(form);
+  return [form, `${form}s`, `${form}d`, `${form}ed`, `${form}es`].includes(word);
+}
+
 /** aren't → are not, doesn't → does not, can't → cannot, won't → will not (보기에서 not이 사라지지 않게) */
 function expandNegativeContractions(text: string): string {
   // 의문문은 풀면 어색하다(Won't you? → Will not you?)
@@ -2171,7 +2225,16 @@ export function assertBasicQuestionShape(
       if (w.length < 3) return `정답 낱말 「${word}」이 너무 짧습니다.`;
       const exact = bodyWords.includes(w);
       if (!exact) changed += 1;
-      const rooted = bodyWords.some((b) => b.startsWith(stem(w)) || w.startsWith(stem(b)));
+      /*
+       * 앞 글자가 달라지는 불규칙 파생어(lose → loss, choose → choice)도 지문에 뿌리가 있는 말이다
+       * (윌링어학원 2026-11-20: 지문 「lose autonomy」의 답 「loss」를 버려 다른 유형으로 바뀌었다).
+       * un-·non- 처럼 뜻을 뒤집는 앞가지는 형태 바꾸기가 아니라 그대로 거른다.
+       */
+      const rooted =
+        bodyWords.some((b) => b.startsWith(stem(w)) || w.startsWith(stem(b))) ||
+        IRREGULAR_DERIVATIVES.some(
+          (fam) => fam.some((m) => isFormOf(w, m)) && bodyWords.some((b) => fam.some((m) => isFormOf(b, m)))
+        );
       if (!rooted) {
         return `정답 낱말 「${word}」은 지문에 뿌리가 없습니다.`;
       }

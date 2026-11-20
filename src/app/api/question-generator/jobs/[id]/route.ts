@@ -85,7 +85,28 @@ export async function GET(
       qQuery = qQuery.eq("created_by", profile.id);
     }
 
-    const { data: questions } = await qQuery;
+    const { data: rawQuestions } = await qQuery;
+    /*
+     * 지문은 넣은 순서대로. 문항은 32개씩 동시에 만들어 「만든 시각」 순서가 지문 순서와 어긋난다
+     * (윌링어학원 30지문 150문항, 2026-11-20 「입력한 순서대로 지문이 안 나옴」). 설계도(slot_index)가
+     * 있는 문항은 그 번호가 먼저고, 없는 문항만 입력한 지문 차례 → 만든 차례로 놓는다.
+     */
+    const inputIds = ((job.request_config as { passageIds?: unknown } | null)?.passageIds ?? []) as unknown[];
+    const rank = new Map<string, number>();
+    inputIds.forEach((pid, i) => {
+      if (typeof pid === "string" && !rank.has(pid)) rank.set(pid, i);
+    });
+    const questions = (rawQuestions ?? [])
+      .map((q, i) => ({ q, i }))
+      .sort((a, b) => {
+        const sa = a.q.slot_index as number | null;
+        const sb = b.q.slot_index as number | null;
+        if (sa != null || sb != null) return a.i - b.i;
+        const ra = rank.get(String(a.q.passage_id ?? "")) ?? Number.MAX_SAFE_INTEGER;
+        const rb = rank.get(String(b.q.passage_id ?? "")) ?? Number.MAX_SAFE_INTEGER;
+        return ra - rb || a.i - b.i;
+      })
+      .map((x) => x.q);
 
     // 문항 번호 위에 작게 다는 지문 출처.
     // 지문이 하나여도 보낸다 — 출처가 적혀 있으면 문항마다 달라는 선생님 요청(2026-09-30).

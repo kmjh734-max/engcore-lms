@@ -4,8 +4,11 @@ export const MAX_SETS_PER_TYPE = 50;
 /** 한 번에 생성 가능한 최대 문항 수 (지문 수 × 유형 합) */
 export const MAX_TOTAL_QUESTIONS = 500;
 
-/** 한 번에 넣을 수 있는 최대 지문 수 */
-export const MAX_PASSAGES = 30;
+/**
+ * 한 번에 넣을 수 있는 최대 지문 수. 30이었는데 모의고사 한 회·교과서 몇 과를 한 번에 넣기엔
+ * 모자랐다(윌링어학원 2026-11-20). 문항 수는 MAX_TOTAL_QUESTIONS(500)가 따로 막는다.
+ */
+export const MAX_PASSAGES = 50;
 
 /** 로컬 검수 통과 최소 점수 (미달 시 문항 폐기) */
 export const VALIDATION_PASS_SCORE = 70;
