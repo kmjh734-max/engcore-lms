@@ -68,6 +68,8 @@ type QuestionRow = {
   choice_language?: string | null;
   /** 중학교 문제 은행: 보기가 (A)·(B)·(C) 칸으로 나뉜 문항 — 칸 이름, 보기 글은 칸을 탭으로 잇는다 */
   choice_columns?: string[] | null;
+  /** 중학교 문제 은행: 문장 넣기 문항의 주어진 문장(지문 위 상자) */
+  given_sentence?: string | null;
 };
 
 /**
@@ -649,6 +651,8 @@ function QuestionBlock({
           </p>
           {isInsertion && extra ? (
             <div className="qg-print-given-box">{extra}</div>
+          ) : q.given_sentence ? (
+            <div className="qg-print-given-box">{renderMarkedText(q.given_sentence)}</div>
           ) : null}
         </div>
       ) : null}

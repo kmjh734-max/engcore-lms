@@ -80,6 +80,8 @@ function groupKey(lines: string[]): string {
   return `g${(h >>> 0).toString(36)}`;
 }
 
+const GIVEN_MARK = "[주어진 문장]";
+
 /** 칸 이름 줄: 「(A)   (B)   (C)」「ⓐ\t ⓑ\t ⓒ」「㉠ ㉡ ㉠ ㉡」(두 단 배치라 되풀이되기도) */
 const COL_LABEL = /^(\([A-Ea-e]\)|\([가-마]\)|[ⓐ-ⓔ]|[㉠-㉤])$/;
 function columnLabels(line: string): string[] | null {
@@ -121,7 +123,11 @@ function splitColumnChoices(q: MsQuestion): { body: string[]; columns: string[];
 
 export function msQuestionToPrintRow(q0: MsQuestion): QuestionPrintRow {
   const split = splitColumnChoices(q0);
-  const q = split ? { ...q0, body: split.body, choices: split.choices } : q0;
+  const q1 = split ? { ...q0, body: split.body, choices: split.choices } : q0;
+  // 문장 넣기: 「[주어진 문장] …」 줄은 지문에서 떼어 지문 위 상자로(2026-11-22)
+  const gi = q1.body.findIndex((l) => l.startsWith(GIVEN_MARK));
+  const given = gi >= 0 ? q1.body[gi].slice(GIVEN_MARK.length).trim() : null;
+  const q = gi >= 0 ? { ...q1, body: q1.body.filter((_, i) => i !== gi) } : q1;
   const group = q.groupLines?.length ? q.groupLines : null;
   const answers = q.answer.split(/\s*,\s*/).filter(Boolean);
   const correct: unknown =
@@ -135,6 +141,7 @@ export function msQuestionToPrintRow(q0: MsQuestion): QuestionPrintRow {
     passage_modified: null,
     choices: q.choices.map((c) => ({ number: c.no, text: fixUnderline(blanks(c.text)).replace(/\n/g, " / ").replace(/\s*\t\s*/g, split ? "\t" : " / ") })),
     choice_columns: split?.columns ?? null,
+    given_sentence: given ? blanks(given) : null,
     correct_answer: correct,
     // 해설은 글자로만 찍힌다: 밑줄 표시는 뺀다
     explanation: q.explanation.replace(/<\/?u>/g, ""),
