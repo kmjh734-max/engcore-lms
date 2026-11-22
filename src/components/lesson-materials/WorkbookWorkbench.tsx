@@ -1887,6 +1887,12 @@ export function WorkbookWorkbench({
   /** 2단 쪽의 본문(단) 높이. 머리글 높이를 잰 뒤에 정해진다. */
   const [columnBodyMm, setColumnBodyMm] = useState<number | null>(null);
   /**
+   * 「빈 자리에 이어서」(join) 쪽의 본문 높이. 그 쪽 머리에는 유형 제목 줄이 없어(유형 제목은 흐름 안에 단다)
+   * columnBodyMm보다 그만큼 길다 — 같은 높이를 쓰면 쪽마다 아래가 비고 마지막 문항 하나가 다음 쪽으로 밀렸다
+   * (윌링 「구현고2 T/F + 도식화」, 선생님 2026-11-22 「한 페이지에 다 안 나온다」).
+   */
+  const [joinBodyMm, setJoinBodyMm] = useState<number | null>(null);
+  /**
    * 한 쪽보다 긴 지문(packed가 아닌 쪽)·정답 블록이 차지하는 쪽 수. 키는 "유형:지문 번호" 또는
    * "answer:블록 key". 재기 전에는 없고, 그동안은 예전처럼 한 쪽에 싣는다.
    */
@@ -3276,6 +3282,20 @@ export function WorkbookWorkbench({
   break-inside: avoid;
   page-break-inside: avoid;
 }
+/*
+ * 「빈 자리에 이어서」 흐름: 도식화 같은 상자 문항은 통째로 넘기고, 유형 제목·지문 딱지·지문은 아래 내용과 붙여 둔다
+ * — 쪽 끝에 「1. 도식화 / 지문 3」 제목만 남거나 도식화 칸이 두 쪽으로 갈렸다(윌링, 선생님 2026-11-22).
+ */
+.workbook-window-flow .wb-join-keep {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.workbook-window-flow .workbook-stream-type,
+.workbook-window-flow .wb-passage-meta,
+.workbook-window-flow .tb-tip {
+  break-after: avoid;
+  page-break-after: avoid;
+}
 .workbook-two-col li,
 .workbook-two-col .break-inside-avoid {
   break-inside: avoid;
@@ -3763,6 +3783,9 @@ export function WorkbookWorkbench({
     // 머리글 아래 여백(mb-4)과, 쪽 번호와 겹치지 않을 여유를 뺀다.
     const columnPx = pageBodyPx - ((headerEl?.offsetHeight ?? 72) + 16) - 4 * pxPerMm;
     setColumnBodyMm(Math.floor((columnPx / pxPerMm) * 10) / 10);
+    const titleEl = headerEl?.querySelector(".wb-type-title") as HTMLElement | null;
+    const titlePx = titleEl ? titleEl.offsetHeight + (parseFloat(getComputedStyle(titleEl).marginTop) || 0) : 0;
+    setJoinBodyMm(Math.floor(((columnPx + titlePx) / pxPerMm) * 10) / 10);
     // 문항은 단 사이에서 쪼개지지 않고 통째로 넘어가 단 끝에 빈 줄이 생기므로 조금 덜 채운다.
     // 그래도 넘치면 그린 뒤에 넘친 쪽을 찾아 지문 하나를 다음 쪽으로 보낸다(columnLimits).
     const next: Partial<Record<WorkbookColumnTypeId, { indices: number[]; packed: boolean }[]>> = {};
@@ -3880,7 +3903,7 @@ export function WorkbookWorkbench({
       next[el.dataset.wbProbe!] = Math.max(1, Math.ceil(cols / perPage));
     });
     setWindowCounts((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
-  }, [workbook, columnPacks, answerOversize, columnBodyMm, fontsReady, designStyle, fontsTick, loadedPassages, streamFit, streamBreaks]);
+  }, [workbook, columnPacks, answerOversize, columnBodyMm, joinBodyMm, fontsReady, designStyle, fontsTick, loadedPassages, streamFit, streamBreaks]);
 
   /*
    * 2단 흐름의 유형 블록이 한 단을 조금(20% 이내) 넘으면 한 단계씩 작게 해 다시 잰다(최대 3단계).
@@ -4572,7 +4595,10 @@ export function WorkbookWorkbench({
   /** 「빈 자리에 이어서」 흐름: 유형이 바뀌는 곳마다 유형 제목을 단다(쪽 머리에는 유형 제목을 두지 않는다) */
   const renderJoinRun = (run: JoinRun): ReactNode =>
     run.blocks.map((b, k) => (
-      <div key={`join-${b.t}-${b.i}`} className="workbook-col-section">
+      <div
+        key={`join-${b.t}-${b.i}`}
+        className={`workbook-col-section${isTbWorkbookType(b.t) && b.t !== "tb_chunk_line" ? " wb-join-keep" : ""}`}
+      >
         {k === 0 || run.blocks[k - 1]!.t !== b.t ? (
           <h3 className="workbook-stream-type" style={{ color: ACCENT }}>
             {typeOrders.get(b.t) ?? 1}. {COLUMN_TYPE_TITLE[b.t]}
@@ -4793,7 +4819,7 @@ export function WorkbookWorkbench({
                     workbookTitle={title}
                     isLast={isLast}
                     columns={run?.columns ?? 2}
-                    columnHeightMm={columnBodyMm ?? undefined}
+                    columnHeightMm={joinBodyMm ?? columnBodyMm ?? undefined}
                     windowIndex={page.window.index}
                     windowCount={page.window.count}
                   >
@@ -4971,7 +4997,7 @@ export function WorkbookWorkbench({
                 </div>
               ) : null}
               {joinRuns.map((r) => (
-                <WindowFlow key={`probe-join-${r.key}`} columns={r.columns} heightMm={columnBodyMm} index={0} probe={`join:${r.key}`}>
+                <WindowFlow key={`probe-join-${r.key}`} columns={r.columns} heightMm={joinBodyMm ?? columnBodyMm} index={0} probe={`join:${r.key}`}>
                   {renderJoinRun(r)}
                 </WindowFlow>
               ))}
