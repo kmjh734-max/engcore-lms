@@ -1891,6 +1891,13 @@ export function WorkbookWorkbench({
    * "answer:블록 key". 재기 전에는 없고, 그동안은 예전처럼 한 쪽에 싣는다.
    */
   const [windowCounts, setWindowCounts] = useState<Record<string, number>>({});
+  /**
+   * 지문별 이어 싣기 2단 흐름에서 한 단을 조금 넘는 유형 블록의 줄 간격 좁히기 단계(1~3, -1은 좁혀도 안 들어가 그대로).
+   * 키는 블록 key. 선생님 2026-11-22 「한 단락을 너무 많이 넘어서면 줄간격을 자동으로」.
+   */
+  const [streamFit, setStreamFit] = useState<Record<string, number>>({});
+  /** 2단 흐름에서 다음 단 맨 위로 넘길 블록 key들("|"로 이음). 재기 전에는 비어 있다. */
+  const [streamBreaks, setStreamBreaks] = useState("");
   /** 정답지 쪽마다 실을 블록(key). 재기 전에는 null(한 쪽에 전부). */
   const [answerPages, setAnswerPages] = useState<string[][] | null>(null);
   /** 한 쪽보다 긴 정답 블록(key). 쪽 수를 재어 여러 쪽에 이어 싣는다. */
@@ -3277,6 +3284,14 @@ export function WorkbookWorkbench({
 .workbook-stream-block {
   margin-bottom: 16px;
 }
+/* 2단 흐름: 유형이 바뀌면 다음 단 맨 위에서(선생님 2026-11-22) */
+.workbook-window-flow.workbook-two-col .workbook-stream-block.wb-col-break {
+  break-before: column;
+}
+/* 한 단(쪽)을 조금 넘는 유형은 블록을 단계별로 조금 작게(줄 간격·글자·답 줄이 같이 줄어 반드시 짧아진다) */
+.workbook-stream-block[data-fit="1"] { zoom: 0.95; }
+.workbook-stream-block[data-fit="2"] { zoom: 0.91; }
+.workbook-stream-block[data-fit="3"] { zoom: 0.87; }
 .workbook-stream-psg {
   display: flex;
   align-items: baseline;
@@ -3865,7 +3880,74 @@ export function WorkbookWorkbench({
       next[el.dataset.wbProbe!] = Math.max(1, Math.ceil(cols / perPage));
     });
     setWindowCounts((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
-  }, [workbook, columnPacks, answerOversize, columnBodyMm, fontsReady, designStyle, fontsTick, loadedPassages]);
+  }, [workbook, columnPacks, answerOversize, columnBodyMm, fontsReady, designStyle, fontsTick, loadedPassages, streamFit, streamBreaks]);
+
+  /*
+   * 2단 흐름의 유형 블록이 한 단을 조금(20% 이내) 넘으면 한 단계씩 작게 해 다시 잰다(최대 3단계).
+   * 3단계로도 안 들어가면 -1(원래 간격으로 다음 단에 이어 감). 많이 넘는 블록은 손대지 않는다.
+   */
+  useLayoutEffect(() => {
+    const box = measureRef.current?.querySelector<HTMLElement>("[data-wb-fit-measure]");
+    if (!box || columnBodyMm == null || !fontsReady) return;
+    // 화면 미리보기가 쪽을 줄여 보일 수 있어 측정 상자의 배율로 나눈다(zoom 블록은 boundingRect로 재야 줄어든 높이가 나온다)
+    const scale = box.getBoundingClientRect().width / (box.offsetWidth || 1) || 1;
+    const colPx = ((columnBodyMm * 96) / 25.4) * scale;
+    const next: Record<string, number> = { ...streamFit };
+    let changed = false;
+    box.querySelectorAll<HTMLElement>("[data-fit-key]").forEach((el) => {
+      const key = el.dataset.fitKey!;
+      const cur = streamFit[key] ?? 0;
+      if (cur < 0) return;
+      const h = el.getBoundingClientRect().height;
+      if (h <= colPx - 2) return;
+      const want = cur === 0 ? (h <= colPx * 1.2 ? 1 : 0) : cur < 3 ? cur + 1 : -1;
+      if (want !== cur) {
+        next[key] = want;
+        changed = true;
+      }
+    });
+    // 1단 흐름: 마지막 쪽에 쪽 높이의 20% 미만만 남으면 좁힌다(앞 쪽에 다 담기면 멈춤)
+    measureRef.current?.querySelectorAll<HTMLElement>("[data-fit-group1]").forEach((el) => {
+      const key = el.dataset.fitGroup1!;
+      const cur = streamFit[key] ?? 0;
+      if (cur < 0) return;
+      const pages = el.getBoundingClientRect().height / colPx;
+      const frac = pages - Math.floor(pages);
+      if (pages <= 1 || frac === 0 || frac >= 0.2) return;
+      const want = cur < 3 ? cur + 1 : -1;
+      next[key] = want;
+      changed = true;
+    });
+    if (changed) {
+      setStreamFit(next);
+      return;
+    }
+    /*
+     * 간격이 정해진 뒤 단 나눔을 정한다(선생님 2026-11-22 「유형이 바뀌면 다음 단락으로」): 다음 유형이 지금 단의
+     * 남은 자리에 통째로 들어가면 이어 싣고, 안 들어가면 다음 단 맨 위에서 시작한다(유형이 단 사이에서 잘리지 않게,
+     * 짧은 유형 하나에 단 하나를 통째로 쓰지 않게).
+     */
+    const breaks: string[] = [];
+    box.querySelectorAll<HTMLElement>("[data-fit-group]").forEach((g) => {
+      let used = 0;
+      g.querySelectorAll<HTMLElement>(":scope > [data-fit-key]").forEach((el) => {
+        const h = el.getBoundingClientRect().height;
+        if (used > 0 && used + h > colPx - 2) {
+          breaks.push(el.dataset.fitKey!);
+          used = 0;
+        }
+        used += h;
+        while (used > colPx) used -= colPx;
+        used += parseFloat(getComputedStyle(el).marginBottom) || 0;
+      });
+    });
+    const joined = breaks.join("|");
+    setStreamBreaks((prev) => (prev === joined ? prev : joined));
+  }, [streamFit, workbook, columnBodyMm, fontsReady, designStyle, fontsTick, loadedPassages]);
+  // 워크북 내용이 바뀌면 좁히기를 처음부터 다시 잰다
+  useEffect(() => {
+    setStreamFit({});
+  }, [workbook]);
 
   // 그린 2단 쪽이 오른쪽 단 밖으로 넘치면(재 둔 높이와 실제가 다를 때) 그 쪽에 싣는 지문을 하나 줄인다.
   useLayoutEffect(() => {
@@ -4583,16 +4665,24 @@ export function WorkbookWorkbench({
     }
     blocks.sort((a, b) => streamPassageRank(a.pid) - streamPassageRank(b.pid) || a.seq - b.seq);
     const out: Array<{ pid: string | null; nodes: ReactNode[]; columns: 1 | 2; cont: boolean }> = [];
+    const breakSet = new Set(streamBreaks.split("|"));
     let prevPid: string | null | undefined;
     let prevType: WorkbookTypeId | undefined;
     for (const b of blocks) {
       const newPassage = b.pid !== prevPid;
       const info = b.pid ? streamPassageInfo.get(b.pid) : undefined;
       const cols = streamColsOf(b.type);
+      const fresh = newPassage || !out.length || out.at(-1)!.columns !== cols;
       if (newPassage || !out.length) out.push({ pid: b.pid, nodes: [], columns: cols, cont: false });
       else if (out.at(-1)!.columns !== cols) out.push({ pid: b.pid, nodes: [], columns: cols, cont: true });
+      const fit = cols === 2 ? streamFit[b.key] ?? 0 : streamFit[`g1:${b.pid}`] ?? 0;
       out.at(-1)!.nodes.push(
-        <div key={b.key} className="workbook-stream-block">
+        <div
+          key={b.key}
+          className={`workbook-stream-block${cols === 2 && !fresh && breakSet.has(b.key) ? " wb-col-break" : ""}`}
+          data-fit-key={cols === 2 ? b.key : undefined}
+          data-fit={fit > 0 ? fit : undefined}
+        >
           {newPassage && b.pid === "__all" ? <span data-wb-stream-psg="__all" /> : null}
           {newPassage && info ? (
             <div className="workbook-stream-psg" data-wb-stream-psg={b.pid!}>
@@ -4862,6 +4952,24 @@ export function WorkbookWorkbench({
                   {g.nodes}
                 </WindowFlow>
               ))}
+              {/* 2단 흐름 블록마다 한 단 너비로 세운 높이(줄 간격 좁히기 판단용) */}
+              {streamGroups.some((g) => g.columns === 2) ? (
+                <div data-wb-fit-measure="" style={{ width: `calc((100% - ${WINDOW_GAP}) / 2)` }}>
+                  {streamGroups.map((g, gi) => (g.columns === 2 ? <div key={`fit-${gi}`} data-fit-group="">{g.nodes}</div> : null))}
+                </div>
+              ) : null}
+              {/* 1단 흐름(해석 적기·요지)을 쪽 너비로 세운 높이 — 마지막 쪽에 몇 줄만 남으면 좁혀 앞 쪽에 담는다 */}
+              {streamGroups.some((g) => g.columns === 2) ? (
+                <div data-wb-fit-measure1="">
+                  {streamGroups.map((g, gi) =>
+                    g.columns === 1 && g.pid ? (
+                      <div key={`fit1-${gi}`} data-fit-group1={`g1:${g.pid}`} style={{ display: "flow-root" }}>
+                        {g.nodes}
+                      </div>
+                    ) : null
+                  )}
+                </div>
+              ) : null}
               {joinRuns.map((r) => (
                 <WindowFlow key={`probe-join-${r.key}`} columns={r.columns} heightMm={columnBodyMm} index={0} probe={`join:${r.key}`}>
                   {renderJoinRun(r)}
