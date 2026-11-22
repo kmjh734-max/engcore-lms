@@ -10,6 +10,23 @@
 /** 지문의 한 조각(문단 번호와 그 문단 안의 문장 또는 어절 묶음). */
 export type PrintUnit = { para: number; text: string };
 
+/**
+ * 지문 속 표 한 문단: 「[표] 머리 | 머리 // 칸 | 칸 // …」(줄은 「 // 」, 칸은 「 | 」, 첫 줄이 머리).
+ * 중학교 문제 은행에서 칸마다 한 줄로 흩어졌던 표를 이 꼴로 저장한다(2026-11-22).
+ */
+export const TABLE_MARK = "[표]";
+
+export function parseTableParagraph(text: string): string[][] | null {
+  if (!text.startsWith(TABLE_MARK)) return null;
+  const rows = text
+    .slice(TABLE_MARK.length)
+    .split(/\s+\/\/\s+/)
+    .map((r) => r.split(/\s+\|\s+/).map((c) => c.trim()))
+    .filter((r) => r.some(Boolean));
+  // 「[표] 글 한 줄」처럼 칸 나눔이 없는 옛 꼴은 표가 아니라 글로 둔다
+  return rows.some((r) => r.length >= 2) ? rows : null;
+}
+
 /** 쪼갠 문항의 한 부분: 지문 조각 [from, to), 머리(번호·지시문)와 꼬리(보기·선택지)를 싣는지. */
 export type PrintPiecePart = { from: number; to: number; first: boolean; last: boolean };
 
@@ -69,6 +86,11 @@ function splitSentenceWords(sentence: string): string[] {
 export function splitPrintUnits(paragraphs: string[]): PrintUnit[] {
   const units: PrintUnit[] = [];
   paragraphs.forEach((para, pi) => {
+    // 표 문단(「[표] 칸 | 칸 // 칸 | 칸」, 중학교 문제 은행)은 쪼개지 않는다
+    if (para.startsWith(TABLE_MARK)) {
+      units.push({ para: pi, text: para });
+      return;
+    }
     const sentences = splitOutsideTags(para, (before) => SENTENCE_END.test(before));
     for (const s of sentences) {
       for (const chunk of splitSentenceWords(s)) units.push({ para: pi, text: chunk });

@@ -80,7 +80,48 @@ function groupKey(lines: string[]): string {
   return `g${(h >>> 0).toString(36)}`;
 }
 
-export function msQuestionToPrintRow(q: MsQuestion): QuestionPrintRow {
+/** 칸 이름 줄: 「(A)   (B)   (C)」「ⓐ\t ⓑ\t ⓒ」「㉠ ㉡ ㉠ ㉡」(두 단 배치라 되풀이되기도) */
+const COL_LABEL = /^(\([A-Ea-e]\)|\([가-마]\)|[ⓐ-ⓔ]|[㉠-㉤])$/;
+function columnLabels(line: string): string[] | null {
+  const toks = line.trim().split(/\s+/);
+  if (toks.length < 2 || !toks.every((t) => COL_LABEL.test(t))) return null;
+  const labels: string[] = [];
+  for (const t of toks) {
+    if (labels.includes(t)) break;
+    labels.push(t);
+  }
+  return labels.length >= 2 ? labels : null;
+}
+/** 보기 글을 칸으로: 탭(「broke \t- \twas broken」처럼 탭 사이 줄표 포함) → 「 - 」 → 두 칸 이상 띄움 차례로, 칸 수가 맞는 첫 방법 */
+function choiceCells(text: string, n: number): string[] | null {
+  for (const re of [/\s*\t[\t\s\-–—]*/, /\s+[-–—]{1,4}\s+/, /\s*\t\s*|\s{2,}/]) {
+    const cells = text.split(re).map((c) => c.trim()).filter(Boolean);
+    if (cells.length === n) return cells;
+  }
+  return null;
+}
+
+/**
+ * 보기가 (A)·(B)·(C) 칸으로 나뉜 문항(교사용 hwp에서 표였던 것 — 2026-11-22 「표로 된 문제가 깨졌다」):
+ * 제 글 끝의 칸 이름 줄을 떼어 머리로, 보기는 칸마다 나눈다. 칸 수가 맞지 않으면 그대로 둔다.
+ */
+function splitColumnChoices(q: MsQuestion): { body: string[]; columns: string[]; choices: MsQuestion["choices"] } | null {
+  if (q.kind !== "mc" || q.choices.length < 2) return null;
+  const at = q.body.findIndex((l) => columnLabels(l));
+  if (at < 0) return null;
+  const columns = columnLabels(q.body[at])!;
+  const cells = q.choices.map((c) => choiceCells(c.text, columns.length));
+  if (!cells.every(Boolean)) return null;
+  return {
+    body: q.body.filter((_, i) => i !== at),
+    columns,
+    choices: q.choices.map((c, i) => ({ ...c, text: cells[i]!.join("\t") })),
+  };
+}
+
+export function msQuestionToPrintRow(q0: MsQuestion): QuestionPrintRow {
+  const split = splitColumnChoices(q0);
+  const q = split ? { ...q0, body: split.body, choices: split.choices } : q0;
   const group = q.groupLines?.length ? q.groupLines : null;
   const answers = q.answer.split(/\s*,\s*/).filter(Boolean);
   const correct: unknown =
@@ -92,7 +133,8 @@ export function msQuestionToPrintRow(q: MsQuestion): QuestionPrintRow {
     question_text: group ? q.body.map(blanks).join("\n") : "",
     passage_original: (group ?? q.body).map(blanks).join("\n\n"),
     passage_modified: null,
-    choices: q.choices.map((c) => ({ number: c.no, text: fixUnderline(blanks(c.text)).replace(/\n/g, " / ") })),
+    choices: q.choices.map((c) => ({ number: c.no, text: fixUnderline(blanks(c.text)).replace(/\n/g, " / ").replace(/\s*\t\s*/g, split ? "\t" : " / ") })),
+    choice_columns: split?.columns ?? null,
     correct_answer: correct,
     // 해설은 글자로만 찍힌다: 밑줄 표시는 뺀다
     explanation: q.explanation.replace(/<\/?u>/g, ""),

@@ -2408,6 +2408,36 @@ body[data-vocab-print-scope="exam"] .vocab-print-page--answer-key {
   line-height: 1.35;
 }
 
+/* 중학교 문제 은행: 지문 속 표와 (A)·(B)·(C) 칸 보기 */
+.qg-print-q-table {
+  border-collapse: collapse;
+  margin: 1mm 0;
+  font-size: 8.5pt;
+  line-height: 1.3;
+}
+.qg-print-q-table td {
+  border: 0.3mm solid #94a3b8;
+  padding: 0.6mm 2mm;
+  text-align: center;
+  vertical-align: middle;
+}
+.qg-print-q-table-head td {
+  background: #f1f5f9;
+  font-weight: 700;
+}
+.qg-print-choice-table td {
+  border: none;
+  padding: 0.2mm 3mm 0.2mm 0;
+  text-align: left;
+}
+.qg-print-choice-table .qg-print-q-table-head td {
+  background: none;
+  text-align: center;
+}
+.qg-print-choice-table td + td {
+  text-align: center;
+}
+
 .qg-print-choice-mark {
   flex-shrink: 0;
   width: 4.5mm;

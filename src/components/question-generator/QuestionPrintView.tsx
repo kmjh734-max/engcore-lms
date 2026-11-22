@@ -9,6 +9,7 @@ import { ListeningPrintQrCode } from "@/components/listening/ListeningPrintQrCod
 import {
   paginatePrintPieces,
   splitPrintUnits,
+  parseTableParagraph,
   type PrintPiece,
   type PrintPiecePage,
   type PrintPiecePart,
@@ -65,6 +66,8 @@ type QuestionRow = {
   passage_id?: string | null;
   hard_words?: Array<{ word: string; meaning: string }> | null;
   choice_language?: string | null;
+  /** 중학교 문제 은행: 보기가 (A)·(B)·(C) 칸으로 나뉜 문항 — 칸 이름, 보기 글은 칸을 탭으로 잇는다 */
+  choice_columns?: string[] | null;
 };
 
 /**
@@ -208,8 +211,30 @@ function parseBogiLines(text: string): string[] {
   return cleaned.split(/\n+/).map((s) => s.trim()).filter(Boolean);
 }
 
+/** 지문·보기 속 표(첫 줄이 머리, 칸 수가 모자란 줄은 마지막 칸을 넓힌다) */
+function PrintTable({ rows }: { rows: string[][] }) {
+  const cols = Math.max(...rows.map((r) => r.length));
+  return (
+    <table className="qg-print-q-table">
+      <tbody>
+        {rows.map((r, ri) => (
+          <tr key={ri} className={ri === 0 ? "qg-print-q-table-head" : undefined}>
+            {r.map((c, ci) => (
+              <td key={ci} colSpan={ci === r.length - 1 && r.length < cols ? cols - r.length + 1 : undefined}>
+                {renderMarkedText(c)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 /** <u>…</u> 및 일반 텍스트를 인쇄용 노드로 변환 */
 function renderMarkedText(text: string): ReactNode[] {
+  const table = parseTableParagraph(text);
+  if (table) return [<PrintTable key="tb" rows={table} />];
   const nodes: ReactNode[] = [];
   const re = /<u>([\s\S]*?)<\/u>/gi;
   let last = 0;
@@ -264,7 +289,12 @@ function PassageUnits({
   }
   return (
     <>
-      {paras.map((p) => (
+      {paras.map((p) =>
+        p.items.length === 1 && marked && parseTableParagraph(p.items[0]!.text) ? (
+          <div key={p.para} className={pClass} data-qg-para="">
+            <span data-qg-u={p.items[0]!.index}>{renderMarkedText(p.items[0]!.text)}</span>
+          </div>
+        ) : (
         <p key={p.para} className={pClass} data-qg-para="">
           {p.items.map((it) => (
             <span key={it.index} data-qg-u={it.index}>
@@ -273,7 +303,8 @@ function PassageUnits({
             </span>
           ))}
         </p>
-      ))}
+        ),
+      )}
     </>
   );
 }
@@ -646,12 +677,39 @@ function QuestionBlock({
       extra ? (
         q.question_type?.startsWith("ms_") ? (
           // 중학교 문제 은행: 줄(보기 ⓐ~ⓔ, (A)~(C))과 밑줄을 살린다
-          <p className="qg-print-extra" style={{ whiteSpace: "pre-line" }}>{renderMarkedText(extra)}</p>
+          extra.split("\n").some((l) => parseTableParagraph(l.trim())) ? (
+            <div className="qg-print-extra">
+              {extra.split("\n").map((l, i) =>
+                parseTableParagraph(l.trim()) ? <div key={i}>{renderMarkedText(l.trim())}</div> : <p key={i}>{renderMarkedText(l)}</p>,
+              )}
+            </div>
+          ) : (
+            <p className="qg-print-extra" style={{ whiteSpace: "pre-line" }}>{renderMarkedText(extra)}</p>
+          )
         ) : (
           <p className="qg-print-extra">{extra}</p>
         )
       ) : null}
-      {showChoices && (
+      {showChoices && q.choice_columns?.length ? (
+        <table className="qg-print-q-table qg-print-choice-table">
+          <tbody>
+            <tr className="qg-print-q-table-head">
+              <td />
+              {q.choice_columns.map((c, i) => (
+                <td key={i}>{c}</td>
+              ))}
+            </tr>
+            {q.choices!.map((c) => (
+              <tr key={c.number}>
+                <td className="qg-print-choice-mark">{CIRCLED[c.number - 1] ?? `${c.number}.`}</td>
+                {c.text.split("\t").map((cell, i) => (
+                  <td key={i}>{renderMarkedText(cell)}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : showChoices && (
         <ul className="qg-print-choices">
           {q.choices!.map((c) => (
             <li key={c.number}>
