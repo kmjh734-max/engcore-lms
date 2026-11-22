@@ -1,16 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 /*
  * 관리 홈 「잉코어 사용법」 — 처음 로그인하면 한 번 뜨고, 「다시 보지 않기」를 누르면 안 뜬다.
  * 언제든 홈 위 「? 사용법」으로 다시 연다. 그림은 public/tutorial (실제 화면 캡처, 학원·학생 이름 가림 —
- * 다시 찍기: scripts/tmp-rv/_tutorial-shots.mjs).
+ * 다시 찍기: scripts/tmp-rv/_tutorial-shots.mjs). 영상은 public/tutorial/video/<탭>.mp4
+ * (화면 녹화 + 자막, 만들기: scripts/tmp-rv/tutorial-video/).
+ *
+ * 탭 차례는 왼쪽 메뉴 묶음과 같다(선생님 2026-11-19): 수업자료 만들기 → 수업 운영 → 학생 학습 → 리포트.
+ * 장마다 설명하는 메뉴를 달아 두고, 그 학원에 열리지 않은 메뉴의 장은 뺀다.
  */
 
-type Slide = { img: string; title: string; body: string };
-type Track = { key: string; label: string; slides: Slide[]; tryHref: string; tryLabel: string };
+type Slide = {
+  img: string;
+  title: string;
+  body: string;
+  /** 이 장이 설명하는 메뉴(/admin·/teacher 뒤 경로). 그 학원 메뉴에 없으면 뺀다. */
+  menu: string;
+};
+type Track = {
+  key: string;
+  label: string;
+  slides: Slide[];
+  tryHref: string;
+  tryLabel: string;
+  /** 탭 영상(public 경로). 없으면 「영상으로 보기」를 띄우지 않는다. */
+  video?: string;
+};
 
 const TRACKS: Track[] = [
   {
@@ -18,31 +36,55 @@ const TRACKS: Track[] = [
     label: "📚 수업자료 만들기",
     tryHref: "/admin/lesson-materials/input",
     tryLabel: "지문 넣으러 가기",
+    video: "/tutorial/video/materials.mp4",
     slides: [
       {
+        menu: "/lesson-materials",
         img: "/tutorial/m1.webp",
         title: "수업자료 메뉴에서 「+ 새 자료 추가」",
         body: "왼쪽 메뉴 수업자료를 누르면 자료함이 열려요. 오른쪽 위 「+ 새 자료 추가」를 눌러 지문을 넣으러 가요.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/m2.webp",
         title: "지문을 붙여 넣어요",
         body: "한 줄에 지문 하나예요. 엑셀에서 여러 줄을 한꺼번에 붙여도 돼요. 모의고사 지문은 「모의고사 지문 불러오기」로 바로 가져와요. 다 넣으면 「다음 단계로 →」.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/m3.webp",
         title: "문장과 해석을 확인하고 저장",
         body: "지문이 문장별로 나뉘고 제목·해석·내용 흐름이 붙어요. 고칠 곳만 고치고 「자료 저장 완료 →」를 누르면 자료함에 들어가요.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/m4.webp",
         title: "지문을 고르고 만들 자료를 눌러요",
         body: "자료함에서 지문을 체크하면 아래에 보라색 막대가 떠요. 수업용 자료 · 지문 분석서 · 워크북 · 1장 요약직보자료 · 1장 테스트 · 문제 제작 · 최종통합자료 중 하나를 눌러요. 자료마다 생김새는 「🗂 자료 종류」 탭에서 볼 수 있어요.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/m5.webp",
         title: "만든 자료는 위쪽 탭에 모여요",
         body: "분석서 · 워크북 · 1장 테스트처럼 종류별 탭에 쌓여요. 눌러 열어서 「인쇄」나 「PDF로 저장」을 하면 돼요. 크레딧은 만들 때만 빠지고, 다시 열거나 인쇄할 때는 빠지지 않아요.",
+      },
+      {
+        menu: "/question-generator",
+        img: "/tutorial/q1.webp",
+        title: "변형문제 — 「+ 새로 만들기」",
+        body: "왼쪽 메뉴 변형문제에서 「+ 새로 만들기」. 「유형별로」나 「1지문 다문항」을 고르고 유형별 세트 수를 정해요. 지문을 붙여 넣거나 「모의고사 지문 불러오기」로 가져온 뒤, 아래 문항 수와 크레딧을 확인하고 「변형문제 생성」을 눌러요.",
+      },
+      {
+        menu: "/middle-school",
+        img: "/tutorial/ms1.webp",
+        title: "중학교 수업자료 — 교과서와 과를 골라요",
+        body: "위쪽에서 교과서(출판사·학년)를 고르면 과 카드가 나와요. 카드에서 바로 「단어 시험지 출력」 「테스트지 출력」 「본교재 출력」 「정답지 출력」을 하거나, 카드를 눌러 수업용 자료·워크북·변형문제를 골라 뽑아요.",
+      },
+      {
+        menu: "/grammar",
+        img: "/tutorial/g1.webp",
+        title: "문법 문제 은행 — 담아서 시험지로",
+        body: "레벨과 단원을 고르고 문항을 하나씩 담거나 「모두 담기」를 눌러요. 「단계별 출제 문항 수」로 객관식·서술형 수를 정해 한 번에 담을 수도 있어요. 다 담으면 「시험지 만들기」 → 제목과 옵션(정답지 함께 뽑기 등)을 정하고 「인쇄」.",
       },
     ],
   },
@@ -53,36 +95,43 @@ const TRACKS: Track[] = [
     tryLabel: "자료함으로 가기",
     slides: [
       {
+        menu: "/lesson-materials",
         img: "/tutorial/t1.webp",
         title: "수업용 자료 — 수업 시간에 바로 쓰는 묶음",
         body: "지문 전체 단어장, 지문마다 단어 정리·문장별 해석, 백지노트, 직독직해, 단어 시험지 중 필요한 것만 골라 한 파일로 뽑아요. 디자인도 네 가지 중에서 골라요.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/t2.webp",
         title: "지문 분석서 — 문장마다 구조와 해석",
         body: "문장마다 주어·동사 같은 구조 표시, 해석, 시험에 나올 어법·어휘 포인트가 붙어요. 수업 준비용으로도, 학생 배포용으로도 써요.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/t3.webp",
         title: "워크북 — 유형을 골라 만드는 연습지",
         body: "해석 적기 · 단어 시험 · 제목·주제 · 빈칸 · 어법 선택 · 순서 배열 등 유형을 골라 순서를 정해요. 문제지·정답지를 따로 PDF로 저장할 수 있어요.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/t4.webp",
         title: "1장 요약직보자료 — 지문 하나를 한 장에",
         body: "본문, 내용 흐름, 중요 포인트를 지문당 한 장으로 정리해요. 시험 직전 복습 자료로 좋아요.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/t5.webp",
         title: "1장 테스트 — 지문 한 장짜리 시험지",
         body: "어법·어휘 고르기, 지칭어 쓰기, 중요 표현 쓰기, 요약문 빈칸, T/F 같은 유형을 체크해서 지문당 한 장 테스트를 만들어요. 문제·정답을 따로 뽑을 수 있어요.",
       },
       {
+        menu: "/question-generator",
         img: "/tutorial/t6.webp",
         title: "변형문제 — 내신·수능형 문제",
         body: "지문으로 어법·어휘·내용 일치·빈칸·순서 같은 객관식과 서술형 변형문제를 만들어요. 문제지와 해설지를 골라 인쇄해요. 자료함에서 「문제 제작」을 누르거나 왼쪽 메뉴 변형문제에서 시작해요.",
       },
       {
+        menu: "/lesson-materials",
         img: "/tutorial/t7.webp",
         title: "최종통합자료 — 한 권짜리 시험 대비 교재",
         body: "표지와 학습 계획표부터 분석서·워크북·테스트까지 한 권으로 묶어요. 학교·시험 이름이 들어간 표지를 골라 바로 인쇄할 수 있어요.",
@@ -90,48 +139,131 @@ const TRACKS: Track[] = [
     ],
   },
   {
-    key: "study",
-    label: "🎧 단어·듣기 배정",
-    tryHref: "/admin/listening/assign",
-    tryLabel: "듣기 배정하러 가기",
+    key: "ops",
+    label: "🏫 수업 운영",
+    tryHref: "/admin/classes",
+    tryLabel: "반 만들러 가기",
+    video: "/tutorial/video/ops.mp4",
     slides: [
       {
+        menu: "/classes",
         img: "/tutorial/v1.webp",
-        title: "반을 만들고 학생을 등록해요",
-        body: "반 관리에서 「+ 새 반」, 학생·수강에서 학생마다 아이디와 첫 비밀번호를 만들어 주세요. 학생은 휴대폰 인터넷 브라우저에서 그 아이디로 로그인해 공부해요. 앱은 깔지 않아도 돼요.",
+        title: "반 관리 — 「새 반」부터",
+        body: "「새 반」을 눌러 반 이름과 담당 강사를 넣고 「만들기」. 반을 누르면 「학생」 「강좌·교재」 「설정」 탭이 있어요. 「설정」에 수업 요일·시간을 넣어 두면 학습일정표 날짜가 저절로 채워져요.",
       },
       {
+        menu: "/students",
+        img: "/tutorial/c2.webp",
+        title: "학생·수강 — 「학생 등록」",
+        body: "「학생 등록」에서 이름·아이디·첫 비밀번호를 넣고 반을 고르면, 그 반의 강좌·단어·듣기가 함께 배정돼요. 「링크 복사」로 가입 링크를 보내 학생이 직접 가입하게 할 수도 있어요. 학생은 휴대폰 브라우저로 로그인해요. 앱은 깔지 않아도 돼요.",
+      },
+      {
+        menu: "/progress",
+        img: "/tutorial/c3.webp",
+        title: "수강 현황 — 누가 뒤처졌는지",
+        body: "동영상 강좌를 누가 어디까지 봤는지 보여 줘요. 「뒤처진 순」으로 정렬하면 오래 안 본 학생이 위로 와요. 줄을 펼치면 강별 완료와 시청 시각이 보여요.",
+      },
+      {
+        menu: "/study-plans",
+        img: "/tutorial/c4.webp",
+        title: "학습일정표 — 한 달 계획을 한 장에",
+        body: "선생님 → 반 → 학생을 고르고 「일정표 만들기」. 「반 요일로 날짜 채우기」 「배정된 듣기·단어 채우기」로 칸을 자동으로 채운 뒤, 교재명·진도·숙제를 적고 「저장」해요. 지난달 표가 있으면 그대로 이어 와요.",
+      },
+    ],
+  },
+  {
+    key: "study",
+    label: "🎧 학생 학습",
+    tryHref: "/admin/listening/assign",
+    tryLabel: "듣기 배정하러 가기",
+    video: "/tutorial/video/study.mp4",
+    slides: [
+      {
+        menu: "/courses",
+        img: "/tutorial/s1.webp",
+        title: "동영상강좌 — 「+ 새 강좌」 후 「배정하기」",
+        body: "「+ 새 강좌」에서 제목을 넣고 「+ 영상 추가」로 Vimeo 링크를 붙인 뒤 「강좌 저장」. 강좌 화면의 「배정하기」에서 반이나 학생을 고르면 바로 수강해요. 반에 배정하면 나중에 들어온 학생도 자동으로 들어가요.",
+      },
+      {
+        menu: "/vocab",
         img: "/tutorial/v2.webp",
         title: "단어장을 골라 「배정」",
         body: "단어학습에서 학년에 맞는 단어장을 체크하고 아래 막대의 「배정」 → 반이나 학생을 골라 「배정하기」. 학생 화면에 바로 보여요.",
       },
       {
+        menu: "/listening",
         img: "/tutorial/v3.webp",
         title: "듣기는 날마다 나눠서 나가요",
         body: "듣기학습 → 배정 → 「새로 배정하기」. 누구에게 · 어떤 세트를 · 요일(월~금 · 월수금 · 매일) · 하루 문항 수를 정하고 「배정」. 중1~고3 학년별 세트가 미리 들어 있어요.",
       },
       {
+        menu: "/listening",
         img: "/tutorial/v4.webp",
         title: "현황에서 누가 했는지 봐요",
         body: "오늘 안 한 학생, 이번 달 수행률·정답률이 보여요. 학생 이름을 누르면 학부모께 알림을 보낼 수 있어요. 시험 기간에는 배정 카드에서 「일시정지」해 두세요.",
       },
       {
+        menu: "/vocab",
         img: "/tutorial/v5.webp",
         title: "요금은 학생 1명당 한 달 한 번",
         body: "단어·듣기는 학생이 그달 처음 공부할 때(또는 배정할 때) 한 번만 빠져요. 그달에 몇 번을 공부해도 더 빠지지 않아요. 기능별 가격은 크레딧 화면에서 볼 수 있어요.",
       },
     ],
   },
+  {
+    key: "reports",
+    label: "📊 리포트",
+    tryHref: "/admin/reports",
+    tryLabel: "리포트 보러 가기",
+    video: "/tutorial/video/reports.mp4",
+    slides: [
+      {
+        menu: "/reports",
+        img: "/tutorial/r1.webp",
+        title: "학습 리포트 — 학부모께 보내기",
+        body: "기간(이번 달 · 최근 30일 등)을 고르고 학생을 누르면 단어·듣기·영상 기록으로 리포트가 바로 만들어져요. 안내 문구도 같이 들어오고, 「카카오톡으로 보내기」 「링크 복사」 「PDF 저장」으로 보내요.",
+      },
+      {
+        menu: "/exam-analysis",
+        img: "/tutorial/r2.webp",
+        title: "내신 시험 분석 — 시험지를 올리면 문항표까지",
+        body: "시험지 PDF나 사진을 올리고 학교·학년·시험을 적은 뒤 「분석하기」. 1분쯤 뒤 영역·난이도·지문 출처, 문항표, 점수가 갈린 문항이 정리된 보고서가 나와요. 보고서에서 「동형모의고사 만들기」로 이어 갈 수 있어요.",
+      },
+      {
+        menu: "/student-records",
+        img: "/tutorial/r3.webp",
+        title: "학생부 분석 — 파일 하나로 보고서",
+        body: "「새 분석」 → 학생 고르기(안 골라도 돼요) → 학생부 파일(PDF·나이스 HTML·사진) 올리기 → 「분석 보고서 만들기」. 1~3분 뒤 성적·추천 대학·세특 정리가 나오고, 카카오톡·링크·PDF로 보내요.",
+      },
+      {
+        menu: "/nelt",
+        img: "/tutorial/r4.webp",
+        title: "NELT 성장 리포트 — 두 번 이상 본 학생",
+        body: "「결과 넣기」에 NELT 결과 링크를 붙여 넣고 「링크 읽기」. 회차가 둘 이상이면 레벨 변화와 상위 % 변화로 성장 리포트가 만들어져요. 줄의 「성장 리포트」를 눌러 학부모께 보내요.",
+      },
+    ],
+  },
 ];
 
-const DISMISS_KEY = "engcore_tutorial_dismissed_v1";
+/* 새 메뉴 묶음으로 바꾼 사용법(2026-11-19)을 한 번 더 보여 주려고 v2. */
+const DISMISS_KEY = "engcore_tutorial_dismissed_v2";
 
-/** role 에 맞춰 「…하러 가기」 경로를 바꾼다 (/admin/… ↔ /teacher/…) */
-export function TutorialDialog({ role = "admin" }: { role?: "admin" | "teacher" }) {
+/**
+ * role 에 맞춰 「…하러 가기」 경로를 바꾼다 (/admin/… ↔ /teacher/…).
+ * menus: 그 학원(그 역할)에 열린 메뉴 경로(/admin·/teacher 뒤, 예: "/lesson-materials"). 없으면 모두 보인다.
+ */
+export function TutorialDialog({ role = "admin", menus }: { role?: "admin" | "teacher"; menus?: string[] }) {
   const [open, setOpen] = useState(false);
   const [trackIdx, setTrackIdx] = useState(0);
   const [slideIdx, setSlideIdx] = useState(0);
   const [dontShow, setDontShow] = useState(false);
+  const [videoOn, setVideoOn] = useState(false);
+
+  const tracks = useMemo(() => {
+    if (!menus) return TRACKS;
+    const has = (m: string) => menus.some((x) => x === m || x.startsWith(`${m}/`));
+    return TRACKS.map((t) => ({ ...t, slides: t.slides.filter((s) => has(s.menu)) })).filter((t) => t.slides.length > 0);
+  }, [menus]);
 
   useEffect(() => {
     try {
@@ -152,20 +284,29 @@ export function TutorialDialog({ role = "admin" }: { role?: "admin" | "teacher" 
     setOpen(false);
   }, [dontShow]);
 
+  const goTrack = useCallback((i: number) => {
+    setTrackIdx(i);
+    setSlideIdx(0);
+    setVideoOn(false);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
-      if (e.key === "ArrowRight") setSlideIdx((i) => Math.min(i + 1, TRACKS[trackIdx]!.slides.length - 1));
+      if (videoOn) return;
+      if (e.key === "ArrowRight") setSlideIdx((i) => Math.min(i + 1, (tracks[trackIdx]?.slides.length ?? 1) - 1));
       if (e.key === "ArrowLeft") setSlideIdx((i) => Math.max(i - 1, 0));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, close, trackIdx]);
+  }, [open, close, trackIdx, tracks, videoOn]);
 
-  const track = TRACKS[trackIdx]!;
-  const slide = track.slides[slideIdx]!;
-  const last = slideIdx === track.slides.length - 1;
+  if (tracks.length === 0) return null;
+  const track = tracks[Math.min(trackIdx, tracks.length - 1)]!;
+  const slide = track.slides[Math.min(slideIdx, track.slides.length - 1)]!;
+  const last = slideIdx >= track.slides.length - 1;
+  const lastTrack = trackIdx >= tracks.length - 1;
 
   return (
     <>
@@ -174,6 +315,7 @@ export function TutorialDialog({ role = "admin" }: { role?: "admin" | "teacher" 
           type="button"
           onClick={() => {
             setSlideIdx(0);
+            setVideoOn(false);
             setOpen(true);
           }}
           className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700 hover:bg-brand-100"
@@ -200,16 +342,13 @@ export function TutorialDialog({ role = "admin" }: { role?: "admin" | "teacher" 
               </button>
             </div>
 
-            <div className="mt-3 flex gap-2 border-b border-slate-200 px-6">
-              {TRACKS.map((t, i) => (
+            <div className="mt-3 flex gap-1 overflow-x-auto border-b border-slate-200 px-6">
+              {tracks.map((t, i) => (
                 <button
                   key={t.key}
                   type="button"
-                  onClick={() => {
-                    setTrackIdx(i);
-                    setSlideIdx(0);
-                  }}
-                  className={`-mb-px border-b-[3px] px-4 py-2.5 text-sm font-bold ${
+                  onClick={() => goTrack(i)}
+                  className={`-mb-px shrink-0 border-b-[3px] px-3 py-2.5 text-sm font-bold ${
                     i === trackIdx ? "border-brand-600 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800"
                   }`}
                 >
@@ -219,18 +358,43 @@ export function TutorialDialog({ role = "admin" }: { role?: "admin" | "teacher" 
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={slide.img}
-                alt={slide.title}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 object-contain"
-                style={{ aspectRatio: "1440 / 860" }}
-              />
-              <p className="mt-4 text-xs font-bold text-brand-700">
-                {slideIdx + 1} / {track.slides.length}
-              </p>
-              <h3 className="mt-1 text-xl font-extrabold text-slate-900">{slide.title}</h3>
-              <p className="mt-1.5 text-[15px] leading-7 text-slate-700">{slide.body}</p>
+              {track.video ? (
+                <div className="mb-3 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setVideoOn((v) => !v)}
+                    className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-bold text-slate-700 hover:bg-slate-50"
+                  >
+                    {videoOn ? "그림으로 보기" : "▶ 영상으로 보기"}
+                  </button>
+                </div>
+              ) : null}
+              {videoOn && track.video ? (
+                <video
+                  key={track.video}
+                  src={track.video}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="w-full rounded-xl border border-slate-200 bg-black"
+                  style={{ aspectRatio: "1440 / 860" }}
+                />
+              ) : (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={slide.img}
+                    alt={slide.title}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 object-contain"
+                    style={{ aspectRatio: "1440 / 860" }}
+                  />
+                  <p className="mt-4 text-xs font-bold text-brand-700">
+                    {slideIdx + 1} / {track.slides.length}
+                  </p>
+                  <h3 className="mt-1 text-xl font-extrabold text-slate-900">{slide.title}</h3>
+                  <p className="mt-1.5 text-[15px] leading-7 text-slate-700">{slide.body}</p>
+                </>
+              )}
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-6 py-4">
@@ -238,37 +402,38 @@ export function TutorialDialog({ role = "admin" }: { role?: "admin" | "teacher" 
                 <input type="checkbox" checked={dontShow} onChange={(e) => setDontShow(e.target.checked)} className="h-4 w-4" />
                 다시 보지 않기
               </label>
-              <div className="flex items-center gap-1.5">
-                {track.slides.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    aria-label={`${i + 1}번째 장`}
-                    onClick={() => setSlideIdx(i)}
-                    className={`h-2 rounded-full ${i === slideIdx ? "w-6 bg-brand-600" : "w-2 bg-slate-300"}`}
-                  />
-                ))}
-              </div>
+              {videoOn ? null : (
+                <div className="flex items-center gap-1.5">
+                  {track.slides.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      aria-label={`${i + 1}번째 장`}
+                      onClick={() => setSlideIdx(i)}
+                      className={`h-2 rounded-full ${i === slideIdx ? "w-6 bg-brand-600" : "w-2 bg-slate-300"}`}
+                    />
+                  ))}
+                </div>
+              )}
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  disabled={slideIdx === 0}
-                  onClick={() => setSlideIdx((i) => i - 1)}
-                  className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 disabled:opacity-40"
-                >
-                  이전
-                </button>
-                {last ? (
-                  trackIdx < TRACKS.length - 1 ? (
+                {videoOn ? null : (
+                  <button
+                    type="button"
+                    disabled={slideIdx === 0}
+                    onClick={() => setSlideIdx((i) => i - 1)}
+                    className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-bold text-slate-600 disabled:opacity-40"
+                  >
+                    이전
+                  </button>
+                )}
+                {videoOn || last ? (
+                  !lastTrack ? (
                     <button
                       type="button"
-                      onClick={() => {
-                        setTrackIdx(trackIdx + 1);
-                        setSlideIdx(0);
-                      }}
+                      onClick={() => goTrack(trackIdx + 1)}
                       className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white hover:bg-brand-700"
                     >
-                      다음: {TRACKS[trackIdx + 1]!.label.replace(/^\S+\s/, "")} →
+                      다음: {tracks[trackIdx + 1]!.label.replace(/^\S+\s/, "")} →
                     </button>
                   ) : (
                     <Link

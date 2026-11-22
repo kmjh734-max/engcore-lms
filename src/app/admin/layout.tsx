@@ -1,49 +1,12 @@
 import { redirect } from "next/navigation";
-import { filterNavItems } from "@/lib/academy-features";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
-import { isStudyPlanEnabled, isStudyPlanNavItem } from "@/lib/study-plan/access";
+import { getAdminNavItems } from "@/lib/nav/menus";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Suspense } from "react";
 import { LowCreditBanner } from "@/components/credits/LowCreditBanner";
 import { CreditWall } from "@/components/credits/CreditWall";
 import { CreditConfirmHost } from "@/components/credits/CreditConfirmHost";
 import { GuideBanner } from "@/components/home/GuideBanner";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { isGrammarBankOpen } from "@/lib/grammar-bank/queries";
-import { isVocabDiagOpen } from "@/lib/vocab-diagnostic/access";
-import { isMiddleSchoolOpen } from "@/lib/middle-school/queries";
-
-/** 개인회원(개인 선생님)에게는 강사·관리자 계정 관리가 필요 없다 */
-const TEAM_ONLY = new Set(["/admin/teachers", "/admin/admins"]);
-
-async function isPersonalMember(academyId: string | null | undefined): Promise<boolean> {
-  if (!academyId) return false;
-  const { data } = await createAdminClient().from("academies").select("settings").eq("id", academyId).maybeSingle();
-  return (data?.settings as { signup?: { member_type?: string } } | null)?.signup?.member_type === "personal";
-}
-
-const NAV_ITEMS = [
-  { href: "/admin", label: "관리 홈" },
-  { href: "/admin/courses", label: "동영상강좌 관리", group: "학습" },
-  { href: "/admin/vocab", label: "단어학습", group: "학습" },
-  { href: "/admin/listening", label: "듣기학습", group: "학습" },
-  { href: "/admin/question-generator", label: "변형문제", group: "학습" },
-  { href: "/admin/lesson-materials", label: "수업자료", group: "학습" },
-  { href: "/admin/middle-school", label: "중학교 수업자료", group: "학습" },
-  { href: "/admin/grammar", label: "문법 문제 은행", group: "학습" },
-  { href: "/admin/classes", label: "반 관리", group: "수업 운영" },
-  { href: "/admin/students", label: "학생·수강", group: "수업 운영" },
-  { href: "/admin/progress", label: "수강 현황", group: "수업 운영" },
-  { href: "/admin/study-plans", label: "학습일정표", group: "수업 운영" },
-  { href: "/admin/reports", label: "학습 리포트", group: "리포트" },
-  { href: "/admin/exam-analysis", label: "내신 시험 분석", group: "리포트" },
-  { href: "/admin/student-records", label: "학생부 분석", group: "리포트" },
-  { href: "/admin/nelt", label: "NELT 성장 리포트", group: "리포트" },
-  { href: "/admin/marketing/vocab-diagnostic", label: "어휘 진단", group: "마케팅" },
-  { href: "/admin/teachers", label: "강사 관리", group: "관리" },
-  { href: "/admin/admins", label: "관리자 계정", group: "관리" },
-  { href: "/admin/credits", label: "크레딧", group: "관리" },
-];
 
 export default async function AdminLayout({
   children,
@@ -56,27 +19,12 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
-  const [personal, studyPlan, grammarOpen, diagOpen, middleOpen] = await Promise.all([
-    isPersonalMember(profile.academy_id),
-    isStudyPlanEnabled(profile.academy_id),
-    isGrammarBankOpen(profile.academy_id),
-    isVocabDiagOpen(profile.academy_id),
-    isMiddleSchoolOpen(profile.academy_id),
-  ]);
-  let navItems = NAV_ITEMS;
-  if (personal) navItems = navItems.filter((i) => !TEAM_ONLY.has(i.href));
-  if (!studyPlan) navItems = navItems.filter((i) => !isStudyPlanNavItem(i.href));
-  // 문법 문제 은행은 열어 준 학원에서만 메뉴에 둔다.
-  if (!grammarOpen) navItems = navItems.filter((i) => i.href !== "/admin/grammar");
-  // 마케팅 > 어휘 진단도 정수학원처럼 켜 준 학원에서만.
-  if (!diagOpen) navItems = navItems.filter((i) => !i.href.startsWith("/admin/marketing"));
-  // 중학교 수업자료는 정수학원만(선생님 2026-10-29).
-  if (!middleOpen) navItems = navItems.filter((i) => i.href !== "/admin/middle-school");
+  const navItems = await getAdminNavItems(profile.academy_id);
 
   return (
     <DashboardLayout
       profile={profile}
-      navItems={filterNavItems(navItems)}
+      navItems={navItems}
     >
       <LowCreditBanner academyId={profile.academy_id} canCharge />
       <CreditWall academyId={profile.academy_id} canCharge />
