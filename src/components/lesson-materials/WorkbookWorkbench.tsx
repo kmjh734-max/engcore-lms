@@ -4523,7 +4523,14 @@ export function WorkbookWorkbench({
   const streamPassageInfo = new Map(
     streamPassages.map((x, i) => [x.projectId, { no: i + 1, title: x.title, source: x.source }] as const)
   );
-  const streamGroups: Array<{ pid: string | null; nodes: ReactNode[] }> = (() => {
+  /*
+   * 지문별 이어 싣기에서도 워크북 파일에 2단으로 정한 유형(columnLayout)은 2단 흐름으로 싣는다(선생님 2026-11-22
+   * 「2단으로 할 수 있는 건 2단으로, 페이지 낭비 없게」). 같은 지문 안에서 단 수가 바뀌는 곳에서 흐름을 나눈다.
+   * columnLayout이 비어 있는 옛 워크북은 예전처럼 지문마다 1단 흐름 하나(다시 열어도 같게).
+   */
+  const streamColsOf = (t: WorkbookTypeId): 1 | 2 =>
+    (WORKBOOK_COLUMN_TYPES as readonly string[]).includes(t) && workbook.columnLayout?.[t as WorkbookColumnTypeId] === 2 ? 2 : 1;
+  const streamGroups: Array<{ pid: string | null; nodes: ReactNode[]; columns: 1 | 2; cont: boolean }> = (() => {
     if (!streamOn) return [];
     const flowLists: Record<FlowKind, Array<{ projectId: string }>> = {
       line_ko: ltSections,
@@ -4575,13 +4582,15 @@ export function WorkbookWorkbench({
       });
     }
     blocks.sort((a, b) => streamPassageRank(a.pid) - streamPassageRank(b.pid) || a.seq - b.seq);
-    const out: Array<{ pid: string | null; nodes: ReactNode[] }> = [];
+    const out: Array<{ pid: string | null; nodes: ReactNode[]; columns: 1 | 2; cont: boolean }> = [];
     let prevPid: string | null | undefined;
     let prevType: WorkbookTypeId | undefined;
     for (const b of blocks) {
       const newPassage = b.pid !== prevPid;
       const info = b.pid ? streamPassageInfo.get(b.pid) : undefined;
-      if (newPassage || !out.length) out.push({ pid: b.pid, nodes: [] });
+      const cols = streamColsOf(b.type);
+      if (newPassage || !out.length) out.push({ pid: b.pid, nodes: [], columns: cols, cont: false });
+      else if (out.at(-1)!.columns !== cols) out.push({ pid: b.pid, nodes: [], columns: cols, cont: true });
       out.at(-1)!.nodes.push(
         <div key={b.key} className="workbook-stream-block">
           {newPassage && b.pid === "__all" ? <span data-wb-stream-psg="__all" /> : null}
@@ -4608,7 +4617,7 @@ export function WorkbookWorkbench({
   /** 지문별 묶음 g의 k번째 쪽 머리글: 그 지문 번호·제목(둘째 쪽부터 「(계속)」) */
   const streamTitleAt = (g: number, k: number): string | undefined => {
     const pid = streamGroups[g]?.pid;
-    const more = k > 0 ? " (계속)" : "";
+    const more = k > 0 || streamGroups[g]?.cont ? " (계속)" : "";
     if (pid === "__all") return `단어 시험${more}`;
     const info = pid ? streamPassageInfo.get(pid) : undefined;
     return info ? `${info.no}. ${info.source || info.title}${more}` : undefined;
@@ -4720,7 +4729,7 @@ export function WorkbookWorkbench({
                     })()}
                     noAutoContinued
                     isLast={isLast}
-                    columns={1}
+                    columns={streamGroups[page.group]?.columns ?? 1}
                     columnHeightMm={columnBodyMm ?? undefined}
                     windowIndex={page.window.index}
                     windowCount={page.window.count}
@@ -4849,7 +4858,7 @@ export function WorkbookWorkbench({
           {columnBodyMm != null ? (
             <div className="workbook-a4-body" style={{ height: 0, overflow: "hidden" }}>
               {streamGroups.map((g, gi) => (
-                <WindowFlow key={`probe-passage-stream-${gi}`} columns={1} heightMm={columnBodyMm} index={0} probe={`passage:stream:${gi}`}>
+                <WindowFlow key={`probe-passage-stream-${gi}`} columns={g.columns} heightMm={columnBodyMm} index={0} probe={`passage:stream:${gi}`}>
                   {g.nodes}
                 </WindowFlow>
               ))}
