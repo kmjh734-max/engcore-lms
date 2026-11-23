@@ -756,9 +756,38 @@ export type GrammarFocusPick = {
  * 문항마다 다른 유닛·CASE·형태 쌍을 강제.
  * wrongCount: 어법추론 1, 어법개수 1~5
  */
+/**
+ * 틀린 밑줄 문법을 고르는 무게 — 학교 기출 약 70곳 판정(2026-11-24, 참고파일/기출분석/2026-11-24_기출출제방식.md):
+ * 관계사 14 · 분사 12 · 수일치 12 · 동사형(병렬·원형/-ing) 12 · 형용사↔부사 7 · 태 7 · 나머지.
+ * 예전에는 14단원을 고르게 뽑아 가정법·특수구문이 기출보다 훨씬 자주 나왔다.
+ */
+const GRAMMAR_UNIT_WEIGHT: Record<string, number> = {
+  relative: 20,
+  participle: 17,
+  sv: 17,
+  verbal: 11,
+  parallel: 6,
+  adjadv: 10,
+  voice: 10,
+  noun: 2,
+  tense: 2,
+  modal: 1,
+  subjunctive: 1,
+  compare: 1,
+  prepconj: 1,
+  special: 1,
+};
+
+/** 무게대로 뽑은 순서(앞일수록 먼저 쓴다) */
+function weightedUnitOrder(): GrammarUnitBank[] {
+  return GRAMMAR_UNIT_BANKS.map((u) => ({ u, k: Math.pow(Math.random(), 1 / (GRAMMAR_UNIT_WEIGHT[u.key] ?? 1)) }))
+    .sort((a, b) => b.k - a.k)
+    .map((x) => x.u);
+}
+
 export function pickGrammarFocus(wrongCount: number): GrammarFocusPick {
   const n = Math.max(1, Math.min(wrongCount, 5));
-  const units = shuffle(GRAMMAR_UNIT_BANKS);
+  const units = weightedUnitOrder();
 
   // S-V는 최대 1유닛만
   const pickedUnits: GrammarUnitBank[] = [];

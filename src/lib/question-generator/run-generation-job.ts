@@ -488,9 +488,14 @@ export function balancedAnswerSlot(seed: string, k: number): number {
   return perm[k % 5]!;
 }
 
+/** 정답 근거가 지문 한 곳에 놓이는 유형 — 구역 돌리기 대상 */
+const REGION_TYPES = new Set(["sentence_blank", "vocabulary", "grammar", "underlined_inference", "content_true", "content_false"]);
+
 type WorkItem = {
   /** 정답이 갈 자리(1~5). 작업 안 문항 차례 5개마다 ①~⑤가 한 번씩 — 작업 안 정답 쏠림 막기(2026-11-24) */
   answerSlot?: number;
+  /** 정답 근거를 둘 지문 구역(0 앞·1 가운데·2 뒤). 같은 지문 여러 문항이 같은 문장을 묻지 않게(2026-11-24) */
+  focusRegion?: number;
   passageId: string;
   passageText: string;
   analysis: PassageAnalysis;
@@ -1259,6 +1264,23 @@ export async function runGenerationJob(
       };
     }
 
+    /*
+     * 같은 지문에 문항이 여럿이면 정답 근거(빈칸·틀린 밑줄·참 보기·함축 밑줄)를 둘 구역을 앞·가운데·뒤로 돌린다.
+     * 2026-11-24 직접 풀기: 한 지문 33문항 작업에서 「evaluate the risk」가 다섯 문항의 정답 근거였다.
+     * 학교 기출은 한 지문에 문항이 대개 하나이고, 둘이면 근거 문장이 거의 겹치지 않았다.
+     * 거르거나 다시 만들지 않고 프롬프트 한 줄로만 벌린다(중복은 걸러 내지 않는다 — 선생님 2026-10-04).
+     */
+    const regionTurn = new Map<string, number>();
+    for (const item of work) {
+      if (!REGION_TYPES.has(item.option.type)) continue;
+      if ((totalByPassage.get(item.passageId) ?? 0) < 2) continue;
+      const k = regionTurn.get(item.passageId) ?? 0;
+      regionTurn.set(item.passageId, k + 1);
+      let h = 0;
+      for (const ch of item.passageId) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      item.focusRegion = (k + h) % 3;
+    }
+
     // 유형마다 작업 전체에서 몇 번째인지 — 조건 문법·어법 포인트를 고루 돌리는 데 쓴다
     const turnByType = new Map(madeByType);
     for (const item of work) {
@@ -1409,6 +1431,7 @@ export async function runGenerationJob(
       retries: item.slot ? 2 : undefined,
       setNote: item.setNote,
       answerSlot: item.answerSlot,
+      focusRegion: item.focusRegion,
     });
 
     /*

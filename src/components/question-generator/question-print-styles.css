@@ -604,3 +604,9 @@
   text-indent: 0;
   font-weight: 700;
 }
+
+/* 긴 빈칸은 줄 끝에서 잘려 다음 줄로 이어진다 — 통째로 넘어가 앞 줄이 벌어지지 않게(2026-11-24) */
+.qg-print-blank-run {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}

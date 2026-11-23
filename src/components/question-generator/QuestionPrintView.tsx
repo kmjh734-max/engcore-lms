@@ -273,6 +273,24 @@ function PrintTable({ rows }: { rows: string[][] }) {
 }
 
 /** <u>…</u> 및 일반 텍스트를 인쇄용 노드로 변환 */
+/**
+ * 긴 빈칸(____ 여러 개)은 줄 끝에서 잘려 다음 줄로 이어지게 한다. 한 덩어리로 두면 줄에 안 들어갈 때 통째로
+ * 다음 줄로 넘어가고, 양쪽 맞춤 때문에 앞 줄 낱말 사이가 크게 벌어졌다(「common     goal,     always」, 2026-11-24).
+ */
+function withBreakableBlanks(text: string, keyBase: string): ReactNode[] {
+  const parts = text.split(/(_{8,})/);
+  if (parts.length === 1) return [text];
+  return parts.map((part, i) =>
+    /^_{8,}$/.test(part) ? (
+      <span key={`${keyBase}b${i}`} className="qg-print-blank-run">
+        {part}
+      </span>
+    ) : (
+      part
+    )
+  );
+}
+
 function renderMarkedText(text: string): ReactNode[] {
   const table = parseTableParagraph(text);
   if (table) return [<PrintTable key="tb" rows={table} />];
@@ -284,7 +302,7 @@ function renderMarkedText(text: string): ReactNode[] {
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) {
       nodes.push(
-        <span key={`t${key++}`}>{text.slice(last, m.index)}</span>
+        <span key={`t${key++}`}>{withBreakableBlanks(text.slice(last, m.index), `k${key}`)}</span>
       );
     }
     nodes.push(
@@ -295,7 +313,7 @@ function renderMarkedText(text: string): ReactNode[] {
     last = m.index + m[0].length;
   }
   if (last < text.length) {
-    nodes.push(<span key={`t${key++}`}>{text.slice(last)}</span>);
+    nodes.push(<span key={`t${key++}`}>{withBreakableBlanks(text.slice(last), `k${key}`)}</span>);
   }
   return nodes.length > 0 ? nodes : [text];
 }

@@ -435,12 +435,14 @@ LANGUAGE: passageModified + choices MUST be ENGLISH only (no Korean).`;
       // 「길이를 비슷하게」라는 말은 이미 공통 규칙에 있었는데도 지켜지지 않았다.
       // 개수 유형과 같이 숫자로 못박는다.
       const blankLengthRule = `- 다섯 선택지의 낱말 수를 맞춘다: 가장 긴 것과 가장 짧은 것의 차이가 <b>3낱말 이내</b>.
+- 머리말을 맞춘다: 정답만 연결어(Yet·But·However·Thus·Instead)로 시작하거나, 오답 넷이 같은 머리말인데 정답만 다른 머리말이면 머리말만 보고 답이 보인다(2026-11-24 직접 풀기 2건). 다섯 보기가 같은 연결어로 시작하거나, 다섯이 모두 다른 말로 시작하게 한다.
 - 정답이 가장 긴 선택지가 되지 않게 한다. 쓰고 나서 다섯 개의 낱말 수를 세어 보고, 정답이 제일 길면 오답을 늘리거나 정답을 줄여 다시 맞춘다.
 - 빈칸으로 지운 문장에만 나오는 고유명사(사람·곳 이름)·연도는 바꿔 쓴 정답에 넣지 않는다. 학생 지문에 없는 정보다 — 그 문장이 글의 흐름에서 하는 말로 쓴다.`;
       if (option.difficulty === "high") {
         return `문장빈칸 HIGH (상) — 효자 기출동형:
 - In passageModified, blank ONE important sentence (or key clause) with ____________________________________.
 - The blanked content must be a flow-critical sentence from the passage.
+- What to blank (학교 기출 2026-11-24): the claim/topic sentence or its key clause — most often the LAST sentence or a MIDDLE claim sentence, rarely an example detail. Blank a span of about 6~14 words of the original.
 - 5 ENGLISH full-sentence/phrase choices.
 - CRITICAL: ALL choices (including the correct one) must PARAPHRASE the blanked sentence — synonyms/rewording, NOT copy the original wording.
 ${blankLengthRule}
@@ -451,7 +453,8 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
       return `문장빈칸 LOW (하) — 효자 기출동형:
 - In passageModified, blank ONE important sentence (or key clause) with ____________________________________.
 - The blanked content must be a flow-critical sentence from the passage (like mock-exam sentence blanks).
-- 5 ENGLISH full-sentence/phrase choices that fit the blank; correct answer may stay close to the original sentence meaning/wording.
+- What to blank (학교 기출 2026-11-24): the claim/topic sentence or its key clause — most often the LAST sentence or a MIDDLE claim sentence, rarely an example detail. Blank a span of about 6~14 words of the original.
+- 5 ENGLISH full-sentence/phrase choices that fit the blank. The correct answer keeps the original MEANING but rewords it with COMMON words (학교 기출 빈칸 정답의 68%가 원문 낱말 30% 미만, 원문 그대로는 7%) — do not copy the blanked words; keep it easy by using everyday vocabulary, not by copying.
 ${blankLengthRule}
 - Exactly one correct. questionText empty.
 ${choiceExplanationRules()}
@@ -468,6 +471,7 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
 - CRITICAL: PARAPHRASE the lead-in (지시문) only — reword synonyms/structure; do NOT copy it verbatim from the passage.
 - Keep (A)(B)(C) body paragraphs as ORIGINAL wording from the passage (do not paraphrase A/B/C).
 - Exactly one correct order. Put lead-in+(A)(B)(C) in passageModified. questionText empty.
+- Paragraph size (학교 기출 2026-11-24): each of (A)(B)(C) is usually TWO sentences (1~3); keep the three roughly even rather than one long and two one-line paragraphs.
 - CHOOSE THE CUT POINTS so that only one order works (고정 시험지 2026-11-10: 두 순서가 다 읽히는 문항이 많았다). Start each of the 2nd and 3rd paragraphs in the correct order with a sentence that cannot stand right after the lead-in or another paragraph: a reference back (this/these/such/the + a noun just introduced, he/she/they), an addition or contrast word (also, In addition, however, Instead), or a time step (Then, Later). Do not cut where the next paragraph opens with a fresh general statement.
 - Before answering, read each of the other four orders: if any of them also reads naturally, move the cut points (or skip with {"skip":true,"reason":"순서 단서 없음"}).
 LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean in passage or choices.`;
@@ -477,6 +481,7 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
 - Keep the lead-in (지시문) as ORIGINAL wording from the passage (do not paraphrase).
 - Keep (A)(B)(C) as ORIGINAL wording from the passage.
 - Exactly one correct order. Put lead-in+(A)(B)(C) in passageModified. questionText empty.
+- Paragraph size (학교 기출 2026-11-24): each of (A)(B)(C) is usually TWO sentences (1~3); keep the three roughly even rather than one long and two one-line paragraphs.
 - CHOOSE THE CUT POINTS so that only one order works (고정 시험지 2026-11-10: 두 순서가 다 읽히는 문항이 많았다). Start each of the 2nd and 3rd paragraphs in the correct order with a sentence that cannot stand right after the lead-in or another paragraph: a reference back (this/these/such/the + a noun just introduced, he/she/they), an addition or contrast word (also, In addition, however, Instead), or a time step (Then, Later). Do not cut where the next paragraph opens with a fresh general statement.
 - Before answering, read each of the other four orders: if any of them also reads naturally, move the cut points (or skip with {"skip":true,"reason":"순서 단서 없음"}).
 LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean in passage or choices.`;
@@ -768,8 +773,8 @@ ${explainRules}`;
 - 문맥에 맞지 않는 곳을 <b>정확히 ${wrongN}개</b> 두고, 나머지 ${spots - wrongN}개는 <b>반드시</b> 문맥에 맞게 쓴다.
 - 이 개수는 바꾸지 않는다. ${wrongN}개보다 많이도 적게도 두지 않는다.
 - correctAnswer = ${wrongN}.
-- WRONG 기법: 반의·방향 반전 / 유사 철자·형태 혼동어 / 문맥만 틀린 유의어.
-${vocabChoiceCraft()}
+- WRONG 기법: 반의·방향 반전(기본) / 문맥만 틀린 유의어.
+${vocabChoiceCraft(paraphraseOn)}
 ${choiceExplanationRules()}
 - choices MUST be EXACTLY and ONLY these five texts in order:
   1:"1개"  2:"2개"  3:"3개"  4:"4개"  5:"5개"
@@ -783,8 +788,8 @@ LANGUAGE: passage ENGLISH only.`;
       return `어휘 어색한 것 고르기 — 고1 학력평가·내신 고퀄리티 (A4 변형동형):
 - passageModified = FULL ENGLISH passage with exactly five vocabulary spots ① ② ③ ④ ⑤ as ①<u>word/phrase</u>.
 - Exactly ONE is contextually WRONG; the other four are clearly correct in context.
-- WRONG 기법 우선: (1) 반의·방향 반전 (2) 철자·형태 유사 혼동어 (3) 문맥만 틀린 유의어형.
-${vocabChoiceCraft()}
+- WRONG 기법: (1) 반의·방향 반전(기본) (2) 문맥만 틀린 유의어형.
+${vocabChoiceCraft(paraphraseOn)}
 ${choiceExplanationRules()}
 - choices: omit or empty array — numbers IN the passage are the options; do NOT print a separate choice list.
 - CRITICAL: Do NOT use choices like "1개/2개/3개". That is a DIFFERENT question type (어휘개수). This is 어휘추론 — exactly ONE wrong word.
@@ -1637,12 +1642,53 @@ function tidyChoiceEdges(
   const texts = choices.map((c) => String(c.text ?? "").trim());
   const sentence = texts.every((t) => /^[A-Za-z"“'‘]/.test(t) && t.split(/\s+/).length >= 3 && !/[가-힣]/.test(t));
   if (!sentence) return choices;
-  let out = texts;
-  const dotted = out.filter((t) => /[.!?]["”’']?$/.test(t)).length;
-  if (dotted > 0 && dotted < out.length) {
-    out = dotted * 2 >= out.length
-      ? out.map((t) => (/[.!?]["”’']?$/.test(t) ? t : `${t}.`))
-      : out.map((t) => t.replace(/\.(["”’']?)$/, "$1"));
+  /*
+   * 의문문 보기는 물음표로 끝낸다(2026-11-24 직접 풀기: 제목 「How Did Greek Pottery Preserve …」「Can … Represent …」가
+   * 물음표 없이 나갔다). 의문사+조동사로 시작하거나, 제목이 조동사로 시작하면 의문문으로 본다.
+   */
+  const isQuestion = (t: string) =>
+    /^["“'‘]?(how|why|what|when|where|who|which|whose)\s+(do|does|did|is|are|was|were|can|could|will|would|should|has|have|had|may|might|must)\b/i.test(t) ||
+    (type === "title" && /^["“'‘]?(do|does|did|is|are|was|were|can|could|will|would|should|has|have)\s+[A-Za-z]/i.test(t) && !/:/.test(t));
+  let out = texts.map((t) => (isQuestion(t) && !/\?["”’']?$/.test(t) ? `${t.replace(/[.!]+$/, "")}?` : t));
+  const plain = out.filter((t) => !isQuestion(t));
+  const dotted = plain.filter((t) => /[.!?]["”’']?$/.test(t)).length;
+  if (dotted > 0 && dotted < plain.length) {
+    out = dotted * 2 >= plain.length
+      ? out.map((t) => (isQuestion(t) || /[.!?]["”’']?$/.test(t) ? t : `${t}.`))
+      : out.map((t) => (isQuestion(t) ? t : t.replace(/\.(["”’']?)$/, "$1")));
+  }
+  if (type === "title") {
+    /*
+     * 제목 대문자 표기를 한 문항 안에서 맞춘다: 「A Way To …」(작은 낱말도 대문자)와 「Limits of …」(소문자)가 섞이면
+     * 작은 낱말(관사·접속사·짧은 전치사)을 소문자로 맞춘다. 첫 낱말과 쌍점·대시 뒤 첫 낱말은 그대로 둔다(2026-11-24).
+     */
+    const SMALL = /^(a|an|the|and|but|or|nor|of|to|in|on|at|for|by|as|with|from|into|onto|via|vs)$/i;
+    const smallCase = (t: string) => {
+      const ws = t.split(/(\s+)/);
+      let first = true;
+      const flags: boolean[] = [];
+      ws.forEach((w, i) => {
+        if (/^\s+$/.test(w)) return;
+        if (!first && SMALL.test(w.replace(/[^A-Za-z]/g, "")) && !/[:—–-]$/.test(ws[i - 2] ?? "")) flags.push(/^[A-Z]/.test(w));
+        first = false;
+      });
+      return flags;
+    };
+    const all = out.flatMap(smallCase);
+    if (all.some(Boolean) && all.some((f) => !f)) {
+      out = out.map((t) => {
+        const ws = t.split(/(\s+)/);
+        let first = true;
+        return ws
+          .map((w, i) => {
+            if (/^\s+$/.test(w)) return w;
+            const keep = first || /[:—–-]$/.test(ws[i - 2] ?? "");
+            first = false;
+            return !keep && SMALL.test(w.replace(/[^A-Za-z]/g, "")) ? w.toLowerCase() : w;
+          })
+          .join("");
+      });
+    }
   }
   if (type !== "title") {
     const caps = out.filter((t) => /^["“'‘]?[A-Z]/.test(t)).length;
@@ -3037,6 +3083,8 @@ export async function generateOneQuestion(opts: {
   offlineRaw?: Record<string, unknown>;
   /** 섞을 때 정답을 둘 자리(1~5). 작업 단위로 고르게 나눠 준다 */
   answerSlot?: number;
+  /** 정답 근거를 둘 지문 구역(0 앞·1 가운데·2 뒤) — 같은 지문 문항끼리 근거 문장이 겹치지 않게 */
+  focusRegion?: number;
 }): Promise<GeneratedQuestionPayload> {
   const { option, analysis } = opts;
   // 시험지 흔적(정답 표기·문장 번호)을 걷어 낸 지문으로 만든다
@@ -3355,6 +3403,18 @@ export async function generateOneQuestion(opts: {
       : copyIndex > 0
       ? `- SAME-TYPE COPY ${copyIndex + 1} for this passage: another item of this exact type already exists for this passage. Make this one DIFFERENT — anchor the answer/underline/blank/referent in the ${["LATER part", "MIDDLE part", "EARLIER part"][copyIndex % 3]} of the passage, pick a different target sentence or word than the most obvious one, and write different choices.`
       : "";
+  /*
+   * 같은 지문의 다른 유형 문항과 정답 근거 문장이 겹치지 않게 구역을 정해 준다(2026-11-24).
+   * 개수형(어법·어휘 개수)과 요약·대의 유형은 지문 전체를 보므로 넣지 않는다.
+   */
+  const regionCode = option.aingkaCode || "";
+  const regionApplies =
+    opts.focusRegion != null &&
+    copyIndex === 0 &&
+    !/개수|통문장|요약|주제|제목|요지|사례|비유|답변/.test(regionCode);
+  const regionHint = regionApplies
+    ? `- SAME-PASSAGE SPREAD: other questions on this passage test other sentences. Put THIS item's answer evidence (the blanked sentence / the wrong underline / the true-or-false statement's source / the underlined expression) in the ${["FIRST third", "MIDDLE third", "LAST third"][opts.focusRegion!]} of the passage, unless no suitable sentence is there.`
+    : "";
 
   // 순서추론도 나열 지문이면 건너뛴다(2026-10-03 전수 대조: 「I have a dream」 반복 연설·항목 나열에서 순서가 둘 이상 성립)
   const allowSkip =
@@ -3708,7 +3768,7 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
           total: opts.diversitySlot.total,
           label: opts.diversitySlot.label,
         },
-      })}${diversityHint ? `\n${diversityHint}` : ""}${copyHint ? `\n${copyHint}` : ""}`
+      })}${diversityHint ? `\n${diversityHint}` : ""}${copyHint ? `\n${copyHint}` : ""}${regionHint ? `\n${regionHint}` : ""}`
     : "";
 
   /*
@@ -4166,4 +4226,9 @@ export function stripRepeatedInstruction(questionText: string, instruction: stri
     .split("\n")
     .filter((line) => line.trim() !== want);
   return kept.join("\n").replace(/^\n+/, "");
+}
+
+/** 시험용(API 없음): 보기 끝·대문자 다듬기만 따로 부른다 */
+export function __tidyForTest(choices: Array<{ number: number; text: string }>, type: string) {
+  return tidyChoiceEdges(choices, type);
 }

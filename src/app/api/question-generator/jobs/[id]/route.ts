@@ -79,7 +79,9 @@ export async function GET(
       .neq("status", "archived")
       // 동형모의고사(설계도)는 시험지 번호 순서, 나머지는 만든 순서
       .order("slot_index", { ascending: true, nullsFirst: false })
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true })
+      // 같은 시각에 한꺼번에 넣은 문항은 순서가 불러올 때마다 바뀌어 문제지·해설지 번호가 어긋났다(2026-11-24)
+      .order("id", { ascending: true });
 
     if (profile.role === "teacher") {
       qQuery = qQuery.eq("created_by", profile.id);

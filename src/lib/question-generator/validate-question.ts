@@ -1111,6 +1111,34 @@ export function validateGeneratedQuestion(opts: {
     }
   }
 
+  /*
+   * 2026-11-24 직접 풀기에서 찾은 「머리말로 찍히는」 보기(기록만, 다시 만들지 않는다):
+   * 오답 넷이 같은 말로 시작하고 정답만 다른 말(89ffcea7), 정답만 연결어 Yet으로 시작(4c0eac59).
+   */
+  if (option.isObjective && choiceTexts.length === 5 && Number.isInteger(keyNo) && keyNo >= 1 && keyNo <= 5) {
+    const head = (t: string) => t.toLowerCase().replace(/^[^a-z가-힣]+/, "").split(/\s+/).slice(0, 2).join(" ");
+    const heads = choiceTexts.map(head);
+    const rest = heads.filter((_, i) => i !== keyNo - 1);
+    if (rest[0] && rest.every((h) => h === rest[0]) && heads[keyNo - 1] !== rest[0]) {
+      warnings.push("오답 넷은 같은 말로 시작하는데 정답만 다른 말로 시작합니다. 머리말만 보고 답이 보입니다.");
+    }
+    const conn = /^(yet|but|however|thus|therefore|instead|still|nevertheless|so)\b/i;
+    if (conn.test(choiceTexts[keyNo - 1]!) && !choiceTexts.some((t, i) => i !== keyNo - 1 && conn.test(t))) {
+      warnings.push("정답만 연결어로 시작합니다. 연결어만 보고 답이 보입니다.");
+    }
+  }
+  // 어휘: 고유명사·제목 안 낱말에 밑줄(23b0b349 「America's Best <u>Large</u> Employers」) — 고치면 이름이 바뀐다
+  if (option.type === "vocabulary") {
+    const pm = String(q.passageModified ?? "");
+    const re = /([A-Za-z’'.,;:!?]+)\s+[①-⑧ⓐ-ⓗ]?<u>([A-Z][a-z]+)<\/u>\s+([A-Z][A-Za-z]+)/g;
+    for (const m of pm.matchAll(re)) {
+      if (/[.!?]$/.test(m[1]!) || !/^[A-Z]/.test(m[1]!)) continue;
+      warnings.push(`고유명사 안 낱말 「${m[2]}」에 밑줄을 그었습니다. 이름 안 낱말은 밑줄에서 뺍니다.`);
+      score -= 45;
+      break;
+    }
+  }
+
   // 빈칸추론: 두 보기가 말만 바꾼 같은 뜻이면 정답이 둘이다 (#139 「limits … apparent」 vs 「shortcomings … clear」)
   if (option.type === "sentence_blank" && Array.isArray(q.choices) && q.choices.length >= 5) {
     const bag = (s: string) =>
