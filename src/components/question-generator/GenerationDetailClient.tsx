@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
+import { InlineQuestionEditor } from "@/components/question-generator/InlineQuestionEditor";
 import { QuestionEditFields } from "@/components/question-generator/QuestionEditFields";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { QgJobProgressBar } from "@/components/question-generator/QgJobProgressBar";
@@ -86,6 +87,8 @@ export function GenerationDetailClient({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<Partial<QuestionRow>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
+  /** 「바로 편집」: 문제지 모양 그대로 칸을 눌러 고친다(지인에듀 문서 편집, 선생님 2026-11-23) */
+  const [inlineEdit, setInlineEdit] = useState(false);
   const router = useRouter();
 
   const jobTitle =
@@ -206,6 +209,19 @@ export function GenerationDetailClient({
     } finally {
       setBusyId(null);
     }
+  }
+
+  /** 바로 편집: 고친 칸만 보내고, 화면의 그 문항만 바꾼다(전체를 다시 부르지 않는다) */
+  async function saveInline(id: string, patch: Partial<QuestionRow>): Promise<string | null> {
+    const res = await fetch(`/api/question-generator/questions/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    }).catch(() => null);
+    const data = res ? await res.json().catch(() => null) : null;
+    if (!data?.ok) return data?.message ?? "저장하지 못했습니다.";
+    setQuestions((prev) => prev.map((x) => (x.id === id ? ({ ...x, ...patch } as QuestionRow) : x)));
+    return null;
   }
 
   async function remove(id: string) {
@@ -337,6 +353,23 @@ export function GenerationDetailClient({
         </div>
       )}
 
+      {questions.length > 0 ? (
+        <div className="mb-3 flex items-center justify-end gap-2">
+          <span className="text-[11px] text-slate-400">
+            {inlineEdit ? "칸을 눌러 고치고, 칸을 벗어나면 저장됩니다 · ①~⑤를 누르면 정답이 바뀝니다" : ""}
+          </span>
+          <button
+            type="button"
+            onClick={() => setInlineEdit((v) => !v)}
+            className={`rounded-lg border px-3 py-1.5 text-sm font-semibold ${
+              inlineEdit ? "border-brand-500 bg-brand-600 text-white" : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            {inlineEdit ? "바로 편집 끄기" : "바로 편집"}
+          </button>
+        </div>
+      ) : null}
+
       {[...grouped.entries()].map(([cat, list]) => (
         <section key={cat} className="mb-6">
           <h2 className="mb-3 text-base font-semibold text-slate-900">
@@ -377,7 +410,13 @@ export function GenerationDetailClient({
                   key={q.id}
                   className="rounded-2xl border border-slate-200 bg-white p-4 shadow-card"
                 >
-                  {editing ? (
+                  {inlineEdit ? (
+                    <InlineQuestionEditor
+                      q={q}
+                      no={idx + 1}
+                      onSave={(id, patch) => saveInline(id, patch as Partial<QuestionRow>)}
+                    />
+                  ) : editing ? (
                     <QuestionEditFields
                       draft={editDraft}
                       onChange={(next) => setEditDraft(next as Partial<QuestionRow>)}

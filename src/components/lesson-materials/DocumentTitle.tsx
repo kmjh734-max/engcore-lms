@@ -64,6 +64,8 @@ export function DocumentTitle({
       name,
     }).catch(() => null);
     if (!res || !res.ok) setDoc({ ...doc, name: prev });
+    // 쪽 머리에 파일 이름을 찍는 화면(워크북)이 바로 따라 바뀌게 알린다
+    else window.dispatchEvent(new CustomEvent(DOCUMENT_NAME_EVENT, { detail: { id: doc.id, name: res.name || name } }));
     setSavedNote(res && res.ok ? "saved" : "error");
     setTimeout(() => setSavedNote(null), 2500);
   }

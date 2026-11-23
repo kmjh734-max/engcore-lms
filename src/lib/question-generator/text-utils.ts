@@ -316,6 +316,32 @@ export function passageHasConsecutiveWords(
   return ` ${p} `.includes(` ${ph} `);
 }
 
+/**
+ * 리얼영어 서술형(어휘 빈칸·주제문·구문 변환·대화문·내용 매칭, 2026-11-23): 꼬리표 상자 + <답란>.
+ * <답란> 아래 줄마다 답 칸 이름(ⓐ / ⓑ / 주제 / 정답)이다. <답란>이 없으면 null.
+ */
+export function parseTaggedAnswerBlocks(text: string): {
+  sections: Array<{ tag: string; body: string }>;
+  answerLabels: string[];
+} | null {
+  const cleaned = cleanQuestionText(text);
+  if (!/(^|\n)\s*<답란>/.test(cleaned)) return null;
+  const sections: Array<{ tag: string; body: string }> = [];
+  let answerLabels: string[] = [];
+  const parts = cleaned.split(/(?:^|\n)\s*<([^<>\n]{1,6})>\s*(?=\n|$)/);
+  for (let i = 1; i < parts.length; i += 2) {
+    const tag = parts[i]!.trim();
+    const body = (parts[i + 1] ?? "").trim();
+    if (tag === "답란") {
+      answerLabels = body.split(/\n+/).map((l) => l.trim()).filter(Boolean);
+    } else if (body) {
+      sections.push({ tag, body });
+    }
+  }
+  if (answerLabels.length === 0) answerLabels = ["정답"];
+  return { sections, answerLabels };
+}
+
 /** 지칭 서술형 답란 마커 */
 export function parseReferenceAnswerBlock(text: string): {
   labels: string[];

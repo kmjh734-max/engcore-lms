@@ -38,6 +38,7 @@ import { loadDrawProjects } from "@/lib/lesson-materials/load-draw-client";
 import { fetchWorkbookDoc } from "@/lib/lesson-materials/workbook-doc-client";
 import { postJson } from "@/lib/lesson-materials/post-json";
 import { DocumentTitle } from "@/components/lesson-materials/DocumentTitle";
+import { DOCUMENT_NAME_EVENT } from "@/components/lesson-materials/open-new-document";
 import type {
   createLessonMaterialDocument,
   getWorkbookDocument,
@@ -537,6 +538,19 @@ function WindowFlow({
       {children}
     </div>
   );
+}
+
+/** 「지문마다 새 쪽」에서 남는 자리만큼 키우는 유형(지문을 글로 흘리는 1단 유형) */
+const ROOMY_COLUMN_TYPES = new Set<string>(["blank_fill", "grammar_choice", "grammar_fix", "vocab_choice", "vocab_fix"]);
+
+/**
+ * 남는 자리 비율(room)을 글자 크기(zoom)와 줄 간격으로 나눈다. 글자를 키우면 줄도 늘어 높이가 대략 제곱으로 늘고,
+ * 줄 간격은 글 높이에만 곱해진다. 글자는 15% 안쪽으로만, 나머지는 줄 간격(쓸 칸)으로 — 빈칸에 답을 적을 자리가 넓어진다.
+ */
+function roomyStyle(room: number): CSSProperties {
+  const zoom = Math.min(1.3, Math.pow(room, 0.35));
+  const lh = Math.min(2, Math.max(1, room / (zoom * zoom)));
+  return { zoom, ["--wb-roomy" as string]: String(Math.round(lh * 100) / 100) } as CSSProperties;
 }
 
 /**
@@ -1697,6 +1711,8 @@ type ColumnPage = {
   typeOrder: number;
   packed: boolean;
   columns: 1 | 2;
+  /** 지문마다 새 쪽에서 남는 자리 비율(1.15~2.2). 글자·줄 간격을 키워 쪽을 채운다. */
+  room?: number;
   /** 한 쪽보다 긴 지문을 여러 쪽에 이어 실을 때 이 쪽의 순서와 전체 쪽 수. */
   window?: { index: number; count: number };
 };
@@ -1882,7 +1898,7 @@ export function WorkbookWorkbench({
   }, [workbook]);
   /** 2단 유형: 쪽마다 실을 지문(문항) 번호. packed가 아니면 한 쪽보다 긴 지문 하나. */
   const [columnPacks, setColumnPacks] = useState<
-    Partial<Record<WorkbookColumnTypeId, { indices: number[]; packed: boolean }[]>>
+    Partial<Record<WorkbookColumnTypeId, { indices: number[]; packed: boolean; room?: number }[]>>
   >({});
   /** 2단 쪽의 본문(단) 높이. 머리글 높이를 잰 뒤에 정해진다. */
   const [columnBodyMm, setColumnBodyMm] = useState<number | null>(null);
@@ -2032,6 +2048,31 @@ export function WorkbookWorkbench({
         if (seq === saveSeq.current) setSaveState(res.ok ? "saved" : "error");
       });
     }, 800);
+  }
+
+  /** 파일 이름이 바뀌면(왼쪽 위 이름·자료함) 쪽 머리 제목도 같이 바꾼다(윌링, 선생님 2026-11-23). */
+  useEffect(() => {
+    const onName = (e: Event) => {
+      const d = (e as CustomEvent).detail as { id?: string; name?: string } | undefined;
+      const docId = new URLSearchParams(window.location.search).get("doc")?.trim();
+      const name = d?.name?.trim();
+      if (!d?.id || d.id !== docId || !name) return;
+      setWorkbook((w) => (w && w.metadata.title !== name ? { ...w, metadata: { ...w.metadata, title: name } } : w));
+    };
+    window.addEventListener(DOCUMENT_NAME_EVENT, onName);
+    return () => window.removeEventListener(DOCUMENT_NAME_EVENT, onName);
+  }, []);
+
+  /** 옆 칸에서 쪽 머리 제목을 고치면 파일 이름도 같이 바꾼다 — 둘이 따로 놀면 다음에 열 때 파일 이름으로 돌아간다. */
+  async function renameFileToTitle(raw: string) {
+    const docId = new URLSearchParams(window.location.search).get("doc")?.trim();
+    const name = raw.trim();
+    if (!docId || !name) return;
+    const res = await postJson<{ ok: true; name: string } | { ok: false; message: string }>(
+      "/api/lesson-materials/documents/open",
+      { op: "rename", role, id: docId, name }
+    ).catch(() => null);
+    if (res && res.ok) window.dispatchEvent(new CustomEvent(DOCUMENT_NAME_EVENT, { detail: { id: docId, name: res.name || name } }));
   }
 
   /** 닫기(저장): 아직 보내지 않은 고친 내용을 바로 보내고, 보내는 중인 저장까지 끝낸다. */
@@ -2416,7 +2457,9 @@ export function WorkbookWorkbench({
           setGenerating(false);
           return;
         }
-        const saved = doc.payload as WorkbookData;
+        const raw = doc.payload as WorkbookData;
+        // 쪽 머리 제목은 파일 이름을 따른다(아래 파일 불러오기와 같다)
+        const saved = doc.name?.trim() ? { ...raw, metadata: { ...raw.metadata, title: doc.name.trim() } } : raw;
         setWorkbook(withWorkbookDefaults(byPassageFlow ? { ...saved, layoutOrder: "passage" } : saved));
         setGenerating(false);
         return;
@@ -2486,7 +2529,15 @@ export function WorkbookWorkbench({
           return;
         }
         if (doc.payload && typeof doc.payload === "object") {
-          const saved = withWorkbookDefaults(doc.payload as WorkbookData);
+          const loaded = withWorkbookDefaults(doc.payload as WorkbookData);
+          /*
+           * 쪽 머리 제목은 파일 이름을 따른다. 자료함에서 이름을 바꿔도 처음 만들 때 적은 제목(「워크북_1115」)이
+           * 그대로 찍혔다(윌링, 선생님 2026-11-23 「왼쪽 상단에 이름이 바뀌지 않음」).
+           */
+          const saved =
+            doc.name?.trim() && doc.name.trim() !== loaded.metadata.title
+              ? { ...loaded, metadata: { ...loaded.metadata, title: doc.name.trim() } }
+              : loaded;
           producedDocRef.current = docId;
           setSourceNote("existing");
           saveWorkbookToSession(saved);
@@ -3290,6 +3341,27 @@ export function WorkbookWorkbench({
   break-inside: avoid;
   page-break-inside: avoid;
 }
+/* 「지문마다 새 쪽」에서 남는 자리만큼 줄 간격을 넓힌다(roomyStyle). 기본 줄 높이 약 1.7에 곱한다. */
+.wb-roomy :is(.workbook-passage, .grammar-passage, .wb-en, .wb-ko) {
+  line-height: calc(1.7 * var(--wb-roomy, 1)) !important;
+}
+/* 빈칸 밑줄도 길게 — 3.6em은 낱말을 적기에 짧았다 */
+.wb-roomy .blank-line {
+  width: 5.6em;
+  max-width: 6.5em;
+}
+.wb-roomy .space-y-4 > * + * {
+  margin-top: calc(16px * var(--wb-roomy, 1)) !important;
+}
+/*
+ * 지문 본문도 통째로 — 단(쪽) 끝에서 지문이 잘려 다음 쪽으로 넘어갔다(윌링, 선생님 2026-11-23
+ * 「지문이 잘려서 다음 페이지로 넘어감, 해당 지문에 대한 구성은 잘리지 않게」). 한 단보다 긴 지문은 어쩔 수 없이 나뉜다.
+ */
+.workbook-window-flow .workbook-passage,
+.workbook-window-flow .grammar-passage {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
 .workbook-window-flow .workbook-stream-type,
 .workbook-window-flow .wb-passage-meta,
 .workbook-window-flow .tb-tip {
@@ -3550,7 +3622,7 @@ export function WorkbookWorkbench({
         // 배치를 재기 전(첫 그림)에는 지문마다 한 쪽씩 둔다.
         const packs =
           columnPacks[columnType]?.filter((p) => p.indices.every((i) => i < count)) ??
-          Array.from({ length: count }, (_, i) => ({ indices: [i], packed: false }));
+          Array.from({ length: count }, (_, i) => ({ indices: [i], packed: false, room: undefined as number | undefined }));
         for (const p of packs) {
           // 한 쪽보다 긴 지문: 잰 쪽 수만큼 같은 지문을 이어 싣는다(쪽마다 다음 단들이 보인다).
           const windows = p.packed ? 0 : (windowCounts[`${columnType}:${p.indices[0]}`] ?? 0);
@@ -3575,6 +3647,7 @@ export function WorkbookWorkbench({
             typeOrder: order,
             packed: p.packed,
             columns,
+            room: p.room,
           });
         }
         continue;
@@ -3788,7 +3861,7 @@ export function WorkbookWorkbench({
     setJoinBodyMm(Math.floor(((columnPx + titlePx) / pxPerMm) * 10) / 10);
     // 문항은 단 사이에서 쪼개지지 않고 통째로 넘어가 단 끝에 빈 줄이 생기므로 조금 덜 채운다.
     // 그래도 넘치면 그린 뒤에 넘친 쪽을 찾아 지문 하나를 다음 쪽으로 보낸다(columnLimits).
-    const next: Partial<Record<WorkbookColumnTypeId, { indices: number[]; packed: boolean }[]>> = {};
+    const next: Partial<Record<WorkbookColumnTypeId, { indices: number[]; packed: boolean; room?: number }[]>> = {};
     for (const t of WORKBOOK_COLUMN_TYPES) {
       if (!workbook.selectedTypes.includes(t)) continue;
       // 1단도 쪽에 자리가 남으면 다음 지문을 이어 싣는다.
@@ -3797,7 +3870,7 @@ export function WorkbookWorkbench({
       const heights = Array.from(
         root.querySelectorAll<HTMLElement>(`[data-wb-col="${t}"]`)
       ).map((el) => el.offsetHeight + COLUMN_SECTION_GAP_PX);
-      const packs: { indices: number[]; packed: boolean }[] = [];
+      const packs: { indices: number[]; packed: boolean; room?: number }[] = [];
       let current: number[] = [];
       let used = 0;
       // 지문마다 새 쪽: 문장 순서 배열은 문항 단위라, 같은 지문의 문항끼리는 한 쪽에 둔다.
@@ -3823,6 +3896,19 @@ export function WorkbookWorkbench({
       // 한 쪽에 다 들어가지 않는 지문 하나는 쪽을 늘려 두 단 높이를 맞춘다.
       for (const p of packs) {
         if (p.indices.length === 1 && heights[p.indices[0]!]! > capacity) p.packed = false;
+      }
+      /*
+       * 「지문마다 새 쪽」 1단: 지문 하나가 쪽 절반만 쓰고 아래가 비었다(윌링, 선생님 2026-11-23 「빈칸 간격이 너무 작고
+       * 하단에 낭비되는 공간」「어법 선택 글자가 너무 작고」). 남는 자리만큼 글자·줄 간격을 키워 쪽을 채운다.
+       * 넘치지 않게 남는 비율의 88%까지만 쓴다.
+       */
+      if (separate && workbook.columnLayout?.[t] !== 2 && ROOMY_COLUMN_TYPES.has(t)) {
+        for (const p of packs) {
+          if (!p.packed) continue;
+          const used = p.indices.reduce((a, i) => a + heights[i]!, 0);
+          const ratio = (capacity * 0.88) / Math.max(1, used);
+          if (ratio >= 1.15) p.room = Math.round(Math.min(ratio, 3.2) * 100) / 100;
+        }
       }
       next[t] = packs;
     }
@@ -4800,7 +4886,11 @@ export function WorkbookWorkbench({
                     windowCount={page.window?.count}
                   >
                     {page.indices.map((i) => (
-                      <div key={`col-${page.type}-${i}`} className="workbook-col-section">
+                      <div
+                        key={`col-${page.type}-${i}`}
+                        className={`workbook-col-section${page.room ? " wb-roomy" : ""}`}
+                        style={page.room ? roomyStyle(page.room) : undefined}
+                      >
                         {renderColumnSection(page.type, i)}
                       </div>
                     ))}
@@ -5736,11 +5826,12 @@ export function WorkbookWorkbench({
 
           <div data-side-panel="passages" className="space-y-4">
               <label className="block space-y-1">
-                <span className="text-[11px] font-bold text-slate-500">워크북 제목(쪽 머리에 찍힘)</span>
+                <span className="text-[11px] font-bold text-slate-500">워크북 제목(쪽 머리에 찍힘 · 파일 이름도 같이 바뀜)</span>
                 <input
                   className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-100"
                   value={title}
                   maxLength={80}
+                  onBlur={(e) => void renameFileToTitle(e.target.value)}
                   onChange={(e) =>
                     editWorkbook((w) => ({
                       ...w,

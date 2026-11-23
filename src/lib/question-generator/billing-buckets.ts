@@ -8,7 +8,7 @@
 
 /** 어법 유형 — 지문 전체를 다시 읽고 여러 자리를 한꺼번에 봐야 해서 값이 더 든다 */
 export const isGrammarBillingType = (key: string | null) =>
-  /:(어법추론|어법개수)$/.test(String(key ?? ""));
+  /:(어법추론|어법개수|어법통문장)$/.test(String(key ?? ""));
 
 /**
  * 서술형 — 호출이 2.3번 들어가고(검수에서 걸려 다시 만드는 일이 잦다) 해설이 길다.

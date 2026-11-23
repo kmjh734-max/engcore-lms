@@ -95,6 +95,20 @@ export const PASSAGE_KEEP_MIN = 0.9;
  * 차례대로 이어 나오는지 보고, 밑줄 자리에서만 (밑줄 낱말 수 + 3)까지 건너뛰게 한다.
  * 걸리면 빠진·바뀐 자리 앞 낱말을 돌려준다.
  */
+/**
+ * 밑줄 글(b)이 원문 문장(a)에서 낱말 몇 개가 다른가 — b의 낱말 가운데 a와 차례대로 맞지 않는 수(가장 긴 공통 낱말열).
+ * 밑줄이 문장 머리(However,)를 빼고 시작해도 자리가 밀려 다르다고 보지 않는다.
+ */
+function wordDiff(a: string, b: string): number {
+  const x = plainText(a).toLowerCase().split(/\s+/).filter(Boolean);
+  const y = plainText(b).toLowerCase().split(/\s+/).filter(Boolean);
+  const dp = Array.from({ length: x.length + 1 }, () => new Array<number>(y.length + 1).fill(0));
+  for (let i = 1; i <= x.length; i++)
+    for (let j = 1; j <= y.length; j++)
+      dp[i]![j] = x[i - 1] === y[j - 1] ? dp[i - 1]![j - 1]! + 1 : Math.max(dp[i - 1]![j]!, dp[i]![j - 1]!);
+  return y.length - dp[x.length]![y.length]!;
+}
+
 export function underlineOutsideProblem(original: string, modified: string): string | null {
   // 원문의 깨진 낱말(「t he」)은 문항에서 붙여 낸다 — 같은 손질을 한 뒤 견준다
   const words = (t: string) =>
@@ -272,7 +286,7 @@ export function validateGeneratedQuestion(opts: {
       (option.type === "vocabulary" && option.aingkaCode === "어휘추론") ||
       // 어법 추론: 밑줄 ①~⑤가 지문 안에 있고 아래 보기는 없다
       (option.type === "grammar" &&
-        (option.aingkaCode === "어법추론" || option.aingkaCode === "어법모두고르기"));
+        (option.aingkaCode === "어법추론" || option.aingkaCode === "어법모두고르기" || option.aingkaCode === "어법통문장"));
 
     if (slotInPassage) {
       if (option.type === "grammar") {
@@ -341,7 +355,12 @@ export function validateGeneratedQuestion(opts: {
       const foreign = [...String(q.passageModified).matchAll(/<u>([\s\S]*?)<\/u>/g)]
         .map((m) => plainText(m[1] ?? ""))
         // 여섯 낱말부터 잡는다 — 「keep their children mildly supervise」(목적격보어, 다섯 낱말)는 정상이었다
-        .filter((u) => u && !original.includes(u) && wordCount(u) > 5);
+        // 통문장은 밑줄이 문장 하나라, 틀린 문장은 한 낱말만 바뀌어도 원문과 다르다 — 낱말 두 개 넘게 다르면 잡는다
+        .filter((u) =>
+          option.aingkaCode === "어법통문장"
+            ? u && !original.includes(u) && !sentencesOf(opts.passage).some((s) => wordDiff(s, u) <= 2)
+            : u && !original.includes(u) && wordCount(u) > 5
+        );
       if (foreign.length > 0) {
         warnings.push(
           `밑줄이 원문과 다르게 길게 고쳐졌습니다: "${foreign[0]!.slice(0, 40)}". 원문 낱말 한두 개만 바꿔야 합니다.`
@@ -350,6 +369,20 @@ export function validateGeneratedQuestion(opts: {
       } else if (sentencesOf(q.passageModified ?? "").length > sentencesOf(opts.passage).length) {
         warnings.push("원문에 없는 문장을 지문에 넣었습니다. 원문 문장 안에서만 밑줄을 쳐야 합니다.");
         score -= 45;
+      } else if (option.aingkaCode === "어법통문장") {
+        // 통문장: 밑줄 밖 조각이 원문에 그대로 있으면 된다(문장 통째 밑줄은 아래 비교가 자리를 잘못 맞춘다)
+        const squash = (t: string) => plainText(t).replace(/\s+/g, " ").trim();
+        const orig = squash(opts.passage);
+        const outside = String(q.passageModified ?? "")
+          .replace(/[ⓐ-ⓔ①-⑤]\s*(?=<u>)/g, "")
+          .split(/<u>[\s\S]*?<\/u>/)
+          .map(squash)
+          .filter((t) => t.length > 12);
+        const bad = outside.find((t) => !orig.includes(t));
+        if (bad) {
+          warnings.push(`밑줄 밖 원문이 바뀌었습니다(「${bad.slice(0, 30)}」). 밑줄 밖은 원문 그대로 둡니다.`);
+          score -= 45;
+        }
       } else {
         const at = underlineOutsideProblem(opts.passage, q.passageModified ?? "");
         if (at) {
@@ -475,10 +508,11 @@ export function validateGeneratedQuestion(opts: {
    * 정답 5개인데 해설은 넷을 짚은 문항이 있었다(2026-10-03 전수 대조 #6082·#6090).
    */
   if (code === "어법개수") {
-    const listed = String(q.explanation ?? "").match(/어색한\s*것은\s*((?:[ⓐ-ⓕ][\s,·와과및]*)+)/);
+    // 상(8곳)은 ⓐ~ⓗ까지 짚는다
+    const listed = String(q.explanation ?? "").match(/어색한\s*것은\s*((?:[ⓐ-ⓗ][\s,·와과및]*)+)/);
     const n = Number(q.correctAnswer);
     if (listed && Number.isInteger(n)) {
-      const marks = new Set([...listed[1]!.matchAll(/[ⓐ-ⓕ]/g)].map((m) => m[0]));
+      const marks = new Set([...listed[1]!.matchAll(/[ⓐ-ⓗ]/g)].map((m) => m[0]));
       if (marks.size > 0 && marks.size !== n) {
         warnings.push(`해설이 틀린 곳을 ${marks.size}개 짚었는데 정답은 ${n}개입니다.`);
         score -= 45;
@@ -825,6 +859,159 @@ export function validateGeneratedQuestion(opts: {
     if (/^(a|an|the|of|to|and|or|but|that|than|as|in|on|at|for|with|by|is|are|was|were|be|actually|very|so|not|only|just|even|also|still)$/.test(last) || /^(and|or|but)$/.test(words[0] ?? "")) {
       warnings.push(`ⓐ "${first}"가 기능어로 끝나거나 접속사로 시작합니다. 요약문이 비문이 됩니다.`);
       score -= 45;
+    }
+  }
+
+  // 요약문 완성 (A)(B): 요약문 한 줄에 (A)(B)가 하나씩, 보기 다섯은 「낱말 …… 낱말」 (윌링 2026-11-23)
+  if (code === "요약완성AB") {
+    const summary = plainText(String(q.questionText ?? ""));
+    const aN = (summary.match(/\(\s*A\s*\)/g) ?? []).length;
+    const bN = (summary.match(/\(\s*B\s*\)/g) ?? []).length;
+    if (aN !== 1 || bN !== 1) {
+      warnings.push("요약문에 (A)와 (B)가 하나씩 있어야 합니다.");
+      score -= 80;
+    }
+    if (summary.split(/\s+/).length < 10) {
+      warnings.push("요약문이 너무 짧습니다.");
+      score -= 45;
+    }
+    const pairs = (q.choices ?? []).map((c) => String(c?.text ?? "").split(/\s*(?:……|…|\.{2,})\s*/).map((w) => w.trim()).filter(Boolean));
+    if (pairs.length !== 5 || pairs.some((p) => p.length !== 2 || p.some((w) => w.split(/\s+/).length > 3))) {
+      warnings.push("보기는 「(A)낱말 …… (B)낱말」 다섯 개여야 합니다.");
+      score -= 80;
+    } else {
+      const keys = pairs.map((p) => p.join("|").toLowerCase());
+      if (new Set(keys).size < 5) {
+        warnings.push("같은 낱말 쌍 보기가 둘 있습니다.");
+        score -= 80;
+      }
+    }
+    // 요약문이 지문 문장을 그대로 베끼면 풀 것이 없다
+    if (summary.length > 40 && plainText(opts.passage).toLowerCase().includes(summary.replace(/\(\s*[AB]\s*\)/g, "").slice(0, 40).toLowerCase())) {
+      warnings.push("요약문이 지문 문장을 그대로 옮겼습니다.");
+      score -= 45;
+    }
+  }
+
+  // 빈칸(단어): 빈칸 하나, 보기는 영어 한 낱말 다섯 — 「through conscious reflection」 같은 구가 섞였다(2026-11-23)
+  if (code === "빈칸단어") {
+    const multi = (q.choices ?? []).filter((c) => plainText(String(c?.text ?? "")).trim().split(/\s+/).length !== 1);
+    if ((q.choices ?? []).length !== 5 || multi.length > 0) {
+      warnings.push("보기는 영어 한 낱말 다섯 개여야 합니다.");
+      score -= 80;
+    }
+    if ((String(q.passageModified ?? "").match(/_{3,}/g) ?? []).length !== 1) {
+      warnings.push("빈칸은 하나여야 합니다.");
+      score -= 80;
+    }
+  }
+  // 답변 가능 개수형: 질문 ⓐ~ⓖ 일곱, 보기 2개~6개, 정답 번호와 맞는 개수
+  if (code === "답변가능개수") {
+    const qs = String(q.questionText ?? "").split(/\n+/).map((l) => l.trim()).filter((l) => /^[ⓐ-ⓖ]/.test(l));
+    if (qs.length !== 7) {
+      warnings.push(`질문이 ${qs.length}개입니다. ⓐ~ⓖ 일곱 개여야 합니다.`);
+      score -= 80;
+    }
+    const labels = (q.choices ?? []).map((c) => String(c?.text ?? "").replace(/\s/g, ""));
+    if (labels.join(",") !== "2개,3개,4개,5개,6개") {
+      warnings.push("보기는 ① 2개 ~ ⑤ 6개여야 합니다.");
+      score -= 80;
+    }
+  }
+  // 리얼영어 서술형(2026-11-23): 꼬리표·정답이 지문과 맞는지
+  if (["어휘빈칸공통", "주제문작성", "구문변환", "대화문완성", "내용매칭"].includes(code)) {
+    const qt = String(q.questionText ?? "");
+    const ans = String(q.correctAnswer ?? "");
+    const norm = (t: string) => plainText(t).toLowerCase().replace(/[^a-z0-9' ]+/g, " ").replace(/\s+/g, " ").trim();
+    const src = ` ${norm(opts.passage)} `;
+    const pairs = ans.split(/\s*\/\s*/).map((part) => {
+      const m = part.match(/^\s*([ⓐ-ⓔ])\s*[:：]\s*(.+)$/);
+      return m ? { mark: m[1]!, text: m[2]!.trim() } : null;
+    });
+    if (!/(^|\n)\s*<답란>/.test(qt)) {
+      warnings.push("문제 글에 <답란>이 없습니다.");
+      score -= 80;
+    }
+    if (code === "어휘빈칸공통") {
+      const mod = String(q.passageModified ?? "");
+      if (!/ⓐ\s*_{3,}/.test(mod) || !/ⓑ\s*_{3,}/.test(mod)) {
+        warnings.push("지문에 빈칸 ⓐ, ⓑ가 둘 다 있어야 합니다.");
+        score -= 80;
+      }
+      const words = pairs.filter(Boolean).map((p) => norm(p!.text));
+      if (words.length !== 2 || words[0] !== words[1] || words[0]!.split(" ").length !== 1 || !src.includes(` ${words[0]} `)) {
+        warnings.push("정답은 지문에 있는 같은 한 낱말이어야 합니다(ⓐ: word / ⓑ: word).");
+        score -= 80;
+      }
+    }
+    if (code === "대화문완성") {
+      const ok = pairs.length === 2 && pairs.every((p) => p && src.includes(` ${norm(p.text)} `));
+      if (!ok) {
+        warnings.push("대화 빈칸 정답이 지문에 그대로 있는 어구가 아닙니다.");
+        score -= 80;
+      }
+      if (!/<대화>/.test(qt)) {
+        warnings.push("<대화>가 없습니다.");
+        score -= 80;
+      }
+    }
+    if (code === "주제문작성") {
+      const bogi = qt.match(/<보기>\s*\n([\s\S]*?)(?=\n\s*<|$)/)?.[1] ?? "";
+      const bank = bogi.split(/\s*\/\s*|\n/).map((w) => norm(w)).filter(Boolean);
+      const answerWords = norm(ans.replace(/^주제\s*[:：]?\s*/, "")).split(" ").filter(Boolean);
+      const extra = [...qt.matchAll(/전치사\s*['‘"]([a-z]+)['’"]/gi)].map((m) => m[1]!.toLowerCase());
+      const left = [...answerWords];
+      for (const w of [...bank, ...extra]) {
+        const i = left.indexOf(w);
+        if (i >= 0) left.splice(i, 1);
+      }
+      const nSaid = Number(qt.match(/총\s*(\d+)\s*단어/)?.[1] ?? 0);
+      if (left.length > 0 || bank.length + extra.length !== answerWords.length) {
+        warnings.push(`<보기> 낱말과 정답 낱말이 맞지 않습니다${left.length ? `(보기에 없는 낱말: ${left.join(", ")})` : ""}.`);
+        score -= 80;
+      }
+      if (nSaid && nSaid !== answerWords.length) {
+        warnings.push(`조건의 낱말 수(${nSaid})와 정답 낱말 수(${answerWords.length})가 다릅니다.`);
+        score -= 80;
+      }
+    }
+    if (code === "구문변환") {
+      if (!/<u>[\s\S]+?<\/u>/.test(String(q.passageModified ?? ""))) {
+        warnings.push("지문에 바꿔 쓸 문장 밑줄이 없습니다.");
+        score -= 80;
+      }
+      if (norm(ans).split(" ").length < 4) {
+        warnings.push("정답 문장이 너무 짧습니다.");
+        score -= 45;
+      }
+    }
+    if (code === "내용매칭") {
+      const nums = [...ans.matchAll(/[ⓐⓑ]\s*[:：]\s*([①-⑤1-5])/g)].map((m) => m[1]);
+      if (nums.length !== 2 || nums[0] === nums[1]) {
+        warnings.push("정답은 「ⓐ: ③ / ⓑ: ⑤」처럼 서로 다른 번호 둘이어야 합니다.");
+        score -= 80;
+      }
+      if ((qt.match(/^\s*[①②③④⑤]/gm) ?? []).length !== 5) {
+        warnings.push("<보기> 예시가 ①~⑤ 다섯 개여야 합니다.");
+        score -= 80;
+      }
+    }
+  }
+  // 어법(통문장): 밑줄이 문장 통째로 다섯
+  if (code === "어법통문장") {
+    const us = [...String(q.passageModified ?? "").matchAll(/<u>([\s\S]*?)<\/u>/g)].map((m) => plainText(m[1]!));
+    if (us.length !== 5 || us.some((u) => u.split(/\s+/).length < 5)) {
+      warnings.push("밑줄은 문장 통째로 다섯 개여야 합니다.");
+      score -= 80;
+    }
+  }
+
+  // 사례 분류형: 영어 사례 다섯
+  if (code === "사례분류") {
+    const short = (q.choices ?? []).filter((c) => String(c?.text ?? "").split(/\s+/).length < 10);
+    if ((q.choices ?? []).length !== 5 || short.length > 0) {
+      warnings.push("사례는 10낱말이 넘는 영어 문장 다섯 개여야 합니다.");
+      score -= 80;
     }
   }
 

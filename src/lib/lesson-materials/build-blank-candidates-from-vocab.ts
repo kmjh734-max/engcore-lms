@@ -163,11 +163,15 @@ export function buildBlankCandidatesFromVocab(input: {
       const tokens = tokenizeWords(s.english);
       for (const tok of tokens) {
         const lower = tok.text.toLowerCase();
+        /*
+         * 어미를 뗀 줄기가 3자 미만이면 맞춰 보지 않는다. Korea’s·U.S.·Let’s 의 「s」는 떼면 빈 글자라
+         * 어떤 낱말과도 맞는다고 나와, traditional 자리에 「s」 빈칸이 뚫렸다(전수 대조 2026-11-19, 12개 워크북).
+         */
+        const stem = lower.replace(/(?:ing|ed|es|s)$/, "");
         const match =
           lower === lemma ||
           (lemma.length >= 4 &&
-            (lower.startsWith(lemma) ||
-              lemma.startsWith(lower.replace(/(?:ing|ed|es|s)$/, ""))));
+            (lower.startsWith(lemma) || (stem.length >= 3 && lemma.startsWith(stem))));
         if (!match) continue;
         const occs = findExactWordOccurrences(s.english, tok.text);
         const occurrenceIndex = occs.findIndex(

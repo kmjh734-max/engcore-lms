@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
 import { postJson } from "@/lib/lesson-materials/post-json";
+import { askCreditConfirm } from "@/lib/credits/confirm-store";
 import { runWithConcurrency } from "@/lib/run-with-concurrency";
 import type { renameLessonMaterialDocument } from "@/lib/lesson-materials/document-actions";
 import { defaultDocumentName } from "@/lib/lesson-materials/documents";
@@ -253,6 +254,14 @@ export function OnePageWorkbench({
   const [tests, setTests] = useState<Record<string, OnePageTestPassage>>(() =>
     initialTests(initialProjects, savedTest)
   );
+  /*
+   * T/F 다시 만들기(윌링 2026-11-23 「T/F 난이도 조절이나 개수 선택」). 워크북 T/F 생성기로 개수·난이도를 골라
+   * 만들고, 저장하는 시험지(이 파일)에만 넣는다. 지문 재료는 그대로 둔다(T/F는 1장 테스트지에만 찍힌다).
+   */
+  const [tfCount, setTfCount] = useState(5);
+  const [tfHard, setTfHard] = useState(false);
+  const [tfBusy, setTfBusy] = useState(false);
+  const [tfNote, setTfNote] = useState<string | null>(null);
   const [pendingIds, setPendingIds] = useState<Set<string>>(() => new Set());
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [active, setActive] = useState<string | null>(initialProjects[0]?.id ?? null);
@@ -566,6 +575,49 @@ export function OnePageWorkbench({
       setPdfBusy(null);
     }
   }
+  async function regenerateTf() {
+    const ids = projects.map((p) => p.id);
+    if (!ids.length || tfBusy) return;
+    const go = await askCreditConfirm({
+      title: "T/F 다시 만들기",
+      description: `지문마다 T/F ${tfCount}문항을 「${tfHard ? "어렵게" : "기본"}」으로 새로 만듭니다. 이 테스트지 파일의 T/F만 바뀝니다.`,
+      subject: `지문 ${ids.length}개 · 지문마다 ${tfCount}문항`,
+      contents: ["T/F 문제"],
+      items: [{ feature: "lesson_workbook_tf", quantity: ids.length }],
+      sample: "workbook",
+    });
+    if (!go) return;
+    setTfBusy(true);
+    setTfNote(null);
+    const res = await postJson<{ ok: boolean; message?: string; workbook?: { sections?: { projectId: string; items: { statement: string; answer: "T" | "F" }[] }[] } }>(
+      "/api/lesson-materials/workbook",
+      {
+        role,
+        input: {
+          projectIds: ids,
+          selectedTypes: ["tf"],
+          tfOptions: { count: tfCount, difficulty: tfHard ? "hard" : "normal", language: "en" },
+          title: titleRef.current || "T/F",
+        },
+      }
+    ).catch(() => null);
+    setTfBusy(false);
+    const sections = res && res.ok ? (res.workbook?.sections ?? []) : [];
+    if (!sections.length) {
+      setTfNote((res && "message" in res && res.message) || "T/F를 만들지 못했습니다.");
+      return;
+    }
+    const next: Record<string, { statement: string; answer: "T" | "F" }[]> = {};
+    for (const sec of sections) next[sec.projectId] = sec.items.map((it) => ({ statement: it.statement, answer: it.answer }));
+    const merged = { ...testsRef.current };
+    for (const [pid, list] of Object.entries(next)) if (merged[pid]) merged[pid] = { ...merged[pid]!, tf: list };
+    testsRef.current = merged;
+    setTests(merged);
+    needSave.current = true;
+    await saveTests();
+    setTfNote(`T/F를 지문마다 ${tfCount}문항으로 바꿨습니다.`);
+  }
+
   const typeCounts: Record<OnePageTestTypeKey, number> = {
     choice: 0, ref: 0, expr: 0, imp: 0, writing: 0, summary: 0, tf: 0,
   };
@@ -688,6 +740,48 @@ export function OnePageWorkbench({
               </div>
               <p className="text-[11px] text-slate-400">{SUMMARY_LAYOUTS.find((l) => l.id === summaryLayout)?.hint}</p>
             </div>
+          ) : null}
+          {mode === "test" ? (
+          <div className="space-y-2 rounded-lg border border-slate-200 p-3">
+            <p className="text-xs font-bold text-slate-700">T/F 문항</p>
+            <div className="flex items-center gap-2 text-[12px] text-slate-700">
+              <label className="flex items-center gap-1">
+                개수
+                <select
+                  className="rounded border border-slate-200 px-1 py-0.5"
+                  value={tfCount}
+                  onChange={(e) => setTfCount(Number(e.target.value))}
+                >
+                  {[3, 4, 5, 6, 7, 8].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="flex rounded-md bg-slate-100 p-0.5">
+                {([false, true] as const).map((hard) => (
+                  <button
+                    key={String(hard)}
+                    type="button"
+                    onClick={() => setTfHard(hard)}
+                    className={`rounded px-2 py-0.5 text-[11px] font-bold ${tfHard === hard ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"}`}
+                  >
+                    {hard ? "어렵게" : "기본"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={tfBusy}
+              onClick={() => void regenerateTf()}
+              className="w-full rounded-md border border-violet-300 bg-white py-1.5 text-xs font-bold text-violet-700 hover:bg-violet-50 disabled:opacity-50"
+            >
+              {tfBusy ? "T/F 만드는 중…" : "T/F 다시 만들기"}
+            </button>
+            {tfNote ? <p className="text-[11px] text-slate-500">{tfNote}</p> : null}
+          </div>
           ) : null}
           {mode === "test" ? (
             <div className="space-y-2 rounded-lg border border-violet-200 bg-violet-50/60 p-3">

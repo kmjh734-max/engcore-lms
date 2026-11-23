@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -86,7 +86,6 @@ export function LessonMaterialProjectWorkspace({
       ? illustration_captions.map((c) => String(c ?? ""))
       : []
   );
-  const [editingEnglish, setEditingEnglish] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const [generatingOrganization, setGeneratingOrganization] = useState(false);
   const [generatingIllustration, setGeneratingIllustration] = useState(false);
@@ -308,20 +307,21 @@ export function LessonMaterialProjectWorkspace({
     }
   }
 
-  async function translateOne(id: string) {
-    const target = itemsDraft.find((it) => it.id === id);
-    if (!target?.english_text.trim()) return;
+  /** 고른 문장들을 한꺼번에 자동 해석한다 */
+  async function translateMany(ids: string[]) {
+    const targets = itemsDraft.filter((it) => ids.includes(it.id) && it.english_text.trim());
+    if (targets.length === 0) return;
     setTranslating(true);
     setError(null);
     try {
       const res = await translateLessonMaterialLinesAction({
-        lines: [target.english_text],
+        lines: targets.map((t) => t.english_text),
       });
       if (!res.ok) {
         setError(res.message);
         return;
       }
-      updateItem(id, { korean_text: res.korean[0] ?? "" });
+      targets.forEach((t, i) => updateItem(t.id, { korean_text: res.korean[i] ?? "" }));
     } finally {
       setTranslating(false);
     }
@@ -435,79 +435,12 @@ export function LessonMaterialProjectWorkspace({
         </div>
       </section>
 
-      <section className="space-y-3">
-        {itemsDraft
-          .slice()
-          .sort((a, b) => a.order_index - b.order_index)
-          .map((it, idx) => {
-            const isEditing = editingEnglish.has(it.id);
-            return (
-              <div
-                key={it.id}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-3"
-              >
-                <div className="mb-2 text-xs font-bold text-slate-500">
-                  문장 {idx + 1}
-                </div>
-                <div className="grid gap-3 lg:grid-cols-2">
-                  <div className="rounded-xl bg-rose-50 p-3">
-                    <div className="text-xs font-bold text-rose-600">영어</div>
-                    {isEditing ? (
-                      <textarea
-                        className="mt-1 min-h-[72px] w-full resize-y rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm text-rose-900"
-                        value={it.english_text}
-                        onChange={(e) =>
-                          updateItem(it.id, { english_text: e.target.value })
-                        }
-                      />
-                    ) : (
-                      <div className="mt-1 whitespace-pre-wrap text-sm text-rose-900">
-                        {it.english_text.trim() || "영어 지문이 비어 있습니다."}
-                      </div>
-                    )}
-                  </div>
-                  <div className="rounded-xl border border-slate-200 p-3">
-                    <div className="text-xs font-bold text-slate-600">
-                      한글 해석
-                    </div>
-                    <textarea
-                      className="mt-2 min-h-[72px] w-full resize-y rounded-lg border border-slate-200 px-3 py-2 text-sm"
-                      value={it.korean_text}
-                      onChange={(e) =>
-                        updateItem(it.id, { korean_text: e.target.value })
-                      }
-                      placeholder="한글 해석을 입력하세요."
-                    />
-                  </div>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600"
-                    onClick={() => {
-                      setEditingEnglish((prev) => {
-                        const next = new Set(prev);
-                        if (next.has(it.id)) next.delete(it.id);
-                        else next.add(it.id);
-                        return next;
-                      });
-                    }}
-                  >
-                    {isEditing ? "영어 편집 완료" : "영어 편집하기"}
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs text-brand-700 disabled:opacity-50"
-                    disabled={translating || !it.english_text.trim()}
-                    onClick={() => void translateOne(it.id)}
-                  >
-                    한글 해석 (자동)
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-      </section>
+      <SentenceGrid
+        rows={itemsDraft.slice().sort((a, b) => a.order_index - b.order_index)}
+        translating={translating}
+        onChange={updateItem}
+        onTranslate={(ids) => void translateMany(ids)}
+      />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button
@@ -556,5 +489,140 @@ export function LessonMaterialProjectWorkspace({
         </Button>
       </div>
     </div>
+  );
+}
+
+type GridRow = { id: string; english_text: string; korean_text: string };
+
+/**
+ * 문장 표(엑셀처럼) — 지인에듀 입력 표를 본떠(선생님 2026-11-23 「엑셀처럼 편하게 수정」).
+ * 칸을 누르면 바로 고친다(「영어 편집하기」 단추 없음). Tab·Shift+Tab은 옆 칸, Enter는 아래 칸(줄바꿈은 Shift+Enter),
+ * 위·아래 화살표는 칸 맨 앞·맨 끝에서 윗줄·아랫줄로 간다. 엑셀에서 「영어⇥해석」 여러 줄을 복사해 붙이면 그 줄부터 아래로 채운다.
+ */
+function SentenceGrid({
+  rows,
+  translating,
+  onChange,
+  onTranslate,
+}: {
+  rows: GridRow[];
+  translating: boolean;
+  onChange: (id: string, patch: Partial<{ english_text: string; korean_text: string }>) => void;
+  onTranslate: (ids: string[]) => void;
+}) {
+  const refs = useRef(new Map<string, HTMLTextAreaElement>());
+  const cellKey = (r: number, c: number) => `${r}:${c}`;
+  const focusCell = (r: number, c: number) => {
+    const el = refs.current.get(cellKey(r, c));
+    if (!el) return false;
+    el.focus();
+    return true;
+  };
+  const field = (c: number) => (c === 0 ? "english_text" : "korean_text") as "english_text" | "korean_text";
+  const emptyKo = rows.filter((r) => r.english_text.trim() && !r.korean_text.trim()).map((r) => r.id);
+
+  function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>, r: number, c: number) {
+    const el = e.currentTarget;
+    if (e.key === "Tab") {
+      const next = e.shiftKey ? (c === 1 ? [r, 0] : [r - 1, 1]) : c === 0 ? [r, 1] : [r + 1, 0];
+      if (focusCell(next[0]!, next[1]!)) e.preventDefault();
+    } else if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+      if (focusCell(r + 1, c)) e.preventDefault();
+    } else if (e.key === "ArrowUp" && el.selectionStart === 0 && el.selectionEnd === 0) {
+      if (focusCell(r - 1, c)) e.preventDefault();
+    } else if (e.key === "ArrowDown" && el.selectionStart === el.value.length) {
+      if (focusCell(r + 1, c)) e.preventDefault();
+    }
+  }
+
+  function onPaste(e: React.ClipboardEvent<HTMLTextAreaElement>, r: number, c: number) {
+    const text = e.clipboardData.getData("text/plain");
+    // 탭이나 여러 줄이 든 표 붙여넣기만 가로챈다. 한 줄 글은 보통대로 붙는다.
+    if (!text.includes("\t") && !/\n\s*\S/.test(text.trim())) return;
+    const lines = text.replace(/\r/g, "").replace(/\n+$/, "").split("\n");
+    e.preventDefault();
+    lines.forEach((line, i) => {
+      const row = rows[r + i];
+      if (!row) return;
+      line.split("\t").forEach((v, j) => {
+        const col = c + j;
+        if (col > 1) return;
+        onChange(row.id, { [field(col)]: v.trim() });
+      });
+    });
+  }
+
+  return (
+    <section className="overflow-hidden rounded-xl border border-slate-300 bg-white">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-3 py-2">
+        <p className="text-[11px] text-slate-500">
+          칸을 눌러 바로 고칩니다 · Tab 옆 칸 · Enter 아래 칸(줄바꿈은 Shift+Enter) · 엑셀에서 「영어 ⇥ 해석」 여러 줄을 복사해 붙이면 아래로 채웁니다
+        </p>
+        <button
+          type="button"
+          className="rounded-md border border-brand-200 bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 disabled:opacity-50"
+          disabled={translating || emptyKo.length === 0}
+          onClick={() => onTranslate(emptyKo)}
+        >
+          {translating ? "해석 중…" : `빈 해석 모두 자동 (${emptyKo.length})`}
+        </button>
+      </div>
+      <table className="w-full table-fixed border-collapse text-sm">
+        <colgroup>
+          <col className="w-12" />
+          <col />
+          <col />
+          <col className="w-16" />
+        </colgroup>
+        <thead>
+          <tr className="bg-slate-100 text-[11px] font-bold text-slate-600">
+            <th className="border-r border-slate-200 py-1.5">#</th>
+            <th className="border-r border-slate-200 py-1.5 pl-2 text-left">영어</th>
+            <th className="border-r border-slate-200 py-1.5 pl-2 text-left">한글 해석</th>
+            <th className="py-1.5">자동</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, r) => (
+            <tr key={row.id} className="border-t border-slate-200 align-top">
+              <td className="border-r border-slate-200 bg-slate-50 pt-2 text-center text-xs font-semibold text-slate-500">{r + 1}</td>
+              {[0, 1].map((c) => (
+                <td
+                  key={c}
+                  className="border-r border-slate-200 p-0 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-brand-400"
+                >
+                  <textarea
+                    ref={(el) => {
+                      if (el) refs.current.set(cellKey(r, c), el);
+                      else refs.current.delete(cellKey(r, c));
+                    }}
+                    rows={1}
+                    value={row[field(c)]}
+                    onChange={(e) => onChange(row.id, { [field(c)]: e.target.value })}
+                    onKeyDown={(e) => onKeyDown(e, r, c)}
+                    onPaste={(e) => onPaste(e, r, c)}
+                    placeholder={c === 0 ? "영어 문장" : "한글 해석"}
+                    className={`block w-full resize-none border-0 px-2 py-1.5 leading-relaxed outline-none [field-sizing:content] ${
+                      c === 0 ? "text-slate-900" : "text-slate-700"
+                    } ${c === 1 && row.english_text.trim() && !row.korean_text.trim() ? "bg-amber-50/60" : "bg-transparent"}`}
+                  />
+                </td>
+              ))}
+              <td className="p-1 text-center">
+                <button
+                  type="button"
+                  title="이 문장 한글 해석 자동"
+                  className="rounded-md px-1.5 py-1 text-[11px] text-brand-700 hover:bg-brand-50 disabled:opacity-40"
+                  disabled={translating || !row.english_text.trim()}
+                  onClick={() => onTranslate([row.id])}
+                >
+                  해석
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
   );
 }

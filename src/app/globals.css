@@ -2176,6 +2176,53 @@ body[data-vocab-print-scope="exam"] .vocab-print-page--answer-key {
   color: #1e293b;
 }
 
+/* 해설지 맨 앞 빠른 정답 표 */
+.qg-quick-answers {
+  width: 100%;
+  margin-top: 3mm;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+  text-align: center;
+}
+.qg-quick-answers th,
+.qg-quick-answers td {
+  border: 1px solid #cbd5e1;
+  padding: 1.6mm 0;
+}
+.qg-quick-answers th {
+  width: 12mm;
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #334155;
+}
+.qg-quick-answers-no td {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+}
+.qg-quick-answers-sub {
+  font-size: 7.5pt;
+  color: #64748b;
+}
+
+/* 요약문 완성 (A)(B): 지문 아래 ↓ + 요약문 상자, 보기는 (A) …… (B) 두 칸 */
+.qg-print-summary-ab-arrow {
+  margin: 0.6mm 0 0;
+  text-align: center;
+  font-size: 9pt;
+  line-height: 1;
+  color: #475569;
+}
+.qg-print-summary-ab-box {
+  margin-top: 0.6mm;
+}
+.qg-print-summary-ab-choices td {
+  padding-right: 3mm;
+}
+.qg-print-summary-ab-dots {
+  color: #64748b;
+}
+
 .qg-print-section-hdr {
   margin: 1.5mm 0 1mm;
   padding-bottom: 0.6mm;

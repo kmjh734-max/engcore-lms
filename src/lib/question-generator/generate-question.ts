@@ -359,6 +359,58 @@ ${choiceExplanationRules()}
             : "standard"
       }.`;
     case "sentence_blank": {
+      if (code === "요약완성AB") {
+        /*
+         * 요약문 완성 객관식(수능 40번형). 07-10에 막은 것은 「요지」가 이 모양으로 잘못 나오던 것이고,
+         * 이 유형은 따로 고르는 것이다(윌링 2026-11-23 「객관식 요약문이 없다」, 리얼영어 99세트 중 가장 많이 쓴 유형).
+         */
+        return `요약문 완성 (A)(B) — 수능 40번형:
+- Do NOT change the passage at all (omit passageModified).
+- questionText = ONE English summary sentence (18~32 words) of the WHOLE passage's main point, with two blanks written exactly as "(A)" and "(B)" (one word each, or a two-word phrase at most). Do not copy a passage sentence; paraphrase the gist.
+- The words for (A) and (B) are NOT copied from the passage: use a synonym or another form (e.g. passage "led baby turtles home" → (A) reliable). Each blank word must be supported by the passage.
+- 5 choices, each written "wordA …… wordB" (A first, then B, separated by " …… "). Exactly one pair fits BOTH blanks.
+- Every wrong pair must fail on at least one blank for a reason you can point to in the passage (opposite meaning, wrong relation, not stated). Use each correct word once or twice among the wrong pairs so a student cannot pick by one blank alone — but never make a wrong pair where both words also fit.
+- Choices are single words (or two-word phrases), same part of speech within each column, similar length.
+- correctAnswer = the number of the right pair.${option.difficulty === "high" ? "\n- HIGH (상): the right words are less obvious paraphrases; distractor words are near in meaning but wrong in this context." : ""}
+${choiceExplanationRules()}
+LANGUAGE: questionText + choices ENGLISH only. explanation Korean.`;
+      }
+      if (code === "빈칸단어") {
+        // 핵심 낱말 하나를 비우고 영어 한 낱말 보기 다섯(리얼영어 「빈칸 추론(단어)」 54문항)
+        return `빈칸 추론(단어) — 「다음 빈칸에 들어갈 말로 가장 적절한 것은?」:
+- In passageModified, replace ONE key content word (noun/verb/adjective/adverb that carries the passage's main point) with ________. Exactly one blank. Everything else word for word.
+- Choose a word whose meaning the rest of the passage clearly supports (a contrast, a repeated idea, an example that explains it). Do not blank a word that appears again elsewhere in the passage unchanged (it would give the answer away).
+- 5 ENGLISH single-word choices, same part of speech and form as the blank (if the blank needs "-ing" or plural, every choice has that form). The key may be the original word or a close synonym that fits exactly.
+- Wrong choices: plausible in the sentence alone but contradicted by the passage's logic (opposite, too narrow, unrelated quality). Never a synonym of the key that also fits.
+- correctAnswer = the key. questionText "".
+${choiceExplanationRules()}
+LANGUAGE: passageModified + choices ENGLISH only.`;
+      }
+      if (code === "답변가능개수") {
+        // <보기>의 질문 가운데 지문만 읽고 답할 수 있는 것의 개수(리얼영어 「답변 가능 개수형」 50문항)
+        const answerable = 2 + Math.floor(Math.random() * 5); // 2~6
+        return `답변 가능 개수형 — 「<보기>의 질문들 중 다음 글을 읽고 답할 수 있는 질문의 개수는?」
+- Do NOT change the passage (omit passageModified).
+- questionText = exactly 7 ENGLISH questions labeled ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ, one per line ("ⓐ What …?").
+- Exactly ${answerable} of the 7 can be answered from the passage ALONE (the answer is stated or follows directly). The others ask for something the passage never gives: an exact number/year/name, a cause or result it does not state, details about people or places it does not describe.
+- An ANSWERABLE question has a short, definite answer the passage states in words (a name, a thing, a reason, an action) — not "What problem can occur…?" or "What happens…?" when the passage only hints. If a student could argue either way, rewrite it.
+- An unanswerable question must still sound related (same topic, same people/terms) so it is not obvious. Never ask about something the passage DOES answer in other words. Never ask yes/no questions; use What/Why/How/Which/When/Who.
+- Mix the answerable ones through the list (not all first).
+- choices: exactly ① 2개 ② 3개 ③ 4개 ④ 5개 ⑤ 6개 (text "2개" … "6개"). correctAnswer = ${answerable - 1} (the choice "${answerable}개").
+- explanation (Korean): list the answerable letters with the passage words that answer each — the words must be the actual answer to that question (who/what it asks for), not a nearby phrase — then say why each other one cannot be answered.
+LANGUAGE: questions ENGLISH, explanation Korean.`;
+      }
+      if (code === "사례분류") {
+        // 다섯 사례 가운데 성격이 다른 하나(리얼영어 「사례 분류형」 17문항)
+        return `사례 분류형 — 「다음 글의 내용을 바탕으로 할 때, 사례 ①~⑤ 중 나머지 넷과 성격이 다른 것은?」
+- Do NOT change the passage (omit passageModified). questionText "" (empty).
+- First find the passage's key concept or contrast (e.g. AI as a threat that replaces people vs. AI as a tool people control).
+- choices = 5 ENGLISH example sentences (15~28 words each), each a NEW concrete situation not in the passage (people, places, actions). Four show the SAME side of the concept; exactly one shows the OTHER side.
+- The odd one out must differ in the concept itself, not in surface details (topic, setting, length). The four same-side examples should vary in setting so the odd one cannot be found by topic alone.
+- Every example must clearly belong to one side when judged by the passage's idea; no example that fits both.
+- correctAnswer = the odd one. explanation (Korean): name the two sides, which side the four show, and why the answer is the other side.
+LANGUAGE: choices ENGLISH, explanation Korean.`;
+      }
       if (code === "연결어빈칸") {
         return `In passageModified put discourse blanks (A) and (B). 5 ENGLISH pair choices like "However …… Therefore". Exactly one correct.
 ${choiceExplanationRules()}
@@ -518,6 +570,29 @@ ${markRule}`;
     case "grammar": {
       const catalog = grammarCatalogPromptBlock();
       const explainRules = grammarExplanationRules();
+      if (code === "어법통문장") {
+        // 밑줄 친 문장 다섯 가운데 어법상 틀린 문장(리얼영어 「어법(통문장)」)
+        const { focusBlock } = pickGrammarFocus(1);
+        // 틀린 문장 자리는 코드가 정한다 — 모델에 맡기니 시험 3문항이 모두 ④였다(2026-11-23)
+        const wrongAt = Math.floor(Math.random() * 5);
+        return `${catalog}
+
+--- 이번 문항 ---
+어법(통문장) — 밑줄 친 문장 다섯 중 어법상 적절하지 않은 것:
+${focusBlock}
+
+형식:
+- passageModified = 영어 지문. 서로 다른 문장 다섯 개를 통째로 밑줄 ⓐ<u>문장 전체</u> … ⓔ<u>문장 전체</u> (마침표까지 밑줄 안에). 지문 앞뒤에 걸쳐 고르게.
+- 밑줄 칠 문장은 8낱말 이상인 문장만 고른다(「You think.」 같은 짧은 문장·의문문 금지). 그런 문장이 다섯 개가 안 되면 {"skip":true,"reason":"긴 문장 다섯 개 없음"}.
+- 오류는 반드시 밑줄 친 문장 안에 둔다. 밑줄 밖은 한 글자도 바꾸지 않는다.
+- 그중 정확히 한 문장에만 어법 오류 하나 — 원문 낱말의 형태만 바꿔 만든다(수일치·시제·태·준동사·관계사 등). 위 ‘이번 문항’ 문법을 쓴다.
+- 나머지 네 문장은 원문 그대로(어법상 옳음).
+- 밑줄 밖은 원문 그대로.
+- choices: omit or empty array. correctAnswer 1-5 (ⓐ=1 … ⓔ=5 = 틀린 문장). questionText 빈칸.
+- explanation 한글: 틀린 문장의 틀린 곳 → 바른 형태와 이유, 나머지 네 문장은 각 문장에서 가장 헷갈릴 어법 하나를 정확한 문법 이름으로 짚어 왜 맞는지 한 줄씩(예: 가주어 It의 진주어 to부정사, each 단수 동사).
+- 틀린 문장은 반드시 ${"ⓐⓑⓒⓓⓔ"[wrongAt]} 자리(${wrongAt + 1}번째 밑줄)에 둔다. correctAnswer = ${wrongAt + 1}.
+LANGUAGE: 지문은 영어만.`;
+      }
       if (code === "어법추론" || code === "어법모두고르기") {
         const { focusBlock } = pickGrammarFocus(1);
         return `${catalog}
@@ -537,7 +612,12 @@ ${grammarChoiceCraftNote()}
 LANGUAGE: 지문은 영어만.`;
       }
       if (code === "어법개수") {
-        const wrongN = plannedWrongCount(code, turn);
+        /*
+         * 상(8곳): 리얼영어 어법 오류갯수는 ⓐ~ⓗ 여덟 밑줄에 ① 1개~⑤ 5개다(2026-11-23). 하나는 늘 6곳.
+         * 자리가 많아 틀린 개수를 3·4개 쪽으로도 고르게 돌린다.
+         */
+        const eight = option.difficulty === "high";
+        const wrongN = eight ? [3, 1, 4, 2, 5][Math.max(0, Math.floor(turn)) % 5]! : plannedWrongCount(code, turn);
         const { focusBlock } = pickGrammarFocus(wrongN);
         return `${catalog}
 
@@ -546,7 +626,7 @@ LANGUAGE: 지문은 영어만.`;
 ${focusBlock}
 
 형식:
-- passageModified = 영어 지문, 밑줄 정확히 6개 ⓐ~ⓕ → ⓐ<u>대상</u>
+- passageModified = 영어 지문, 밑줄 정확히 ${eight ? "8개 ⓐ~ⓗ" : "6개 ⓐ~ⓕ"} → ⓐ<u>대상</u>${eight ? " (지문 앞뒤에 고르게, 한 문장에 둘 넘게 몰지 않는다)" : ""}
 - 틀린 곳 정확히 ${wrongN}개 — 위 ‘이번 문항’ 문법 (단원 중복 없이). 나머지 맞음
 - choices 고정: 1:"1개" 2:"2개" 3:"3개" 4:"4개" 5:"5개"
 - correctAnswer = ${wrongN}. questionText 빈칸
@@ -727,6 +807,120 @@ ${choiceExplanationRules()}
       }
       return `Underline a key expression with <u>...</u> in passageModified. 5 ENGLISH meaning choices.`;
     case "writing": {
+      if (code === "어휘빈칸공통") {
+        // 빈칸 ⓐ, ⓑ에 공통으로 들어갈 한 낱말(리얼영어 「어휘 빈칸」 102문항)
+        return `서술형 · 어휘 빈칸(공통 한 낱말):
+- 지문에 세 번 이상 나오고 글의 핵심을 이루는 내용어 하나를 고른다(명사·동사·형용사; 관사·전치사·대명사·고유명사 금지). 세 번 나오는 낱말이 없으면 {"skip":true,"reason":"세 번 나오는 핵심어 없음"}.
+- passageModified = 영어 지문. 그 낱말이 나오는 자리 가운데 두 곳을 ⓐ__________, ⓑ__________ 로 바꾼다(형태가 같은 자리 둘). 적어도 한 곳은 비우지 않고 남겨 학생이 지문에서 찾을 수 있게 한다. 나머지는 원문 그대로.
+- 빈칸 둘 다 문맥만으로 그 낱말이 떠오르게 고른다(다른 낱말도 자연스럽게 들어가는 자리는 피한다).
+- questionText:
+<조건>
+○ 지문에 쓰인 낱말을 그대로 쓸 것
+○ 빈칸 ⓐ, ⓑ에 공통으로 들어갈 영어 한 단어를 쓸 것
+○ 철자가 정확할 것
+
+<답란>
+ⓐ
+ⓑ
+- correctAnswer = "ⓐ: word / ⓑ: word" (같은 낱말).
+- choices 없음. explanation 한글: 두 빈칸의 문맥 근거와 그 낱말의 뜻.
+LANGUAGE: 지문·정답 영어.`;
+      }
+      if (code === "주제문작성") {
+        // 글의 주제를 조건에 맞는 영어 명사구로(리얼영어 「주제문 작성」 27문항)
+        return `서술형 · 주제문 작성(명사구):
+- 먼저 글의 주제를 담은 영어 명사구 하나를 정한다(8~14낱말, 예: "dual functions of analogies in philosophy as illustrations and parts of arguments"). 지문의 핵심 낱말을 쓴다.
+- 그 명사구의 낱말을 정답에 쓰인 꼴 그대로 흩어 보기 칸에 넣는다. 단, 전치사 하나는 보기 칸에서 빼고 <조건>에 「필요하면 전치사 'X'를 한 번 더 쓸 것」으로 적는다(정답에 그 전치사가 두 번 쓰일 때만. 아니면 이 조건 줄을 쓰지 않는다).
+- questionText:
+<조건>
+○ 보기의 단어를 모두 한 번씩 사용할 것
+○ (필요할 때만) 전치사 'of'를 한 번 더 사용할 것
+○ 총 N단어의 명사구로 쓸 것
+
+<보기>
+word / word / word …
+
+<답란>
+주제
+- N = correctAnswer 낱말 수(정확히 센다).
+- correctAnswer = 그 명사구(소문자로 시작, 마침표 없음). 보기 칸 낱말 + 조건의 전치사 = 정답 낱말과 정확히 같아야 한다. 조건 줄에서는 꼬리표 기호 없이 「보기」라고만 쓴다.
+- 정답 말고 다른 어순이 문법적으로 같은 뜻이 되지 않게 짠다. 서로 자리를 바꿔도 말이 되는 형용사·명사 짝(relational value and social inclusion ↔ social value and relational inclusion)은 쓰지 않는다 — and로 잇는 대등한 두 덩이는 하나만 쓰거나 한쪽을 지문의 고정 표현으로.
+- choices 없음. explanation 한글: 글의 핵심과 명사구 구조(핵심 명사 + 수식어).
+LANGUAGE: 보기·정답 영어.`;
+      }
+      if (code === "구문변환") {
+        // 밑줄 문장을 조건대로 바꿔 쓰기(리얼영어 「구문 변환」 10문항)
+        return `서술형 · 구문 변환:
+- 지문에서 바꿔 쓰기 좋은 문장 하나를 고른다: 수동태(→능동태), 능동태(→수동태), 분사구문(→부사절), 관계사절(→분사), It ~ to 가주어, 도치 등. 뜻이 그대로 유지되는 변환만.
+- passageModified = 영어 지문. 그 문장을 ⓐ<u>문장</u> 으로 밑줄. 나머지는 원문 그대로.
+- questionText:
+<조건>
+○ 바꿀 형태 (예: 능동태 문장으로 바꿀 것)
+○ 주어를 'they'로 쓸 것 (필요할 때)
+○ 원문의 시제를 유지할 것
+
+<답란>
+정답
+- 조건은 2~3줄, 답이 하나로 정해지게 쓴다(주어를 정하지 않으면 답이 여럿이 되는 변환은 주어를 정해 준다).
+- correctAnswer = 바꿔 쓴 영어 문장 하나(뜻·시제 같음).
+- choices 없음. explanation 한글: 원문 구조 → 바뀐 구조와 바꾼 점.
+LANGUAGE: 지문·정답 영어.`;
+      }
+      if (code === "대화문완성") {
+        // 글 내용으로 나눈 대화의 빈칸(리얼영어 「대화문 완성」 12문항)
+        return `서술형 · 대화문 완성:
+- 지문 내용을 두고 학생 두 명(A, B)이 나누는 짧은 영어 대화 4~6줄을 쓴다. 대화는 글의 핵심을 다시 말한다.
+- 대화에 빈칸 ⓐ__________, ⓑ__________ 두 곳. 각 빈칸은 지문에 그대로 있는 연속 어구(2~5낱말)로만 채울 수 있게 한다.
+- 지문은 바꾸지 않는다(passageModified 없음).
+- questionText:
+<조건>
+○ 본문에서 찾아 그대로 쓸 것
+○ ⓐ는 N단어, ⓑ는 M단어로 쓸 것
+
+<대화>
+A: …
+B: … ⓐ__________ …
+A: …
+B: … ⓑ__________ …
+
+<답란>
+ⓐ
+ⓑ
+- N, M = 정답 낱말 수(정확히).
+- correctAnswer = "ⓐ: words / ⓑ: words" — 지문에 연속으로 있는 그대로의 어구.
+- 빈칸 자리에 문법적으로 꼭 맞게 들어가야 한다(관사·수·시제).
+- choices 없음. explanation 한글: 각 빈칸의 근거 문장.
+LANGUAGE: 대화·정답 영어.`;
+      }
+      if (code === "내용매칭") {
+        // 개념 ⓐⓑ에 맞는 예시를 <보기>에서 골라 번호 쓰기(리얼영어 「내용 매칭」 6문항)
+        return `서술형 · 내용 매칭(예시 고르기):
+- 지문이 설명하는 개념(또는 대비되는 두 생각) 두 개를 정한다.
+- 보기 칸에 새 영어 예시 문장 다섯 개(①~⑤, 각 15~25낱말). 개념 ⓐ에 꼭 맞는 것 하나, 개념 ⓑ에 꼭 맞는 것 하나, 나머지 셋은 어느 개념에도 맞지 않는다(그럴듯하지만 핵심이 빠지거나 반대).
+- 지문은 바꾸지 않는다(passageModified 없음).
+- questionText:
+<조건>
+○ 보기에서 ⓐ, ⓑ의 개념을 가장 잘 나타내는 예시의 번호를 하나씩 쓸 것
+
+<보기>
+① …
+② …
+③ …
+④ …
+⑤ …
+
+<개념>
+ⓐ 개념 이름(영어, 지문 표현)
+ⓑ 개념 이름(영어, 지문 표현)
+
+<답란>
+ⓐ
+ⓑ
+- correctAnswer = "ⓐ: ③ / ⓑ: ⑤" 꼴.
+- 한 예시가 두 개념에 다 맞거나, 맞는 예시가 둘이 되면 안 된다.
+- choices 없음. explanation 한글: 두 정답이 왜 그 개념인지, 나머지 셋이 왜 아닌지.
+LANGUAGE: 예시·개념 영어.`;
+      }
       if (code === "문법조건영작") {
         /*
          * 선생님 요청(2026-09-28): 특정 문법을 조건으로 하는 영작. 문법은 지문에 실제로
@@ -1436,7 +1630,8 @@ function normalizePayload(
     (option.type === "vocabulary" && option.aingkaCode === "어휘추론") ||
     (option.type === "grammar" &&
       (option.aingkaCode === "어법추론" ||
-        option.aingkaCode === "어법모두고르기"))
+        option.aingkaCode === "어법모두고르기" ||
+        option.aingkaCode === "어법통문장"))
   ) {
     choices = undefined;
   }
@@ -1632,7 +1827,8 @@ function answerIsMarkIndex(option: QuestionTypeOption): boolean {
   return (
     option.aingkaCode === "어휘추론" ||
     option.aingkaCode === "어법추론" ||
-    option.aingkaCode === "어법모두고르기"
+    option.aingkaCode === "어법모두고르기" ||
+    option.aingkaCode === "어법통문장"
   );
 }
 
@@ -1881,7 +2077,8 @@ export function assertBasicQuestionShape(
     const body = [
       q.passageModified || "",
       option.type === "sentence_insertion" ? q.questionText || "" : "",
-      ...(option.type === "grammar" || option.type === "vocabulary"
+      // 답변 가능 개수형의 보기는 「2개」~「6개」라 한글이 맞다
+      ...(option.type === "grammar" || option.type === "vocabulary" || option.aingkaCode === "답변가능개수"
         ? []
         : (q.choices ?? []).map((c) => c.text)),
     ].join("\n");
@@ -2624,7 +2821,8 @@ export function assertBasicQuestionShape(
     const mod = q.passageModified || "";
     const isGrammarInference =
       option.aingkaCode === "어법추론" ||
-      option.aingkaCode === "어법모두고르기";
+      option.aingkaCode === "어법모두고르기" ||
+      option.aingkaCode === "어법통문장";
 
     if (option.aingkaCode === "어법개수") {
       if (!q.choices || q.choices.length < 5) {
@@ -2632,6 +2830,9 @@ export function assertBasicQuestionShape(
       }
       if (!/[ⓐⓑⓒⓓⓔⓕ]/.test(mod) || !/<u>[\s\S]*?<\/u>/i.test(mod)) {
         return "어법 개수 문항은 ⓐ~ⓕ 밑줄 표지가 필요합니다.";
+      }
+      if (option.difficulty === "high" && new Set(mod.match(/[ⓐ-ⓗ](?=\s*<u>)/g) ?? []).size !== 8) {
+        return "어법 개수(상)는 밑줄이 ⓐ~ⓗ 여덟 곳이어야 합니다.";
       }
     } else if (isGrammarInference) {
       // 어법 추론: 하단 조합 보기 없음 — 본문 ⓐ~ⓔ가 보기
@@ -2722,6 +2923,12 @@ const QG_MODEL_MAIN = process.env.OPENAI_MODEL_QG_MAIN?.trim() || "gpt-5.6-sol";
 // 내용일치도 싼 모델로(2026-10-04: 내용불일치가 싼 모델로 두 차례 40문항 시험에서 불량 0, 내용일치는 비싼 모델 원가가 문항당 45원)
 // 일치개수도 싼 모델로(2026-10-10: 비싼 모델은 문항당 약 95원이라 110크레딧에서 1.25~1.6배였다. 싼 모델 20문항 시험에서
 // 정답 20/20, 평균 시도 1.1번, 문항당 약 54원. 처음 시험은 보기 계획을 빼먹어 25%가 실패했다 — 아래 일치개수 규칙에 계획 줄을 넣었다)
+/** 리얼영어 서술형 — 문제 글을 꼬리표 상자(<조건>/<보기>/<대화>/<개념>/<답란>)로 쓰는 writing 코드 */
+export const TAGGED_WRITING_CODES = new Set(["어휘빈칸공통", "주제문작성", "구문변환", "대화문완성", "내용매칭"]);
+
+/** 지문은 그대로 두고 문제 글(questionText)+객관식 보기를 내는 sentence_blank 갈래 코드 */
+export const QT_MCQ_CODES = new Set(["요약완성AB", "답변가능개수", "사례분류"]);
+
 const LIGHT_TYPES = new Set(["title", "topic", "sentence_blank", "content_false", "content_true", "content_count"]);
 
 function modelForType(option: { type: string }): string {
@@ -2730,7 +2937,7 @@ function modelForType(option: { type: string }): string {
 
 const QUESTION_WRITER_SHARED_SYSTEM = `Korean HS English exam writer. ONE question JSON only. Fast & concise.
 - No meta tags.
-- NEVER create 요약문완성 (Korean summary with (A)/(B) blanks and …… pair choices). That type is removed.
+- 요지 items: NEVER turn them into a summary sentence with (A)/(B) blanks and …… pair choices. Only the 요약문 완성 (A)(B) type (its ITEM RULES say so) uses that shape.
 - For MCQ: correctAnswer is 1-5. Prefer varied positions (not always 1).
 - hardWords: When (a) English MCQ choices or (b) 일치개수 English <보기> (or Korean <보기>→passage): include 4~6 {word, meaning}. Target ≈ 중3+ / Lexile ≥~1000L (US Grade 8 CCSS text ~1010L–1185L). Prefer the HARDER lemmas that appear in THIS item's English — skip ultra-basics (people/important/money/make/need). Include short non-basic lemmas when apt (swap, skim, grasp, yield, burden, voucher, reluctant, scrutinize, comparable, misprint, conscious). Single dictionary token only (never phrases like "national monies"). Fake plurals (monies/datas) forbidden. meaning = short Korean gloss. Rotate lemmas across same-passage slots. If none fit → []. For Korean-only MCQ / count-only / subjective without English 보기 → [].
 - explanation(해설)은 "~다"로 끝나는 평서형으로 쓴다. 존댓말("맞습니다", "합니다", "해요") 금지.
@@ -2877,11 +3084,21 @@ export async function generateOneQuestion(opts: {
     option.type === "grammar" &&
     grammarFixCodes.has(option.aingkaCode || meta?.aingkaCode || "");
 
+  const isSummaryAB = (option.aingkaCode || meta?.aingkaCode) === "요약완성AB";
+  /*
+   * 지문은 그대로 두고 문제 글(questionText)과 객관식 보기를 내는 유형 — 요약완성AB·답변가능개수·사례분류
+   * (리얼영어 99세트 집계에서 우리에게 없던 객관식, 2026-11-23). 사례분류는 문제 글이 없다.
+   */
+  const isQtMcq = QT_MCQ_CODES.has(option.aingkaCode || meta?.aingkaCode || "");
+  /** 리얼영어 서술형(2026-11-23): 문제 글을 <조건>/<보기>/<대화>/<개념>/<답란> 꼬리표로 쓴다 */
+  const taggedCode = option.aingkaCode || meta?.aingkaCode || "";
+  const isTaggedWriting = option.type === "writing" && TAGGED_WRITING_CODES.has(taggedCode);
+  const taggedNeedsPassage = isTaggedWriting && (taggedCode === "어휘빈칸공통" || taggedCode === "구문변환");
   const needsModified =
+    (!isQtMcq && option.type === "sentence_blank") ||
     [
       "grammar",
       "vocabulary",
-      "sentence_blank",
       "order",
       "sentence_insertion",
       "irrelevant_sentence",
@@ -2889,9 +3106,12 @@ export async function generateOneQuestion(opts: {
     ].includes(option.type) ||
     isWordOrder ||
     isGrammarWriting ||
-    isReferenceWriting;
+    isReferenceWriting ||
+    taggedNeedsPassage;
 
   const needsQuestionText =
+    isTaggedWriting ||
+    (isQtMcq && (option.aingkaCode || meta?.aingkaCode) !== "사례분류") ||
     option.type === "content_count" ||
     option.type === "sentence_insertion" ||
     isWordOrder ||
@@ -3082,10 +3302,19 @@ export async function generateOneQuestion(opts: {
     (option.type === "underlined_inference" &&
       (option.aingkaCode === "함축의미추론" ||
         meta?.aingkaCode === "함축의미추론")) ||
-    isReferenceWriting;
+    isReferenceWriting ||
+    // 리얼영어 유형: 두 번 넘게 나오는 핵심어·긴 문장 다섯이 없는 지문은 건너뛴다
+    taggedCode === "어휘빈칸공통" ||
+    option.aingkaCode === "어법통문장";
 
   const questionTextRule = needsQuestionText
-    ? option.type === "sentence_insertion"
+    ? isSummaryAB
+      ? "Fill questionText with ONLY the English summary sentence containing (A) and (B)."
+      : (option.aingkaCode || meta?.aingkaCode) === "답변가능개수"
+      ? "Fill questionText with the questions ⓐ~ⓖ, one per line (ⓐ What …?)."
+      : isTaggedWriting
+      ? "Fill questionText with the tagged blocks exactly as the ITEM RULES show (<조건>, <보기>, <대화>, <개념>, <답란> — only the ones shown; each tag on its own line)."
+      : option.type === "sentence_insertion"
       ? "Fill questionText with the ENGLISH given sentence to insert."
       : isGrammarWriting
         ? "Fill questionText with <조건>, <보기>, <해석> exactly as the ITEM RULES show (each tag on its own line)."
@@ -3109,6 +3338,10 @@ export async function generateOneQuestion(opts: {
       ? "passageModified MUST include blank ⓐ__________ in the ENGLISH passage."
       : isReferenceWriting
         ? "passageModified MUST underline the pronoun/expression with <u>…</u> (대명사는 ⓐ<u>it</u>)."
+        : taggedNeedsPassage
+        ? taggedCode === "구문변환"
+          ? "passageModified = the passage with the target sentence underlined as ⓐ<u>…</u>; everything else word for word."
+          : "passageModified = the passage with the two spots replaced by ⓐ__________ and ⓑ__________; everything else word for word."
         : "Use passageModified when needed."
     : "Do NOT change passage; omit passageModified.";
 
@@ -3167,7 +3400,7 @@ export async function generateOneQuestion(opts: {
     option.aingkaCode === "어휘추론"
       ? "- Do NOT return bottom choices for 어휘 고르기; ①~⑤ in the passage are enough. correctAnswer is the wrong number."
       : "",
-    option.aingkaCode === "어법추론" || option.aingkaCode === "어법모두고르기"
+    option.aingkaCode === "어법추론" || option.aingkaCode === "어법모두고르기" || option.aingkaCode === "어법통문장"
       ? "- Do NOT return bottom choices for 어법 추론; ⓐ~ⓔ in the passage are enough. correctAnswer is the ONE wrong underline (1-5)."
       : "",
     option.aingkaCode === "어법개수" || option.aingkaCode === "어휘개수"
@@ -3550,7 +3783,14 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
                      * 제시어 배열·요약문·어법 수정이 유형 규칙과 다른 틀을 받았다(2026-10-13 점검).
                      */
                     ...(needsQuestionText
-                      ? option.type === "content_count"
+                      ? isQtMcq
+                        ? {
+                            // 요약문·답변가능 질문은 questionText, 보기는 객관식 다섯 개 그대로
+                            questionText: isSummaryAB
+                              ? "string — ONE English summary sentence containing (A) and (B)"
+                              : "string — ⓐ~ⓖ questions, one per line",
+                          }
+                        : option.type === "content_count"
                         ? {
                             questionText:
                               "(1) ...\\n(2) ...\\n(3) ...\\n(4) ...\\n(5) ...\\n(6) ...",
@@ -3778,6 +4018,16 @@ ${opts.setNote.slice(0, 1800)}`] : []),
       }
     }
   }
+  /*
+   * 답변 가능 개수형: 보기는 늘 ① 2개 ~ ⑤ 6개 차례. 모델이 「정답 위치를 섞으라」는 공통 규칙대로
+   * 보기를 섞어 냈다(2026-11-23) — 고른 개수로 정답 번호를 다시 매긴다.
+   */
+  if (option.aingkaCode === "답변가능개수" && Array.isArray(payload.choices) && payload.choices.length === 5) {
+    const picked = payload.choices.find((c) => Number(c.number) === Number(payload.correctAnswer));
+    const n = Number(String(picked?.text ?? "").replace(/[^\d]/g, ""));
+    payload.choices = [2, 3, 4, 5, 6].map((k, i) => ({ number: i + 1, text: `${k}개` }));
+    if (n >= 2 && n <= 6) payload.correctAnswer = n - 1;
+  }
   const shapeError = assertBasicQuestionShape(
     payload,
     option,
@@ -3795,7 +4045,7 @@ ${opts.setNote.slice(0, 1800)}`] : []),
    */
   if (
     option.type === "irrelevant_sentence" ||
-    (option.type === "grammar" && (option.aingkaCode === "어법추론" || option.aingkaCode === "어법모두고르기"))
+    (option.type === "grammar" && (option.aingkaCode === "어법추론" || option.aingkaCode === "어법모두고르기" || option.aingkaCode === "어법통문장"))
   ) {
     const toNum: Record<string, string> = { "ⓐ": "①", "ⓑ": "②", "ⓒ": "③", "ⓓ": "④", "ⓔ": "⑤" };
     const swap = (t?: string | null) => (t ? t.replace(/[ⓐⓑⓒⓓⓔ]/g, (m) => toNum[m] ?? m) : t);

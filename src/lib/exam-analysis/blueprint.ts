@@ -42,7 +42,8 @@ function pickByName(name: string, level: ExamLevel, isSubjective: boolean): Pick
     "문장 삽입": { key: `sentence_insertion:na:${hi}:문장삽입` },
     "무관한 문장": { key: `irrelevant_sentence:na:${hi}:무관한문장` },
     "밑줄 의미": { key: "underlined_inference:en:default:함축의미추론" },
-    "요약문 완성": { key: `sentence_blank:en:${hi}:빈칸추론`, substituted: true },
+    // 요약문 완성 객관식을 따로 만든다(윌링 2026-11-23 「객관식 요약문이 없다」)
+    "요약문 완성": { key: level === "상" ? "sentence_blank:en:high:요약완성AB" : "sentence_blank:en:mid:요약완성AB" },
     연결어: { key: "sentence_blank:en:default:연결어빈칸" },
     "어법 판단": { key: "grammar:na:default:어법추론" },
     "어법 (개수)": { key: "grammar:na:default:어법개수" },

@@ -269,7 +269,8 @@ export function resolveBlankSentenceId(
 }
 
 export function tokenizeWords(sentence: string): WordSpan[] {
-  const re = /[A-Za-z]+(?:'[A-Za-z]+)?/g;
+  // 굽은 따옴표(’)도 한 낱말로 — Let’s 가 「Let」+「s」로 갈려 「s」만 빈칸이 됐다(윌링, 선생님 2026-11-23)
+  const re = /[A-Za-z]+(?:['’][A-Za-z]+)?/g;
   const out: WordSpan[] = [];
   let m: RegExpExecArray | null;
   let idx = 0;
@@ -285,7 +286,7 @@ export function tokenizeWords(sentence: string): WordSpan[] {
 }
 
 export function isExcludedBlankWord(answerText: string): boolean {
-  const bare = answerText.replace(/[^A-Za-z']/g, "").toLowerCase();
+  const bare = answerText.replace(/[^A-Za-z'’]/g, "").replace(/’/g, "'").toLowerCase();
   if (!bare) return true;
   if (EXCLUDED_LOWER.has(bare)) return true;
   if (DEGREE_ADVERBS.has(bare)) return true;
@@ -530,6 +531,14 @@ export function validateBlankCandidates(input: {
       continue;
     }
     const hit = hits[occurrenceIndex]!;
+    /*
+     * 저장된 후보 묶음(lesson_pack_json)에 이미 들어간 「s」(lemma=traditional·series 등)도 막는다 — 표제어가
+     * 네 글자 이상인데 정답이 두 글자 이하면 밀린 자리다(전수 대조 2026-11-19).
+     */
+    if (hit.text.length <= 2 && lemma.length >= 4) {
+      rejected.push({ reason: `밀린 자리: ${hit.text} (표제어 ${lemma})`, raw, code: "TOKEN_MAPPING_FAILED" as const });
+      continue;
+    }
     const posKey = `${sentenceId}:${hit.start}:${hit.end}`;
     if (usedPositions.has(posKey)) {
       rejected.push({ reason: `위치 중복: ${posKey}`, raw });

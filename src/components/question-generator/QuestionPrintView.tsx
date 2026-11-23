@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { usePdfPrefetch, usePdfSave } from "@/components/pdf/usePdfSave";
 import { collectPrintPages } from "@/lib/pdf/download-sheets-pdf";
@@ -30,6 +30,7 @@ import {
   normalizePassage,
   parseGrammarCorrectionBlocks,
   parseReferenceAnswerBlock,
+  parseTaggedAnswerBlocks,
   parseSummaryTableBlocks,
   parseSummaryWritingBlocks,
   parseWordOrderBlocks,
@@ -175,6 +176,44 @@ function formatAnswer(a: unknown): string {
     return CIRCLED[a - 1] ?? String(a);
   }
   return String(a ?? "");
+}
+
+/** 빠른 정답 칸 — 객관식은 ①~⑤, 서술형(긴 답)은 「서술형」 */
+function quickAnswerText(a: unknown): string {
+  const s = formatAnswer(a).trim();
+  if (!s) return "-";
+  if (/^[①-⑤](\s*\/\s*[①-⑤])*$/.test(s) || /^\d{1,2}$/.test(s)) return s;
+  return "서술형";
+}
+
+/** 해설지 맨 앞 빠른 정답 표 — 번호 줄과 정답 줄을 10문항씩 */
+function QuickAnswerTable({ items }: { items: { num: number; ans: string }[] }) {
+  const rows: { num: number; ans: string }[][] = [];
+  for (let i = 0; i < items.length; i += 10) rows.push(items.slice(i, i + 10));
+  return (
+    <table className="qg-quick-answers">
+      <tbody>
+        {rows.map((row, r) => (
+          <Fragment key={r}>
+            <tr className="qg-quick-answers-no">
+              <th>번호</th>
+              {row.map((it) => (
+                <td key={it.num}>{it.num}</td>
+              ))}
+            </tr>
+            <tr>
+              <th>정답</th>
+              {row.map((it) => (
+                <td key={it.num} className={it.ans === "서술형" ? "qg-quick-answers-sub" : ""}>
+                  {it.ans}
+                </td>
+              ))}
+            </tr>
+          </Fragment>
+        ))}
+      </tbody>
+    </table>
+  );
 }
 
 function extractBannerNo(sourceDetail: string): string | null {
@@ -568,6 +607,12 @@ function QuestionBlock({
   const isCount = q.question_type === "content_count";
   const isInsertion = q.question_type === "sentence_insertion";
   const isIrrelevant = q.question_type === "irrelevant_sentence";
+  /** 요약문 완성 (A)(B) — 요약문은 지문 아래 상자, 보기는 (A)|(B) 두 칸 표(수능 40번형, 2026-11-23) */
+  const isSummaryAB = /:요약완성AB$/.test(String(q.option_key ?? ""));
+  const summaryPairs = isSummaryAB
+    ? (q.choices ?? []).map((c) => String(c.text ?? "").split(/\s*(?:……|…|\.{2,})\s*/).map((w) => w.trim()))
+    : null;
+  const summaryColumns = summaryPairs && summaryPairs.every((p) => p.length === 2) ? ["(A)", "(B)"] : null;
   const summaryTable = parseSummaryTableBlocks(q.question_text);
   const summaryWriting = summaryTable
     ? null
@@ -582,8 +627,13 @@ function QuestionBlock({
     summaryTable || summaryWriting || wordOrder || grammarFix
       ? null
       : parseReferenceAnswerBlock(q.question_text);
-  const extra =
+  /** 리얼영어 서술형 꼬리표 상자(<조건>/<보기>/<대화>/<개념> + <답란>) */
+  const tagged =
     summaryTable || summaryWriting || wordOrder || referenceAnswer || grammarFix
+      ? null
+      : parseTaggedAnswerBlocks(q.question_text);
+  const extra =
+    summaryTable || summaryWriting || wordOrder || referenceAnswer || grammarFix || tagged
       ? ""
       : cleanQuestionText(q.question_text);
   const passage = hidePassage ? "" : questionPassage(q);
@@ -597,6 +647,7 @@ function QuestionBlock({
     !summaryWriting &&
     !referenceAnswer &&
     !grammarFix &&
+    !tagged &&
     q.choices &&
     q.choices.length > 0 &&
     q.choices.some((c) => String(c.text ?? "").trim().length > 0);
@@ -665,6 +716,7 @@ function QuestionBlock({
       ) : null}
       {wordOrder ? <WordOrderBoxes blocks={wordOrder} /> : null}
       {grammarFix ? <GrammarCorrectionBoxes blocks={grammarFix} /> : null}
+      {tagged ? <TaggedAnswerBoxes blocks={tagged} /> : null}
       {referenceAnswer
         ? referenceAnswer.labels.map((lab) => (
             <p key={lab} className="qg-print-wo-answer-line">
@@ -690,11 +742,52 @@ function QuestionBlock({
           ) : (
             <p className="qg-print-extra" style={{ whiteSpace: "pre-line" }}>{renderMarkedText(extra)}</p>
           )
+        ) : /:답변가능개수$/.test(String(q.option_key ?? "")) ? (
+          <div>
+            <p className="qg-print-bogi-label">&lt; 보 기 &gt;</p>
+            <div className="qg-print-count-box qg-print-bogi-box">
+              {String(q.question_text ?? "")
+                .split(/\n+/)
+                .map((l) => l.trim())
+                .filter(Boolean)
+                .map((line, i) => (
+                  <p key={i} className="qg-print-bogi-line">
+                    {line}
+                  </p>
+                ))}
+            </div>
+          </div>
+        ) : isSummaryAB ? (
+          <div className="qg-print-summary-ab">
+            <p className="qg-print-summary-ab-arrow">↓</p>
+            <div className="qg-print-given-box qg-print-summary-ab-box">
+              {renderMarkedText(extra.replace(/\(\s*([AB])\s*\)/g, "<u>  ($1)  </u>"))}
+            </div>
+          </div>
         ) : (
           <p className="qg-print-extra">{extra}</p>
         )
       ) : null}
-      {showChoices && q.choice_columns?.length ? (
+      {showChoices && summaryColumns && summaryPairs ? (
+        <table className="qg-print-q-table qg-print-choice-table qg-print-summary-ab-choices">
+          <tbody>
+            <tr className="qg-print-q-table-head">
+              <td />
+              <td>(A)</td>
+              <td />
+              <td>(B)</td>
+            </tr>
+            {q.choices!.map((c, i) => (
+              <tr key={c.number}>
+                <td className="qg-print-choice-mark">{CIRCLED[c.number - 1] ?? `${c.number}.`}</td>
+                <td>{summaryPairs[i]![0]}</td>
+                <td className="qg-print-summary-ab-dots">……</td>
+                <td>{summaryPairs[i]![1]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : showChoices && q.choice_columns?.length ? (
         <table className="qg-print-q-table qg-print-choice-table">
           <tbody>
             <tr className="qg-print-q-table-head">
@@ -1591,6 +1684,20 @@ export function QuestionPrintView({
             id="qg-print-root"
             className={`max-w-[210mm] px-4 py-6 print:mx-0 print:max-w-none print:px-0 print:py-0 ${designClass(designStyle)} ${materialDesignClass(md)}`}
           >
+            {mode === "answers" && !embedded ? (
+              // 해설지 맨 앞 「빠른 정답」(리얼영어 시험지 모양, 2026-11-23). 쪽 나눔 계산과 엇갈리지 않게 따로 한 쪽.
+              <article className="qg-print-page qg-print-sheet qg-print-page-break">
+                {renderHeader(false, 0, sheetPages.length)}
+                <div className="qg-print-type-banner">
+                  <p className="qg-print-type-banner-title">빠른 정답</p>
+                </div>
+                <QuickAnswerTable
+                  items={displayItems.flatMap((it) =>
+                    it.kind === "q" ? [{ num: it.num, ans: quickAnswerText(it.q.correct_answer) }] : []
+                  )}
+                />
+              </article>
+            ) : null}
             {sheetPages.map((page, pageIdx) => (
               <article
                 key={pageIdx}
@@ -1967,6 +2074,33 @@ export function QuestionPrintView({
           {printBody}
         </div>
       </div>
+    </div>
+  );
+}
+
+/** 리얼영어 서술형: 꼬리표마다 상자 하나(< 조건 >·< 보기 >·대화·개념), 끝에 답 칸 줄 */
+function TaggedAnswerBoxes({ blocks }: { blocks: NonNullable<ReturnType<typeof parseTaggedAnswerBlocks>> }) {
+  return (
+    <div className="qg-print-tagged">
+      {blocks.sections.map((sec, i) => (
+        <div key={i} className="qg-print-tagged-sec">
+          {sec.tag === "대화" || sec.tag === "개념" ? null : (
+            <p className="qg-print-bogi-label">&lt; {sec.tag.split("").join(" ")} &gt;</p>
+          )}
+          <div className="qg-print-count-box qg-print-bogi-box">
+            {sec.body.split(/\n+/).map((line, k) => (
+              <p key={k} className="qg-print-bogi-line">
+                {renderMarkedText(line.replace(/_{3,}/g, "__________"))}
+              </p>
+            ))}
+          </div>
+        </div>
+      ))}
+      {blocks.answerLabels.map((lab) => (
+        <p key={lab} className="qg-print-wo-answer-line">
+          {lab} : _______________________________________________
+        </p>
+      ))}
     </div>
   );
 }

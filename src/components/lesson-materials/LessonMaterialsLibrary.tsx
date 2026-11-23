@@ -109,14 +109,15 @@ export function LessonMaterialsLibrary({
   const [folderChoice, setFolderChoice] = useState<FolderFilter>("all");
   const [libraryTab, setLibraryTab] = useState<LibraryTab>("materials");
   /**
-   * 폴더는 지문자료 탭에서만 쓴다. 수업용자료·분석서·워크북 탭은 고른 폴더와 상관없이
-   * 전체를 보여 주고, 왼쪽에서 폴더를 누르면 지문자료 탭으로 돌아간다.
+   * 고른 폴더는 모든 탭에 걸린다 — 수업용자료·워크북·1장 자료 탭도 그 폴더 지문으로 만든 파일만 보인다.
+   * 전에는 지문자료 탭에서만 폴더를 따르고 다른 탭은 전체가 나와, 폴더별로 만든 단어장·수업용 자료를 찾기 힘들었다
+   * (윌링 2026-11-23). 폴더를 눌러도 보던 탭을 그대로 둔다. 휴지통은 지문자료 탭에서만 본다.
    */
-  const folderScoped = libraryTab === "materials";
-  const folderFilter: FolderFilter = folderScoped ? folderChoice : "all";
+  const folderScoped = true;
+  const folderFilter: FolderFilter = folderChoice;
   function setFolderFilter(next: FolderFilter) {
     setFolderChoice(next);
-    setLibraryTab("materials");
+    if (next === "trash") setLibraryTab("materials");
   }
   const [selected, setSelected] = useState<Set<string>>(new Set());
   /** 아래 바의 「단어장 만들기」를 누를 때마다 늘린다 — 단어 탭이 이름 창을 띄운다 */
@@ -299,10 +300,33 @@ export function LessonMaterialsLibrary({
               : libraryTab === "integrated"
                 ? "integrated"
                 : null;
-  const tabDocuments = useMemo(
-    () => (documentKind ? (data.documents ?? []).filter((d) => d.kind === documentKind) : []),
-    [data.documents, documentKind]
+  /** 고른 폴더(하위 폴더 포함)의 지문 id. 전체·휴지통이면 null(거르지 않는다). */
+  const folderProjectIds = useMemo(() => {
+    if (folderFilter === "all" || folderFilter === "trash") return null;
+    if (folderFilter === "unfiled") return new Set(data.unfiledProjects.map((p) => p.id));
+    const ids = new Set(collectDescendantIds(folderFilter));
+    return new Set(data.projects.filter((p) => p.folder_id && ids.has(p.folder_id)).map((p) => p.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [folderFilter, data.projects, data.unfiledProjects, childrenByParent]);
+  /** 만든 파일이 고른 폴더의 지문을 하나라도 쓰면 그 폴더 것으로 본다 */
+  const docInFolder = (d: { project_ids?: string[] | null }) =>
+    !folderProjectIds || (Array.isArray(d.project_ids) && d.project_ids.some((id) => folderProjectIds.has(id)));
+  const folderDocuments = useMemo(
+    () => (data.documents ?? []).filter((d) => docInFolder(d)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data.documents, folderProjectIds]
   );
+  const tabDocuments = useMemo(
+    () => (documentKind ? folderDocuments.filter((d) => d.kind === documentKind) : []),
+    [folderDocuments, documentKind]
+  );
+  /** 단어장은 지문 목록이 없다 — 폴더 안 수업용 자료와 이름이 같은 단어장만(둘은 같은 이름으로 만든다) */
+  const folderVocabSets = useMemo(() => {
+    const sets = data.lessonVocabSets ?? [];
+    if (!folderProjectIds) return sets;
+    const names = new Set(folderDocuments.filter((d) => d.kind === "lesson_pack").map((d) => d.name.trim()));
+    return sets.filter((v) => names.has(v.title.trim()));
+  }, [data.lessonVocabSets, folderDocuments, folderProjectIds]);
   /** 워크북·1장 자료·변형문제·최종통합자료 탭은 만든 결과만 있고 지문별 목록이 없다. */
   const showProjectList =
     libraryTab === "materials" || libraryTab === "lesson" || libraryTab === "analysis" || libraryTab === "vocab";
@@ -1024,18 +1048,18 @@ export function LessonMaterialsLibrary({
               key="test_draw"
               role={role}
               kind="test_draw"
-              documents={(data.documents ?? []).filter((d) => d.kind === "test_draw")}
+              documents={folderDocuments.filter((d) => d.kind === "test_draw")}
             />
           </div>
         ) : null}
         {libraryTab === "vocab" && !inTrash ? (
           <LessonVocabTab
             role={role}
-            sets={data.lessonVocabSets ?? []}
+            sets={folderVocabSets}
             selectedIds={selectedInInputOrder}
             onMade={() => setSelected(new Set())}
             askSignal={vocabAsk}
-            lessonDocs={(data.documents ?? [])
+            lessonDocs={folderDocuments
               .filter((d) => d.kind === "lesson_pack")
               .map((d) => ({ name: d.name, project_ids: Array.isArray(d.project_ids) ? d.project_ids : [] }))}
           />
