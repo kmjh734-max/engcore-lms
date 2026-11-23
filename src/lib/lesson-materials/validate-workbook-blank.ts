@@ -288,6 +288,8 @@ export function tokenizeWords(sentence: string): WordSpan[] {
 export function isExcludedBlankWord(answerText: string): boolean {
   const bare = answerText.replace(/[^A-Za-z'’]/g, "").replace(/’/g, "'").toLowerCase();
   if (!bare) return true;
+  // 한 글자는 빈칸으로 내지 않는다 — U.S.의 S, 대화 화자 「W:」가 빈칸이 됐다(2026-11-23 전수 대조)
+  if (bare.replace(/'/g, "").length < 2) return true;
   if (EXCLUDED_LOWER.has(bare)) return true;
   if (DEGREE_ADVERBS.has(bare)) return true;
   if (/^\d+$/.test(bare)) return true;
