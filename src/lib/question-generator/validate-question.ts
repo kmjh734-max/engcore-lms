@@ -1086,6 +1086,31 @@ export function validateGeneratedQuestion(opts: {
     }
   }
 
+  /*
+   * 기록만 하는 표면 검사(2026-11-24 훑기에서 찾은 빈틈, 원가가 늘지 않게 다시 만들지는 않는다):
+   * 정답만 유난히 긴 보기 · 정답이 지문을 7낱말 이상 그대로 · 요지류 보기에 지문에 없는 숫자.
+   */
+  const keyNo = Number(q.correctAnswer);
+  if (option.isObjective && choiceTexts.length === 5 && Number.isInteger(keyNo) && keyNo >= 1 && keyNo <= 5 &&
+      choiceTexts.every((t) => t.split(/\s+/).length >= 3)) {
+    const lens = choiceTexts.map((t) => t.split(/\s+/).length);
+    const keyLen = lens[keyNo - 1]!;
+    const others = lens.filter((_, i) => i !== keyNo - 1);
+    if (keyLen - Math.max(...others) >= 3) warnings.push(`정답 보기만 유난히 깁니다(${lens.join("/")}낱말). 보기 길이로 찍힐 수 있습니다.`);
+    const keyWords = choiceTexts[keyNo - 1]!.toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9' ]/g, " ").split(/\s+/).filter(Boolean);
+    const body = ` ${plainText(opts.passage).toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9' ]/g, " ").replace(/\s+/g, " ")} `;
+    for (let i = 0; i + 7 <= keyWords.length; i++) {
+      if (body.includes(` ${keyWords.slice(i, i + 7).join(" ")} `)) {
+        warnings.push("정답 보기가 지문 문장을 7낱말 이상 그대로 옮겼습니다. 지문과 같은 문장 찾기로 풀립니다.");
+        break;
+      }
+    }
+    if (/^(title|topic|summary_mcq|underlined_inference)$/.test(option.type) || (option.type === "sentence_blank" && code === "빈칸추론")) {
+      const nums = choiceTexts.flatMap((t) => t.match(/\d[\d,.]*/g) ?? []).filter((n) => !plainText(opts.passage).includes(n.replace(/[.,]$/, "")));
+      if (nums.length) warnings.push(`보기에 지문에 없는 숫자가 있습니다(${[...new Set(nums)].join(", ")}). 지어낸 사실일 수 있습니다.`);
+    }
+  }
+
   // 빈칸추론: 두 보기가 말만 바꾼 같은 뜻이면 정답이 둘이다 (#139 「limits … apparent」 vs 「shortcomings … clear」)
   if (option.type === "sentence_blank" && Array.isArray(q.choices) && q.choices.length >= 5) {
     const bag = (s: string) =>

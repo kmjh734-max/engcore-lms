@@ -471,7 +471,26 @@ async function generateWithValidation(opts: {
 /** 문항 하나가 지금 있는 단계 — 진행 문구에 센다 */
 type QgStage = "make" | "check" | "redo" | "swap";
 
+/**
+ * 작업 안 k번째 문항의 정답 자리. 문항 차례 5개 묶음마다 ①~⑤를 한 번씩 섞어 쓴다(작업 id로 정해져
+ * 이어 만들어도 같다). 문항마다 따로 무작위로 섞으니 21문항 작업에 ④가 하나도 없었다(2026-11-24 훑기).
+ */
+export function balancedAnswerSlot(seed: string, k: number): number {
+  const round = Math.floor(k / 5);
+  let h = 2166136261;
+  for (const ch of `${seed}:${round}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+  const perm = [1, 2, 3, 4, 5];
+  for (let i = 4; i > 0; i--) {
+    h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0;
+    const j = h % (i + 1);
+    [perm[i], perm[j]] = [perm[j]!, perm[i]!];
+  }
+  return perm[k % 5]!;
+}
+
 type WorkItem = {
+  /** 정답이 갈 자리(1~5). 작업 안 문항 차례 5개마다 ①~⑤가 한 번씩 — 작업 안 정답 쏠림 막기(2026-11-24) */
+  answerSlot?: number;
   passageId: string;
   passageText: string;
   analysis: PassageAnalysis;
@@ -1143,6 +1162,7 @@ export async function runGenerationJob(
         const option = findOptionByKey(b.optionKey);
         if (!row || !option) return;
         work.push({
+          answerSlot: balancedAnswerSlot(jobId, index),
           passageId: row.passageId,
           passageText: row.passageRow.passage,
           analysis: row.analysis,
@@ -1187,6 +1207,7 @@ export async function runGenerationJob(
         copyIndexByKey.set(key, copyIndex + 1);
         if (copyIndex < (existingCountBySlot.get(key) ?? 0)) continue;
         work.push({
+          answerSlot: balancedAnswerSlot(jobId, pi * (setCfg ? setCfg.size : options.length) + pos),
           copyIndex,
           passageId,
           passageText: passageRow.passage,
@@ -1387,6 +1408,7 @@ export async function runGenerationJob(
       wordOrderMode: config.wordOrderMode ?? "passage",
       retries: item.slot ? 2 : undefined,
       setNote: item.setNote,
+      answerSlot: item.answerSlot,
     });
 
     /*

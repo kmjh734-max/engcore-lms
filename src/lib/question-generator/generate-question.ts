@@ -1514,7 +1514,9 @@ function parseChoiceAnswer(raw: unknown): number | null {
 function shuffleObjectiveChoices(
   choices: Array<{ number: number; text: string }>,
   correctAnswer: number,
-  explanation: string
+  explanation: string,
+  /** 정답을 둘 자리(1~n). 없으면 무작위 */
+  targetSlot?: number
 ): {
   choices: Array<{ number: number; text: string }>;
   correctAnswer: number;
@@ -1532,6 +1534,16 @@ function shuffleObjectiveChoices(
     const tmp = texts[i]!;
     texts[i] = texts[j]!;
     texts[j] = tmp;
+  }
+  // 정답 글을 정해 준 자리로 옮긴다(작업 안 정답 번호 고르게)
+  if (targetSlot && targetSlot >= 1 && targetSlot <= texts.length) {
+    const key = before[correctAnswer - 1]!;
+    const at = texts.indexOf(key);
+    if (at >= 0 && at !== targetSlot - 1) {
+      const tmp = texts[targetSlot - 1]!;
+      texts[targetSlot - 1] = key;
+      texts[at] = tmp;
+    }
   }
 
   // 섞기 전 번호 → 섞은 뒤 번호. 같은 글이 둘이면 앞에서부터 하나씩 짝지어 준다.
@@ -1614,11 +1626,41 @@ function hasHangul(text: string): boolean {
   return /[\uAC00-\uD7A3]/.test(text || "");
 }
 
+/**
+ * 문장형 영어 보기의 끝 마침표·첫 글자 대소문자를 다섯 보기에서 맞춘다(많은 쪽으로). 섞여 있으면 표기가
+ * 다른 보기가 눈에 띈다(2026-11-24 훑기 8건). 세 낱말 미만·기호 보기·제목(Title Case)은 건드리지 않는다.
+ */
+function tidyChoiceEdges(
+  choices: Array<{ number: number; text: string }>,
+  type: string
+): Array<{ number: number; text: string }> {
+  const texts = choices.map((c) => String(c.text ?? "").trim());
+  const sentence = texts.every((t) => /^[A-Za-z"“'‘]/.test(t) && t.split(/\s+/).length >= 3 && !/[가-힣]/.test(t));
+  if (!sentence) return choices;
+  let out = texts;
+  const dotted = out.filter((t) => /[.!?]["”’']?$/.test(t)).length;
+  if (dotted > 0 && dotted < out.length) {
+    out = dotted * 2 >= out.length
+      ? out.map((t) => (/[.!?]["”’']?$/.test(t) ? t : `${t}.`))
+      : out.map((t) => t.replace(/\.(["”’']?)$/, "$1"));
+  }
+  if (type !== "title") {
+    const caps = out.filter((t) => /^["“'‘]?[A-Z]/.test(t)).length;
+    // 대문자가 많을 때만 대문자로 올린다. 소문자로 내리면 「Anita's …」 같은 이름까지 소문자가 된다.
+    if (caps > 0 && caps < out.length && caps * 2 >= out.length) {
+      out = out.map((t) => t.replace(/^(["“'‘]?)([a-z])/, (_m, q: string, ch: string) => q + ch.toUpperCase()));
+    }
+  }
+  return choices.map((c, i) => ({ ...c, text: out[i]! }));
+}
+
 function normalizePayload(
   raw: Record<string, unknown>,
   option: QuestionTypeOption,
   passage: string,
-  forcedInstruction: string
+  forcedInstruction: string,
+  /** 섞을 때 정답을 둘 자리(작업 단위로 고르게) */
+  answerSlot?: number
 ): GeneratedQuestionPayload {
   let choices = Array.isArray(raw.choices)
     ? raw.choices
@@ -1682,6 +1724,7 @@ function normalizePayload(
     correctAnswer = n;
   } else {
     const parsed = parseChoiceAnswer(correctAnswer);
+    if (option.isObjective && choices && choices.length >= 2) choices = tidyChoiceEdges(choices, option.type);
     if (
       option.isObjective &&
       choices &&
@@ -1689,7 +1732,7 @@ function normalizePayload(
       !NO_SHUFFLE_TYPES.has(option.type)
     ) {
       const before = parsed ?? 1;
-      const shuffled = shuffleObjectiveChoices(choices, before, explanation);
+      const shuffled = shuffleObjectiveChoices(choices, before, explanation, answerSlot);
       choices = shuffled.choices;
       correctAnswer = shuffled.correctAnswer;
       explanation = shuffled.explanation;
@@ -2992,6 +3035,8 @@ export async function generateOneQuestion(opts: {
    * (API 없이 유형을 하나씩 돌려 보기, 선생님 2026-11-23). 운영 경로에서는 넘기지 않는다.
    */
   offlineRaw?: Record<string, unknown>;
+  /** 섞을 때 정답을 둘 자리(1~5). 작업 단위로 고르게 나눠 준다 */
+  answerSlot?: number;
 }): Promise<GeneratedQuestionPayload> {
   const { option, analysis } = opts;
   // 시험지 흔적(정답 표기·문장 번호)을 걷어 낸 지문으로 만든다
@@ -3285,7 +3330,7 @@ export async function generateOneQuestion(opts: {
     .filter(Boolean)
     .join("\n");
   const craftSystemHint = option.isObjective
-    ? "- 보기: 5개 모두 그럴듯하게. 정답만 눈에 띄지 않게. 강한 오답 ≥2. 황당 오답 금지. 정답 하나. 길이는 비슷하게.\n- 보기끼리 같은 말을 되풀이하지 않는다(선생님 지적 2026-11-23 「선지의 단어가 반복된다」): 다섯 보기가 같은 말로 시작하거나 같은 말로 끝나지 않게 문장 틀을 달리 쓰고, 지문의 글감 낱말을 그대로 쓰는 보기는 정답을 포함해 다섯 중 셋까지 — 나머지는 바꿔 말하거나(상위어·유의어, 대명사는 금지) 다른 측면을 말한다."
+    ? "- 보기: 5개 모두 그럴듯하게. 정답만 눈에 띄지 않게. 강한 오답 ≥2. 황당 오답 금지. 정답 하나. 길이는 비슷하게.\n- 보기끼리 같은 말을 되풀이하지 않는다(선생님 지적 2026-11-23 「선지의 단어가 반복된다」): 다섯 보기가 같은 말로 시작하거나 같은 말로 끝나지 않게 문장 틀을 달리 쓰고, 지문의 글감 낱말을 그대로 쓰는 보기는 정답을 포함해 다섯 중 셋까지 — 나머지는 바꿔 말하거나(상위어·유의어, 대명사는 금지) 다른 측면을 말한다.\n- 정답이 혼자 가장 긴 보기가 되지 않게 한다: 정답 낱말 수가 둘째로 긴 보기보다 3낱말 넘게 길지 않게 맞춘다(2026-11-24 훑기: 문장형 객관식 7.7%가 정답만 유난히 길었다).\n- 정답 보기는 지문 문장을 7낱말 이상 그대로 옮기지 않는다 — 바꿔 말한다(지문과 같은 문장만 찾으면 풀린다)."
     : "";
 
   const diversityHint =
@@ -3928,7 +3973,8 @@ ${opts.setNote.slice(0, 1800)}`] : []),
     raw,
     option,
     passage,
-    forcedInstruction
+    forcedInstruction,
+    opts.answerSlot
   );
   if (option.type === "sentence_insertion") {
     const endSlot = moveEndInsertionSlot(payload as { passageModified?: string | null; correctAnswer?: unknown; explanation?: string | null });
