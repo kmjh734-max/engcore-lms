@@ -96,7 +96,8 @@ export function countEnglishSentences(text: string): number {
   const cleaned = normalizePassage(text);
   if (!cleaned) return 0;
   const parts = cleaned
-    .split(/(?<!\b(?:Mr|Mrs|Ms|Dr|Prof|St|Mt|Jr|Sr)\.)(?<=[.!?])(?:\s+|$)/)
+    // 닫는 따옴표 뒤(「…way.” Then」)에서도 자른다 — 예전 식은 못 잘라 지문 9~15%를 적게 셌다(모의고사 분석 2026-11-24)
+    .split(ENGLISH_SENTENCE_GAP)
     .map((s) => s.trim())
     .filter((s) => {
       const letters = (s.match(/[A-Za-z]/g) ?? []).length;

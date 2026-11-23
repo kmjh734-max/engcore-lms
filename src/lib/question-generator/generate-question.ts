@@ -442,7 +442,7 @@ LANGUAGE: passageModified + choices MUST be ENGLISH only (no Korean).`;
         return `문장빈칸 HIGH (상) — 효자 기출동형:
 - In passageModified, blank ONE important sentence (or key clause) with ____________________________________.
 - The blanked content must be a flow-critical sentence from the passage.
-- What to blank (학교 기출 2026-11-24): the claim/topic sentence or its key clause — most often the LAST sentence or a MIDDLE claim sentence, rarely an example detail. Blank a span of about 6~14 words of the original.
+- What to blank (학교 기출 2026-11-24): the claim/topic sentence or its key clause — most often the LAST sentence or a MIDDLE claim sentence, rarely an example detail. Blank a span of about 6~14 words of the original. Never blank the FIRST sentence. In a claim → example → conclusion passage (모의고사 빈칸 지문의 모양), good targets are the sentence right before "For example" or a sentence starting with Thus/Therefore/In short.
 - 5 ENGLISH full-sentence/phrase choices.
 - CRITICAL: ALL choices (including the correct one) must PARAPHRASE the blanked sentence — synonyms/rewording, NOT copy the original wording.
 ${blankLengthRule}
@@ -453,7 +453,7 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
       return `문장빈칸 LOW (하) — 효자 기출동형:
 - In passageModified, blank ONE important sentence (or key clause) with ____________________________________.
 - The blanked content must be a flow-critical sentence from the passage (like mock-exam sentence blanks).
-- What to blank (학교 기출 2026-11-24): the claim/topic sentence or its key clause — most often the LAST sentence or a MIDDLE claim sentence, rarely an example detail. Blank a span of about 6~14 words of the original.
+- What to blank (학교 기출 2026-11-24): the claim/topic sentence or its key clause — most often the LAST sentence or a MIDDLE claim sentence, rarely an example detail. Blank a span of about 6~14 words of the original. Never blank the FIRST sentence. In a claim → example → conclusion passage (모의고사 빈칸 지문의 모양), good targets are the sentence right before "For example" or a sentence starting with Thus/Therefore/In short.
 - 5 ENGLISH full-sentence/phrase choices that fit the blank. The correct answer keeps the original MEANING but rewords it with COMMON words (학교 기출 빈칸 정답의 68%가 원문 낱말 30% 미만, 원문 그대로는 7%) — do not copy the blanked words; keep it easy by using everyday vocabulary, not by copying.
 ${blankLengthRule}
 - Exactly one correct. questionText empty.
@@ -3412,6 +3412,16 @@ export async function generateOneQuestion(opts: {
     opts.focusRegion != null &&
     copyIndex === 0 &&
     !/개수|통문장|요약|주제|제목|요지|사례|비유|답변/.test(regionCode);
+  /*
+   * 통념→반박 지문(모의고사 22번 요지 22%·20번 주장 25%가 2~3번째 문장이 역접으로 시작, 2026-11-24 분석):
+   * 첫 문장은 반박되는 통념이라 그것을 정답으로 고르면 틀린다. 코드가 역접을 찾아 대의 유형에만 알려 준다.
+   */
+  const passageSentences = passage.split(ENGLISH_SENTENCE_GAP).map((x) => x.trim()).filter(Boolean);
+  const turnAt = passageSentences.slice(1, 3).findIndex((x) => /^(However|But|Yet|Instead|In fact|In reality|Actually|On the contrary),?\s/.test(x));
+  const mythHint =
+    turnAt >= 0 && /^(title|topic|summary_mcq)$/.test(option.type)
+      ? `- MYTH→REBUTTAL PASSAGE: sentence ${turnAt + 2} starts with a contrast word, so the opening is a view the writer rejects. The correct choice states what comes AFTER the contrast; make one strong distractor restate the opening view.`
+      : "";
   const regionHint = regionApplies
     ? `- SAME-PASSAGE SPREAD: other questions on this passage test other sentences. Put THIS item's answer evidence (the blanked sentence / the wrong underline / the true-or-false statement's source / the underlined expression) in the ${["FIRST third", "MIDDLE third", "LAST third"][opts.focusRegion!]} of the passage, unless no suitable sentence is there.`
     : "";
@@ -3768,7 +3778,7 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
           total: opts.diversitySlot.total,
           label: opts.diversitySlot.label,
         },
-      })}${diversityHint ? `\n${diversityHint}` : ""}${copyHint ? `\n${copyHint}` : ""}${regionHint ? `\n${regionHint}` : ""}`
+      })}${diversityHint ? `\n${diversityHint}` : ""}${copyHint ? `\n${copyHint}` : ""}${regionHint ? `\n${regionHint}` : ""}${mythHint ? `\n${mythHint}` : ""}`
     : "";
 
   /*
