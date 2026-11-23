@@ -91,6 +91,7 @@ export function topicChoiceCraft(en: boolean): string {
 - 강한 오답①: 대상은 맞지만 관계가 틀림.
 - 강한 오답②: 관계는 맞지만 범위가 너무 좁거나 넓음.
 - 그 외: 도입부만 / 사례만 일반화.
+- 다섯 보기가 같은 글감 낱말·같은 시작(「How dissatisfied professionals …」)을 되풀이하지 않는다. 글감 낱말을 그대로 쓰는 보기는 다섯 중 셋까지, 나머지는 바꿔 말한다(2026-11-23 「선지의 단어가 반복된다」).
 - 정답만 과도하게 추상·멋진 표현 금지.`;
 }
 
@@ -100,6 +101,7 @@ export function titleChoiceCraft(en: boolean): string {
 - 비유·수수께끼·시적 표현 금지, 글감을 막연한 말로 가리기 금지 (전수조사 2026-10-04: 제목 정답 17%가 무슨 글인지 드러나지 않았다 —
   'A Pledge Still Out of Reach', 'When Planned Reserves Meet Present Lures', 'A Leaner Method That Opened New Visual Possibilities').
 - 강한 오답: 글감은 같되 메시지 빗나감 / 범위 오류. 오답도 직설적으로 쓴다(정답과 톤을 맞추되 모두 분명하게).
+- 정답은 글감 낱말을 담지만, 오답이 모두 같은 글감 낱말·같은 틀(「… That Organize Everyday Time」)을 되풀이하지 않는다. 글감 낱말을 그대로 쓰는 보기는 다섯 중 셋까지, 나머지는 바꿔 말하거나 다른 측면을 제목으로 삼는다(2026-11-23 「선지의 단어가 반복된다」: 10-04 뒤 제목 보기 85%가 같은 낱말을 4~5개 보기에 되풀이했다).
 ${
     en
       ? `- 영어 제목은 줄여 쓰다 뜻이 흐려지지 않게 완전한 말로 쓴다(2026-11-12 시험: 제목 7문항 중 2문항이 영어가 어색했다).

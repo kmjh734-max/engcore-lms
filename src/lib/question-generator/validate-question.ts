@@ -1030,6 +1030,62 @@ export function validateGeneratedQuestion(opts: {
     }
   }
 
+  /*
+   * 보기끼리 같은 말 되풀이(선생님 2026-11-23 「선지의 단어가 반복된다」). 10-04 규칙 뒤 제목·주제 보기의 85~89%가
+   * 같은 내용어를 4~5개 보기에 되풀이했다. 심한 것만 다시 만든다: 다섯 보기 모두에 든 내용어, 4개 이상에 든
+   * 내용어 둘 이상, 4개 이상이 같은 두 낱말로 시작·끝. 지문 속 고유명사(사람·곳 이름)는 세지 않는다.
+   */
+  const repeatType =
+    option.type === "title" ||
+    option.type === "topic" ||
+    option.type === "summary_mcq" ||
+    (option.type === "sentence_blank" && code === "빈칸추론") ||
+    (option.type === "underlined_inference" && code === "함축의미추론");
+  const choiceTexts = (q.choices ?? []).map((c) => plainText(String(c?.text ?? "")));
+  if (repeatType && choiceTexts.length === 5 && choiceTexts.every((t) => /[A-Za-z]/.test(t) && !/[가-힣]/.test(t))) {
+    const REPEAT_STOP = new Set(
+      "the a an of to in and or for with on by as is are be been its it that this these those their his her them they from at not only but how why what when which who than more most can will may into about over through without between because people".split(" ")
+    );
+    const proper = new Set(
+      [...plainText(opts.passage).matchAll(/(?<=[a-z,;]\s)([A-Z][a-z]+)/g)].map((m) => m[1]!.toLowerCase())
+    );
+    const wordsOf = (t: string) =>
+      t
+        .toLowerCase()
+        .replace(/[’‘]/g, "'")
+        .replace(/[^a-z' ]/g, " ")
+        .split(/\s+/)
+        .filter((w) => w.length > 2 && !REPEAT_STOP.has(w) && !proper.has(w));
+    const cnt = new Map<string, number>();
+    for (const t of choiceTexts) for (const w of new Set(wordsOf(t))) cnt.set(w, (cnt.get(w) ?? 0) + 1);
+    const inAll = [...cnt].filter(([, n]) => n === 5).map(([w]) => w);
+    const inFour = [...cnt].filter(([, n]) => n >= 4).map(([w]) => w);
+    const edge = (pick: (ws: string[]) => string[]) => {
+      const m = new Map<string, number>();
+      for (const t of choiceTexts) {
+        const k = pick(t.toLowerCase().replace(/[^a-z' ]/g, " ").split(/\s+/).filter(Boolean)).join(" ");
+        if (k.split(" ").length === 2) m.set(k, (m.get(k) ?? 0) + 1);
+      }
+      return [...m].find(([, n]) => n >= 4)?.[0] ?? null;
+    };
+    const sameStart = edge((ws) => ws.slice(0, 2));
+    const sameEnd = edge((ws) => ws.slice(-2));
+    const why = [
+      inAll.length ? `다섯 보기 모두에 「${inAll.join(", ")}」` : "",
+      !inAll.length && inFour.length >= 2 ? `네 보기 이상에 「${inFour.join(", ")}」` : "",
+      sameStart ? `네 보기 이상이 「${sameStart} …」로 시작` : "",
+      sameEnd ? `네 보기 이상이 「… ${sameEnd}」로 끝남` : "",
+    ].filter(Boolean);
+    if (why.length) {
+      warnings.push(`보기끼리 같은 말을 되풀이합니다(${why.join(" · ")}). 글감 낱말은 셋까지만 그대로 쓰고 문장 틀을 달리 써 주세요.`);
+      /*
+       * 기록만 하고 다시 만들지는 않는다. 보기 규칙만으로 반복이 70%대 → 10~20%대로 줄었고, 다시 만들게 하니
+       * 원가가 문항당 49원 → 59원(110크레딧의 1.88배)으로 올라 2배를 밑돌고 유형 대체도 났다(2026-11-24 시험 23문항).
+       */
+      score -= 10;
+    }
+  }
+
   // 빈칸추론: 두 보기가 말만 바꾼 같은 뜻이면 정답이 둘이다 (#139 「limits … apparent」 vs 「shortcomings … clear」)
   if (option.type === "sentence_blank" && Array.isArray(q.choices) && q.choices.length >= 5) {
     const bag = (s: string) =>
