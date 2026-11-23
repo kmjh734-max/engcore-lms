@@ -53,6 +53,7 @@ import {
 import { countEnglishSentences } from "@/lib/question-generator/text-utils";
 import { isSetMarkKey, setFallbackAllowed, setKeysForPassage } from "@/lib/question-generator/passage-set";
 import { setNoteFor, sharedPassageOf } from "@/lib/question-generator/passage-set-check";
+import { frameChoiceExplanation } from "@/lib/question-generator/explanation-frame";
 import { markedSentences, mergeMarkedPassages } from "@/lib/question-generator/passage-set-merge";
 import type {
   GenerationRequestConfig,
@@ -157,7 +158,7 @@ export function runAdaptivePool<T>(
   });
 }
 
-function toRow(
+export function toRow(
   payload: GeneratedQuestionPayload,
   opts: {
     passageId: string;
@@ -206,7 +207,15 @@ function toRow(
     correct_answer: payload.correctAnswer,
     acceptable_answers: payload.acceptableAnswers ?? null,
     // 번호 뒤 조사를 읽는 소리에 맞춘다(①는 → ①은)
-    explanation: fixCircledParticles(payload.explanation),
+    // 객관식 해설 끝은 「따라서 정답은 '…' ④번이다.」(리얼영어 틀, 2026-11-23)
+    explanation: fixCircledParticles(
+      frameChoiceExplanation({
+        explanation: payload.explanation,
+        choices: payload.choices,
+        correctAnswer: payload.correctAnswer,
+        isObjective: opts.option.isObjective,
+      })
+    ),
     hard_words: payload.hardWords ?? [],
     evidence: payload.evidence ?? [],
     scoring_guide: payload.scoringGuide ?? null,
@@ -1925,7 +1934,14 @@ export async function regenerateSingleQuestion(opts: {
     choices: result.payload.choices ?? null,
     correct_answer: result.payload.correctAnswer,
     acceptable_answers: result.payload.acceptableAnswers ?? null,
-    explanation: result.payload.explanation,
+    explanation: fixCircledParticles(
+      frameChoiceExplanation({
+        explanation: result.payload.explanation,
+        choices: result.payload.choices,
+        correctAnswer: result.payload.correctAnswer,
+        isObjective: option.isObjective,
+      })
+    ),
     evidence: [],
     scoring_guide: result.payload.scoringGuide ?? null,
     validation_result: result.payload.validation ?? null,

@@ -180,6 +180,12 @@ const SAMPLES: Record<string, TypeSample> = {
     shape: "영어 질문 ⓐ~ⓖ 일곱 개 가운데 글에 답이 있는 것을 세기",
     lines: ["ⓐ What happens to children labeled as smart?  ⓑ In which year did …?  …", "① 2개  ② 3개  ③ 4개  ④ 5개  ⑤ 6개"],
   },
+  비유대응: {
+    name: "비유 대응",
+    stem: "다음 글에서 비유적으로 쓰인 표현과 그것이 나타내는 대상이 바르게 짝지어진 것은?",
+    shape: "글의 비유 표현(왼쪽)과 그것이 가리키는 대상(오른쪽) 짝 고르기",
+    lines: ["① the best tea …… a leader's abilities", "② the water …… the people a leader works with  …"],
+  },
   사례분류: {
     name: "사례 분류",
     stem: "다음 글의 내용을 바탕으로 할 때, 사례 ①~⑤ 중 나머지 넷과 성격이 다른 것은?",

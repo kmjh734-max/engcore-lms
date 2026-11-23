@@ -91,7 +91,8 @@ function inspectSpots(passageModified: string) {
 function expectedMarks(code: VocabularyCode, answer: number | null): string[] {
   if (code === "어휘추론") return VOCAB_MARKS.slice(0, 5);
   if (answer == null || answer < 1 || answer > 5) return [];
-  return VOCAB_MARKS.slice(0, answer + 3);
+  // 만들 때와 같은 자리 수 — 생성은 max(5, 개수+3)인데 여기는 개수+3이라 「1개」 문항(5곳)이 늘 떨어졌다(2026-11-23)
+  return VOCAB_MARKS.slice(0, Math.max(5, answer + 3));
 }
 
 function renderExplanation(

@@ -1006,6 +1006,21 @@ export function validateGeneratedQuestion(opts: {
     }
   }
 
+  // 비유 대응: 「지문 표현 …… 뜻」 다섯, 왼쪽은 지문에 그대로
+  if (code === "비유대응") {
+    const pairs = (q.choices ?? []).map((c) => String(c?.text ?? "").split(/\s*(?:……|…)\s*/));
+    if (pairs.length !== 5 || pairs.some((p) => p.length !== 2 || !p[0]!.trim() || !p[1]!.trim())) {
+      warnings.push("보기는 「지문 표현 …… 나타내는 대상」 다섯이어야 합니다.");
+      score -= 80;
+    } else {
+      const body = plainText(opts.passage).toLowerCase().replace(/[’‘]/g, "'");
+      const missing = pairs.filter((p) => !body.includes(p[0]!.trim().toLowerCase().replace(/[’‘]/g, "'")));
+      if (missing.length) {
+        warnings.push(`보기 왼쪽 표현이 지문에 없습니다: ${missing.map((p) => p[0]).join(", ")}`);
+        score -= 60;
+      }
+    }
+  }
   // 사례 분류형: 영어 사례 다섯
   if (code === "사례분류") {
     const short = (q.choices ?? []).filter((c) => String(c?.text ?? "").split(/\s+/).length < 10);
@@ -1203,14 +1218,26 @@ export function validateGeneratedQuestion(opts: {
       if (!mk) continue;
       const isList = /(?:어색한|틀린)\s*것은/.test(line);
       if (isList) {
-        for (const m of line.matchAll(/[ⓐ-ⓖ①-⑤]/g)) wrong.add(m[0]!);
+        /*
+         * 목록은 「…것은 ⓑ, ⓕ로 / ⓑ, ⓕ이다」까지만 센다. 한 줄 해설이 뒤에서 ⓐⓒⓓⓔ를 「알맞다」고 짚은 것까지
+         * 틀린 것으로 세어 멀쩡한 문항을 버렸다(2026-11-23 API 없이 돌려 보기). 뒤쪽은 조각마다 맞다/틀리다를 가린다.
+         */
+        const at = line.search(/(?:어색한|틀린)\s*것은/);
+        const seg = line.slice(at).split(/[.。]|로\s|이다|이며|으로/)[0] ?? "";
+        for (const m of seg.matchAll(/[ⓐ-ⓖ①-⑤]/g)) wrong.add(m[0]!);
+        for (const part of line.slice(at + seg.length).split(/[.,]/)) {
+          const mk2 = part.match(/[ⓐ-ⓖ①-⑤]/);
+          if (!mk2) continue;
+          if (/→|->|⇒|틀림|틀리다|어색|부적절|고쳐/.test(part)) wrong.add(mk2[0]!);
+          else if (/맞음|맞다|맞습니다|올바른|알맞|적절하다/.test(part)) right.add(mk2[0]!);
+        }
         continue;
       }
       if (/→|->|⇒|틀림|틀리다|어색|부적절/.test(line)) wrong.add(mk[0]!);
       else if (/맞음|맞다|맞습니다|올바른|알맞|적절하다/.test(line)) right.add(mk[0]!);
     }
     // 머리글이 한 줄에 다 들어온 해설도 읽는다
-    const listed = expl.match(/(?:어색한|틀린)\s*것은[^\n]{1,60}/);
+    const listed = expl.match(/(?:어색한|틀린)\s*것은[^\n.]{1,60}/);
     if (listed) for (const m of listed[0]!.matchAll(/[ⓐ-ⓖ①-⑤]/g)) wrong.add(m[0]!);
 
     const inBody = new Set(

@@ -400,6 +400,16 @@ LANGUAGE: passageModified + choices ENGLISH only.`;
 - explanation (Korean): list the answerable letters with the passage words that answer each — the words must be the actual answer to that question (who/what it asks for), not a nearby phrase — then say why each other one cannot be answered.
 LANGUAGE: questions ENGLISH, explanation Korean.`;
       }
+      if (code === "비유대응") {
+        // 글의 비유 표현과 그것이 나타내는 대상(리얼영어 「비유 대응」)
+        return `비유 대응 — 「다음 글에서 비유적으로 쓰인 표현과 그것이 나타내는 대상이 바르게 짝지어진 것은?」
+- Use only when the passage builds an ANALOGY or METAPHOR (A stands for B: tea in a bag ↔ a leader's talent, a wall ↔ isolation). If there is none, output {"skip":true,"reason":"비유 없음"}.
+- Do NOT change the passage (omit passageModified). questionText "".
+- choices = 5 pairs written "expression …… what it stands for" — the left side is copied word for word from the passage (2~6 words), the right side is a short ENGLISH phrase (3~8 words) naming what it represents in the writer's point.
+- Exactly one pair is right. Each wrong pair links a real passage expression to a wrong meaning that is plausible (another element of the analogy, the opposite, or too literal).
+- correctAnswer = the right pair. explanation (Korean): explain the analogy, why the right pair matches, and why each wrong pair does not.
+LANGUAGE: choices ENGLISH, explanation Korean.`;
+      }
       if (code === "사례분류") {
         // 다섯 사례 가운데 성격이 다른 하나(리얼영어 「사례 분류형」 17문항)
         return `사례 분류형 — 「다음 글의 내용을 바탕으로 할 때, 사례 ①~⑤ 중 나머지 넷과 성격이 다른 것은?」
@@ -2267,8 +2277,8 @@ export function assertBasicQuestionShape(
       const pronoun = (um?.[1] || "it").replace(/\s+/g, " ").trim();
       q.instruction =
         n === 1
-          ? `다음 글의 밑줄 친 ⓐ${pronoun}이 가리키는 바를 본문에서 정확히 찾아 한 단어의 영어로 쓰시오.`
-          : `다음 글의 밑줄 친 ⓐ${pronoun}이 가리키는 바를 본문에서 정확히 찾아 ${n}단어의 영어로 쓰시오.`;
+          ? `다음 글의 밑줄 친 ⓐ${pronoun}가 가리키는 바를 본문에서 정확히 찾아 한 단어의 영어로 쓰시오.`
+          : `다음 글의 밑줄 친 ⓐ${pronoun}가 가리키는 바를 본문에서 정확히 찾아 ${n}단어의 영어로 쓰시오.`;
     } else {
       const n = countEnglishWords(ans);
       if (n < 3 || n > 12) {
@@ -2927,7 +2937,7 @@ const QG_MODEL_MAIN = process.env.OPENAI_MODEL_QG_MAIN?.trim() || "gpt-5.6-sol";
 export const TAGGED_WRITING_CODES = new Set(["어휘빈칸공통", "주제문작성", "구문변환", "대화문완성", "내용매칭"]);
 
 /** 지문은 그대로 두고 문제 글(questionText)+객관식 보기를 내는 sentence_blank 갈래 코드 */
-export const QT_MCQ_CODES = new Set(["요약완성AB", "답변가능개수", "사례분류"]);
+export const QT_MCQ_CODES = new Set(["요약완성AB", "답변가능개수", "사례분류", "비유대응"]);
 
 const LIGHT_TYPES = new Set(["title", "topic", "sentence_blank", "content_false", "content_true", "content_count"]);
 
@@ -2977,6 +2987,11 @@ export async function generateOneQuestion(opts: {
   attempt?: number;
   /** 첫 메시지(유형 규칙)만 보내 캐시를 데우고 끝낸다 */
   primeOnly?: boolean;
+  /**
+   * 시험용: 모델을 부르지 않고 이 답(모델이 낼 JSON)을 받은 것으로 친다. 뒤 다듬기·모양 검사는 그대로 탄다
+   * (API 없이 유형을 하나씩 돌려 보기, 선생님 2026-11-23). 운영 경로에서는 넘기지 않는다.
+   */
+  offlineRaw?: Record<string, unknown>;
 }): Promise<GeneratedQuestionPayload> {
   const { option, analysis } = opts;
   // 시험지 흔적(정답 표기·문장 번호)을 걷어 낸 지문으로 만든다
@@ -3111,7 +3126,7 @@ export async function generateOneQuestion(opts: {
 
   const needsQuestionText =
     isTaggedWriting ||
-    (isQtMcq && (option.aingkaCode || meta?.aingkaCode) !== "사례분류") ||
+    (isQtMcq && !["사례분류", "비유대응"].includes(option.aingkaCode || meta?.aingkaCode || "")) ||
     option.type === "content_count" ||
     option.type === "sentence_insertion" ||
     isWordOrder ||
@@ -3864,7 +3879,10 @@ ${opts.setNote.slice(0, 1800)}`] : []),
     return null as unknown as GeneratedQuestionPayload;
   }
 
-  const raw = (await questionGeneratorChatJsonWithRetry({
+  if (opts.offlineRaw && process.env.QG_SHOW_PROMPT === "1") {
+    console.log(["----- SYSTEM -----", callBase.system, "----- USER -----", userParts.join("\n\n")].join("\n"));
+  }
+  const raw = opts.offlineRaw ? { ...opts.offlineRaw } : (await questionGeneratorChatJsonWithRetry({
     ...callBase,
     user: userParts,
     /*

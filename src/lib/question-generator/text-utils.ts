@@ -303,6 +303,8 @@ export function passageHasConsecutiveWords(
   const norm = (s: string) =>
     (s || "")
       .toLowerCase()
+      // 굽은 따옴표도 낱말 안 아포스트로피로 — you’ve가 두 낱말로 갈려 지문에 있는 정답을 버렸다(2026-11-23 API 없이 돌려 보기)
+      .replace(/[’‘]/g, "'")
       .replace(/[^\p{L}\p{N}\s']/gu, " ")
       .replace(/\s+/g, " ")
       .trim();
