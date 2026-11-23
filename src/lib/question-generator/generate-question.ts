@@ -1185,6 +1185,7 @@ word1 / word2 / … (6~10개, 정답 ⓐ+ⓑ를 섞은 핵심 단어. 동사는 
 | Building | Her uncle said a school would be built for village children. | Her eyes (B) with joy. |
 | Distance | The nearest school was (C) away on foot. | She imagined learning to read and write. |
 
+- 빈칸마다 들어갈 본문 낱말은 하나뿐이어야 한다. 본문의 다른 낱말이나 그 꼴 바꾸기(inflexible → flexible, 본문이 같은 말로 풀어 쓴 homeostasis / balance)도 들어가면 칸의 문장을 바꿔 하나로 좁힌다(2026-11-24 직접 풀기 2건).
 - 줄 이름과 빈칸이 아닌 칸에는 (A)(B)(C)의 정답 낱말을 쓰지 않는다(정답이 capacity 인데 줄 이름이 Capacity 이거나 옆 칸에 "no such capacity" 가 있으면 표만 보고 답한다).
 - 표는 <b>정확히 세 칸</b>이다. 첫 줄이 머리글이고, 그 아래 세 줄이 내용이다.
   줄마다 | 로 칸을 나눈다.
@@ -3411,7 +3412,8 @@ export async function generateOneQuestion(opts: {
   const regionApplies =
     opts.focusRegion != null &&
     copyIndex === 0 &&
-    !/개수|통문장|요약|주제|제목|요지|사례|비유|답변/.test(regionCode);
+    // 제시어배열은 코드가 중요한 문장을 골라 준다(선생님 2026-10-04 「주제문·결론으로」) — 구역 힌트와 부딪히지 않게 뺀다
+    !/개수|통문장|요약|주제|제목|요지|사례|비유|답변|대화문|매칭|어휘빈칸|제시어배열/.test(regionCode);
   /*
    * 통념→반박 지문(모의고사 22번 요지 22%·20번 주장 25%가 2~3번째 문장이 역접으로 시작, 2026-11-24 분석):
    * 첫 문장은 반박되는 통념이라 그것을 정답으로 고르면 틀린다. 코드가 역접을 찾아 대의 유형에만 알려 준다.
@@ -3423,7 +3425,7 @@ export async function generateOneQuestion(opts: {
       ? `- MYTH→REBUTTAL PASSAGE: sentence ${turnAt + 2} starts with a contrast word, so the opening is a view the writer rejects. The correct choice states what comes AFTER the contrast; make one strong distractor restate the opening view.`
       : "";
   const regionHint = regionApplies
-    ? `- SAME-PASSAGE SPREAD: other questions on this passage test other sentences. Put THIS item's answer evidence (the blanked sentence / the wrong underline / the true-or-false statement's source / the underlined expression) in the ${["FIRST third", "MIDDLE third", "LAST third"][opts.focusRegion!]} of the passage, unless no suitable sentence is there.`
+    ? `- SAME-PASSAGE SPREAD: other questions on this passage test other sentences. Put THIS item's answer evidence (the blanked sentence / the wrong underline / the true-or-false statement's source / the underlined expression / the sentence to rebuild or rewrite) in the ${["FIRST third", "MIDDLE third", "LAST third"][opts.focusRegion!]} of the passage, unless no suitable sentence is there.`
     : "";
 
   // 순서추론도 나열 지문이면 건너뛴다(2026-10-03 전수 대조: 「I have a dream」 반복 연설·항목 나열에서 순서가 둘 이상 성립)

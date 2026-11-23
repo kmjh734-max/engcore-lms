@@ -489,7 +489,7 @@ export function balancedAnswerSlot(seed: string, k: number): number {
 }
 
 /** 정답 근거가 지문 한 곳에 놓이는 유형 — 구역 돌리기 대상 */
-const REGION_TYPES = new Set(["sentence_blank", "vocabulary", "grammar", "underlined_inference", "content_true", "content_false"]);
+const REGION_TYPES = new Set(["sentence_blank", "vocabulary", "grammar", "underlined_inference", "content_true", "content_false", "writing"]);
 
 type WorkItem = {
   /** 정답이 갈 자리(1~5). 작업 안 문항 차례 5개마다 ①~⑤가 한 번씩 — 작업 안 정답 쏠림 막기(2026-11-24) */
