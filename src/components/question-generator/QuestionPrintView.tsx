@@ -2081,17 +2081,14 @@ export function QuestionPrintView({
 /** 리얼영어 서술형: 꼬리표마다 상자 하나(< 조건 >·< 보기 >·대화·개념), 끝에 답 칸 줄 */
 function TaggedAnswerBoxes({ blocks }: { blocks: NonNullable<ReturnType<typeof parseTaggedAnswerBlocks>> }) {
   return (
-    <div className="qg-print-tagged">
+    // 기존 서술형(제시어 배열·요약문·어법 수정)과 같은 상자 모양 — 상자 안 왼쪽 위에 <조건> 꼬리표(2026-11-23 모양 맞춤)
+    <div className="qg-print-word-order">
       {blocks.sections.map((sec, i) => (
-        <div key={i} className="qg-print-tagged-sec">
-          {sec.tag === "대화" || sec.tag === "개념" ? null : (
-            <p className="qg-print-bogi-label">&lt; {sec.tag.split("").join(" ")} &gt;</p>
-          )}
-          <div className="qg-print-count-box qg-print-bogi-box">
+        <div key={i} className="qg-print-wo-box">
+          <p className="qg-print-wo-label">&lt;{sec.tag}&gt;</p>
+          <div className={`qg-print-wo-body${sec.tag === "보기" && !/^[①-⑤]/m.test(sec.body) ? " qg-print-wo-words" : ""}`}>
             {sec.body.split(/\n+/).map((line, k) => (
-              <p key={k} className="qg-print-bogi-line">
-                {renderMarkedText(line.replace(/_{3,}/g, "__________"))}
-              </p>
+              <p key={k}>{renderMarkedText(line.replace(/_{3,}/g, "__________"))}</p>
             ))}
           </div>
         </div>
