@@ -292,6 +292,52 @@ function GrammarScopeBox({
   );
 }
 
+/**
+ * 대의·세부·추론·어법 칸은 하/상·(영)/(한) 표로 그린다. 표에 없는 유형(리얼영어 요약문 완성·답변 가능 개수·사례 분류 등, 2026-11-23)은
+ * 칸 아래 「더 많은 유형」에 줄로 나온다. 표에 새 유형을 넣지 않아도 빠지지 않게 하려는 것(선생님 2026-11-24 「변형문제 보니깐 안 보여」).
+ */
+const FIXED_LAYOUT_KEYS = new Set<string>([
+  "title:en:low:제목추론",
+  "title:en:high:제목추론",
+  "title:ko:low:제목추론",
+  "title:ko:high:제목추론",
+  "topic:en:low:주제추론",
+  "topic:en:high:주제추론",
+  "topic:ko:low:주제추론",
+  "topic:ko:high:주제추론",
+  "summary_mcq:ko:low:요지추론",
+  "summary_mcq:ko:high:요지추론",
+  "content_true:en:low:내용일치",
+  "content_true:en:high:내용일치",
+  "content_true:ko:low:내용일치",
+  "content_true:ko:high:내용일치",
+  "content_false:en:low:내용불일치",
+  "content_false:en:high:내용불일치",
+  "content_false:ko:low:내용불일치",
+  "content_false:ko:high:내용불일치",
+  "content_count:en:low:일치개수",
+  "content_count:en:high:일치개수",
+  "content_count:ko:low:일치개수",
+  "content_count:ko:high:일치개수",
+  "order:na:low:순서추론",
+  "order:na:high:순서추론",
+  "sentence_blank:en:low:빈칸추론",
+  "sentence_blank:en:high:빈칸추론",
+  "sentence_insertion:na:low:문장삽입",
+  "sentence_insertion:na:high:문장삽입",
+  "irrelevant_sentence:na:low:무관한문장",
+  "irrelevant_sentence:na:high:무관한문장",
+  "underlined_inference:en:default:함축의미추론",
+  "underlined_inference:en:default:목적추론",
+  "underlined_inference:en:default:심경추론",
+  "sentence_blank:en:default:연결어빈칸",
+  "grammar:na:default:어법추론",
+  "grammar:na:default:어법개수",
+  "vocabulary:na:default:어휘추론",
+  "vocabulary:na:default:어휘개수",
+  "summary_mcq:en:default:요지추론",
+]);
+
 export function QuestionGeneratorClient({
   role,
   basePath,
@@ -1575,6 +1621,47 @@ export function QuestionGeneratorClient({
                           ) : null}
                         </div>
                       )}
+                      {(isMainIdea || isDetails || isInference || isGrammar) &&
+                        (() => {
+                          const extra = group.options.filter((o) => !FIXED_LAYOUT_KEYS.has(o.key));
+                          if (extra.length === 0) return null;
+                          return (
+                            <div className="mt-2 space-y-0.5 border-t border-slate-100 pt-1.5">
+                              <p className="mb-1 text-[11px] font-semibold text-slate-700">더 많은 유형</p>
+                              {extra.map((opt) => {
+                                const n = counts[opt.key] ?? 0;
+                                return (
+                                  <div
+                                    key={opt.key}
+                                    data-qtype={opt.key}
+                                    className="flex items-center gap-1 rounded border border-slate-100 bg-slate-50/80 px-1.5 py-0.5"
+                                  >
+                                    <span className="min-w-0 flex-1 truncate text-[11px] text-slate-800">
+                                      {opt.label}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
+                                      onClick={() => setCount(opt.key, n - 1)}
+                                    >
+                                      −
+                                    </button>
+                                    <span className="w-5 shrink-0 text-center text-xs font-bold tabular-nums text-slate-900">
+                                      {n}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
+                                      onClick={() => setCount(opt.key, n + 1)}
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        })()}
                     </div>
                   )}
                 </div>
