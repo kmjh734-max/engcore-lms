@@ -642,10 +642,12 @@ function pieceProps(part: PrintPiecePart | undefined) {
  * 단을 넘겨 이어 실은 지문 조각 맨 위의 작은 표시. 표시 없이 문장만 옆 단 위에 있으면
  * 새 지문처럼 보여 어색했다(선생님 지적 2026-09-18: "단이 잘리는 건 괜찮은데 이상하게 잘린다").
  */
-function ContinuedLabel({ index }: { index: number }) {
+/** 앞 단에서 이어지는 문항 — 동형모의고사는 시험지 번호(서술 1 등)로(구현고2 서비스 회차에서 「07번」으로 나왔다) */
+function ContinuedLabel({ index, itemNo }: { index: number; itemNo?: string | null }) {
+  const no = itemNo?.trim();
   return (
     <p className="qg-print-cont-label" data-qg-cont="">
-      {padNo(index)}번 지문 이어서
+      {no ? (/^\d+$/.test(no) ? `${no}번` : `[${no}]`) : `${padNo(index)}번`} 지문 이어서
     </p>
   );
 }
@@ -752,7 +754,7 @@ function QuestionBlock({
   if (isCount) {
     return (
       <section className={`qg-print-card qg-print-count-card${cardClass}`} data-qg-qid={q.id}>
-        {!head ? <ContinuedLabel index={index} /> : null}
+        {!head ? <ContinuedLabel index={index} itemNo={q.item_no} /> : null}
         {head && passageSource ? <p className="qg-print-q-source" data-qg-head="">{passageSource}</p> : null}
         {head ? (
           <p className="qg-print-q-head" data-qg-head="">
@@ -786,7 +788,7 @@ function QuestionBlock({
 
   return (
     <section className={`qg-print-card${cardClass}`} data-qg-qid={q.id}>
-      {!head ? <ContinuedLabel index={index} /> : null}
+      {!head ? <ContinuedLabel index={index} itemNo={q.item_no} /> : null}
       {head ? (
         <div data-qg-head="">
           {passageSource ? <p className="qg-print-q-source">{passageSource}</p> : null}
