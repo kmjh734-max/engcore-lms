@@ -369,7 +369,7 @@ ${choiceExplanationRules()}
 - Do NOT change the passage at all (omit passageModified).
 - questionText = ONE English summary sentence (18~32 words) of the WHOLE passage's main point, with two blanks written exactly as "(A)" and "(B)" (one word each, or a two-word phrase at most). Do not copy a passage sentence; paraphrase the gist.
 - With the right words filled in, the summary must read as a natural sentence that the passage itself would agree with clause by clause. Do not invent a link the passage does not make (e.g. "X's inefficiency makes Y sustainable" when the passage never says X causes Y) — use the passage's own relation (contrast, cause, sequence) between the two ideas. Each blank fills a plain role (an adjective describing a thing, a verb for what someone does), not an odd collocation like "energy that is (B) by harmful effects".
-- The words for (A) and (B) are NOT copied from the passage: use a synonym or another form (e.g. passage "led baby turtles home" → (A) reliable). Each blank word must be supported by the passage.
+- The words for (A) and (B) are NOT copied from the passage: use a synonym or another form (e.g. passage "led baby turtles home" → (A) reliable). Each blank word must be supported by the passage: the correct answer restates something the passage actually says, not a general benefit it never mentions (e.g. "broadens horizons" when the passage only says the experiences themselves bring happiness).
 - 5 choices, each written "wordA …… wordB" (A first, then B, separated by " …… "). Exactly one pair fits BOTH blanks.
 - Every wrong pair must fail on at least one blank for a reason you can point to in the passage (opposite meaning, wrong relation, not stated). Use each correct word once or twice among the wrong pairs so a student cannot pick by one blank alone — but never make a wrong pair where both words also fit.
 - Choices are single words (or two-word phrases), same part of speech within each column, similar length.
@@ -382,6 +382,7 @@ LANGUAGE: questionText + choices ENGLISH only. explanation Korean.`;
         return `빈칸 추론(단어) — 「다음 빈칸에 들어갈 말로 가장 적절한 것은?」:
 - In passageModified, replace ONE key content word (noun/verb/adjective/adverb that carries the passage's main point) with ________. Exactly one blank. Everything else word for word.
 - Choose a word whose meaning the rest of the passage clearly supports (a contrast, a repeated idea, an example that explains it). Do not blank a word that appears again elsewhere in the passage unchanged (it would give the answer away).
+- Every choice placed in the blank must make a grammatical, sensible-sounding sentence; it is wrong only because the passage rules it out. So do not blank a word inside a fixed frame where the wrong choices turn into nonsense ("20 times as ___ as the price" → "20 times as modest as"), and do not blank a number or a plain comparison word (high/low, more/less).
 - Blank a word that stands alone: never one word of a phrasal verb ("caught up"), a fixed two-word term ("lactic acid", "student council") or a hyphenated word, so the answer is ONE word.
 - 5 ENGLISH single-word choices — each choice is exactly one word: no spaces, no article, no particle, no ending period. Same part of speech and form as the blank (if the blank needs "-ing" or plural, every choice has that form). The key may be the original word or a close synonym that fits exactly.
 - Wrong choices: plausible in the sentence alone but contradicted by the passage's logic (opposite, too narrow, unrelated quality). Never a synonym of the key that also fits.
@@ -832,7 +833,7 @@ ${choiceExplanationRules()}
       if (code === "어휘빈칸공통") {
         // 빈칸 ⓐ, ⓑ에 공통으로 들어갈 한 낱말(리얼영어 「어휘 빈칸」 102문항)
         return `서술형 · 어휘 빈칸(공통 한 낱말):
-- 지문에 세 번 이상 나오고 글의 핵심을 이루는 내용어 하나를 고른다(명사·동사·형용사; 관사·전치사·대명사·고유명사 금지). 세 번 나오는 낱말이 없으면 {"skip":true,"reason":"세 번 나오는 핵심어 없음"}.
+- 지문에 세 번 이상 나오고 글의 핵심을 이루는 내용어 하나를 고른다(명사·동사·형용사; 관사·전치사·대명사·고유명사 금지, make·do·have·get·take·go 같은 기본 동사와 thing·way·people 같은 흔한 말도 금지 — 글의 주제를 담은 낱말이어야 한다). 이름의 일부인 자리(「Shilin Night Market」의 Market)는 비우지 않는다. 세 번 나오는 낱말이 없으면 {"skip":true,"reason":"세 번 나오는 핵심어 없음"}.
 - passageModified = 영어 지문. 그 낱말이 나오는 자리 가운데 두 곳을 ⓐ__________, ⓑ__________ 로 바꾼다(형태가 같은 자리 둘). 적어도 한 곳은 비우지 않고 남겨 학생이 지문에서 찾을 수 있게 한다. 어느 두 자리를 비울지는 자유다 — 남는 자리가 빈칸에서 되도록 멀어지게 고른다. 남겨 둔 자리는 빈칸과 같은 문장에 두지 않는다(「Imagine an ⓐ____. The part of the ⓑ____ … the iceberg」처럼 빈칸 바로 뒤에 답이 보이면 읽지 않고 풀린다, 2026-11-24). 바로 옆 문장밖에 남길 데가 없으면 그래도 만든다 — 이것 때문에 skip하지 않는다. 나머지는 원문 그대로.
 - 빈칸 둘 다 문맥만으로 그 낱말이 떠오르게 고른다(다른 낱말도 자연스럽게 들어가는 자리는 피한다).
 - questionText:
@@ -874,7 +875,7 @@ LANGUAGE: 보기·정답 영어.`;
         // 밑줄 문장을 조건대로 바꿔 쓰기(리얼영어 「구문 변환」 10문항)
         return `서술형 · 구문 변환:
 - 지문에서 바꿔 쓰기 좋은 문장 하나를 고른다: 수동태(→능동태), 능동태(→수동태), 분사구문(→부사절), 관계사절(→분사), It ~ to 가주어, 도치 등. 뜻이 그대로 유지되는 변환만.
-- 바꾼 문장도 원어민이 실제로 쓸 자연스러운 영어여야 한다. 일반 주어(you, we, people, they, one)를 by로 붙이는 수동태(「…needs to be increased by you」)는 쓰지 않는다 — 그런 문장이면 다른 변환이나 다른 문장을 고른다.
+- 바꾼 문장도 원어민이 실제로 쓸 자연스러운 영어여야 한다. 일반 주어(you, we, people, they, one)를 by로 붙이는 수동태(「…needs to be increased by you」)는 쓰지 않는다. 사물·추상 명사를 by 뒤에 두는 5형식 수동태(「This painting was made an important symbol by the historical background」)도 어색하다 — 그런 문장이면 다른 변환이나 다른 문장을 고른다.
 - 문장 구조가 실제로 바뀌는 변환이어야 한다. 낱말 한두 개를 덧붙이거나 바꾸는 것(To → In order to, can → be able to, so → therefore)은 구문 변환이 아니다 — 그런 것밖에 없으면 다른 문장을 고른다.
 - passageModified = 영어 지문. 그 문장을 ⓐ<u>문장</u> 으로 밑줄. 나머지는 원문 그대로.
 - questionText:

@@ -1004,6 +1004,11 @@ export function validateGeneratedQuestion(opts: {
       warnings.push("밑줄은 문장 통째로 다섯 개여야 합니다.");
       score -= 80;
     }
+    // 「The reason? You have …」처럼 묻는 문장과 다음 문장을 한 밑줄로 묶은 일(2026-11-24 db51027e)
+    if (us.some((u) => /[?]\s*["”’]?\s+\S/.test(u))) {
+      warnings.push("밑줄 하나에 문장이 둘 들어갔습니다(묻는 문장 포함). 밑줄은 한 문장씩, 묻는 문장은 빼야 합니다.");
+      score -= 45;
+    }
     // 지문 첫 문장을 통째로 빼먹고 통과한 일(2026-11-24 실제 생성 e11b1475) — 문장 수가 줄면 잡는다
     const before = sentencesOf(plainText(opts.passage)).length;
     const after = sentencesOf(plainText(String(q.passageModified ?? "").replace(/[ⓐ-ⓔ①-⑤]\s*(?=<u>)/g, ""))).length;
