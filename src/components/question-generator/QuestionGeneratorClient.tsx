@@ -292,51 +292,149 @@ function GrammarScopeBox({
   );
 }
 
-/**
- * 대의·세부·추론·어법 칸은 하/상·(영)/(한) 표로 그린다. 표에 없는 유형(리얼영어 요약문 완성·답변 가능 개수·사례 분류 등, 2026-11-23)은
- * 칸 아래 「더 많은 유형」에 줄로 나온다. 표에 새 유형을 넣지 않아도 빠지지 않게 하려는 것(선생님 2026-11-24 「변형문제 보니깐 안 보여」).
+
+/*
+ * 유형 메뉴 한 줄 = 유형 하나, 오른쪽에 하·상 칸(선생님 2026-11-24 「줄 간격을 줄이든, 상하를 쉽게 고르게 하든, 칸을 줄이든」).
+ * 예전에는 하·상이 따로 이름+버튼 두 줄짜리 카드여서 메뉴가 화면 두 개 반이었다. 유형·키는 그대로이고 보이는 모양만 바꾼다.
  */
-const FIXED_LAYOUT_KEYS = new Set<string>([
-  "title:en:low:제목추론",
-  "title:en:high:제목추론",
-  "title:ko:low:제목추론",
-  "title:ko:high:제목추론",
-  "topic:en:low:주제추론",
-  "topic:en:high:주제추론",
-  "topic:ko:low:주제추론",
-  "topic:ko:high:주제추론",
-  "summary_mcq:ko:low:요지추론",
-  "summary_mcq:ko:high:요지추론",
-  "content_true:en:low:내용일치",
-  "content_true:en:high:내용일치",
-  "content_true:ko:low:내용일치",
-  "content_true:ko:high:내용일치",
-  "content_false:en:low:내용불일치",
-  "content_false:en:high:내용불일치",
-  "content_false:ko:low:내용불일치",
-  "content_false:ko:high:내용불일치",
-  "content_count:en:low:일치개수",
-  "content_count:en:high:일치개수",
-  "content_count:ko:low:일치개수",
-  "content_count:ko:high:일치개수",
-  "order:na:low:순서추론",
-  "order:na:high:순서추론",
-  "sentence_blank:en:low:빈칸추론",
-  "sentence_blank:en:high:빈칸추론",
-  "sentence_insertion:na:low:문장삽입",
-  "sentence_insertion:na:high:문장삽입",
-  "irrelevant_sentence:na:low:무관한문장",
-  "irrelevant_sentence:na:high:무관한문장",
-  "underlined_inference:en:default:함축의미추론",
+type TypeRow = { label: string; hint?: string; low?: string; high?: string; one?: string };
+
+const TYPE_ROWS: Record<string, TypeRow[]> = {
+  main_idea: [
+    { label: "제목 (영)", low: "title:en:low:제목추론", high: "title:en:high:제목추론" },
+    { label: "제목 (한)", low: "title:ko:low:제목추론", high: "title:ko:high:제목추론" },
+    { label: "주제 (영)", low: "topic:en:low:주제추론", high: "topic:en:high:주제추론" },
+    { label: "주제 (한)", low: "topic:ko:low:주제추론", high: "topic:ko:high:주제추론" },
+    { label: "요지", low: "summary_mcq:ko:low:요지추론", high: "summary_mcq:ko:high:요지추론" },
+    { label: "요약문 완성 (A)(B)", low: "sentence_blank:en:mid:요약완성AB", high: "sentence_blank:en:high:요약완성AB" },
+  ],
+  details: [
+    { label: "일치 (영)", low: "content_true:en:low:내용일치", high: "content_true:en:high:내용일치" },
+    { label: "일치 (한)", low: "content_true:ko:low:내용일치", high: "content_true:ko:high:내용일치" },
+    { label: "불일치 (영)", low: "content_false:en:low:내용불일치", high: "content_false:en:high:내용불일치" },
+    { label: "불일치 (한)", low: "content_false:ko:low:내용불일치", high: "content_false:ko:high:내용불일치" },
+    { label: "일치개수 (영)", low: "content_count:en:low:일치개수", high: "content_count:en:high:일치개수" },
+    { label: "일치개수 (한)", low: "content_count:ko:low:일치개수", high: "content_count:ko:high:일치개수" },
+  ],
+  inference: [
+    { label: "순서", low: "order:na:low:순서추론", high: "order:na:high:순서추론" },
+    { label: "문장 빈칸", low: "sentence_blank:en:low:빈칸추론", high: "sentence_blank:en:high:빈칸추론" },
+    { label: "삽입", low: "sentence_insertion:na:low:문장삽입", high: "sentence_insertion:na:high:문장삽입" },
+    { label: "무관한 문장", low: "irrelevant_sentence:na:low:무관한문장", high: "irrelevant_sentence:na:high:무관한문장" },
+    { label: "함축 의미", hint: "영어 보기", one: "underlined_inference:en:default:함축의미추론" },
+  ],
+  grammar_vocabulary: [
+    { label: "어법 추론", one: "grammar:na:default:어법추론" },
+    { label: "어법 개수", hint: "상 = 8곳", low: "grammar:na:default:어법개수", high: "grammar:na:high:어법개수" },
+    { label: "어휘 추론", one: "vocabulary:na:default:어휘추론" },
+    { label: "어휘 개수", one: "vocabulary:na:default:어휘개수" },
+  ],
+};
+
+/** 추론 칸 「기타」 접힘 줄(예전 그대로) */
+const INFERENCE_GITA_KEYS = [
   "underlined_inference:en:default:목적추론",
   "underlined_inference:en:default:심경추론",
   "sentence_blank:en:default:연결어빈칸",
-  "grammar:na:default:어법추론",
-  "grammar:na:default:어법개수",
-  "vocabulary:na:default:어휘추론",
-  "vocabulary:na:default:어휘개수",
-  "summary_mcq:en:default:요지추론",
-]);
+];
+/** 표에 따로 두지 않는 유형(요지 (영)은 A4 변형동형 전용) */
+const ROW_HIDDEN = new Set(["summary_mcq:en:default:요지추론", ...INFERENCE_GITA_KEYS]);
+
+/** 칸의 줄들 — 정해 둔 줄 + 표에 없는 유형은 그 칸 끝에 한 줄씩(새 유형이 빠지지 않게) */
+function typeRowsFor(category: string, options: ReadonlyArray<{ key: string; label: string }>): TypeRow[] {
+  const rows = (TYPE_ROWS[category] ?? []).filter((r) => [r.low, r.high, r.one].some((k) => k && options.some((o) => o.key === k)));
+  const used = new Set(rows.flatMap((r) => [r.low, r.high, r.one].filter(Boolean) as string[]));
+  const rest = options.filter((o) => !used.has(o.key) && !ROW_HIDDEN.has(o.key)).map((o) => ({ label: o.label, one: o.key }));
+  return [...rows, ...rest];
+}
+
+/** 「모두 넣기 (+1)」가 넣는 유형(예전과 같음) */
+const ADD_ALL: Record<string, string[]> = {
+  main_idea: [
+    "title:en:low:제목추론", "title:en:high:제목추론", "title:ko:low:제목추론", "title:ko:high:제목추론",
+    "topic:en:low:주제추론", "topic:en:high:주제추론", "topic:ko:low:주제추론", "topic:ko:high:주제추론",
+    "summary_mcq:ko:low:요지추론", "summary_mcq:ko:high:요지추론",
+  ],
+  details: [
+    "content_true:en:low:내용일치", "content_true:en:high:내용일치", "content_true:ko:low:내용일치", "content_true:ko:high:내용일치",
+    "content_false:en:low:내용불일치", "content_false:en:high:내용불일치", "content_false:ko:low:내용불일치", "content_false:ko:high:내용불일치",
+    "content_count:en:low:일치개수", "content_count:en:high:일치개수", "content_count:ko:low:일치개수", "content_count:ko:high:일치개수",
+  ],
+  inference: [
+    "order:na:low:순서추론", "order:na:high:순서추론", "sentence_blank:en:low:빈칸추론", "sentence_blank:en:high:빈칸추론",
+    "sentence_insertion:na:low:문장삽입", "sentence_insertion:na:high:문장삽입",
+    "irrelevant_sentence:na:low:무관한문장", "irrelevant_sentence:na:high:무관한문장",
+    "underlined_inference:en:default:함축의미추론",
+  ],
+  grammar_vocabulary: [
+    "grammar:na:default:어법추론", "grammar:na:default:어법개수", "vocabulary:na:default:어휘추론", "vocabulary:na:default:어휘개수",
+  ],
+};
+
+function MiniStepper({ k, n, setCount }: { k: string; n: number; setCount: (key: string, n: number) => void }) {
+  const on = n > 0;
+  return (
+    <div
+      data-qtype={k}
+      className={`inline-flex h-6 items-center rounded-md border ${on ? "border-brand-400 bg-brand-50" : "border-slate-200 bg-white"}`}
+    >
+      <button type="button" aria-label="빼기" className="h-full w-5 text-sm leading-none text-slate-500 hover:text-slate-900" onClick={() => setCount(k, n - 1)}>
+        −
+      </button>
+      <span className={`w-4 text-center text-xs tabular-nums ${on ? "font-bold text-brand-800" : "text-slate-400"}`}>{n}</span>
+      <button type="button" aria-label="더하기" className="h-full w-5 text-sm leading-none text-slate-500 hover:text-slate-900" onClick={() => setCount(k, n + 1)}>
+        +
+      </button>
+    </div>
+  );
+}
+
+function TypeRows({
+  rows,
+  counts,
+  setCount,
+  hideHead,
+}: {
+  rows: TypeRow[];
+  counts: Record<string, number>;
+  setCount: (key: string, n: number) => void;
+  hideHead?: boolean;
+}) {
+  const twoCols = rows.some((r) => r.low || r.high);
+  return (
+    <div className="divide-y divide-slate-100">
+      {twoCols && !hideHead ? (
+        <div className="grid grid-cols-[1fr_62px_62px] items-end pb-0.5 text-center text-[10px] font-semibold text-slate-400">
+          <span />
+          <span>하</span>
+          <span>상</span>
+        </div>
+      ) : null}
+      {rows.map((r) => (
+        <div
+          key={r.label + (r.one ?? r.low ?? r.high)}
+          data-qtype={r.one ?? undefined}
+          className={`grid items-center gap-x-1 py-[3px] ${twoCols ? "grid-cols-[1fr_62px_62px]" : "grid-cols-[1fr_auto]"}`}
+        >
+          <span className="min-w-0 truncate text-[12px] text-slate-800">
+            {r.label}
+            {r.hint ? <span className="ml-1 text-[10px] text-slate-400">{r.hint}</span> : null}
+          </span>
+          {r.one ? (
+            <span className={`flex justify-center ${twoCols ? "col-span-2" : ""}`}>
+              <MiniStepper k={r.one} n={counts[r.one] ?? 0} setCount={setCount} />
+            </span>
+          ) : (
+            <>
+              <span className="flex justify-center">{r.low ? <MiniStepper k={r.low} n={counts[r.low] ?? 0} setCount={setCount} /> : null}</span>
+              <span className="flex justify-center">{r.high ? <MiniStepper k={r.high} n={counts[r.high] ?? 0} setCount={setCount} /> : null}</span>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function QuestionGeneratorClient({
   role,
@@ -1095,455 +1193,10 @@ export function QuestionGeneratorClient({
                   </div>
                   {open && (
                     <div className="border-t border-slate-100 px-2 py-1.5">
-                  {isMainIdea ? (
-                    <div className="space-y-2">
-                      <p className="text-[11px] leading-snug text-slate-500">
-                        하/상 · (영)/(한)
-                      </p>
-                      {(
-                        [
-                          {
-                            rowLabel: "제목",
-                            keys: [
-                              "title:en:low:제목추론",
-                              "title:en:high:제목추론",
-                              "title:ko:low:제목추론",
-                              "title:ko:high:제목추론",
-                            ],
-                          },
-                          {
-                            rowLabel: "주제",
-                            keys: [
-                              "topic:en:low:주제추론",
-                              "topic:en:high:주제추론",
-                              "topic:ko:low:주제추론",
-                              "topic:ko:high:주제추론",
-                            ],
-                          },
-                          {
-                            rowLabel: "요지",
-                            keys: [
-                              "summary_mcq:ko:low:요지추론",
-                              "summary_mcq:ko:high:요지추론",
-                            ],
-                          },
-                        ] as const
-                      ).map((row) => (
-                        <div key={row.rowLabel}>
-                          <p className="mb-1 text-[11px] font-semibold text-slate-700">
-                            {row.rowLabel}
-                          </p>
-                          <div className="grid grid-cols-2 gap-1">
-                            {row.keys.map((key) => {
-                              const opt = group.options.find(
-                                (o) => o.key === key
-                              );
-                              if (!opt) return null;
-                              const n = counts[key] ?? 0;
-                              return (
-                                <div
-                                  key={key}
-                                data-qtype={key}
-                                  className="rounded border border-slate-200 bg-slate-50 px-1.5 py-1"
-                                >
-                                  <span className="block truncate text-[11px] font-medium text-slate-800">
-                                    {opt.label}
-                                  </span>
-                                  <div className="mt-0.5 flex items-center justify-between gap-0.5">
-                                    <button
-                                      type="button"
-                                      className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                      onClick={() => setCount(key, n - 1)}
-                                    >
-                                      −
-                                    </button>
-                                    <span className="min-w-[1.25rem] text-center text-xs font-bold tabular-nums text-slate-900">
-                                      {n}
-                                    </span>
-                                    <button
-                                      type="button"
-                                      className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                      onClick={() => setCount(key, n + 1)}
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        className="w-full text-xs"
-                        onClick={() =>
-                          addCounts([
-                            ["title:en:low:제목추론", 1],
-                            ["title:en:high:제목추론", 1],
-                            ["title:ko:low:제목추론", 1],
-                            ["title:ko:high:제목추론", 1],
-                            ["topic:en:low:주제추론", 1],
-                            ["topic:en:high:주제추론", 1],
-                            ["topic:ko:low:주제추론", 1],
-                            ["topic:ko:high:주제추론", 1],
-                            ["summary_mcq:ko:low:요지추론", 1],
-                            ["summary_mcq:ko:high:요지추론", 1],
-                          ])
-                        }
-                      >
-                        모두 넣기 (+1)
-                      </Button>
-                    </div>
-                  ) : isDetails ? (
-                    <div className="space-y-2">
-                      <p className="text-[11px] leading-snug text-slate-500">
-                        하/상 · (영)/(한) · 효자·학력평가형 일치/불일치
-                      </p>
-                      {(
-                        [
-                          {
-                            rowLabel: "일치",
-                            keys: [
-                              "content_true:en:low:내용일치",
-                              "content_true:en:high:내용일치",
-                              "content_true:ko:low:내용일치",
-                              "content_true:ko:high:내용일치",
-                            ],
-                          },
-                          {
-                            rowLabel: "불일치",
-                            keys: [
-                              "content_false:en:low:내용불일치",
-                              "content_false:en:high:내용불일치",
-                              "content_false:ko:low:내용불일치",
-                              "content_false:ko:high:내용불일치",
-                            ],
-                          },
-                          {
-                            rowLabel: "일치개수",
-                            keys: [
-                              "content_count:en:low:일치개수",
-                              "content_count:en:high:일치개수",
-                              "content_count:ko:low:일치개수",
-                              "content_count:ko:high:일치개수",
-                            ],
-                          },
-                        ] as const
-                      ).map((row) => (
-                        <div key={row.rowLabel}>
-                          <p className="mb-1 text-[11px] font-semibold text-slate-700">
-                            {row.rowLabel} 세트 수
-                          </p>
-                          <div className="grid grid-cols-2 gap-1">
-                            {row.keys.map((key) => {
-                              const opt = group.options.find(
-                                (o) => o.key === key
-                              );
-                              if (!opt) return null;
-                              const n = counts[key] ?? 0;
-                              return (
-                                <div
-                                  key={key}
-                                data-qtype={key}
-                                  className="rounded border border-slate-200 bg-slate-50 px-1.5 py-1"
-                                >
-                                  <span className="block truncate text-[11px] font-medium text-slate-800">
-                                    {opt.label}
-                                  </span>
-                                  <div className="mt-0.5 flex items-center justify-between gap-0.5">
-                                    <button
-                                      type="button"
-                                      className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                      onClick={() => setCount(key, n - 1)}
-                                    >
-                                      −
-                                    </button>
-                                    <span className="min-w-[1.25rem] text-center text-xs font-bold tabular-nums text-slate-900">
-                                      {n}
-                                    </span>
-                                    <button
-                                      type="button"
-                                      className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                      onClick={() => setCount(key, n + 1)}
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        className="w-full text-xs"
-                        onClick={() =>
-                          addCounts([
-                            ["content_true:en:low:내용일치", 1],
-                            ["content_true:en:high:내용일치", 1],
-                            ["content_true:ko:low:내용일치", 1],
-                            ["content_true:ko:high:내용일치", 1],
-                            ["content_false:en:low:내용불일치", 1],
-                            ["content_false:en:high:내용불일치", 1],
-                            ["content_false:ko:low:내용불일치", 1],
-                            ["content_false:ko:high:내용불일치", 1],
-                            ["content_count:en:low:일치개수", 1],
-                            ["content_count:en:high:일치개수", 1],
-                            ["content_count:ko:low:일치개수", 1],
-                            ["content_count:ko:high:일치개수", 1],
-                          ])
-                        }
-                      >
-                        모두 넣기 (+1)
-                      </Button>
-                    </div>
-                  ) : isInference ? (
-                    <div className="space-y-2">
-                      <p className="text-[11px] leading-snug text-slate-500">
-                        하/상 · 효자·학력평가형 (순서·빈칸·삽입·무관)
-                      </p>
-                      {(
-                        [
-                          {
-                            rowLabel: "순서",
-                            keys: [
-                              "order:na:low:순서추론",
-                              "order:na:high:순서추론",
-                            ],
-                          },
-                          {
-                            rowLabel: "문장빈칸",
-                            keys: [
-                              "sentence_blank:en:low:빈칸추론",
-                              "sentence_blank:en:high:빈칸추론",
-                            ],
-                          },
-                          {
-                            rowLabel: "삽입",
-                            keys: [
-                              "sentence_insertion:na:low:문장삽입",
-                              "sentence_insertion:na:high:문장삽입",
-                            ],
-                          },
-                          {
-                            rowLabel: "무관한 문장",
-                            keys: [
-                              "irrelevant_sentence:na:low:무관한문장",
-                              "irrelevant_sentence:na:high:무관한문장",
-                            ],
-                          },
-                        ] as const
-                      ).map((row) => (
-                        <div key={row.rowLabel}>
-                          <p className="mb-1 text-[11px] font-semibold text-slate-700">
-                            {row.rowLabel}
-                          </p>
-                          <div className="grid grid-cols-2 gap-1">
-                            {row.keys.map((key) => {
-                              const opt = group.options.find(
-                                (o) => o.key === key
-                              );
-                              if (!opt) return null;
-                              const n = counts[key] ?? 0;
-                              return (
-                                <div
-                                  key={key}
-                                data-qtype={key}
-                                  className="rounded border border-slate-200 bg-slate-50 px-1.5 py-1"
-                                >
-                                  <span className="block truncate text-[10px] font-medium text-slate-800">
-                                    {opt.label}
-                                  </span>
-                                  <div className="mt-0.5 flex items-center justify-between gap-0.5">
-                                    <button
-                                      type="button"
-                                      className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                      onClick={() => setCount(key, n - 1)}
-                                    >
-                                      −
-                                    </button>
-                                    <span className="min-w-[1.25rem] text-center text-xs font-bold tabular-nums text-slate-900">
-                                      {n}
-                                    </span>
-                                    <button
-                                      type="button"
-                                      className="flex h-6 w-6 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                      onClick={() => setCount(key, n + 1)}
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
-                      <div>
-                        <p className="mb-1 text-[11px] font-semibold text-slate-700">
-                          함축의미추론
-                          <span className="ml-1 font-normal text-slate-400">
-                            (난이도 없음)
-                          </span>
-                        </p>
-                        {(() => {
-                          const key =
-                            "underlined_inference:en:default:함축의미추론";
-                          const n = counts[key] ?? 0;
-                          return (
-                            <div data-qtype={key} className="flex items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-1">
-                              <span className="min-w-0 flex-1 truncate text-[11px] text-slate-600">
-                                영어 보기 · 없으면 생략
-                              </span>
-                              <button
-                                type="button"
-                                className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                onClick={() => setCount(key, n - 1)}
-                              >
-                                −
-                              </button>
-                              <span className="w-6 shrink-0 text-center text-sm font-bold tabular-nums text-slate-900">
-                                {n}
-                              </span>
-                              <button
-                                type="button"
-                                className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                onClick={() => setCount(key, n + 1)}
-                              >
-                                +
-                              </button>
-                            </div>
-                          );
-                        })()}
-                      </div>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        className="w-full text-xs"
-                        onClick={() =>
-                          addCounts([
-                            ["order:na:low:순서추론", 1],
-                            ["order:na:high:순서추론", 1],
-                            ["sentence_blank:en:low:빈칸추론", 1],
-                            ["sentence_blank:en:high:빈칸추론", 1],
-                            ["sentence_insertion:na:low:문장삽입", 1],
-                            ["sentence_insertion:na:high:문장삽입", 1],
-                            ["irrelevant_sentence:na:low:무관한문장", 1],
-                            ["irrelevant_sentence:na:high:무관한문장", 1],
-                            [
-                              "underlined_inference:en:default:함축의미추론",
-                              1,
-                            ],
-                          ])
-                        }
-                      >
-                        모두 넣기 (+1)
-                      </Button>
-                      <details className="rounded-lg border border-slate-100 bg-slate-50/50 px-2 py-1.5">
-                        <summary className="cursor-pointer text-[11px] font-medium text-slate-500">
-                          기타 (목적·심경·연결어)
-                        </summary>
-                        <div className="mt-1 space-y-0.5">
-                          {[
-                            "underlined_inference:en:default:목적추론",
-                            "underlined_inference:en:default:심경추론",
-                            "sentence_blank:en:default:연결어빈칸",
-                          ].map((key) => {
-                            const opt = group.options.find(
-                              (o) => o.key === key
-                            );
-                            if (!opt) return null;
-                            const n = counts[key] ?? 0;
-                            return (
-                              <div
-                                key={key}
-                                data-qtype={key}
-                                className="flex items-center gap-1 rounded border border-slate-100 bg-white px-1.5 py-0.5"
-                              >
-                                <span className="min-w-0 flex-1 truncate text-[11px] text-slate-800">
-                                  {opt.label}
-                                </span>
-                                <button
-                                  type="button"
-                                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                  onClick={() => setCount(key, n - 1)}
-                                >
-                                  −
-                                </button>
-                                <span className="w-6 shrink-0 text-center text-sm font-bold tabular-nums text-slate-900">
-                                  {n}
-                                </span>
-                                <button
-                                  type="button"
-                                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                  onClick={() => setCount(key, n + 1)}
-                                >
-                                  +
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </details>
-                    </div>
-                  ) : isGrammar ? (
-                    <div className="space-y-1">
-                      {(
-                        [
-                          {
-                            key: "grammar:na:default:어법추론",
-                            label: "어법 추론",
-                          },
-                          {
-                            key: "grammar:na:default:어법개수",
-                            label: "어법 개수",
-                          },
-                          {
-                            key: "vocabulary:na:default:어휘추론",
-                            label: "어휘 추론",
-                          },
-                          {
-                            key: "vocabulary:na:default:어휘개수",
-                            label: "어휘 개수",
-                          },
-                        ] as const
-                      ).map((row) => {
-                        const opt = group.options.find((o) => o.key === row.key);
-                        if (!opt) return null;
-                        const n = counts[row.key] ?? 0;
-                        return (
-                          <div
-                            key={row.key}
-                                data-qtype={row.key}
-                            className="flex items-center gap-1 rounded border border-slate-100 bg-slate-50/80 px-1.5 py-0.5"
-                          >
-                            <span className="min-w-0 flex-1 truncate text-[11px] text-slate-800">
-                              {row.label}
-                            </span>
-                            <button
-                              type="button"
-                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                              onClick={() => setCount(row.key, n - 1)}
-                            >
-                              −
-                            </button>
-                            <span className="w-5 shrink-0 text-center text-xs font-bold tabular-nums text-slate-900">
-                              {n}
-                            </span>
-                            <button
-                              type="button"
-                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                              onClick={() => setCount(row.key, n + 1)}
-                            >
-                              +
-                            </button>
-                          </div>
-                        );
-                      })}
+                  {isMainIdea || isDetails || isInference || isGrammar ? (
+                    <div className="space-y-1.5">
+                      <TypeRows rows={typeRowsFor(group.category, group.options)} counts={counts} setCount={setCount} />
+                      {isGrammar ? (
                       <label className="mt-1 flex items-start gap-2 rounded-lg bg-slate-50 px-2 py-1.5 text-[11px] text-slate-700">
                         <input
                           type="checkbox"
@@ -1556,55 +1209,42 @@ export function QuestionGeneratorClient({
                           꺼 두면 지문이 원문 그대로 나오고, 밑줄 자리만 바뀝니다. 켜면 밑줄 자리를 만들려고 문장도 바꿔 씁니다.
                         </span>
                       </label>
+                      ) : null}
                       <Button
                         type="button"
                         variant="secondary"
-                        className="mt-1 w-full text-xs"
-                        onClick={() =>
-                          addCounts([
-                            ["grammar:na:default:어법추론", 1],
-                            ["grammar:na:default:어법개수", 1],
-                            ["vocabulary:na:default:어휘추론", 1],
-                            ["vocabulary:na:default:어휘개수", 1],
-                          ])
-                        }
+                        className="!h-7 w-full !py-0 text-xs"
+                        onClick={() => addCounts((ADD_ALL[group.category] ?? []).map((k) => [k, 1] as [string, number]))}
                       >
                         모두 넣기 (+1)
                       </Button>
+                      {isInference ? (
+                      <details className="rounded-lg border border-slate-100 bg-slate-50/50 px-2 py-1.5">
+                        <summary className="cursor-pointer text-[11px] font-medium text-slate-500">
+                          기타 (목적·심경·연결어)
+                        </summary>
+                        <div className="mt-1">
+                          <TypeRows
+                            rows={INFERENCE_GITA_KEYS.flatMap((k) => {
+                              const o = group.options.find((x) => x.key === k);
+                              return o ? [{ label: o.label, one: k }] : [];
+                            })}
+                            counts={counts}
+                            setCount={setCount}
+                            hideHead
+                          />
+                        </div>
+                      </details>
+                      ) : null}
                     </div>
                   ) : (
                         <div className="space-y-0.5">
-                          {group.options.map((opt) => {
-                            const n = counts[opt.key] ?? 0;
-                            return (
-                              <div
-                                key={opt.key}
-                                data-qtype={opt.key}
-                                className="flex items-center gap-1 rounded border border-slate-100 bg-slate-50/80 px-1.5 py-0.5"
-                              >
-                                <span className="min-w-0 flex-1 truncate text-[11px] text-slate-800">
-                                  {opt.label}
-                                </span>
-                                <button
-                                  type="button"
-                                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                  onClick={() => setCount(opt.key, n - 1)}
-                                >
-                                  −
-                                </button>
-                                <span className="w-5 shrink-0 text-center text-xs font-bold tabular-nums text-slate-900">
-                                  {n}
-                                </span>
-                                <button
-                                  type="button"
-                                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                  onClick={() => setCount(opt.key, n + 1)}
-                                >
-                                  +
-                                </button>
-                              </div>
-                            );
-                          })}
+                          <TypeRows
+                            rows={group.options.map((o) => ({ label: o.label, one: o.key }))}
+                            counts={counts}
+                            setCount={setCount}
+                            hideHead
+                          />
                           {group.category === "subjective" && wordOrderCount > 0 ? (
                             <WordOrderModeBox mode={wordOrderMode} onMode={setWordOrderMode} />
                           ) : null}
@@ -1621,47 +1261,6 @@ export function QuestionGeneratorClient({
                           ) : null}
                         </div>
                       )}
-                      {(isMainIdea || isDetails || isInference || isGrammar) &&
-                        (() => {
-                          const extra = group.options.filter((o) => !FIXED_LAYOUT_KEYS.has(o.key));
-                          if (extra.length === 0) return null;
-                          return (
-                            <div className="mt-2 space-y-0.5 border-t border-slate-100 pt-1.5">
-                              <p className="mb-1 text-[11px] font-semibold text-slate-700">더 많은 유형</p>
-                              {extra.map((opt) => {
-                                const n = counts[opt.key] ?? 0;
-                                return (
-                                  <div
-                                    key={opt.key}
-                                    data-qtype={opt.key}
-                                    className="flex items-center gap-1 rounded border border-slate-100 bg-slate-50/80 px-1.5 py-0.5"
-                                  >
-                                    <span className="min-w-0 flex-1 truncate text-[11px] text-slate-800">
-                                      {opt.label}
-                                    </span>
-                                    <button
-                                      type="button"
-                                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                      onClick={() => setCount(opt.key, n - 1)}
-                                    >
-                                      −
-                                    </button>
-                                    <span className="w-5 shrink-0 text-center text-xs font-bold tabular-nums text-slate-900">
-                                      {n}
-                                    </span>
-                                    <button
-                                      type="button"
-                                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded border border-slate-200 bg-white text-sm font-semibold text-slate-700"
-                                      onClick={() => setCount(opt.key, n + 1)}
-                                    >
-                                      +
-                                    </button>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          );
-                        })()}
                     </div>
                   )}
                 </div>
