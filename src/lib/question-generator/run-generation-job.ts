@@ -1630,7 +1630,7 @@ export async function runGenerationJob(
             anchorPlan: (() => {
               const kind = anchorKindFor(alt.type, alt.aingkaCode ?? "");
               const avoid = item.anchorPlan?.avoid ?? [];
-              return kind && avoid.length ? { kind, sentence: null, avoid } : null;
+              return kind && kind !== "examples" && avoid.length ? { kind, sentence: null, avoid } : null;
             })(),
             onStage: () => {
               stages.set(item, "swap");

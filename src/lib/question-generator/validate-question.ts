@@ -1004,6 +1004,13 @@ export function validateGeneratedQuestion(opts: {
       warnings.push("밑줄은 문장 통째로 다섯 개여야 합니다.");
       score -= 80;
     }
+    // 지문 첫 문장을 통째로 빼먹고 통과한 일(2026-11-24 실제 생성 e11b1475) — 문장 수가 줄면 잡는다
+    const before = sentencesOf(plainText(opts.passage)).length;
+    const after = sentencesOf(plainText(String(q.passageModified ?? "").replace(/[ⓐ-ⓔ①-⑤]\s*(?=<u>)/g, ""))).length;
+    if (after < before) {
+      warnings.push(`지문 문장이 빠졌습니다(원문 ${before}문장 → ${after}문장). 밑줄 밖 문장도 모두 그대로 둡니다.`);
+      score -= 80;
+    }
   }
 
   // 비유 대응: 「지문 표현 …… 뜻」 다섯, 왼쪽은 지문에 그대로

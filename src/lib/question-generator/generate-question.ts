@@ -368,6 +368,7 @@ ${choiceExplanationRules()}
         return `요약문 완성 (A)(B) — 수능 40번형:
 - Do NOT change the passage at all (omit passageModified).
 - questionText = ONE English summary sentence (18~32 words) of the WHOLE passage's main point, with two blanks written exactly as "(A)" and "(B)" (one word each, or a two-word phrase at most). Do not copy a passage sentence; paraphrase the gist.
+- With the right words filled in, the summary must read as a natural sentence that the passage itself would agree with clause by clause. Do not invent a link the passage does not make (e.g. "X's inefficiency makes Y sustainable" when the passage never says X causes Y) — use the passage's own relation (contrast, cause, sequence) between the two ideas. Each blank fills a plain role (an adjective describing a thing, a verb for what someone does), not an odd collocation like "energy that is (B) by harmful effects".
 - The words for (A) and (B) are NOT copied from the passage: use a synonym or another form (e.g. passage "led baby turtles home" → (A) reliable). Each blank word must be supported by the passage.
 - 5 choices, each written "wordA …… wordB" (A first, then B, separated by " …… "). Exactly one pair fits BOTH blanks.
 - Every wrong pair must fail on at least one blank for a reason you can point to in the passage (opposite meaning, wrong relation, not stated). Use each correct word once or twice among the wrong pairs so a student cannot pick by one blank alone — but never make a wrong pair where both words also fit.
@@ -381,8 +382,10 @@ LANGUAGE: questionText + choices ENGLISH only. explanation Korean.`;
         return `빈칸 추론(단어) — 「다음 빈칸에 들어갈 말로 가장 적절한 것은?」:
 - In passageModified, replace ONE key content word (noun/verb/adjective/adverb that carries the passage's main point) with ________. Exactly one blank. Everything else word for word.
 - Choose a word whose meaning the rest of the passage clearly supports (a contrast, a repeated idea, an example that explains it). Do not blank a word that appears again elsewhere in the passage unchanged (it would give the answer away).
-- 5 ENGLISH single-word choices, same part of speech and form as the blank (if the blank needs "-ing" or plural, every choice has that form). The key may be the original word or a close synonym that fits exactly.
+- Blank a word that stands alone: never one word of a phrasal verb ("caught up"), a fixed two-word term ("lactic acid", "student council") or a hyphenated word, so the answer is ONE word.
+- 5 ENGLISH single-word choices — each choice is exactly one word: no spaces, no article, no particle, no ending period. Same part of speech and form as the blank (if the blank needs "-ing" or plural, every choice has that form). The key may be the original word or a close synonym that fits exactly.
 - Wrong choices: plausible in the sentence alone but contradicted by the passage's logic (opposite, too narrow, unrelated quality). Never a synonym of the key that also fits.
+- Self-check before you answer: put each wrong choice into the blank and reread the passage. If the sentence still agrees with the rest of the passage (e.g. "two kinds of energy-making reactions" also works where the key is "processes"), replace that choice with one the passage clearly rules out. Avoid blanking a general word (process, way, thing, factor) whose near-synonyms all fit; blank a word that carries the passage's specific claim.
 - correctAnswer = the key. questionText "".
 ${choiceExplanationRules()}
 LANGUAGE: passageModified + choices ENGLISH only.`;
@@ -395,7 +398,7 @@ LANGUAGE: passageModified + choices ENGLISH only.`;
 - questionText = exactly 7 ENGLISH questions labeled ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ, one per line ("ⓐ What …?").
 - Exactly ${answerable} of the 7 can be answered from the passage ALONE (the answer is stated or follows directly). The others ask for something the passage never gives: an exact number/year/name, a cause or result it does not state, details about people or places it does not describe.
 - An ANSWERABLE question has a short, definite answer the passage states in words (a name, a thing, a reason, an action) — not "What problem can occur…?" or "What happens…?" when the passage only hints. If a student could argue either way, rewrite it.
-- An unanswerable question must still sound related (same topic, same people/terms) so it is not obvious. Never ask about something the passage DOES answer in other words. Never ask yes/no questions; use What/Why/How/Which/When/Who.
+- An unanswerable question must still sound related (same topic, same people/terms) so it is not obvious. Never ask about something the passage DOES answer in other words. Also never write an unanswerable question that a passage detail seems to answer (asking "Which teacher will advise him?" when the letter is written to Dr. Ko, "Who helped her?" when a helper is named) — a student could defend that answer. Ask instead for a fact with no candidate in the passage at all (a date, a number, a place, a name never mentioned). Never ask yes/no questions; use What/Why/How/Which/When/Who.
 - Mix the answerable ones through the list (not all first).
 - choices: exactly ① 2개 ② 3개 ③ 4개 ④ 5개 ⑤ 6개 (text "2개" … "6개"). correctAnswer = ${answerable - 1} (the choice "${answerable}개").
 - explanation (Korean): list the answerable letters with the passage words that answer each — the words must be the actual answer to that question (who/what it asks for), not a nearby phrase — then say why each other one cannot be answered.
@@ -404,9 +407,10 @@ LANGUAGE: questions ENGLISH, explanation Korean.`;
       if (code === "비유대응") {
         // 글의 비유 표현과 그것이 나타내는 대상(리얼영어 「비유 대응」)
         return `비유 대응 — 「다음 글에서 비유적으로 쓰인 표현과 그것이 나타내는 대상이 바르게 짝지어진 것은?」
-- Use only when the passage builds an ANALOGY or METAPHOR (A stands for B: tea in a bag ↔ a leader's talent, a wall ↔ isolation). If there is none, output {"skip":true,"reason":"비유 없음"}.
+- Use only when the passage builds an ANALOGY or METAPHOR (A stands for B: tea in a bag ↔ a leader's talent, a wall ↔ isolation). If there is none — or fewer than two figurative expressions in the whole passage — output {"skip":true,"reason":"비유 없음"}. A plain statement ("The answer lies in diversity") is not figurative.
 - Do NOT change the passage (omit passageModified). questionText "".
 - choices = 5 pairs written "expression …… what it stands for" — the left side is copied word for word from the passage (2~6 words), the right side is a short ENGLISH phrase (3~8 words) naming what it represents in the writer's point.
+- All five left-side expressions should be figurative or idiomatic (a metaphor, an image, an idiom such as "turbo boost", "cut out for", "pull out of the race") — not literal phrases ("look forward to hearing", "nominated as a candidate", a technical term like "anaerobic overload"). Use five different expressions; if the passage has only two or three, the remaining wrong pairs pair those same expressions with other wrong meanings.
 - Exactly one pair is right. Each wrong pair links a real passage expression to a wrong meaning that is plausible (another element of the analogy, the opposite, or too literal).
 - correctAnswer = the right pair. explanation (Korean): explain the analogy, why the right pair matches, and why each wrong pair does not.
 LANGUAGE: choices ENGLISH, explanation Korean.`;
@@ -607,6 +611,7 @@ ${focusBlock}
 - choices: omit or empty array. correctAnswer 1-5 (ⓐ=1 … ⓔ=5 = 틀린 문장). questionText 빈칸.
 - explanation 한글: 틀린 문장의 틀린 곳 → 바른 형태와 이유, 나머지 네 문장은 각 문장에서 가장 헷갈릴 어법 하나를 정확한 문법 이름으로 짚어 왜 맞는지 한 줄씩(예: 가주어 It의 진주어 to부정사, each 단수 동사).
 - 틀린 문장은 반드시 ${"ⓐⓑⓒⓓⓔ"[wrongAt]} 자리(${wrongAt + 1}번째 밑줄)에 둔다. correctAnswer = ${wrongAt + 1}.
+- 아래 SAME-PASSAGE SENTENCE PLAN이 틀린 문장을 정해 주면 그 문장을 틀리게 하고(같은 지문 다른 어법 문항이 그 문장을 비워 두었다 — 다른 문장을 틀리게 하면 그 문항의 맞는 밑줄이 답을 알려 준다. 위 ‘이번 문항’ 문법이 그 문장에 없으면 그 문장에 있는 다른 어법을 쓴다), 나머지 네 문장을 골라 그 문장이 위 자리에 오게 한다. 그 앞이나 뒤에 고를 문장이 모자라면 자리만 옮기고 correctAnswer를 실제 자리로 쓴다.
 LANGUAGE: 지문은 영어만.`;
       }
       if (code === "어법추론" || code === "어법모두고르기") {
@@ -828,7 +833,7 @@ ${choiceExplanationRules()}
         // 빈칸 ⓐ, ⓑ에 공통으로 들어갈 한 낱말(리얼영어 「어휘 빈칸」 102문항)
         return `서술형 · 어휘 빈칸(공통 한 낱말):
 - 지문에 세 번 이상 나오고 글의 핵심을 이루는 내용어 하나를 고른다(명사·동사·형용사; 관사·전치사·대명사·고유명사 금지). 세 번 나오는 낱말이 없으면 {"skip":true,"reason":"세 번 나오는 핵심어 없음"}.
-- passageModified = 영어 지문. 그 낱말이 나오는 자리 가운데 두 곳을 ⓐ__________, ⓑ__________ 로 바꾼다(형태가 같은 자리 둘). 적어도 한 곳은 비우지 않고 남겨 학생이 지문에서 찾을 수 있게 한다. 남겨 둔 자리는 빈칸과 같은 문장·바로 옆 문장에 두지 않는다(「Imagine an ⓐ____. The part of the ⓑ____ … the iceberg」처럼 바로 뒤에 답이 보이면 읽지 않고 풀린다, 2026-11-24). 나머지는 원문 그대로.
+- passageModified = 영어 지문. 그 낱말이 나오는 자리 가운데 두 곳을 ⓐ__________, ⓑ__________ 로 바꾼다(형태가 같은 자리 둘). 적어도 한 곳은 비우지 않고 남겨 학생이 지문에서 찾을 수 있게 한다. 어느 두 자리를 비울지는 자유다 — 남는 자리가 빈칸에서 되도록 멀어지게 고른다. 남겨 둔 자리는 빈칸과 같은 문장에 두지 않는다(「Imagine an ⓐ____. The part of the ⓑ____ … the iceberg」처럼 빈칸 바로 뒤에 답이 보이면 읽지 않고 풀린다, 2026-11-24). 바로 옆 문장밖에 남길 데가 없으면 그래도 만든다 — 이것 때문에 skip하지 않는다. 나머지는 원문 그대로.
 - 빈칸 둘 다 문맥만으로 그 낱말이 떠오르게 고른다(다른 낱말도 자연스럽게 들어가는 자리는 피한다).
 - questionText:
 <조건>
@@ -869,6 +874,8 @@ LANGUAGE: 보기·정답 영어.`;
         // 밑줄 문장을 조건대로 바꿔 쓰기(리얼영어 「구문 변환」 10문항)
         return `서술형 · 구문 변환:
 - 지문에서 바꿔 쓰기 좋은 문장 하나를 고른다: 수동태(→능동태), 능동태(→수동태), 분사구문(→부사절), 관계사절(→분사), It ~ to 가주어, 도치 등. 뜻이 그대로 유지되는 변환만.
+- 바꾼 문장도 원어민이 실제로 쓸 자연스러운 영어여야 한다. 일반 주어(you, we, people, they, one)를 by로 붙이는 수동태(「…needs to be increased by you」)는 쓰지 않는다 — 그런 문장이면 다른 변환이나 다른 문장을 고른다.
+- 문장 구조가 실제로 바뀌는 변환이어야 한다. 낱말 한두 개를 덧붙이거나 바꾸는 것(To → In order to, can → be able to, so → therefore)은 구문 변환이 아니다 — 그런 것밖에 없으면 다른 문장을 고른다.
 - passageModified = 영어 지문. 그 문장을 ⓐ<u>문장</u> 으로 밑줄. 나머지는 원문 그대로.
 - questionText:
 <조건>
@@ -3442,7 +3449,9 @@ export async function generateOneQuestion(opts: {
     isReferenceWriting ||
     // 리얼영어 유형: 두 번 넘게 나오는 핵심어·긴 문장 다섯이 없는 지문은 건너뛴다
     taggedCode === "어휘빈칸공통" ||
-    option.aingkaCode === "어법통문장";
+    option.aingkaCode === "어법통문장" ||
+    // 비유 대응: 비유 없는 지문은 건너뛴다 — 목록에 빠져 「해설이 비어 있습니다」로 다시 만들다 버렸다(2026-11-24 실제 생성 3번)
+    option.aingkaCode === "비유대응";
 
   const questionTextRule = needsQuestionText
     ? isSummaryAB
