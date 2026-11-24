@@ -223,7 +223,8 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
         out += `<hp:run charPrIDRef="${id}"><hp:t><hp:tab width="4000" leader="0" type="2"/></hp:t></hp:run>`;
         continue;
       }
-      const clean = part.replace(/<[^>]+>/g, "");
+      // HTML 꾸밈 태그만 지운다 — <보기>·<조건> 같은 시험지 표시는 글자 그대로(지우면 「흐름에 맞게 의 단어를」처럼 끊겼다)
+      const clean = part.replace(/<\/?(?:u|b|i|em|strong|span|br|p|div|font|sup|sub)(?=[\s>/])[^>]*>/gi, "");
       if (!clean) continue;
       out += `<hp:run charPrIDRef="${id}"><hp:t>${esc(clean)}</hp:t></hp:run>`;
     }
@@ -245,6 +246,37 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
       `<hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="TOP" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">${inner}</hp:subList>` +
       `<hp:cellAddr colAddr="0" rowAddr="0"/><hp:cellSpan colSpan="1" rowSpan="1"/><hp:cellSz width="${width}" height="1000"/>` +
       `<hp:cellMargin left="${pad}" right="${pad}" top="${pad}" bottom="${pad}"/></hp:tc></hp:tr></hp:tbl>`
+    );
+  }
+  /** 여러 칸 표 — <표> 블록용. rows[r][c] 는 칸 안 문단 XML */
+  function gridTable(width: number, rows: string[][], border: number, fractions?: number[]) {
+    const cols = Math.max(...rows.map((r) => r.length));
+    const cw = Math.floor(width / cols);
+    // 칸 너비(비율) — 없으면 고르게
+    const colW = (ci: number, span: number) =>
+      fractions ? Math.round(width * fractions.slice(ci, ci + span).reduce((a, b) => a + b, 0)) : cw * span;
+    const id = tblId++;
+    const pad = mm(1);
+    const trs = rows
+      .map(
+        (r, ri) =>
+          `<hp:tr>${Array.from({ length: cols }, (_, ci) => {
+            const span = ci === r.length - 1 ? cols - ci : 1;
+            if (ci >= r.length) return "";
+            return (
+              `<hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="${border}">` +
+              `<hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="CENTER" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">${r[ci]}</hp:subList>` +
+              `<hp:cellAddr colAddr="${ci}" rowAddr="${ri}"/><hp:cellSpan colSpan="${span}" rowSpan="1"/><hp:cellSz width="${colW(ci, span)}" height="1000"/>` +
+              `<hp:cellMargin left="${pad}" right="${pad}" top="${pad}" bottom="${pad}"/></hp:tc>`
+            );
+          }).join("")}</hp:tr>`,
+      )
+      .join("");
+    return (
+      `<hp:tbl id="${id}" zOrder="${id - 1000}" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="NONE" repeatHeader="0" rowCnt="${rows.length}" colCnt="${cols}" cellSpacing="0" borderFillIDRef="2" noAdjust="0">` +
+      `<hp:sz width="${fractions ? width : cw * cols}" widthRelTo="ABSOLUTE" height="1000" heightRelTo="ABSOLUTE" protect="0"/>` +
+      `<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>` +
+      `<hp:outMargin left="0" right="0" top="0" bottom="0"/><hp:inMargin left="${pad}" right="${pad}" top="${pad}" bottom="${pad}"/>${trs}</hp:tbl>`
     );
   }
   const anchor = (spec: ParaSpec, ctrl: string) =>
@@ -299,48 +331,103 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
     .join("");
   if (noticeInner) body += anchor({ line: 100, next: mm(3) }, table(COL_W, 3, noticeInner, { pad: mm(1.4), noSplit: true }));
 
-  const boxSpec = (dashed = false): ParaSpec => ({
-    align: "JUSTIFY",
-    line: 135,
-    left: mm(1.6),
-    right: mm(1.6),
-    border: dashed ? 4 : 3,
-    borderOffset: mm(1.2),
-  });
+  const BOX_W = COL_W - mm(0.4);
+  const gap = (n: number) => P({ line: 100, next: mm(n) }, `<hp:run charPrIDRef="${tiny}"/>`);
+  /** 테두리 상자(네 변 모두) — 안 문단들을 한 칸 표로 감싼다. 문단 테두리는 한글에서 양옆 줄이 빠졌다 */
+  const boxed = (inner: string, opts: { dashed?: boolean; pad?: number } = {}) =>
+    anchor({ line: 100, next: 0 }, table(BOX_W, opts.dashed ? 4 : 3, inner, { pad: opts.pad ?? mm(1.8), noSplit: true }));
+  const psgP = (text: string, size = SZ.passage) => P({ align: "JUSTIFY", line: 140 }, runs(text, { pt: size }));
+  const labelP = (t: string) => P({ align: "LEFT", line: 140, next: mm(0.8) }, runs(t, { pt: SZ.extra, bold: true }));
+
+  /** <조건>·<보기>·<요약문>·<표>·<답란> … 블록으로 나눈다(한 줄이 「<이름>」뿐이면 새 블록) */
+  function splitBlocks(qt: string) {
+    const out: Array<{ tag: string; lines: string[] }> = [{ tag: "", lines: [] }];
+    for (const raw of decodeEntities(qt).split("\n")) {
+      const line = raw.trim();
+      const m = line.match(/^<\s*([^<>/]{1,10}?)\s*>$/);
+      if (m) out.push({ tag: m[1]!.trim(), lines: [] });
+      else if (line) out[out.length - 1]!.lines.push(line);
+    }
+    return out.filter((b) => b.tag || b.lines.length);
+  }
+  const ANSWER_TAGS = /^(답란|지칭답란|답안행|답)$/;
+  /** 답란 — 네모 칸(학교 시험지처럼). 밑줄 글자는 한글에서 몇 군데 안 그려졌다 */
+  function answerArea(tag: string, lines: string[]) {
+    const cellP = (t: string, opts: { bold?: boolean; center?: boolean } = {}) =>
+      P({ align: opts.center ? "CENTER" : "LEFT", line: 130 }, runs(t, { pt: SZ.choice, bold: opts.bold }));
+    // 손으로 쓸 높이(약 8mm) — 큰 글자 한 줄로 칸을 키운다
+    const blank = P({ align: "LEFT", line: 160 }, runs(" ", { pt: 15 }));
+    let rows: string[][];
+    let fr: number[];
+    if (tag === "답안행") {
+      const n = Math.max(3, Math.min(5, Number(lines[0]) || 3));
+      rows = [
+        [cellP("", { center: true }), cellP("기호", { bold: true, center: true }), cellP("바르게 고친 것", { bold: true, center: true })],
+        ...Array.from({ length: n }, (_, i) => [cellP(`(${i + 1})`, { center: true }), blank, blank]),
+      ];
+      fr = [0.12, 0.22, 0.66];
+    } else {
+      const labels = lines.filter((l) => l.length <= 8).map((l) => l.replace(/[:：]\s*$/, ""));
+      rows = (labels.length ? labels : ["답"]).map((l) => [cellP(l, { bold: true, center: true }), blank]);
+      fr = [0.14, 0.86];
+    }
+    return P({ line: 100, next: mm(1.2) }, `<hp:run charPrIDRef="${tiny}"/>`) + anchor({ line: 100 }, gridTable(BOX_W, rows, 3, fr));
+  }
+  function blockXml(tag: string, lines: string[], dashedPlain: boolean) {
+    if (!tag) return boxed(lines.map((l) => psgP(l, SZ.extra)).join(""), { dashed: dashedPlain });
+    if (ANSWER_TAGS.test(tag)) return answerArea(tag, lines);
+    if (tag === "표") {
+      const rows = lines
+        .filter((l) => l.includes("|") && !/^\|?\s*[-:| ]+\|?\s*$/.test(l))
+        .map((l) => l.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map((c) => c.trim()));
+      if (rows.length) {
+        const cells = rows.map((r, ri) => r.map((c) => P({ align: ri === 0 ? "CENTER" : "LEFT", line: 135 }, runs(c || " ", { pt: SZ.extra, bold: ri === 0 }))));
+        return labelP("<표>") + anchor({ line: 100 }, gridTable(BOX_W, cells, 3));
+      }
+    }
+    // <보기> 낱말 나열은 한 줄에 「 / 」로
+    const wordList = tag === "보기" && lines.length >= 3 && lines.every((l) => l.split(/\s+/).length <= 3 && !/^[①-⑩(]/.test(l));
+    const body = wordList
+      ? P({ align: "CENTER", line: 160 }, runs(lines.join("  /  "), { pt: SZ.passage }))
+      : lines.map((l) => (/^[○●·\-※]/.test(l) ? P({ align: "LEFT", line: 145, left: mm(2.6), indent: -mm(2.6) }, runs(l, { pt: SZ.extra })) : psgP(l, SZ.extra))).join("");
+    return boxed(P({ align: "LEFT", line: 130, next: mm(1) }, runs(`<${tag}>`, { pt: SZ.extra, bold: true })) + body);
+  }
 
   for (const it of input.items) {
     const pts = typeof it.points === "number" ? ` [${Math.round(it.points * 10) / 10}점]` : "";
     let inner = P(
-      { align: "LEFT", line: 145, left: mm(3.2), indent: -mm(3.2), next: mm(1.6) },
+      { align: "LEFT", line: 150, left: mm(3.2), indent: -mm(3.2), next: mm(2.2) },
       `<hp:run charPrIDRef="${chars.get({ pt: SZ.stem, bold: true })}"><hp:t>${esc(it.label)} </hp:t></hp:run>` +
         runs((it.stem || "다음 물음에 답하시오.") + pts, { pt: SZ.stem }),
     );
-    const gap = (n: number) => P({ line: 100, next: mm(n) }, `<hp:run charPrIDRef="${tiny}"/>`);
     if (it.given?.trim()) {
-      inner += P(boxSpec(), runs(it.given.trim(), { pt: SZ.passage })) + gap(2);
+      inner += boxed(psgP(it.given.trim())) + gap(2.4);
     }
     if (it.passage?.trim()) {
       const ps = it.passage.split(/\n\s*\n|\n(?=\([A-C]\))/).filter((x) => x.trim());
-      inner += ps.map((x) => P(boxSpec(), runs(x.replace(/\s*\n\s*/g, " ").trim(), { pt: SZ.passage }))).join("");
+      inner += boxed(ps.map((x) => psgP(x.replace(/\s*\n\s*/g, " ").trim())).join(""));
     }
     if (it.extra?.trim()) {
-      inner += gap(2);
-      inner += it.extra
-        .split("\n")
-        .filter((l) => l.trim())
-        .map((l) => P({ ...boxSpec(true), align: "LEFT" }, runs(l, { pt: SZ.extra })))
-        .join("");
+      for (const bl of splitBlocks(it.extra)) {
+        inner += gap(ANSWER_TAGS.test(bl.tag) ? 0.5 : 2.4) + blockXml(bl.tag, bl.lines, !it.subjective);
+      }
     }
     const ch = (it.choices ?? []).filter((c) => String(c ?? "").trim());
     if (ch.length) {
-      inner += gap(1.2);
+      inner += gap(3);
       const marks = "①②③④⑤⑥⑦";
       inner += ch
-        .map((c, i) => P({ align: "LEFT", line: 132, left: mm(5), indent: -mm(3.6) }, runs(`${marks[i] ?? `${i + 1}`} ${c}`, { pt: SZ.choice })))
+        .map((c, i) => P({ align: "LEFT", line: 145, left: mm(5), indent: -mm(3.6), next: mm(0.9) }, runs(`${marks[i] ?? `${i + 1}`} ${c}`, { pt: SZ.choice })))
         .join("");
-    } else if (it.subjective) {
-      inner += P({ align: "LEFT", line: 140, prev: mm(3) }, runs("답: ______________________________________", { pt: SZ.choice }));
+    } else if (it.subjective && !/<\s*(답란|지칭답란|답안행)\s*>/.test(it.extra ?? "")) {
+      // 답란 표시가 없으면 발문·문제에 나온 ⓐ ⓑ …로 칸을 만든다
+      const src = `${it.stem} ${it.extra ?? ""}`;
+      let marks = [...new Set(src.match(/[ⓐ-ⓗ]/g) ?? [])];
+      if (!marks.length) marks = [...new Set([...it.stem.matchAll(/\(([A-E])\)/g)].map((m) => `(${m[1]})`))];
+      inner += answerArea("답", marks);
     }
+    // 끝에 얇은 여백 한 줄 — 없으면 한글에서 마지막 상자의 아랫줄이 잘렸다(보기 없는 문항)
+    inner += gap(0.6);
     body += anchor({ line: 100, next: mm(4.5) }, table(COL_W, 2, inner, { noSplit: true }));
   }
   if (input.closing?.trim()) {
