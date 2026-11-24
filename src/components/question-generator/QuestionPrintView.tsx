@@ -2253,7 +2253,7 @@ export function QuestionPrintView({
               <p className="mt-2 text-[11px] leading-snug text-slate-500">비운 칸은 인쇄에서 빠집니다. 이 시험지에만 저장됩니다.</p>
               <button
                 type="button"
-                className="btn-primary mt-3 w-full justify-center py-2 text-sm"
+                className="mt-3 flex w-full items-center justify-center rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700"
                 onClick={() => downloadHwpx(examMeta)}
               >
                 한글 파일로 받기 (.hwpx)

@@ -112,10 +112,11 @@ export function ExamMockBuilder({
   const typeChoices = useMemo(() => {
     const fam = (o: { key: string; isObjective: boolean }) => {
       const [base] = o.key.split(":");
-      if (!o.isObjective || base === "writing" || base === "summary_short" || /오류수정/.test(o.key)) return "서술형";
+      // <보기> 불일치 개수는 객관식(개수 고르기)인데 isObjective 가 false 라 서술형에 섞였다 — 갈래를 먼저 본다
+      if (base === "content_true" || base === "content_false" || base === "content_count") return "세부 정보(내용 일치)";
+      if (base === "writing" || base === "summary_short" || /오류수정/.test(o.key) || !o.isObjective) return "서술형";
       if (base === "grammar") return "어법";
       if (base === "vocabulary") return "어휘";
-      if (base === "content_true" || base === "content_false" || base === "content_count") return "세부 정보(내용 일치)";
       if (base === "title" || base === "topic" || base === "summary_mcq" || /요약완성AB/.test(o.key)) return "대의 파악(제목·주제·요지·요약)";
       return "추론(빈칸·순서·삽입 등)";
     };
@@ -144,6 +145,25 @@ export function ExamMockBuilder({
       답변가능개수: "답할 수 있는 질문 개수",
       사례분류: "사례 분류(성격이 다른 하나)",
       비유대응: "비유 표현 대응",
+      // 서술형 — 무엇을 쓰는지가 보이게(윌링 「서술형 구문변환 등 어떤 식으로 출제되는지」)
+      구문변환: "구문 변환 · 밑줄 문장을 <조건>대로 바꿔 쓰기(능동↔수동·분사구문·관계사절 등)",
+      제시어배열기본: "제시어 배열 · 기본(우리말에 맞게 낱말 배열, 형태 그대로)",
+      제시어배열어형변화: "제시어 배열 · 어형변화(배열하며 필요한 낱말 형태 바꾸기)",
+      제시어배열단어추가: "제시어 배열 · 단어추가(낱말 더하기·형태 바꾸기)",
+      문법조건영작: "제시어 배열 · 지정 문법(정해진 문법을 써서 문장 완성)",
+      요약문빈칸영작: "요약문 빈칸 · <보기> 낱말 배열해 쓰기",
+      요약문빈칸2단어: "요약문 빈칸 · 본문에서 2단어 찾아 쓰기",
+      요약문빈칸3단어: "요약문 빈칸 · 본문에서 3단어 찾아 쓰기",
+      요약표빈칸단어: "요약표 빈칸 · 본문 낱말 찾아 쓰기",
+      주제문작성: "주제문 작성 · <보기> 낱말로 주제 명사구 쓰기",
+      어휘빈칸공통: "어휘 빈칸 · 공통으로 들어갈 영어 한 단어 쓰기",
+      대화문완성: "대화문 완성 · 대화 빈칸을 본문 어구로 채우기",
+      내용매칭: "내용 매칭 · 개념에 맞는 예시 번호 쓰기",
+      지칭대명사서술: "지칭 · 대명사·지시사가 가리키는 말 찾아 쓰기",
+      특정표현의미서술: "지칭 · 밑줄 표현의 뜻을 본문에서 찾아 쓰기",
+      어법오류수정2: "어법 수정 · 틀린 곳 2개 찾아 고쳐 쓰기",
+      어법오류수정3: "어법 수정 · 틀린 곳 3개 찾아 고쳐 쓰기",
+      어법문장오류수정: "어법 수정 · 틀린 문장 찾아 고쳐 쓰기",
     };
     const lv = (o: { choiceLanguage?: string | null; difficulty?: string }) =>
       [o.choiceLanguage === "english" ? "영어 선택지" : o.choiceLanguage === "korean" ? "한글 선택지" : "", o.difficulty === "high" ? "난이도 상" : o.difficulty === "low" ? "난이도 하" : ""]
