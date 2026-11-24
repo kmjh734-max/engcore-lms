@@ -257,13 +257,14 @@ function formatAnswer(a: unknown): string {
 function quickAnswerText(a: unknown): string {
   const s = formatAnswer(a).trim();
   if (!s) return "-";
-  if (/^[①-⑤](\s*\/\s*[①-⑤])*$/.test(s) || /^\d{1,2}$/.test(s)) return s;
+  // 「두 개 고르면」(①, ⑤)도 객관식 답이다 — 「서술형」으로 나왔다(구현고2 서비스 회차 2026-11-25)
+  if (/^[①-⑤](\s*[/,]\s*[①-⑤])*$/.test(s) || /^\d{1,2}$/.test(s)) return s;
   return "서술형";
 }
 
 /** 해설지 맨 앞 빠른 정답 표 — 번호 줄과 정답 줄을 10문항씩 */
-function QuickAnswerTable({ items }: { items: { num: number; ans: string }[] }) {
-  const rows: { num: number; ans: string }[][] = [];
+function QuickAnswerTable({ items }: { items: { num: number; label?: string; ans: string }[] }) {
+  const rows: { num: number; label?: string; ans: string }[][] = [];
   for (let i = 0; i < items.length; i += 10) rows.push(items.slice(i, i + 10));
   return (
     <table className="qg-quick-answers">
@@ -273,7 +274,7 @@ function QuickAnswerTable({ items }: { items: { num: number; ans: string }[] }) 
             <tr className="qg-quick-answers-no">
               <th>번호</th>
               {row.map((it) => (
-                <td key={it.num}>{it.num}</td>
+                <td key={it.num}>{it.label ?? it.num}</td>
               ))}
             </tr>
             <tr>
@@ -1931,7 +1932,8 @@ export function QuestionPrintView({
                 </div>
                 <QuickAnswerTable
                   items={displayItems.flatMap((it) =>
-                    it.kind === "q" ? [{ num: it.num, ans: quickAnswerText(it.q.correct_answer) }] : []
+                    // 동형모의고사는 시험지 번호(서술 1 …)로
+                    it.kind === "q" ? [{ num: it.num, label: it.q.item_no?.trim() || undefined, ans: quickAnswerText(it.q.correct_answer) }] : []
                   )}
                 />
               </article>
