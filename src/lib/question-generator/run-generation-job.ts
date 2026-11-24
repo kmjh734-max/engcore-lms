@@ -54,6 +54,7 @@ import { countEnglishSentences } from "@/lib/question-generator/text-utils";
 import { isSetMarkKey, setFallbackAllowed, setKeysForPassage } from "@/lib/question-generator/passage-set";
 import { setNoteFor, sharedPassageOf } from "@/lib/question-generator/passage-set-check";
 import { frameChoiceExplanation } from "@/lib/question-generator/explanation-frame";
+import { anchorKindFor, planAnchors, type AnchorPlan } from "@/lib/question-generator/sentence-plan";
 import { markedSentences, mergeMarkedPassages } from "@/lib/question-generator/passage-set-merge";
 import type {
   GenerationRequestConfig,
@@ -271,6 +272,10 @@ async function generateWithValidation(opts: {
   duplicateNote?: (payload: GeneratedQuestionPayload) => string | null;
   /** 1지문 다문항: 같은 지문을 함께 쓰는 다른 문항 이야기 */
   setNote?: string;
+  /** 같은 지문 문항끼리 나눠 맡긴 근거 문장(sentence-plan.ts) */
+  anchorPlan?: AnchorPlan | null;
+  answerSlot?: number;
+  focusRegion?: number;
 }): Promise<{
   payload: GeneratedQuestionPayload | null;
   status: "approved";
@@ -496,6 +501,8 @@ type WorkItem = {
   answerSlot?: number;
   /** 정답 근거를 둘 지문 구역(0 앞·1 가운데·2 뒤). 같은 지문 여러 문항이 같은 문장을 묻지 않게(2026-11-24) */
   focusRegion?: number;
+  /** 같은 지문 문항끼리 나눠 맡긴 근거 문장(sentence-plan.ts, 2026-11-24) */
+  anchorPlan?: AnchorPlan | null;
   passageId: string;
   passageText: string;
   analysis: PassageAnalysis;
@@ -1201,7 +1208,18 @@ export async function runGenerationJob(
        * (2026-10-03: 도표 지문 하나로 39개가 생략됐다).
        */
       const chartPassage = isChartDescriptionPassage(cleanSourcePassage(String(passageRow.passage ?? "")));
-      for (const [pos, option] of (setCfg ? setOptionsFor(pi) : options).entries()) {
+      const passageOptions = setCfg ? setOptionsFor(pi) : options;
+      /*
+       * 근거 문장 나눠 맡기기(2026-11-24): 이미 저장된 사본까지 넣은 청한 차례 전체로 정해야
+       * 이어 받기 토막에서도 같은 배정이 나온다.
+       */
+      const anchorPlans = planAnchors(
+        cleanSourcePassage(String(passageRow.passage ?? "")),
+        passageOptions.map((o) =>
+          chartPassage && CHART_UNFIT_TYPES.has(o.type) ? { type: "", code: "" } : { type: o.type, code: o.aingkaCode ?? "" }
+        )
+      );
+      for (const [pos, option] of passageOptions.entries()) {
         if (chartPassage && CHART_UNFIT_TYPES.has(option.type)) {
           chartSkipped += 1;
           chartSkippedTypes.add(option.label || option.type);
@@ -1213,6 +1231,7 @@ export async function runGenerationJob(
         if (copyIndex < (existingCountBySlot.get(key) ?? 0)) continue;
         work.push({
           answerSlot: balancedAnswerSlot(jobId, pi * (setCfg ? setCfg.size : options.length) + pos),
+          anchorPlan: anchorPlans[pos] ?? null,
           copyIndex,
           passageId,
           passageText: passageRow.passage,
@@ -1432,6 +1451,7 @@ export async function runGenerationJob(
       setNote: item.setNote,
       answerSlot: item.answerSlot,
       focusRegion: item.focusRegion,
+      anchorPlan: item.anchorPlan,
     });
 
     /*
@@ -1606,6 +1626,12 @@ export async function runGenerationJob(
             wordOrderMode: config.wordOrderMode ?? "passage",
             retries: 1,
             setNote: item.setNote,
+            // 대체 유형도 같은 지문 다른 문항이 맡은 문장은 피한다(맡은 문장은 박지 않는다)
+            anchorPlan: (() => {
+              const kind = anchorKindFor(alt.type, alt.aingkaCode ?? "");
+              const avoid = item.anchorPlan?.avoid ?? [];
+              return kind && avoid.length ? { kind, sentence: null, avoid } : null;
+            })(),
             onStage: () => {
               stages.set(item, "swap");
               pushStage();

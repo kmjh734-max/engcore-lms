@@ -28,6 +28,7 @@ import {
 import { primeQuestionGeneratorCache, questionGeneratorChatJsonWithRetry } from "@/lib/question-generator/openai";
 import { relabelOrderQuestion } from "@/lib/question-generator/order-relabel";
 import { findAingkaOption } from "@/lib/question-generator/question-types";
+import { anchorPlanLine, type AnchorPlan } from "@/lib/question-generator/sentence-plan";
 import {
   cleanQuestionText,
   countEnglishSentences,
@@ -3087,6 +3088,8 @@ export async function generateOneQuestion(opts: {
   answerSlot?: number;
   /** 정답 근거를 둘 지문 구역(0 앞·1 가운데·2 뒤) — 같은 지문 문항끼리 근거 문장이 겹치지 않게 */
   focusRegion?: number;
+  /** 같은 지문 문항끼리 나눠 맡긴 근거 문장(sentence-plan.ts) — 있으면 구역 힌트 대신 쓴다 */
+  anchorPlan?: AnchorPlan | null;
 }): Promise<GeneratedQuestionPayload> {
   const { option, analysis } = opts;
   // 시험지 흔적(정답 표기·문장 번호)을 걷어 낸 지문으로 만든다
@@ -3412,6 +3415,7 @@ export async function generateOneQuestion(opts: {
   const regionCode = option.aingkaCode || "";
   const regionApplies =
     opts.focusRegion != null &&
+    !opts.anchorPlan &&
     copyIndex === 0 &&
     // 제시어배열은 코드가 중요한 문장을 골라 준다(선생님 2026-10-04 「주제문·결론으로」) — 구역 힌트와 부딪히지 않게 뺀다
     !/개수|통문장|요약|주제|제목|요지|사례|비유|답변|대화문|매칭|어휘빈칸|제시어배열/.test(regionCode);
@@ -3693,7 +3697,15 @@ export async function generateOneQuestion(opts: {
         .map((x) => x.t)
         .filter((t) => !pool.includes(t)),
     ];
-    const pick = ordered[copyK % ordered.length]!;
+    /*
+     * 같은 지문의 다른 문항과 문장을 나눠 맡았으면(sentence-plan.ts) 첫 시도는 맡은 문장, 다시 만들 때는
+     * 다른 문항이 맡은 문장을 빼고 다음 후보로(2026-11-24 「너무 중복되지 않는가」).
+     */
+    const planned = opts.anchorPlan?.sentence ?? null;
+    const avoid = new Set(opts.anchorPlan?.avoid ?? []);
+    const free = ordered.filter((t) => !avoid.has(t));
+    const list = free.length ? free : ordered;
+    const pick = planned && retryShift === 0 && sents.includes(planned) ? planned : list[copyK % list.length]!;
     return `\n\nUSE THIS SENTENCE: 이번 문항은 이 문장을 빈칸으로 한다(글자 그대로, 한 자도 바꾸지 말 것).\n"${pick}"`;
   })();
 
@@ -3773,6 +3785,13 @@ CHOICE SHAPE: 이번 문항의 <b>정답 보기</b>는 이 모양을 우선한�
 ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
   })();
 
+  /*
+   * 「지문 그대로」 제시어배열은 pickedSentenceLine이 맡은 문장을 박아 주므로 계획 줄을 따로 쓰지 않는다.
+   */
+  const anchorLine =
+    opts.anchorPlan?.kind === "rebuild" && /제시어배열/.test(option.aingkaCode ?? "") && (opts.wordOrderMode ?? "passage") !== "paraphrase"
+      ? ""
+      : anchorPlanLine(opts.anchorPlan);
   // 슬롯 정보는 같은 유형 문항끼리도 달라지므로 맨 끝에 둔다
   const slotTail = opts.diversitySlot
     ? `\n\nITEM SLOT: ${JSON.stringify({
@@ -3781,7 +3800,7 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
           total: opts.diversitySlot.total,
           label: opts.diversitySlot.label,
         },
-      })}${diversityHint ? `\n${diversityHint}` : ""}${copyHint ? `\n${copyHint}` : ""}${regionHint ? `\n${regionHint}` : ""}${mythHint ? `\n${mythHint}` : ""}`
+      })}${diversityHint ? `\n${diversityHint}` : ""}${copyHint ? `\n${copyHint}` : ""}${regionHint ? `\n${regionHint}` : ""}${anchorLine ? `\n${anchorLine}` : ""}${mythHint ? `\n${mythHint}` : ""}`
     : "";
 
   /*
