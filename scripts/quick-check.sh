@@ -19,4 +19,8 @@ if [ ${#files[@]} -gt 0 ]; then
 else
   echo "바뀐 src 파일 없음 — 린트 생략"
 fi
+# 변형문제 파일이 바뀌었으면 전 유형 회귀 검사(API·DB 없음, 2초 남짓 — 2026-11-24)
+if printf '%s\n' "${files[@]}" | grep -qE '^src/(lib|components)/question-generator/'; then
+  if npx tsx scripts/qg-regress/regress.mts; then :; else fail=1; fi
+fi
 exit $fail
