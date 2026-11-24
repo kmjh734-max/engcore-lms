@@ -91,6 +91,23 @@ export function normalizePassage(text: string): string {
 export const ENGLISH_SENTENCE_GAP =
   /(?<!\b(?:Mr|Mrs|Ms|Dr|Prof|St|Mt|Jr|Sr|vs|etc|e\.g|i\.e)\.)(?<=[.!?]["'”’]?)\s+(?=[A-Z"'“‘(])/;
 
+/**
+ * 순서 배열 「일부 내용만」: 지문에서 이어진 문장 7개(주어진 글 1 + (A)(B)(C) 두 문장씩)를 잘라 준다.
+ * Jayden 선생님(2026-11-24): (B)가 한 문장처럼 너무 짧게 나온다 — 긴 지문 전체를 셋으로 나누면 고르지 않다.
+ * 8문장 이하는 그대로. 첫 문장부터 자른다.
+ */
+export function orderExcerpt(text: string, seed: number, size = 7): string {
+  const sents = normalizePassage(text)
+    .split(ENGLISH_SENTENCE_GAP)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (sents.length <= size + 1) return text;
+  // 글의 첫머리부터 자른다 — 가운데를 자르면 「주어진 글」이 논지 중간에서 시작해 순서 단서가 없었다(2026-11-24 시험 2번 중 1번 실패)
+  void seed;
+  const start = 0;
+  return sents.slice(start, start + size).join(" ");
+}
+
 /** 영어 지문 문장 수 추정 (.?! 기준) */
 export function countEnglishSentences(text: string): number {
   const cleaned = normalizePassage(text);

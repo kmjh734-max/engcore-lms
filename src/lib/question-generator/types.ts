@@ -141,6 +141,8 @@ export interface GenerationRequestConfig {
    * 기본은 지문 그대로(선생님 결정 2026-09-29). 예전에는 늘 고쳐 썼다.
    */
   wordOrderMode?: "passage" | "paraphrase";
+  /** 동형모의고사 순서 배열을 지문 일부(이어진 7문장)로 낼지 — 「excerpt」면 코드가 잘라 준다 */
+  orderMode?: "excerpt";
   forceGenerateDespiteWarnings?: boolean;
   /** 자료함(수업자료)에서 지문을 골라 만든 경우 그 지문 id. 있으면 자료함 변형문제 탭에 보인다. */
   lessonProjectIds?: string[];

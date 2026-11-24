@@ -50,7 +50,7 @@ import {
   shouldRegenerate,
   validateGeneratedQuestion,
 } from "@/lib/question-generator/validate-question";
-import { countEnglishSentences } from "@/lib/question-generator/text-utils";
+import { countEnglishSentences, orderExcerpt } from "@/lib/question-generator/text-utils";
 import { isSetMarkKey, setFallbackAllowed, setKeysForPassage } from "@/lib/question-generator/passage-set";
 import { setNoteFor, sharedPassageOf } from "@/lib/question-generator/passage-set-check";
 import { frameChoiceExplanation } from "@/lib/question-generator/explanation-frame";
@@ -1210,7 +1210,11 @@ export async function runGenerationJob(
         work.push({
           answerSlot: balancedAnswerSlot(jobId, index),
           passageId: row.passageId,
-          passageText: row.passageRow.passage,
+          // 순서 배열 「일부 내용만」이면 이어진 7문장만 준다(동형모의고사 설정)
+          passageText:
+            config.orderMode === "excerpt" && option.type === "order"
+              ? orderExcerpt(row.passageRow.passage, index * 7 + b.passageIndex)
+              : row.passageRow.passage,
           analysis: row.analysis,
           option,
           sourceDetail: resolved[b.passageIndex]?.sourceDetail || config.sourceDetail || undefined,
@@ -1948,6 +1952,9 @@ function fallbackOptionsFor(optionKey: string, level: "상" | "중" | "하", tur
     ? ["grammar:na:default:어법추론", "grammar:na:default:어법개수"]
     : /^(writing|summary_short):/.test(optionKey)
       ? [
+          // 지칭이 안 되면 같은 갈래(특정 표현 뜻 찾아 쓰기)부터 — 구현고2 서술 2가 제시어 배열로 바뀌었다(2026-11-24)
+          ...(/지칭대명사서술/.test(optionKey) ? ["writing:na:default:특정표현의미서술"] : []),
+          ...(/특정표현의미서술/.test(optionKey) ? ["writing:na:default:지칭대명사서술"] : []),
           "writing:na:default:제시어배열기본",
           "summary_short:na:default:요약문빈칸2단어",
           "writing:na:default:제시어배열어형변화",

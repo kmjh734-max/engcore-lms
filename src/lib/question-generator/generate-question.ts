@@ -1010,7 +1010,9 @@ word1 / word2 / … (정답 문장의 낱말을 원형으로 흩어 놓는다. 8
         return `서술형 · 지칭 추론 · 대명사·지시사 (수특형):
 - passageModified = 영어 지문. 지시 대상이 분명한 대명사·지시사 1곳에 ⓐ<u>it</u> (또는 this/that/they/these/those/them).
 - 앞선 문맥에 선행사(명사·동명사 등)가 본문에 그대로 있어야 함.
-- 적합한 대명사 지칭이 없으면 {"skip":true,"reason":"명확한 대명사 지칭 없음"}.
+- 대명사(it/they/them)뿐 아니라 「지시어+명사」(these systems, those biases, such data)도 쓸 수 있다. 거의 모든 글에 하나는 있다 —
+  they/them/it 이 앞 문장의 명사(구)를 가리키는 곳부터 찾는다(예: the data they are trained on → they = AI systems).
+- 가리키는 말이 1~3단어 명사구로 본문에 그대로 있으면 충분하다. 그런 곳이 정말 하나도 없을 때만 {"skip":true,"reason":"명확한 대명사 지칭 없음"}.
 - questionText:
 <지칭답란>
 ⓐ
@@ -3626,8 +3628,31 @@ export async function generateOneQuestion(opts: {
     .filter((line) => line.trim())
     .join("\n");
   // 문항마다 달라지는 규칙 — 둘째 메시지로 보낸다(첫 메시지 캐시를 깨지 않게)
+  /*
+   * 지칭: 쓸 만한 대명사·지시어가 있는 문장을 코드가 찾아 준다. 모델이 가주어 it 만 보고
+   * 「지칭 대상이 없다」며 건너뛰었다(구현고2 서술 2, 2026-11-24 — 「the data they are trained on」이 있었다).
+   */
+  const referenceCandidates = (() => {
+    if (option.aingkaCode !== "지칭대명사서술") return "";
+    const sents = String(passage ?? "")
+      .split(ENGLISH_SENTENCE_GAP)
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const hits: string[] = [];
+    sents.forEach((t, i) => {
+      if (i === 0) return;
+      const m = t.match(/\b(they|them|their|those\s+\w+|these\s+\w+|such\s+\w+|this\s+\w+|it)\b/i);
+      if (!m) return;
+      if (/^it$/i.test(m[1]!) && /\bit\s+(is|was|seems|takes)\b[^.]*\b(to|that)\b/i.test(t)) return; // 가주어 it
+      hits.push(`- 「${m[1]}」: ${t.slice(0, 160)}`);
+    });
+    return hits.length
+      ? `[지칭으로 쓸 수 있는 곳 — 이 가운데 가리키는 명사(구)가 앞 문장에 그대로 있는 것 하나를 고른다. 건너뛰지 않는다]\n${hits.slice(0, 6).join("\n")}`
+      : "";
+  })();
   const itemRulesForThisItem = [
     typeRulesForItem,
+    referenceCandidates,
     // 선생님이 범위를 정해 두었으면 이번 문항에 쓸 어법 하나를 여기서 정해 준다
     option.aingkaCode === "문법조건영작" && pickedWritingGrammar
       ? `[이번 문항에 쓸 어법] ${pickedWritingGrammar.label}(${pickedWritingGrammar.form})\n` +

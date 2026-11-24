@@ -95,6 +95,8 @@ export function ExamMockBuilder({
   const [overallDifficulty, setOverallDifficulty] = useState("내신");
   const [paraphraseGV, setParaphraseGV] = useState(false);
   const [wordOrderMode, setWordOrderMode] = useState<"passage" | "paraphrase">("passage");
+  /** 순서 배열 지문 — 문항 난이도대로 / 본문 그대로 / 주어진 글만 바꿔 쓰기 / 지문 일부만(Jayden 선생님 제안 2026-11-24) */
+  const [orderMode, setOrderMode] = useState<"level" | "original" | "paraphrase" | "excerpt">("level");
   const [grammarWritingMode, setGrammarWritingMode] = useState<"passage" | "paraphrase">("paraphrase");
 
   /*
@@ -325,6 +327,7 @@ export function ExamMockBuilder({
           paraphraseGrammarVocab: paraphraseGV,
           wordOrderMode,
           grammarWritingMode,
+          orderMode,
           round,
           rounds,
         }),
@@ -399,6 +402,21 @@ export function ExamMockBuilder({
                 만들려고 문장도 바꿔 씁니다.
               </span>
             </label>
+            {slots.some((s) => (slotEdit[s.no]?.optionKey ?? s.optionKey).startsWith("order:")) ? (
+              <label className="flex items-center gap-2 text-xs text-slate-700">
+                <span className="w-20 shrink-0 font-semibold">순서 배열</span>
+                <select
+                  value={orderMode}
+                  onChange={(e) => setOrderMode(e.target.value as "level" | "original" | "paraphrase" | "excerpt")}
+                  className="ui-input h-8 flex-1 text-xs"
+                >
+                  <option value="level">문항 난이도대로 (하: 본문 그대로 · 상: 주어진 글 바꿔 쓰기)</option>
+                  <option value="original">본문 그대로</option>
+                  <option value="paraphrase">일부 변형 (주어진 글만 바꿔 쓰기)</option>
+                  <option value="excerpt">일부 내용만 (지문에서 이어진 7문장, (A)(B)(C) 두 문장씩)</option>
+                </select>
+              </label>
+            ) : null}
             <label className="flex items-center gap-2 text-xs text-slate-700">
               <span className="w-20 shrink-0 font-semibold">제시어 배열</span>
               <select

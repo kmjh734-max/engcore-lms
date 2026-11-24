@@ -40,6 +40,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     overallDifficulty?: string;
     paraphraseGrammarVocab?: boolean;
     wordOrderMode?: "passage" | "paraphrase";
+    /** 순서 배열 지문: 난이도대로 / 본문 그대로(하) / 주어진 글만 바꿔 쓰기(상) / 지문 일부만 */
+    orderMode?: "level" | "original" | "paraphrase" | "excerpt";
     grammarWritingMode?: "passage" | "paraphrase";
     /** 문항 번호마다 바꾼 유형·난이도 */
     slotEdit?: Record<string, { optionKey?: string; level?: "상" | "중" | "하" }>;
@@ -115,6 +117,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       const edit = body.slotEdit?.[s.no] ?? {};
       const level = edit.level ?? s.level;
       let optionKey = edit.optionKey && findOptionByKey(edit.optionKey) ? edit.optionKey : s.optionKey;
+      // 순서 배열을 한 방식으로 고르면 문항 난이도와 상관없이 그 버전으로
+      if (optionKey.startsWith("order:") && (body.orderMode === "original" || body.orderMode === "paraphrase")) {
+        optionKey = `order:na:${body.orderMode === "original" ? "low" : "high"}:순서추론`;
+      }
       if (/^(sentence_insertion|irrelevant_sentence):/.test(optionKey) && !longEnough[passageIndex]) {
         const alt = longEnough.findIndex(Boolean);
         if (alt >= 0) passageIndex = alt;
@@ -205,6 +211,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     examAnalysisId: id,
     ...(body.paraphraseGrammarVocab ? { paraphraseGrammarVocab: true } : {}),
     ...(body.wordOrderMode ? { wordOrderMode: body.wordOrderMode } : {}),
+    ...(body.orderMode === "excerpt" ? { orderMode: "excerpt" as const } : {}),
     ...(body.grammarWritingMode ? { grammarWritingMode: body.grammarWritingMode } : {}),
     // 원래 시험지에서 잰 수준을 그대로 넘긴다(선생님 요청 2026-09-28: 수준이 정말 반영되도록)
     levelBrief: levelBriefFor({
