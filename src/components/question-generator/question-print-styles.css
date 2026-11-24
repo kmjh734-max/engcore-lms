@@ -610,3 +610,155 @@
   word-break: break-all;
   overflow-wrap: anywhere;
 }
+
+/* ───────── 동형모의고사 학교 시험지 양식(선생님 2026-11-24) — 참고파일/2026년 1학기 중간고사 10개를 따른 흑백·바탕체 ───────── */
+.qg-school,
+.qg-school .qg-print-card,
+.qg-school .qg-print-q-head,
+.qg-school .qg-school-head,
+.qg-school .qg-school-runhead,
+.qg-school .qg-school-foot,
+.qg-school .qg-print-cont-label {
+  color: #000;
+  font-family: "Noto Serif KR", "Batang", serif !important;
+}
+.qg-school .qg-print-passage-p,
+.qg-school .qg-print-given-box,
+.qg-school .qg-print-choices li {
+  font-family: "Times New Roman", "Noto Serif KR", serif;
+  color: #000;
+}
+.qg-school .qg-print-card {
+  border-bottom: none;
+  margin-bottom: 4.5mm;
+  font-size: 9.4pt;
+}
+.qg-school .qg-print-q-head {
+  font-weight: 400;
+  font-size: 9.8pt;
+  line-height: 1.5;
+}
+.qg-school .qg-print-q-num {
+  color: #000 !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  font-weight: 700;
+  font-size: 1em !important;
+}
+.qg-school .qg-print-q-num::after {
+  content: ".";
+}
+.qg-school .qg-print-passage-block,
+.qg-school .qg-print-passage {
+  border: 0.75pt solid #000;
+  padding: 1.6mm 2.2mm;
+  margin: 1.2mm 0 1.8mm;
+  background: none;
+}
+.qg-school .qg-print-passage-p {
+  font-size: 9.2pt;
+  line-height: 1.55;
+}
+.qg-school .qg-print-given-box {
+  border: 0.75pt solid #000;
+  background: none;
+  font-size: 9.2pt;
+}
+.qg-school .qg-print-col-right {
+  border-left: 0.9pt solid #000;
+}
+.qg-school .qg-print-cols {
+  column-gap: 6mm;
+}
+.qg-school .qg-print-choice-table td,
+.qg-school .qg-print-choice-mark {
+  color: #000;
+}
+.qg-school-head {
+  margin-bottom: 3mm;
+}
+.qg-school-box {
+  border: 1.2pt solid #000;
+  padding: 2.6mm 5mm 2.2mm;
+  text-align: center;
+}
+.qg-school-t1 {
+  margin: 0;
+  font-size: 12.5pt;
+  letter-spacing: 0.3pt;
+}
+.qg-school-t2 {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin: 1mm 0 1.4mm;
+}
+.qg-school-t2 h1 {
+  margin: 0;
+  font-size: 21pt;
+  font-weight: 900;
+  letter-spacing: 2pt;
+}
+.qg-school-grade {
+  justify-self: start;
+  border: 1pt solid #000;
+  border-radius: 3mm;
+  padding: 0.6mm 4mm;
+  font-size: 12pt;
+  font-weight: 700;
+}
+.qg-school-t3 {
+  display: flex;
+  justify-content: space-between;
+  border-top: 0.75pt solid #000;
+  padding-top: 1.4mm;
+  font-size: 10pt;
+  font-weight: 700;
+}
+.qg-school-note {
+  border: 0.75pt solid #000;
+  margin-top: 2.4mm;
+  padding: 1.6mm 3mm;
+  font-size: 8.8pt;
+  line-height: 1.55;
+  text-align: left;
+}
+.qg-school-note p {
+  margin: 0;
+}
+.qg-school-runhead {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 0.9pt solid #000;
+  padding-bottom: 1mm;
+  margin-bottom: 3mm;
+  font-size: 8.8pt;
+  font-weight: 700;
+}
+.qg-school-foot {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1.5mm;
+  border-top: 0.9pt solid #000;
+  font-size: 8.8pt;
+  color: #000;
+}
+.qg-school-pno {
+  text-align: center;
+  font-weight: 700;
+}
+.qg-school-chk {
+  justify-self: end;
+  border: 0.75pt solid #000;
+  padding: 0.4mm 3mm;
+}
+/* 단 맨 끝 문항의 아래 여백까지 세로줄이 이어져 바닥글(쪽 번호)을 가로지르던 것 */
+.qg-school .qg-print-col > :last-child .qg-print-card,
+.qg-school .qg-print-col > .qg-print-card:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}

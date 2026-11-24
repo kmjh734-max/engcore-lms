@@ -125,7 +125,7 @@ const BRANDING_STORAGE_KEY = "qg-print-branding";
  * 예전에 기본을 골라 둔 사람은 A로 본다. 문항 구성은 같고 글꼴·색·테두리만
  * 바꾼다 — question-print-styles.css의 .qg-style-*.
  */
-type QuestionDesignStyle = "base" | "a" | "b" | "c";
+type QuestionDesignStyle = "base" | "a" | "b" | "c" | "school";
 const TYPE_ORDER_KEY = "question-print-type-order";
 const SPREAD_KEY = "question-print-spread-passages";
 
@@ -150,8 +150,34 @@ const DESIGN_FONTS_HREF =
   "/fonts/print/fonts.css";
 
 function designClass(style: QuestionDesignStyle): string {
+  if (style === "school") return "qg-school";
   return style === "base" ? "" : `qg-style qg-style-${style}`;
 }
+
+/**
+ * 동형모의고사(시험 분석으로 만든 작업)의 문제지는 학교 시험지 양식으로 낸다(선생님 2026-11-24 「동형모의고사는 항상 그런 양식으로」).
+ * 참고: 참고파일/2026년 1학기 중간고사 10개 — 머리 상자(학년도·학기·정기시험·학년 상자·과목, 반·번호·성명),
+ * 안내 상자(문항 수·배점·총점), 2단 세로줄, 바탕체, 「n. 발문 [x.x점]」, 아래 「학년 과목 · 쪽/전체 · 확인란」.
+ * 학교 공식 문서처럼 보이지 않게 결재란·학교 저작권 문구는 넣지 않고 「대비 동형모의고사」를 밝힌다.
+ */
+type SchoolExamMeta = { year: number; semester: number; grade: string; school: string; subject: string; round: string };
+
+function schoolExamMetaOf(rc: Record<string, unknown> | null | undefined, createdAt?: string | null): SchoolExamMeta | null {
+  if (!rc || !rc.examAnalysisId) return null;
+  const title = String(rc.title ?? "");
+  const schoolSrc = String(rc.schoolName ?? "") || title;
+  const sm = schoolSrc.match(/(\S+?)(고등학교|중학교|고|중)(?=\s|$|\d)/);
+  const school = sm ? `${sm[1]}${sm[2]!.startsWith("고") ? "고" : "중"}` : "";
+  const grade = (String(rc.grade ?? "").match(/\d/) ?? title.match(/(\d)\s*학년/) ?? [])[0]?.replace(/\D/g, "") ?? "";
+  const subject = (title.match(/(공통영어\s*\d|영어\s*(?:I{1,2}|Ⅰ|Ⅱ|\d)|영어독해와\s*작문|영어)/) ?? [])[1] ?? "영어";
+  const round = (title.match(/(\d+)\s*차\s*$/) ?? [])[1] ?? "";
+  const d = createdAt ? new Date(createdAt) : new Date();
+  return { year: d.getFullYear(), semester: d.getMonth() >= 6 ? 2 : 1, grade: grade || "", school, subject: subject.replace(/\s+/g, ""), round };
+}
+
+/** 서답형(서술형) 유형인가 — 보기가 지문 안 ①~⑤인 객관식(삽입·어법)은 보기 목록이 비어도 선택형 */
+const isSubjectiveKey = (key: string | null | undefined) =>
+  /^(writing|summary_short):/.test(String(key ?? "")) || /:(어법오류수정\d|어법문장오류수정)$/.test(String(key ?? ""));
 
 type PrintBranding = {
   headerKicker: string;
@@ -992,6 +1018,8 @@ export function QuestionPrintView({
   const [vocabSetId, setVocabSetId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pages, setPages] = useState<SheetPage[]>([]);
+  /** 동형모의고사면 학교 시험지 양식에 쓸 머리 정보 */
+  const [examMeta, setExamMeta] = useState<SchoolExamMeta | null>(null);
   const [branding, setBranding] = useState<PrintBranding>({
     headerKicker: academyName,
     headerTitle: "",
@@ -1005,7 +1033,8 @@ export function QuestionPrintView({
   const measureRef = useRef<HTMLDivElement>(null);
   /** 디자인 — 모든 자료가 하나를 같이 쓴다(material-design.ts, 선생님 2026-10-21). 통합자료는 design으로 준다. */
   const [md, chooseMd] = useMaterialDesign(design);
-  const designStyle = QUESTION_BASE_STYLE[md] as QuestionDesignStyle;
+  const schoolForm = mode === "exam" && examMeta != null;
+  const designStyle = (schoolForm ? "school" : QUESTION_BASE_STYLE[md]) as QuestionDesignStyle;
   /*
    * 유형 차례(유형 코드 목록). 빈 목록은 기본 차례다.
    * 선생님 요청(2026-10-20): 유형별 출력에서 유형 순서를 바꿀 수 있게. 한 번 정하면
@@ -1092,6 +1121,7 @@ export function QuestionPrintView({
     setGrade(nextGrade);
     setSourceDetail(nextDetail);
     setQuestions(data.questions ?? []);
+    setExamMeta(schoolExamMetaOf(job?.request_config ?? null, job?.created_at ?? null));
     // 1지문 다문항으로 만든 작업은 지문별 묶음으로 연다(주소에 배치를 따로 적었으면 그것을 따른다)
     if (job?.request_config?.passageSet && layoutProp === "mixed") setPrintLayout("bySet");
     // 문항 위에는 출처만 단다. 제목은 그 자체가 답이 되는 문항이 많아 싣지 않는다.
@@ -1363,8 +1393,9 @@ export function QuestionPrintView({
       });
 
       const mmToPx = (mm: number) => (mm * 96) / 25.4;
-      const firstColMax = mmToPx(232);
-      const nextColMax = mmToPx(240);
+      // 학교 시험지 양식: 첫 쪽은 머리·안내 상자가 크고, 다음 쪽은 머리 없이 한 줄
+      const firstColMax = mmToPx(designStyle === "school" ? 206 : 232);
+      const nextColMax = mmToPx(designStyle === "school" ? 258 : 240);
 
       /**
        * 한 단보다 긴 문항의 부분 높이: 측정용 문항을 복제해 머리·꼬리·지문 조각을 덜어 낸 뒤 잰다.
@@ -1535,6 +1566,54 @@ export function QuestionPrintView({
   }
 
   function renderHeader(compact: boolean, pageIdx: number, totalPages: number) {
+    if (schoolForm && examMeta) return renderSchoolHeader(pageIdx, examMeta);
+    return renderBrandHeader(compact, pageIdx, totalPages);
+  }
+
+  function renderSchoolHeader(pageIdx: number, m: SchoolExamMeta) {
+    if (pageIdx > 0)
+      return (
+        <header className="qg-school-runhead">
+          <span>{m.grade ? `${m.grade}학년 ` : ""}{m.subject}</span>
+          <span>{m.school ? `${m.school} 대비 ` : ""}동형모의고사{m.round ? ` ${m.round}회` : ""}</span>
+        </header>
+      );
+    const objN = displayItems.filter((it) => it.kind === "q" && !isSubjectiveKey(it.q.option_key)).length;
+    const subjN = displayItems.filter((it) => it.kind === "q" && isSubjectiveKey(it.q.option_key)).length;
+    const total = displayItems.reduce((a, it) => a + (it.kind === "q" && typeof it.q.points === "number" ? it.q.points : 0), 0);
+    return (
+      <header className="qg-school-head">
+        <div className="qg-school-box">
+          <p className="qg-school-t1">
+            {m.year}학년도 {m.semester}학기 {m.grade ? `( ${m.grade} )학년 ` : ""}정기시험 대비 동형모의고사{m.round ? ` · ${m.round}회` : ""}
+          </p>
+          <div className="qg-school-t2">
+            <span className="qg-school-grade">{m.grade ? `${m.grade}학년` : ""}</span>
+            <h1>{m.subject}</h1>
+            <span />
+          </div>
+          <div className="qg-school-t3">
+            <span>{m.school ? `${m.school} 대비` : "(   )교시"}</span>
+            <span>
+              {m.grade ? `${m.grade}학년 ` : ""}(    )반 (    )번  성명 (           )
+            </span>
+          </div>
+        </div>
+        <div className="qg-school-note">
+          <p>○ 자신이 풀어야 할 과목의 문제지인지 확인하시오.</p>
+          <p>○ 답안지에 성명, 학번, 과목명을 정확하게 기입하시오.</p>
+          <p>○ 문항에 따라 배점이 다르니, 각 물음의 끝에 표시된 배점을 참고하시오.</p>
+          <p>
+            ○ 선택형 ( {objN} )문항{subjN ? ` · 서답형 ( ${subjN} )문항` : ""}
+            {total ? ` · 총점 ${Math.round(total * 10) / 10}점` : ""}
+            {subjN ? " — 서답형 답은 답안지 서답형 칸에 검정 볼펜으로 쓰시오." : ""}
+          </p>
+        </div>
+      </header>
+    );
+  }
+
+  function renderBrandHeader(compact: boolean, pageIdx: number, totalPages: number) {
     /*
      * 보기 단어 QR 은 생성 묶음에 딸린 것이라, 골라 묶은 시험지에는 걸지 않는다.
      * (jobId 가 빈 채로 주소를 만들면 열리지 않는 고리가 된다)
@@ -1617,6 +1696,14 @@ export function QuestionPrintView({
   }
 
   function renderFooter(pageIdx: number) {
+    if (schoolForm && examMeta)
+      return (
+        <footer className="qg-school-foot">
+          <span>{examMeta.grade ? `${examMeta.grade}학년 ` : ""}{examMeta.subject}</span>
+          <span className="qg-school-pno">{pageIdx + 1} / {sheetPages.length}</span>
+          <span className="qg-school-chk">확인란</span>
+        </footer>
+      );
     return (
       <footer className="qg-print-footer">
         <div className="qg-print-footer-left">
@@ -1665,7 +1752,7 @@ export function QuestionPrintView({
         part={part}
         hidePassage={item.hidePassage}
         passageSource={
-          branding.hideOrigin || item.hidePassage ? undefined : passageSources[item.q.passage_id ?? ""]
+          branding.hideOrigin || item.hidePassage || schoolForm ? undefined : passageSources[item.q.passage_id ?? ""]
         }
       />
     ) : (
@@ -1686,6 +1773,7 @@ export function QuestionPrintView({
   const printBody = (
     <>
           {designStyle !== "base" ? <link rel="stylesheet" href={DESIGN_FONTS_HREF} /> : null}
+          {designStyle === "school" ? <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&display=swap" /> : null}
           <div
             ref={measureRef}
             aria-hidden
