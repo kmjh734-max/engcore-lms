@@ -239,7 +239,7 @@ export function ExamMockBuilder({
       items: Object.entries(mockBilling)
         .filter(([, q]) => q > 0)
         .map(([feature, quantity]) => ({ feature, quantity: quantity * rounds })),
-      sample: "exam_mock",
+      sample: "exam_mock_paper",
     }))) return;
     setBusy(true);
     setMessage(null);

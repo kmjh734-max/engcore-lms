@@ -16,9 +16,12 @@ import { billingFeatureFor } from "@/lib/question-generator/billing-buckets";
 import { MockPassagePickerModal, type PickedMockPassage } from "@/components/mock-passages/MockPassagePickerModal";
 import { PassageSheet } from "@/components/passages/PassageSheet";
 import { sampleLevelFor, typeSampleFor, type SampleLevel, type TypeSample } from "@/lib/question-generator/type-samples";
+import { questionTypePreview, type TypePreviewShot } from "@/lib/type-previews";
+import { HoverPreview, PreviewShot } from "@/components/ui/HoverPreview";
 import {
   emptyCounts,
   QUESTION_TYPE_GROUPS,
+  findOptionByKey,
   sanitizeCounts,
   sumCounts,
 } from "@/lib/question-generator/question-types";
@@ -493,7 +496,14 @@ export function QuestionGeneratorClient({
   /** 제시어 배열을 지문 그대로 낼지 (선생님 결정 2026-09-29: 기본은 지문 그대로) */
   const [wordOrderMode, setWordOrderMode] = useState<"passage" | "paraphrase">("passage");
   /** 유형에 마우스를 올렸을 때 띄우는 예시 */
-  const [sample, setSample] = useState<{ s: TypeSample; level: SampleLevel; x: number; y: number } | null>(null);
+  const [sample, setSample] = useState<{
+    s: TypeSample | null;
+    /** 실제 만든 문항을 찍은 그림(선생님 2026-10-26). 없으면 글 예시(s)를 보인다. */
+    shot: TypePreviewShot | null;
+    name: string;
+    level: SampleLevel;
+    box: { left: number; right: number; top: number };
+  } | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -1116,14 +1126,19 @@ export function QuestionGeneratorClient({
             className="space-y-1.5"
             onMouseOver={(e) => {
               const row = (e.target as HTMLElement).closest?.("[data-qtype]") as HTMLElement | null;
-              const s = row ? typeSampleFor(row.dataset.qtype) : null;
-              if (!s) {
+              const key = row?.dataset.qtype;
+              const s = key ? typeSampleFor(key) : null;
+              const shot = key ? questionTypePreview(key) : null;
+              if (!s && !shot) {
                 if (!row) setSample(null);
                 return;
               }
-              // 목록을 가리지 않게 오른쪽 빈 곳에 띄운다
-              const box = row!.getBoundingClientRect();
-              setSample({ s, level: sampleLevelFor(row!.dataset.qtype), x: box.right + 12, y: box.top });
+              // 목록을 가리지 않게 목록 칸 오른쪽 빈 곳에 띄운다
+              const list = e.currentTarget.getBoundingClientRect();
+              const opt = findOptionByKey(key!);
+              const group = opt ? QUESTION_TYPE_GROUPS.find((g) => g.options.includes(opt)) : null;
+              const name = s?.name ?? (opt ? `${group?.label.replace(/^Section ·\s*/, "") ?? ""} · ${opt.label}` : "");
+              setSample({ s, shot, name, level: sampleLevelFor(key), box: { left: list.left, right: list.right, top: row!.getBoundingClientRect().top } });
             }}
             onMouseLeave={() => setSample(null)}
           >
@@ -1394,17 +1409,13 @@ export function QuestionGeneratorClient({
             />
           </section>
 
-          {sample ? (
-            <div
-              className="pointer-events-none fixed z-50 w-[min(500px,calc(100vw-32px))] rounded-xl border border-slate-300 bg-white p-4 shadow-2xl"
-              style={{
-                left: Math.min(
-                  sample.x,
-                  Math.max(16, (typeof window === "undefined" ? 1200 : window.innerWidth) - 516)
-                ),
-                top: Math.max(12, Math.min(sample.y, (typeof window === "undefined" ? 800 : window.innerHeight) - 380)),
-              }}
-            >
+          {sample?.shot ? (
+            <HoverPreview anchor={sample.box} width={720} height={Math.round((sample.shot.h * 696) / sample.shot.w) + 60}>
+              <p className="mb-2 text-[15px] font-bold text-slate-900">{sample.name}</p>
+              <PreviewShot src={sample.shot.src} w={sample.shot.w} h={sample.shot.h} alt={`${sample.name} 예시`} />
+            </HoverPreview>
+          ) : sample?.s ? (
+            <HoverPreview anchor={sample.box} width={500} height={380}>
               <p className="text-[15px] font-bold text-slate-900">{sample.s.name}</p>
               <p className="mt-0.5 text-[12.5px] text-slate-500">{sample.s.shape}</p>
               <p className="mt-2.5 rounded-lg bg-slate-50 px-3 py-2 text-[13px] font-semibold leading-snug text-slate-900">
@@ -1420,7 +1431,7 @@ export function QuestionGeneratorClient({
                       }`}
                     >
                       <b className="mr-1">{lv === "low" ? "하" : "상"}</b>
-                      {sample.s.levels![lv]}
+                      {sample.s!.levels![lv]}
                     </p>
                   ))}
                 </div>
@@ -1431,7 +1442,7 @@ export function QuestionGeneratorClient({
                   {sample.s.levelNote}
                 </p>
               ) : null}
-            </div>
+            </HoverPreview>
           ) : null}
 
           {mockOpen ? (

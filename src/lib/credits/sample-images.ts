@@ -59,6 +59,12 @@ export const SAMPLE_IMAGES: Partial<Record<CreditSampleKind, SampleImage>> = {
   },
 };
 
+/** 동형모의고사 만들기 창: 분석 보고서가 아니라 만들어질 학교 시험지 양식 첫 쪽(선생님 2026-11-24 「이미지 동형모의고사로」) */
+SAMPLE_IMAGES.exam_mock_paper = {
+  src: "/samples/exam-mock.jpg",
+  alt: "동형모의고사 — 학교 시험지 양식으로 만든 문제지 실제 인쇄 첫 쪽",
+};
+
 export function sampleImageFor(kind: CreditSampleKind): SampleImage | null {
   return SAMPLE_IMAGES[kind] ?? null;
 }

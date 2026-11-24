@@ -23,6 +23,8 @@ export type CreditSampleKind =
   | "integrated"
   | "question"
   | "exam_mock"
+  /** 동형모의고사 만들기 — 학교 시험지 양식 문제지 견본(시험 분석 만들기 견본과 따로, 2026-11-24) */
+  | "exam_mock_paper"
   | "illustration";
 
 export type CreditConfirmRequest = {

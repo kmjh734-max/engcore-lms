@@ -113,6 +113,8 @@ export function paginatePrintPieces(
     columnSafetyPx?: number;
     /** 이미 문항이 있는 단에서 긴 문항을 시작하려면 남아 있어야 하는 높이. */
     minStartPx?: number;
+    /** 한 단에 들어가는 문항은 쪼개지 않고 통째로 다음 단으로(학교 시험지 양식, 선생님 2026-11-24 「페이지 안 넘어가게」) */
+    wholeItems?: boolean;
   },
   split?: {
     /** 문항의 지문 조각 수(2 미만이면 쪼갤 수 없다). */
@@ -184,7 +186,7 @@ export function paginatePrintPieces(
        */
       const minStart = opts.minStartPx ?? 0;
       const oversized = h > maxH();
-      if (col.length > 0 && (room < minStart || (!oversized && (side as string) === "right"))) {
+      if (col.length > 0 && (room < minStart || (!oversized && ((side as string) === "right" || opts.wholeItems)))) {
         nextColumn();
         continue;
       }

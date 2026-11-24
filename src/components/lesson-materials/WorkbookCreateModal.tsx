@@ -5,6 +5,8 @@ import { openNewDocument } from "@/components/lesson-materials/open-new-document
 import { useMemo, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { Alert } from "@/components/ui/Alert";
+import { HoverPreview, PreviewShot } from "@/components/ui/HoverPreview";
+import { workbookTypePreview } from "@/lib/type-previews";
 import { askCreditConfirm } from "@/lib/credits/confirm-store";
 import {
   DEFAULT_WORKBOOK_BLANK_OPTIONS,
@@ -196,6 +198,8 @@ export function WorkbookCreateModal({
    * 값 확인 창이 이 창 위에 겹쳐 떠서 창이 둘로 보였다. 묻는 동안에는 이 창을 접는다.
    */
   const [asking, setAsking] = useState(false);
+  /** 마우스를 올린 유형: 실제 워크북을 찍은 그림을 옆에 띄운다(선생님 2026-10-26) */
+  const [hover, setHover] = useState<{ id: WorkbookTypeId; box: DOMRect } | null>(null);
   const [selected, setSelected] = useState<Set<WorkbookTypeId>>(
     () => new Set(adding ? [] : ["tf"])
   );
@@ -388,50 +392,58 @@ export function WorkbookCreateModal({
                 const on = selected.has(t.id);
                 const have = adding && blocked(t.id);
                 return (
-                  <button
+                  // 꺼진 버튼은 마우스 이벤트가 안 와서, 고를 수 없는 유형도 미리보기가 뜨게 감싼 칸에서 받는다
+                  <div
                     key={t.id}
-                    type="button"
-                    disabled={!t.ready || have}
-                    onClick={() => toggleType(t.id, t.ready)}
-                    className={`flex items-start gap-3 rounded-xl border px-3 py-3 text-left transition ${
-                      !t.ready || have
-                        ? "cursor-not-allowed border-slate-100 bg-slate-50 opacity-60"
-                        : on
-                          ? "border-violet-400 bg-violet-50 ring-1 ring-violet-300"
-                          : "border-slate-200 bg-white hover:border-violet-200"
-                    }`}
+                    className="flex"
+                    onMouseEnter={(e) => setHover({ id: t.id, box: e.currentTarget.getBoundingClientRect() })}
+                    onMouseLeave={() => setHover(null)}
                   >
-                    <span
-                      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-[11px] font-bold ${
-                        on && t.ready
-                          ? "border-violet-600 bg-violet-600 text-white"
-                          : "border-slate-300 bg-white text-transparent"
+                    <button
+                      type="button"
+                      disabled={!t.ready || have}
+                      onClick={() => toggleType(t.id, t.ready)}
+                      className={`flex w-full items-start gap-3 rounded-xl border px-3 py-3 text-left transition disabled:pointer-events-none ${
+                        !t.ready || have
+                          ? "cursor-not-allowed border-slate-100 bg-slate-50 opacity-60"
+                          : on
+                            ? "border-violet-400 bg-violet-50 ring-1 ring-violet-300"
+                            : "border-slate-200 bg-white hover:border-violet-200"
                       }`}
                     >
-                      ✓
-                    </span>
-                    <span className="min-w-0">
-                      <span className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-900">
-                          {t.title}
+                      <span
+                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border text-[11px] font-bold ${
+                          on && t.ready
+                            ? "border-violet-600 bg-violet-600 text-white"
+                            : "border-slate-300 bg-white text-transparent"
+                        }`}
+                      >
+                        ✓
+                      </span>
+                      <span className="min-w-0">
+                        <span className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-slate-900">
+                            {t.title}
+                          </span>
+                          {!t.ready ? (
+                            <span className="rounded bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
+                              준비 중
+                            </span>
+                          ) : have ? (
+                            <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">
+                              {regen ? "없음" : "이미 있음"}
+                            </span>
+                          ) : null}
                         </span>
-                        {!t.ready ? (
-                          <span className="rounded bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
-                            준비 중
-                          </span>
-                        ) : have ? (
-                          <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">
-                            {regen ? "없음" : "이미 있음"}
-                          </span>
-                        ) : null}
+                        <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">
+                          {t.subtitle}
+                        </span>
                       </span>
-                      <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">
-                        {t.subtitle}
-                      </span>
-                    </span>
-                  </button>
+                    </button>
+                  </div>
                 );
               })}
+              {hover ? <WorkbookTypeHover id={hover.id} box={hover.box} /> : null}
             </div>
           ) : (
             <div className="space-y-5">
@@ -836,6 +848,19 @@ export function WorkbookCreateModal({
         </footer>
       </div>
     </div>
+  );
+}
+
+function WorkbookTypeHover({ id, box }: { id: WorkbookTypeId; box: DOMRect }) {
+  const shot = workbookTypePreview(id);
+  const meta = getWorkbookTypeMeta(id);
+  if (!shot || !meta) return null;
+  return (
+    <HoverPreview anchor={box} width={720} height={640}>
+      <p className="text-[15px] font-bold text-slate-900">{meta.title}</p>
+      <p className="mb-2 mt-0.5 text-[12.5px] text-slate-500">{meta.subtitle}</p>
+      <PreviewShot src={shot.src} w={shot.w} h={shot.h} alt={`${meta.title} 예시`} />
+    </HoverPreview>
   );
 }
 

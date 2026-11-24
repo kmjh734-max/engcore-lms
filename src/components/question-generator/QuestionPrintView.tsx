@@ -750,7 +750,7 @@ function QuestionBlock({
 
   if (isCount) {
     return (
-      <section className={`qg-print-card qg-print-count-card${cardClass}`}>
+      <section className={`qg-print-card qg-print-count-card${cardClass}`} data-qg-qid={q.id}>
         {!head ? <ContinuedLabel index={index} /> : null}
         {head && passageSource ? <p className="qg-print-q-source" data-qg-head="">{passageSource}</p> : null}
         {head ? (
@@ -784,7 +784,7 @@ function QuestionBlock({
   }
 
   return (
-    <section className={`qg-print-card${cardClass}`}>
+    <section className={`qg-print-card${cardClass}`} data-qg-qid={q.id}>
       {!head ? <ContinuedLabel index={index} /> : null}
       {head ? (
         <div data-qg-head="">
@@ -1547,6 +1547,7 @@ export function QuestionPrintView({
             columnSafetyPx: COLUMN_SAFETY_PX,
             // 이미 문항이 있는 단에 1/3도 안 남았으면 긴 문항은 다음 단에서 시작한다.
             minStartPx: nextColMax / 3,
+            wholeItems: designStyle === "school",
           },
           {
             unitCount: (i) => split.unitCount(i + offset),
