@@ -631,11 +631,12 @@
 .qg-school .qg-print-card {
   border-bottom: none;
   margin-bottom: 4.5mm;
-  font-size: 9.4pt;
+  font-size: 9pt;
 }
+/* 학교 원본은 A3·B4 — A4에서는 약 0.8배로(선생님 2026-11-24 「폰트가 너무 큰 거 아닌가」) */
 .qg-school .qg-print-q-head {
   font-weight: 400;
-  font-size: 9.8pt;
+  font-size: 9.5pt;
   line-height: 1.5;
 }
 .qg-school .qg-print-q-num {
@@ -658,13 +659,13 @@
   background: none;
 }
 .qg-school .qg-print-passage-p {
-  font-size: 9.2pt;
+  font-size: 9pt;
   line-height: 1.55;
 }
 .qg-school .qg-print-given-box {
   border: 0.75pt solid #000;
   background: none;
-  font-size: 9.2pt;
+  font-size: 9pt;
 }
 .qg-school .qg-print-col-right {
   border-left: 0.9pt solid #000;
@@ -687,7 +688,7 @@
 .qg-school-t1 {
   margin: 0;
   font-size: 12.5pt;
-  letter-spacing: 0.3pt;
+  font-weight: 400;
 }
 .qg-school-t2 {
   display: grid;
@@ -697,9 +698,9 @@
 }
 .qg-school-t2 h1 {
   margin: 0;
-  font-size: 21pt;
-  font-weight: 900;
-  letter-spacing: 2pt;
+  font-size: 20pt;
+  font-weight: 700;
+  letter-spacing: 0.5pt;
 }
 .qg-school-grade {
   justify-self: start;
@@ -712,9 +713,8 @@
 .qg-school-t3 {
   display: flex;
   justify-content: space-between;
-  border-top: 0.75pt solid #000;
   padding-top: 1.4mm;
-  font-size: 10pt;
+  font-size: 9.5pt;
   font-weight: 700;
 }
 .qg-school-note {
@@ -743,13 +743,16 @@
   align-items: center;
   margin-top: auto;
   padding-top: 1.5mm;
-  border-top: 0.9pt solid #000;
-  font-size: 8.8pt;
+  font-size: 8.5pt;
   color: #000;
+}
+.qg-school-foot > span:first-child {
+  font-weight: 700;
 }
 .qg-school-pno {
   text-align: center;
-  font-weight: 700;
+  border: 0.75pt solid #000;
+  padding: 0.3mm 7mm;
 }
 .qg-school-chk {
   justify-self: end;

@@ -97,6 +97,22 @@ function pickByStem(it: ExamItemRow): Pick | null {
     // 요약문 완성(객관식): 한 문장으로 요약 + 빈칸 (A)(B)
     if (/요약/.test(stem) && /\(A\)|빈칸/.test(stem))
       return { key: it.level === "상" ? "sentence_blank:en:high:요약완성AB" : "sentence_blank:en:mid:요약완성AB" };
+    // 구현고2 대조(선생님 2026-11-24 「분석 유형과 다르게 나온다」「어법과 어휘 구분이 안 된다」)
+    // 빈칸 여럿 (a)~(e) 중 「적절하지 않은」 말 — 한 빈칸 고르기가 아니라 낱말 쓰임 판단에 가깝다
+    if (/빈칸\s*\(?[a-eA-Eⓐ①]/.test(stem) && /적절하지 않은|어색한|들어갈 수 없는/.test(stem))
+      return { key: "vocabulary:na:default:어휘추론", substituted: true };
+    // 빈칸에 들어갈 말(낱말) 고르기 — 짧은 글 여러 개를 묶은 [1~6] 꼴 포함
+    if (/빈칸에\s*(가장\s*)?(적절한|알맞은)\s*(말|낱말|단어)/.test(stem) && /^\[\s*\d+\s*[~∼-]/.test(stem))
+      return { key: "sentence_blank:en:default:빈칸단어" };
+    // 상황에 맞게 영작한 문장 (a)~(e)의 적절성 — 문장 단위 어법 판단
+    if (/영작/.test(stem) && /적절하지 않은|틀린/.test(stem)) return { key: "grammar:na:default:어법통문장", substituted: true };
+    if (/답할 수 있는 질문/.test(stem)) return { key: "sentence_blank:en:default:답변가능개수" };
+    if (/(예시|사례)로?.*(적절|부합|해당)/.test(stem)) return { key: "sentence_blank:en:default:사례분류" };
+    // 「두 개 고르면」은 변형문제에 없어 같은 갈래(어법/어휘)의 개수형으로
+    if (/어법/.test(stem) && /두\s*개|2\s*개/.test(stem)) return { key: "grammar:na:default:어법개수", substituted: true };
+    if (/(낱말|어휘|단어)의?\s*쓰임/.test(stem) && /두\s*개|2\s*개/.test(stem)) return { key: "vocabulary:na:default:어휘개수", substituted: true };
+    if (/어법상\s*(틀린|어색한|적절하지 않은)\s*것은\?/.test(stem)) return { key: "grammar:na:default:어법추론" };
+    if (/(낱말|어휘|단어)의?\s*쓰임이\s*적절하지 않은\s*것은\?/.test(stem)) return { key: "vocabulary:na:default:어휘추론" };
     if (/답할 수 있는 질문/.test(stem)) return { key: "sentence_blank:en:default:답변가능개수" };
     if (/(예시|사례)로?.*(적절|부합|해당)/.test(stem)) return { key: "sentence_blank:en:default:사례분류" };
     // 밑줄이 가리키는 대상(객관식 지칭)은 변형문제에 객관식이 없어 밑줄 의미로 가장 가깝게
@@ -104,6 +120,15 @@ function pickByStem(it: ExamItemRow): Pick | null {
     if (/필자가 주장하는|필자의 주장/.test(stem)) return { key: `summary_mcq:ko:${hi}:요지추론`, substituted: true };
     return null;
   }
+  // 어법상 틀린 것 n개를 골라 고쳐 쓰기 — 3개 이상이면 3개형
+  if (/어법/.test(stem) && /고쳐|수정/.test(stem) && !/순서|요약/.test(stem)) {
+    const n = Number((stem.match(/([2-9])\s*개/) ?? [])[1] ?? 0);
+    return { key: n >= 3 ? "grammar:na:default:어법오류수정3" : "grammar:na:default:어법오류수정2", substituted: n > 3 };
+  }
+  // 가리키는 대상을 지문에서 찾아 쓰기 — 지칭 서술(조건 영작으로 잘못 고쳐 둔 이름보다 발문이 맞다)
+  if (/가리키는/.test(stem) && /(찾아|쓰시오)/.test(stem)) return { key: "writing:na:default:지칭대명사서술" };
+  // 우리말에 맞게 빈칸에 한 단어 쓰기 — 낱말 하나를 쓰는 서술형으로
+  if (/우리말/.test(stem) && /빈칸/.test(stem) && /한\s*(단어|낱말)/.test(stem)) return { key: "writing:na:default:어휘빈칸공통", substituted: true };
   if (/주제를.*(영어|조건)|주제문/.test(stem)) return { key: "writing:na:default:주제문작성" };
   if (/제목을.*(영어|조건)/.test(stem)) return { key: "writing:na:default:주제문작성", substituted: true };
   if (/영영\s*풀이/.test(stem)) return { key: "writing:na:default:어휘빈칸공통", substituted: true };
@@ -131,8 +156,9 @@ const NAME_ALIAS: Record<string, string> = {
  * 동형모의고사를 만들 때와 같은 잣대라야 「유형이 같다」는 말이 같은 뜻이 된다.
  */
 export function examTypeToOptionKey(it: ExamItemRow): { key: string; substituted: boolean } {
+  // 발문이 가장 정확하다 — 이름을 고친 문항도 발문부터 본다(구현고2: 고친 이름 「어휘 판단」이 빈칸 고르기 발문을 덮어 어색한 낱말 고르기로 나왔다)
   const pick =
-    (!it.edited ? pickByStem(it) : null) ??
+    pickByStem(it) ??
     (!it.edited && it.type_key ? pickByKey(it.type_key, it.level) : null) ??
     pickByName(it.type_name, it.level, it.is_subjective);
   return { key: pick.key, substituted: pick.substituted === true };

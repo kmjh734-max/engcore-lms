@@ -42,6 +42,7 @@ import { mergeMarkedPassages } from "@/lib/question-generator/passage-set-merge"
 import "./question-print-styles.css";
 import "@/components/lesson-materials/material-design.css";
 import { MaterialDesignPicker } from "@/components/lesson-materials/MaterialDesignPicker";
+import { buildMockHwpx, type MockHwpxItem } from "@/lib/question-generator/mock-hwpx";
 import {
   QUESTION_BASE_STYLE,
   materialDesignClass,
@@ -190,9 +191,9 @@ type SchoolTexts = {
 };
 const SCHOOL_TEXT_FIELDS: Array<{ key: keyof SchoolTexts; label: string; multi?: boolean }> = [
   { key: "t1", label: "맨 위 제목 줄" },
-  { key: "gradeBadge", label: "학년 상자" },
-  { key: "subject", label: "과목명(큰 글씨)" },
-  { key: "left", label: "왼쪽 아래(학교·교시)" },
+  { key: "subject", label: "큰 제목" },
+  { key: "gradeBadge", label: "큰 제목 왼쪽 상자(비우면 없음)" },
+  { key: "left", label: "왼쪽 아래(교시)" },
   { key: "nameLine", label: "반·번호·성명 줄" },
   { key: "notice", label: "안내 상자(한 줄에 하나)", multi: true },
   { key: "runLeft", label: "둘째 쪽부터 머리 왼쪽" },
@@ -203,23 +204,23 @@ const SCHOOL_TEXT_FIELDS: Array<{ key: keyof SchoolTexts; label: string; multi?:
 function schoolTextDefaults(m: SchoolExamMeta, objN: number, subjN: number, total: number): SchoolTexts {
   const g = m.grade ? `${m.grade}학년` : "";
   return {
-    t1: `${m.year}학년도 ${m.semester}학기 ${m.grade ? `( ${m.grade} )학년 ` : ""}정기시험 대비 동형모의고사${m.round ? ` · ${m.round}회` : ""}`,
-    gradeBadge: g,
-    subject: m.subject,
-    left: m.school ? `${m.school} 대비` : "(   )교시",
-    nameLine: `${g ? `${g} ` : ""}(    )반 (    )번  성명 (            )`,
+    // 호원고1 시험지 머리(선생님 2026-11-24 「호원고 양식」「제목은 학교 이름 + 동형모의고사」)
+    t1: `${m.year}학년도 ${m.semester}학기 ${m.grade ? `( ${m.grade} )학년 ` : ""}${m.subject}${m.round ? ` 제${m.round}회` : ""} 문제지`,
+    gradeBadge: "",
+    subject: `${m.school ? `${m.school} ` : ""}동형모의고사`,
+    left: "(   )교시",
+    nameLine: `${m.grade ? `${m.grade} 학년 ` : ""}(     )반   (     )번   성명 (                )`,
     notice: [
-      "○ 자신이 풀어야 할 과목의 문제지인지 확인하시오.",
       "○ 답안지에 성명, 학번, 과목명을 정확하게 기입하시오.",
+      `○ 문항수: 선다형 ( ${objN} )문항 / 서답형 ( ${subjN} )문항`,
       "○ 문항에 따라 배점이 다르니, 각 물음의 끝에 표시된 배점을 참고하시오.",
-      `○ 선택형 ( ${objN} )문항${subjN ? ` · 서답형 ( ${subjN} )문항` : ""}${total ? ` · 총점 ${Math.round(total * 10) / 10}점` : ""}${
-        subjN ? " — 서답형 답은 답안지 서답형 칸에 검정 볼펜으로 쓰시오." : ""
-      }`,
+      `○ 총   점: ${total ? Math.round(total * 10) / 10 : 100}점`,
+      ...(subjN ? ["○ 서답형 답은 답안지 서답형 칸에 검정 볼펜으로 쓰시오."] : []),
     ].join("\n"),
     runLeft: `${g ? `${g} ` : ""}${m.subject}`,
     runRight: `${m.school ? `${m.school} 대비 ` : ""}동형모의고사${m.round ? ` ${m.round}회` : ""}`,
     footLeft: `${g ? `${g} ` : ""}${m.subject}`,
-    check: "확인란",
+    check: "",
   };
 }
 
@@ -1653,6 +1654,52 @@ export function QuestionPrintView({
     return out;
   }
 
+  /** 한글 파일(.hwpx) 받기 — 화면과 같은 글귀·문항 차례로 브라우저에서 바로 만든다(선생님 2026-11-24 「hwp만」) */
+  function downloadHwpx(m: SchoolExamMeta) {
+    const t = schoolTexts(m);
+    let objI = 0;
+    const items: MockHwpxItem[] = displayItems.flatMap((it) => {
+      if (it.kind !== "q") return [];
+      const q = it.q;
+      const sj = isSubjectiveKey(q.option_key);
+      if (!sj) objI++;
+      const no = String(q.item_no ?? "").trim();
+      const label = /^\d+$/.test(no) ? `${no}.` : no ? `[${no}]` : sj ? "[서답형]" : `${objI}.`;
+      const qt = cleanQuestionText(q.question_text ?? "").trim();
+      const inlineChoices = q.question_type === "sentence_insertion" || q.question_type === "irrelevant_sentence";
+      return [
+        {
+          label,
+          stem: q.instruction,
+          points: q.points,
+          subjective: sj,
+          given: q.question_type === "sentence_insertion" ? q.given_sentence || qt : undefined,
+          passage: questionPassage(q),
+          extra: q.question_type === "sentence_insertion" ? undefined : qt,
+          choices: inlineChoices ? [] : (q.choices ?? []).map((c) => String(c.text ?? "")),
+        },
+      ];
+    });
+    const bytes = buildMockHwpx({
+      t1: t.t1,
+      title: [t.gradeBadge, t.subject].filter((x) => x.trim()).join("  "),
+      left: t.left,
+      nameLine: t.nameLine,
+      notice: t.notice.split("\n"),
+      footLeft: t.footLeft,
+      items,
+      closing: "※ 확인 사항 — 답안지에 표기한 답과 문제지의 답이 같은지 확인하시오.",
+    });
+    const blob = new Blob([bytes as BlobPart], { type: "application/hwp+zip" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${(t.subject || "동형모의고사").replace(/[\\/:*?"<>|]/g, "")}${m.round ? `_${m.round}회` : ""}.hwpx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+
   function renderSchoolHeader(pageIdx: number, m: SchoolExamMeta) {
     const t = schoolTexts(m);
     if (pageIdx > 0)
@@ -2204,6 +2251,14 @@ export function QuestionPrintView({
                 })}
               </div>
               <p className="mt-2 text-[11px] leading-snug text-slate-500">비운 칸은 인쇄에서 빠집니다. 이 시험지에만 저장됩니다.</p>
+              <button
+                type="button"
+                className="btn-primary mt-3 w-full justify-center py-2 text-sm"
+                onClick={() => downloadHwpx(examMeta)}
+              >
+                한글 파일로 받기 (.hwpx)
+              </button>
+              <p className="mt-1 text-[11px] leading-snug text-slate-500">한글에서 바로 열고 고칠 수 있습니다. 위 글귀가 그대로 들어갑니다.</p>
             </div>
           ) : null}
           <div className={`rounded-xl border border-slate-200 bg-slate-50 p-3${schoolForm ? " hidden" : ""}`}>

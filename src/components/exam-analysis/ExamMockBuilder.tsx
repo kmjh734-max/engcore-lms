@@ -104,13 +104,62 @@ export function ExamMockBuilder({
    * 넣어 달라. 지금까지는 원래 시험에서 읽은 유형과 난이도를 그대로 쓸 수밖에
    * 없어, 그 지문에 안 맞는 유형이어도 바꿀 수가 없었다.
    */
-  const typeChoices = useMemo(
-    () =>
-      QUESTION_TYPE_GROUPS.flatMap((g) =>
-        g.options.map((o) => ({ key: o.key, label: `${g.label.replace(/^Section · /, "")} · ${o.label}` }))
-      ),
-    []
-  );
+  /*
+   * 유형 목록 이름 — 갈래(어법/어휘/내용 일치 …)를 앞에, 무엇을 묻는지를 뒤에.
+   * 선생님 2026-11-24(윌링): 「어법과 어휘가 함께 있는데 구분이 잘 안 된다」「대의파악 영·상이 2개씩 있는데 차이가 있는지」.
+   * 전에는 「어법·어휘 · 어색한 것 고르기」처럼 어법인지 어휘인지, 「대의 파악 · (영) 상」처럼 제목인지 주제인지가 안 보였다.
+   */
+  const typeChoices = useMemo(() => {
+    const fam = (o: { key: string; isObjective: boolean }) => {
+      const [base] = o.key.split(":");
+      if (!o.isObjective || base === "writing" || base === "summary_short" || /오류수정/.test(o.key)) return "서술형";
+      if (base === "grammar") return "어법";
+      if (base === "vocabulary") return "어휘";
+      if (base === "content_true" || base === "content_false" || base === "content_count") return "세부 정보(내용 일치)";
+      if (base === "title" || base === "topic" || base === "summary_mcq" || /요약완성AB/.test(o.key)) return "대의 파악(제목·주제·요지·요약)";
+      return "추론(빈칸·순서·삽입 등)";
+    };
+    const NAME: Record<string, string> = {
+      어법추론: "어법 · 밑줄 중 틀린 것 고르기",
+      어법개수: "어법 · 틀린 것의 개수",
+      어법통문장: "어법 · 틀린 문장 고르기",
+      어휘추론: "어휘 · 낱말 쓰임이 어색한 것 고르기",
+      어휘개수: "어휘 · 어색한 낱말의 개수",
+      내용일치: "내용 일치",
+      내용불일치: "내용 불일치",
+      일치개수: "<보기> 진술 중 불일치 개수",
+      제목추론: "제목",
+      주제추론: "주제",
+      요지추론: "요지",
+      요약완성AB: "요약문 (A)(B) 낱말 고르기",
+      순서추론: "순서 배열",
+      빈칸추론: "빈칸(문장·어구)",
+      빈칸단어: "빈칸(낱말 하나)",
+      문장삽입: "문장 삽입",
+      무관한문장: "무관한 문장",
+      함축의미추론: "밑줄 함축 의미",
+      목적추론: "글의 목적",
+      심경추론: "심경 변화",
+      연결어빈칸: "연결어 (A)(B)",
+      답변가능개수: "답할 수 있는 질문 개수",
+      사례분류: "사례 분류(성격이 다른 하나)",
+      비유대응: "비유 표현 대응",
+    };
+    const lv = (o: { choiceLanguage?: string | null; difficulty?: string }) =>
+      [o.choiceLanguage === "english" ? "영어 선택지" : o.choiceLanguage === "korean" ? "한글 선택지" : "", o.difficulty === "high" ? "난이도 상" : o.difficulty === "low" ? "난이도 하" : ""]
+        .filter(Boolean)
+        .join(" · ");
+    return QUESTION_TYPE_GROUPS.flatMap((g) =>
+      g.options.map((o) => {
+        const code = o.key.split(":").pop() ?? "";
+        const name = NAME[code];
+        const extra = lv(o as { choiceLanguage?: string | null; difficulty?: string });
+        const label = name ? `${name}${extra ? ` (${extra})` : ""}` : `${o.label} — ${o.preview}`;
+        return { key: o.key, label, family: fam(o as { key: string; isObjective: boolean }) };
+      })
+    );
+  }, []);
+  const typeFamilies = useMemo(() => [...new Set(typeChoices.map((t) => t.family))], [typeChoices]);
   const [slotEdit, setSlotEdit] = useState<
     Record<string, { optionKey?: string; level?: "상" | "중" | "하" }>
   >({});
@@ -592,7 +641,18 @@ export function ExamMockBuilder({
                         aria-label={`${s.no}번 난이도`}
                         className={`h-7 shrink-0 rounded border px-1 text-[11px] font-bold ${LV[editOf(s.no).level ?? s.level]}`}
                         value={editOf(s.no).level ?? s.level}
-                        onChange={(e) => setEdit(s.no, { level: e.target.value as "상" | "중" | "하" })}
+                        onChange={(e) => {
+                          // 난이도를 바꾸면 상·하 버전이 있는 유형은 그 버전으로 같이 바꾼다(유형 이름의 「난이도 상/하」와 어긋나지 않게)
+                          const level = e.target.value as "상" | "중" | "하";
+                          const cur = editOf(s.no).optionKey ?? s.optionKey;
+                          const [b, l, d, c] = cur.split(":");
+                          let optionKey: string | undefined;
+                          if ((d === "low" || d === "high" || d === "mid") && level !== "중") {
+                            const want = `${b}:${l}:${level === "상" ? "high" : "low"}:${c}`;
+                            if (typeChoices.some((t) => t.key === want)) optionKey = want;
+                          }
+                          setEdit(s.no, optionKey ? { level, optionKey } : { level });
+                        }}
                       >
                         <option value="상">상</option>
                         <option value="중">중</option>
@@ -607,18 +667,23 @@ export function ExamMockBuilder({
                         {typeChoices.some((t) => t.key === (editOf(s.no).optionKey ?? s.optionKey)) ? null : (
                           <option value={s.optionKey}>{s.typeLabel}</option>
                         )}
-                        {typeChoices.map((t) => (
-                          <option key={t.key} value={t.key}>
-                            {t.label}
-                          </option>
+                        {typeFamilies.map((f) => (
+                          <optgroup key={f} label={f}>
+                            {typeChoices
+                              .filter((t) => t.family === f)
+                              .map((t) => (
+                                <option key={t.key} value={t.key}>
+                                  {t.label}
+                                </option>
+                              ))}
+                          </optgroup>
                         ))}
                       </select>
                       <span className="shrink-0 tabular-nums text-slate-500">{s.points ?? "–"}점</span>
-                      {s.substituted ? (
-                        <span className="w-full text-[11px] text-amber-700">
-                          원래 {s.sourceType} → 비슷한 유형으로 바꿨어요
-                        </span>
-                      ) : null}
+                      <span className={`w-full pl-11 text-[11px] ${s.substituted ? "text-amber-700" : "text-slate-400"}`}>
+                        원래 시험지: {s.sourceType}
+                        {s.substituted ? " → 똑같은 유형이 없어 가장 가까운 유형으로 만들어요" : ""}
+                      </span>
                     </li>
                   ))}
                 </ul>
