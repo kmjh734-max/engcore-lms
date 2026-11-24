@@ -1750,7 +1750,7 @@ export async function runGenerationJob(
        * 어휘·어법을 나중에 만든다. 어휘추론이 먼저 세 문장짜리 지문 전부에 밑줄을 치자 뒤의 제시어배열이
        * 비울 문장이 없어, 다시 만들어도 겹친 채 저장됐다(2026-10-11 75문항 작업 두 지문).
        */
-      const SPREAD = /(어휘추론|어법추론|어법개수|어휘개수|어법오류수정2|어법오류수정3)$/;
+      const SPREAD = /(어휘추론|어법추론|어법개수|어휘개수|어법오류수정2|어법오류수정3|어법통문장)$/;
       const markers = list
         .filter((it) => isSetMarkKey(it.option.key))
         .sort((x, y) => Number(SPREAD.test(x.option.key)) - Number(SPREAD.test(y.option.key)));
