@@ -278,10 +278,11 @@ function PrintTable({ rows }: { rows: string[][] }) {
  * 다음 줄로 넘어가고, 양쪽 맞춤 때문에 앞 줄 낱말 사이가 크게 벌어졌다(「common     goal,     always」, 2026-11-24).
  */
 function withBreakableBlanks(text: string, keyBase: string): ReactNode[] {
-  const parts = text.split(/(_{8,})/);
+  // 낱말 하나짜리 빈칸(________, ⓐ__________)은 쪼개지 않는다 — 「_____ / ___.」로 갈렸다(2026-11-24 빈칸 단어). 문장 빈칸만 줄 끝에서 잇는다
+  const parts = text.split(/(_{16,})/);
   if (parts.length === 1) return [text];
   return parts.map((part, i) =>
-    /^_{8,}$/.test(part) ? (
+    /^_{16,}$/.test(part) ? (
       <span key={`${keyBase}b${i}`} className="qg-print-blank-run">
         {part}
       </span>

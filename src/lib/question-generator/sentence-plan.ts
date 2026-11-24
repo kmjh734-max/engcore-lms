@@ -28,6 +28,8 @@ export function anchorKindFor(type: string, code: string): AnchorKind | null {
   if (type === "grammar" && code === "어법통문장") return "wrongsent";
   // 밑줄 여럿인 개수형: 다른 문항이 맡은 문장에는 밑줄을 긋지 않는다
   if ((type === "grammar" && code === "어법개수") || (type === "vocabulary" && code === "어휘개수")) return "spotmany";
+  // 서술형 어법 수정(틀린 곳 2·3개)도 같은 갈래 — 어법 개수와 같은 realistic→realistically를 함께 물었다(2026-11-24 전 유형 점검)
+  if (type === "grammar" && /^어법오류수정[23]$/.test(code)) return "spotmany";
   // 새 예시를 지어 쓰는 두 유형: 같은 지문에 함께 있으면 같은 사람·장면을 썼다(Daniel·토론 동아리, 2026-11-24)
   if ((type === "sentence_blank" && code === "사례분류") || (type === "writing" && code === "내용매칭")) return "examples";
   return null;
@@ -101,6 +103,8 @@ export type AnchorPlan = {
   /** 어법(통문장): 밑줄 칠 다섯 문장(지문 차례)과 그중 틀린 문장의 자리(1~5) */
   group?: string[];
   wrongPos?: number;
+  /** 밑줄형(어법·어휘 추론·개수·수정)이 여럿일 때 틀린 곳을 둘 구역(0 앞·1 가운데·2 뒤) — 서로 같은 자리를 묻지 않게 */
+  region?: number;
 };
 
 /**
@@ -163,6 +167,7 @@ export function planAnchors(passage: string, items: Array<{ type: string; code: 
     if (c != null && !ownerRank.has(c)) ownerRank.set(c, r);
   });
   const exampleIdx = kinds.map((k, idx) => (k === "examples" ? idx : -1)).filter((i) => i >= 0);
+  const spotIdx = kinds.map((k, idx) => (k === "spot" || k === "spotmany" ? idx : -1)).filter((i) => i >= 0);
   return items.map((_, idx) => {
     const k = kinds[idx];
     if (!k) return null;
@@ -184,9 +189,11 @@ export function planAnchors(passage: string, items: Array<{ type: string; code: 
       .slice(0, Math.max(Math.floor(n / 2), groupSents.length))
       .sort((a, b) => a - b)
       .map((c) => sents[c]!);
-    if (mine == null && avoid.length === 0) return null;
+    const region = spotIdx.length >= 2 && spotIdx.includes(idx) ? spotIdx.indexOf(idx) % 3 : undefined;
+    if (mine == null && avoid.length === 0 && region == null) return null;
     return {
       kind: k,
+      ...(region != null ? { region } : {}),
       sentence: mine == null ? null : sents[mine]!,
       avoid,
       ...(myGroup && mine != null ? { group: myGroup.map((c) => sents[c]!), wrongPos: myGroup.indexOf(mine) + 1 } : {}),
@@ -236,9 +243,15 @@ export function anchorPlanLine(plan: AnchorPlan | null | undefined): string {
       .join(", ")}. Put the grammar error in ${lab[plan.wrongPos - 1]} "${head(plan.sentence)}" (use any grammar point that sentence has). correctAnswer = ${plan.wrongPos}. Keep every other sentence of the passage, word for word — do not drop any sentence.`;
   }
   if (plan.kind === "spot" || plan.kind === "spotmany" || !plan.sentence) {
+    const where =
+      plan.region != null
+        ? ` Other grammar/vocabulary questions on this passage test other parts, so put the WRONG ${plan.kind === "spotmany" ? "underlines" : "underline"} in the ${["FIRST", "MIDDLE", "LAST"][plan.region]} third of the passage.`
+        : "";
     return avoid
-      ? `- SAME-PASSAGE SENTENCE PLAN: other questions on this passage already use these sentences: ${avoid}. Do NOT put ${WHAT[plan.kind]} in them.`
-      : "";
+      ? `- SAME-PASSAGE SENTENCE PLAN: other questions on this passage already use these sentences: ${avoid}. Do NOT put ${WHAT[plan.kind]} in them.${where}`
+      : where
+        ? `- SAME-PASSAGE SENTENCE PLAN:${where}`
+        : "";
   }
   return `- SAME-PASSAGE SENTENCE PLAN: other questions on this passage use other sentences. Use the sentence starting "${head(plan.sentence)}" as ${WHAT[plan.kind]}.${
     avoid ? ` If it truly cannot work for this type, choose another sentence — but never these, which other questions use: ${avoid}.` : ""

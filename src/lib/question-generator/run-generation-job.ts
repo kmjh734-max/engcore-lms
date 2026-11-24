@@ -362,6 +362,8 @@ async function generateWithValidation(opts: {
             );
           }
           let solved = await runChecks();
+          /** 보기·낱말을 고쳐 썼는가 — 고쳤으면 규칙 검사를 다시 거친다 */
+          let touched = false;
           /*
            * 낯선 낱말 때문에만 걸렸으면 문항 전체를 다시 만들지 않고 그 낱말만 쉬운 말로 바꾼 뒤 한 번 더 본다
            * (12차 시험: 다시 만든 17번 중 절반 이상이 이 까닭이었고 원가가 1.3배까지 떨어졌다).
@@ -370,7 +372,10 @@ async function generateWithValidation(opts: {
             const rewrote = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
               rewriteRareWords({ payload, words: solved.rareWords! })
             );
-            if (rewrote) solved = await runChecks();
+            if (rewrote) {
+              touched = true;
+              solved = await runChecks();
+            }
           }
           /*
            * 정답은 맞는데 오답 한둘이 정답처럼 읽혀 걸렸으면 그 보기만 다시 쓰고 한 번 더 본다(2026-11-12).
@@ -381,15 +386,40 @@ async function generateWithValidation(opts: {
               repairDistractors({ passage: cleanSourcePassage(opts.passage), payload, numbers: solved.repairChoices! })
             );
             if (repaired) {
+              touched = true;
               const again = await runChecks();
               solved = again.verdict === "pass" ? { ...again, fixed: [...(again.fixed ?? []), "choices"] } : again;
             }
           }
           validation.solve = solved;
+          /*
+           * 보기를 고쳐 쓰거나(repairDistractors) 낯선 낱말을 바꾼 뒤에는 규칙 검사를 다시 거친다.
+           * 빈칸(단어) 오답을 고쳐 쓴 것이 여러 낱말이 되어, 저장 뒤 마지막 그물에서 지워진 일(2026-11-24 전 유형 점검).
+           */
+          if (solved.verdict === "pass" && touched) {
+            const recheck = validateGeneratedQuestion({
+              passage: opts.passage,
+              option: opts.option,
+              question: payload,
+              allowParaphrase: opts.paraphraseGrammarVocab === true,
+            });
+            if (shouldRegenerate(recheck)) {
+              lastError = `고쳐 쓴 보기가 규칙 검사에 걸림: ${recheck.warnings.join(" · ") || "형태 검수 미달"}`;
+              issues.push(lastError);
+              if (process.env.QG_DEBUG_ATTEMPTS === "1") {
+                console.log(`[시도 ${attempt}] ${opts.option.key} ${lastError}\n  ${(payload.choices ?? []).map((c) => c.text).join(" | ")}`);
+              }
+              continue;
+            }
+          }
           if (solved.verdict === "drop") {
             reviewDropped += 1;
             lastError = `직접 풀기: ${solved.reason}`;
             issues.push(lastError);
+            if (process.env.QG_DEBUG_ATTEMPTS === "1") {
+              console.log(`[시도 ${attempt}] ${opts.option.key} 직접 풀기에서 버림: ${solved.reason}
+  ${(payload.choices ?? []).map((c) => c.text).join(" | ")}`);
+            }
             continue;
           }
         }
@@ -444,6 +474,10 @@ async function generateWithValidation(opts: {
       }
       lastError = validation.warnings.join(" · ") || "형태 검수 미달";
       issues.push(lastError);
+      // 점검용: 시도마다 떨어진 까닭과 보기를 찍는다(QG_DEBUG_ATTEMPTS=1, 2026-11-24 영어 제목 실패 추적)
+      if (process.env.QG_DEBUG_ATTEMPTS === "1") {
+        console.log(`[시도 ${attempt}] ${opts.option.key} 점수 ${validation.overallScore}: ${lastError}\n  ${(payload.choices ?? []).map((c) => c.text).join(" | ")}`);
+      }
     } catch (e) {
       if (e instanceof SkipQuestionError) {
         return {

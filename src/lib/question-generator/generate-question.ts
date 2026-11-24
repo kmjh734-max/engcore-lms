@@ -373,6 +373,7 @@ ${choiceExplanationRules()}
 - 5 choices, each written "wordA …… wordB" (A first, then B, separated by " …… "). Exactly one pair fits BOTH blanks.
 - Every wrong pair must fail on at least one blank for a reason you can point to in the passage (opposite meaning, wrong relation, not stated). Use each correct word once or twice among the wrong pairs so a student cannot pick by one blank alone — but never make a wrong pair where both words also fit.
 - Choices are single words (or two-word phrases), same part of speech within each column, similar length.
+- Never put "a" or "an" right before a blank — it gives away whether the answer starts with a vowel and makes some choices ungrammatical ("an (A)" with "universal"). Use "the", a plural, or rephrase.
 - correctAnswer = the number of the right pair.${option.difficulty === "high" ? "\n- HIGH (상): the right words are less obvious paraphrases; distractor words are near in meaning but wrong in this context." : ""}
 ${choiceExplanationRules()}
 LANGUAGE: questionText + choices ENGLISH only. explanation Korean.`;
@@ -813,7 +814,9 @@ LANGUAGE: passage ENGLISH only.`;
 ${choiceCraftCommonRules()}`;
       }
       if (code === "심경추론") {
+        // 설명문(그림 해설 강의)에 화가가 「offended → self-assured」였다고 지어낸 일(2026-11-24 전 유형 점검) — 이야기 글이 아니면 건너뛴다
         return `5 English emotion-change choices like "worried → relieved". Exactly one correct. LANGUAGE: choices ENGLISH only.
+- Use ONLY a narrative or personal passage (a story, diary, letter, anecdote) where a person's feelings are shown in the text and change from one state to another. If the passage is an explanation or lecture and the writer never shows anyone's feelings changing, output {"skip":true,"reason":"심경 변화가 드러나지 않는 글"}. Never infer feelings the text does not show.
 ${choiceCraftCommonRules()}`;
       }
       if (code === "함축의미추론") {
@@ -1165,6 +1168,7 @@ word1 / word2 / … (6~10개, 정답 ⓐ+ⓑ를 섞은 핵심 단어. 동사는 
 (영어 paraphrase 요약. ⓐ__________ 는 연속 2단어 자리, ⓑ__________ 는 1단어. 필요 시 ⓒ도 1단어)
 
 - 정답 구는 반드시 원문 passage에 연속으로 그대로 존재 (대소문자만 달라도 됨).
+- 빈칸 답은 글의 내용을 담은 낱말이어야 한다 — 대명사(they·it·them)·관사·전치사·be동사만으로 된 답 금지(2026-11-24 「how new ⓑ once seemed」의 답 they).
 - correctAnswer: "ⓐ: social muscle / ⓑ: compassion" 형식
 - choices 없음. explanation 한글: 본문 어디 근거인지.`;
       }
@@ -1904,7 +1908,9 @@ function normalizePayload(
     questionText: stripRepeatedInstruction(
       cleanQuestionText(String(raw.questionText ?? "")),
       instructionOut
-    ),
+    )
+      // 요약문 빈칸 바로 앞 a/an은 답을 흘리고 보기 몇을 틀린 말로 만든다(「an (A)」+costly) — 시험지 관례대로 a(n)
+      .replace(/\b([Aa])n? (?=\((?:A|B)\))/g, (_, a: string) => `${a}(n) `),
     choices,
     correctAnswer,
     acceptableAnswers: Array.isArray(raw.acceptableAnswers)
@@ -3451,6 +3457,7 @@ export async function generateOneQuestion(opts: {
     // 리얼영어 유형: 두 번 넘게 나오는 핵심어·긴 문장 다섯이 없는 지문은 건너뛴다
     taggedCode === "어휘빈칸공통" ||
     option.aingkaCode === "어법통문장" ||
+    option.aingkaCode === "심경추론" ||
     // 비유 대응: 비유 없는 지문은 건너뛴다 — 목록에 빠져 「해설이 비어 있습니다」로 다시 만들다 버렸다(2026-11-24 실제 생성 3번)
     option.aingkaCode === "비유대응";
 
