@@ -623,6 +623,7 @@ ${focusBlock}
 - choices: omit or empty array — 기호 IN the passage are the options; do NOT invent bottom combination choices
 - correctAnswer 1-5 mapping ⓐ=1 … ⓔ=5 (= 틀린 밑줄 번호). questionText 빈칸
 ${explainRules}
+- 어법 추론 해설은 틀린 밑줄 줄 다음에 나머지 네 밑줄도 한 줄에 묶어 왜 맞는지 짚는다(예: 「· 나머지: ⓐ 주어 Each에 단수 동사, ⓑ 수동태, ⓓ 관계대명사 which, ⓔ to부정사 목적」). 틀린 것 하나만 설명하면 학생이 나머지를 확인할 수 없다(2026-11-24 직접 풀기 16문항).
 ${grammarChoiceCraftNote()}
 LANGUAGE: 지문은 영어만.`;
       }

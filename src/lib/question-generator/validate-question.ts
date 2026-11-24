@@ -1127,6 +1127,31 @@ export function validateGeneratedQuestion(opts: {
       warnings.push("정답만 연결어로 시작합니다. 연결어만 보고 답이 보입니다.");
     }
   }
+  /*
+   * 내용일치·불일치: 낱말 하나(이름 하나)만 다른 보기 둘은 같은 사실의 참·거짓 짝이라 둘 중 하나가 답임이 드러난다
+   * (11-23 윌링 듣기 대본 「재학생용/신입생용 의자」 c4714d0e, 「Jane/Daniel이 개발자」 75596edc). 기록만 한다.
+   */
+  if ((option.type === "content_true" || option.type === "content_false") && choiceTexts.length === 5) {
+    const words = (t: string) => t.toLowerCase().replace(/[^a-z0-9가-힣'\s]/g, " ").split(/\s+/).filter(Boolean);
+    const bags = choiceTexts.map(words);
+    outer: for (let i = 0; i < 5; i++) {
+      for (let j = i + 1; j < 5; j++) {
+        const a = bags[i]!, b = bags[j]!;
+        if (a.length < 4 || b.length < 4) continue;
+        const left = [...b];
+        let miss = 0;
+        for (const w of a) {
+          const k = left.indexOf(w);
+          if (k >= 0) left.splice(k, 1);
+          else miss++;
+        }
+        if (miss <= 1 && left.length <= 1) {
+          warnings.push(`보기 ${"①②③④⑤"[i]}와 ${"①②③④⑤"[j]}가 낱말 하나만 다릅니다. 같은 사실의 참·거짓 짝이라 둘 중 하나가 답으로 보입니다.`);
+          break outer;
+        }
+      }
+    }
+  }
   // 어휘: 고유명사·제목 안 낱말에 밑줄(23b0b349 「America's Best <u>Large</u> Employers」) — 고치면 이름이 바뀐다
   if (option.type === "vocabulary") {
     const pm = String(q.passageModified ?? "");
