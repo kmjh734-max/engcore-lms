@@ -1311,6 +1311,11 @@ export function QuestionPrintView({
   const displayItems: DisplayItem[] = useMemo(() => {
     if (shown.length === 0) return [];
     /*
+     * 동형모의고사(시험 분석으로 만든 작업)는 시험지 번호 차례가 곧 문항 차례다 — 같은 지문 떨어뜨리기를 하지 않는다.
+     * 구현고2 서비스 회차(2026-11-25): 어휘 1~6번이 같은 지문 칸을 써서 1·7·9…·2·12…로 흩어졌다.
+     */
+    const spread = spreadPassages && !examMeta;
+    /*
      * 지문 순서로 한 바퀴: 지문을 넣은 순서대로 한 문항씩 돌고, 다시 첫 지문으로 돌아온다.
      * (선생님 요청 2026-09-20: "전체 세트가 순서대로 한 바퀴 돌고 다시 18번 문제부터 쭉")
      */
@@ -1376,8 +1381,8 @@ export function QuestionPrintView({
         const shareable0 = all.filter((q) => marked(q) && isSetMarkKey(q.option_key ?? ""));
         const sharedOk = shareable0.length > 0 && mergeMarkedPassages(original0, shareable0.map((q) => questionPassage(q))) != null;
         const ownPassage = (q: QuestionRow) => marked(q) && !(sharedOk && shareable0.includes(q));
-        const list = spreadPassages && all.length > 1 ? all.filter((q) => !ownPassage(q)) : all;
-        if (spreadPassages && all.length > 1) later.push(...all.filter(ownPassage));
+        const list = spread && all.length > 1 ? all.filter((q) => !ownPassage(q)) : all;
+        if (spread && all.length > 1) later.push(...all.filter(ownPassage));
         if (list.length === 0) continue;
         if (mode !== "exam" || list.length < 2) {
           for (const q of list) items.push({ kind: "q", id: q.id, q, num: num++ });
@@ -1409,7 +1414,7 @@ export function QuestionPrintView({
       return items;
     }
     if (printLayout !== "byType") {
-      return (spreadPassages ? spreadByPassage(shown) : shown).map((q, i) => ({
+      return (spread ? spreadByPassage(shown) : shown).map((q, i) => ({
         kind: "q" as const,
         id: q.id,
         q,
@@ -1421,13 +1426,13 @@ export function QuestionPrintView({
     let num = 1;
     for (const g of groups) {
       // 유형 안에서만 벌린다(유형 묶음과 유형별 쪽 나눔은 그대로)
-      for (const q of spreadPassages ? spreadByPassage(g.items) : g.items) {
+      for (const q of spread ? spreadByPassage(g.items) : g.items) {
         items.push({ kind: "q", id: q.id, q, num });
         num++;
       }
     }
     return items;
-  }, [shown, printLayout, mode, passageSources, branding.hideOrigin, typeOrder, spreadPassages]);
+  }, [shown, printLayout, mode, passageSources, branding.hideOrigin, typeOrder, spreadPassages, examMeta]);
 
   /** 유형별: 각 유형 구간 [start, end) — 새 페이지 강제용 */
   const typeRanges = useMemo(() => {

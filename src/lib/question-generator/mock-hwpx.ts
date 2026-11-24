@@ -368,8 +368,21 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
       fr = [0.12, 0.22, 0.66];
     } else {
       const labels = lines.filter((l) => l.length <= 8).map((l) => l.replace(/[:：]\s*$/, ""));
-      rows = (labels.length ? labels : ["답"]).map((l) => [cellP(l, { bold: true, center: true }), blank]);
-      fr = [0.14, 0.86];
+      const ls = labels.length ? labels : ["답"];
+      if (ls.length > 5) {
+        // 칸이 여섯 넘으면 두 줄로 — (가)~(차) 열 칸이 한 단을 넘어 아래로 넘쳤다(구현고2 서비스 회차 2026-11-25)
+        const half = Math.ceil(ls.length / 2);
+        rows = Array.from({ length: half }, (_, k) => [
+          cellP(ls[k]!, { bold: true, center: true }),
+          blank,
+          cellP(ls[k + half] ?? "", { bold: true, center: true }),
+          ls[k + half] ? blank : cellP(""),
+        ]);
+        fr = [0.12, 0.38, 0.12, 0.38];
+      } else {
+        rows = ls.map((l) => [cellP(l, { bold: true, center: true }), blank]);
+        fr = [0.14, 0.86];
+      }
     }
     return P({ line: 100, next: mm(1.2) }, `<hp:run charPrIDRef="${tiny}"/>`) + anchor({ line: 100 }, gridTable(BOX_W, rows, 3, fr));
   }
@@ -404,8 +417,13 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
       inner += boxed(psgP(it.given.trim())) + gap(2.4);
     }
     if (it.passage?.trim()) {
-      const ps = it.passage.split(/\n\s*\n|\n(?=\([A-C]\))/).filter((x) => x.trim());
-      inner += boxed(ps.map((x) => psgP(x.replace(/\s*\n\s*/g, " ").trim())).join(""));
+      // 줄마다 문단 — <가>/<나>·Q/A·(가)~(차) 어휘 줄이 한 덩어리로 붙었다(구현고2 서비스 회차 2026-11-25). 빈 줄은 문단 사이 틈
+      const ps = it.passage.split(/\n/).map((x) => x.trim());
+      inner += boxed(
+        ps
+          .map((x, k) => (x ? psgP(x) : k > 0 && ps[k - 1] ? gap(1.2) : ""))
+          .join(""),
+      );
     }
     if (it.extra?.trim()) {
       for (const bl of splitBlocks(it.extra)) {
@@ -424,6 +442,11 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
       const src = `${it.stem} ${it.extra ?? ""}`;
       let marks = [...new Set(src.match(/[ⓐ-ⓗ]/g) ?? [])];
       if (!marks.length) marks = [...new Set([...it.stem.matchAll(/\(([A-E])\)/g)].map((m) => `(${m[1]})`))];
+      // 발문의 「(a)~(e)」 — 구현고 서답형 3처럼 소문자 기호 범위
+      const range = it.stem.match(/\(([a-h])\)\s*[~∼-]\s*\(([a-h])\)/);
+      if (!marks.length && range) {
+        for (let c = range[1]!.charCodeAt(0); c <= range[2]!.charCodeAt(0); c++) marks.push(`(${String.fromCharCode(c)})`);
+      }
       inner += answerArea("답", marks);
     }
     // 끝에 얇은 여백 한 줄 — 없으면 한글에서 마지막 상자의 아랫줄이 잘렸다(보기 없는 문항)
