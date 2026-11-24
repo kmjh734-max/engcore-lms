@@ -175,6 +175,54 @@ function schoolExamMetaOf(rc: Record<string, unknown> | null | undefined, create
   return { year: d.getFullYear(), semester: d.getMonth() >= 6 ? 2 : 1, grade: grade || "", school, subject: subject.replace(/\s+/g, ""), round };
 }
 
+/** 학교 시험지 양식에서 선생님이 고치는 글귀(비우면 인쇄에서 빠짐) — 선생님 2026-11-24 「제목이라든가 이름 등등을 다 수정할 수 있게」 */
+type SchoolTexts = {
+  t1: string;
+  gradeBadge: string;
+  subject: string;
+  left: string;
+  nameLine: string;
+  notice: string;
+  runLeft: string;
+  runRight: string;
+  footLeft: string;
+  check: string;
+};
+const SCHOOL_TEXT_FIELDS: Array<{ key: keyof SchoolTexts; label: string; multi?: boolean }> = [
+  { key: "t1", label: "맨 위 제목 줄" },
+  { key: "gradeBadge", label: "학년 상자" },
+  { key: "subject", label: "과목명(큰 글씨)" },
+  { key: "left", label: "왼쪽 아래(학교·교시)" },
+  { key: "nameLine", label: "반·번호·성명 줄" },
+  { key: "notice", label: "안내 상자(한 줄에 하나)", multi: true },
+  { key: "runLeft", label: "둘째 쪽부터 머리 왼쪽" },
+  { key: "runRight", label: "둘째 쪽부터 머리 오른쪽" },
+  { key: "footLeft", label: "아래 왼쪽" },
+  { key: "check", label: "아래 오른쪽 칸(확인란)" },
+];
+function schoolTextDefaults(m: SchoolExamMeta, objN: number, subjN: number, total: number): SchoolTexts {
+  const g = m.grade ? `${m.grade}학년` : "";
+  return {
+    t1: `${m.year}학년도 ${m.semester}학기 ${m.grade ? `( ${m.grade} )학년 ` : ""}정기시험 대비 동형모의고사${m.round ? ` · ${m.round}회` : ""}`,
+    gradeBadge: g,
+    subject: m.subject,
+    left: m.school ? `${m.school} 대비` : "(   )교시",
+    nameLine: `${g ? `${g} ` : ""}(    )반 (    )번  성명 (            )`,
+    notice: [
+      "○ 자신이 풀어야 할 과목의 문제지인지 확인하시오.",
+      "○ 답안지에 성명, 학번, 과목명을 정확하게 기입하시오.",
+      "○ 문항에 따라 배점이 다르니, 각 물음의 끝에 표시된 배점을 참고하시오.",
+      `○ 선택형 ( ${objN} )문항${subjN ? ` · 서답형 ( ${subjN} )문항` : ""}${total ? ` · 총점 ${Math.round(total * 10) / 10}점` : ""}${
+        subjN ? " — 서답형 답은 답안지 서답형 칸에 검정 볼펜으로 쓰시오." : ""
+      }`,
+    ].join("\n"),
+    runLeft: `${g ? `${g} ` : ""}${m.subject}`,
+    runRight: `${m.school ? `${m.school} 대비 ` : ""}동형모의고사${m.round ? ` ${m.round}회` : ""}`,
+    footLeft: `${g ? `${g} ` : ""}${m.subject}`,
+    check: "확인란",
+  };
+}
+
 /** 서답형(서술형) 유형인가 — 보기가 지문 안 ①~⑤인 객관식(삽입·어법)은 보기 목록이 비어도 선택형 */
 const isSubjectiveKey = (key: string | null | undefined) =>
   /^(writing|summary_short):/.test(String(key ?? "")) || /:(어법오류수정\d|어법문장오류수정)$/.test(String(key ?? ""));
@@ -1020,6 +1068,27 @@ export function QuestionPrintView({
   const [pages, setPages] = useState<SheetPage[]>([]);
   /** 동형모의고사면 학교 시험지 양식에 쓸 머리 정보 */
   const [examMeta, setExamMeta] = useState<SchoolExamMeta | null>(null);
+  /** 학교 시험지 양식 글귀를 선생님이 고친 값(시험지마다 이 브라우저에 저장) */
+  const [schoolEdit, setSchoolEdit] = useState<Partial<SchoolTexts>>({});
+  const schoolEditKey = `qg-school-form:${setId ?? jobId}`;
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(schoolEditKey);
+      setSchoolEdit(raw ? (JSON.parse(raw) as Partial<SchoolTexts>) : {});
+    } catch {
+      setSchoolEdit({});
+    }
+  }, [schoolEditKey]);
+  const patchSchoolEdit = (patch: Partial<SchoolTexts>) =>
+    setSchoolEdit((prev) => {
+      const next = { ...prev, ...patch };
+      try {
+        localStorage.setItem(schoolEditKey, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
   const [branding, setBranding] = useState<PrintBranding>({
     headerKicker: academyName,
     headerTitle: "",
@@ -1570,45 +1639,52 @@ export function QuestionPrintView({
     return renderBrandHeader(compact, pageIdx, totalPages);
   }
 
+  /** 학교 시험지 양식 글귀: 선생님이 고친 값 > 기본값 */
+  function schoolTexts(m: SchoolExamMeta): SchoolTexts {
+    const objN = displayItems.filter((it) => it.kind === "q" && !isSubjectiveKey(it.q.option_key)).length;
+    const subjN = displayItems.filter((it) => it.kind === "q" && isSubjectiveKey(it.q.option_key)).length;
+    const total = displayItems.reduce((acc, it) => acc + (it.kind === "q" && typeof it.q.points === "number" ? it.q.points : 0), 0);
+    const out = schoolTextDefaults(m, objN, subjN, total);
+    for (const f of SCHOOL_TEXT_FIELDS) {
+      const v = schoolEdit[f.key];
+      if (typeof v === "string") out[f.key] = v;
+    }
+    return out;
+  }
+
   function renderSchoolHeader(pageIdx: number, m: SchoolExamMeta) {
+    const t = schoolTexts(m);
     if (pageIdx > 0)
       return (
         <header className="qg-school-runhead">
-          <span>{m.grade ? `${m.grade}학년 ` : ""}{m.subject}</span>
-          <span>{m.school ? `${m.school} 대비 ` : ""}동형모의고사{m.round ? ` ${m.round}회` : ""}</span>
+          <span>{t.runLeft}</span>
+          <span>{t.runRight}</span>
         </header>
       );
-    const objN = displayItems.filter((it) => it.kind === "q" && !isSubjectiveKey(it.q.option_key)).length;
-    const subjN = displayItems.filter((it) => it.kind === "q" && isSubjectiveKey(it.q.option_key)).length;
-    const total = displayItems.reduce((a, it) => a + (it.kind === "q" && typeof it.q.points === "number" ? it.q.points : 0), 0);
     return (
       <header className="qg-school-head">
         <div className="qg-school-box">
-          <p className="qg-school-t1">
-            {m.year}학년도 {m.semester}학기 {m.grade ? `( ${m.grade} )학년 ` : ""}정기시험 대비 동형모의고사{m.round ? ` · ${m.round}회` : ""}
-          </p>
+          {t.t1 ? <p className="qg-school-t1">{t.t1}</p> : null}
           <div className="qg-school-t2">
-            <span className="qg-school-grade">{m.grade ? `${m.grade}학년` : ""}</span>
-            <h1>{m.subject}</h1>
+            {t.gradeBadge ? <span className="qg-school-grade">{t.gradeBadge}</span> : <span />}
+            <h1>{t.subject}</h1>
             <span />
           </div>
           <div className="qg-school-t3">
-            <span>{m.school ? `${m.school} 대비` : "(   )교시"}</span>
-            <span>
-              {m.grade ? `${m.grade}학년 ` : ""}(    )반 (    )번  성명 (           )
-            </span>
+            <span>{t.left}</span>
+            <span style={{ whiteSpace: "pre" }}>{t.nameLine}</span>
           </div>
         </div>
-        <div className="qg-school-note">
-          <p>○ 자신이 풀어야 할 과목의 문제지인지 확인하시오.</p>
-          <p>○ 답안지에 성명, 학번, 과목명을 정확하게 기입하시오.</p>
-          <p>○ 문항에 따라 배점이 다르니, 각 물음의 끝에 표시된 배점을 참고하시오.</p>
-          <p>
-            ○ 선택형 ( {objN} )문항{subjN ? ` · 서답형 ( ${subjN} )문항` : ""}
-            {total ? ` · 총점 ${Math.round(total * 10) / 10}점` : ""}
-            {subjN ? " — 서답형 답은 답안지 서답형 칸에 검정 볼펜으로 쓰시오." : ""}
-          </p>
-        </div>
+        {t.notice.trim() ? (
+          <div className="qg-school-note">
+            {t.notice
+              .split("\n")
+              .filter((l) => l.trim())
+              .map((l, i) => (
+                <p key={i}>{l}</p>
+              ))}
+          </div>
+        ) : null}
       </header>
     );
   }
@@ -1699,9 +1775,9 @@ export function QuestionPrintView({
     if (schoolForm && examMeta)
       return (
         <footer className="qg-school-foot">
-          <span>{examMeta.grade ? `${examMeta.grade}학년 ` : ""}{examMeta.subject}</span>
+          <span>{schoolTexts(examMeta).footLeft}</span>
           <span className="qg-school-pno">{pageIdx + 1} / {sheetPages.length}</span>
-          <span className="qg-school-chk">확인란</span>
+          {schoolTexts(examMeta).check ? <span className="qg-school-chk">{schoolTexts(examMeta).check}</span> : <span />}
         </footer>
       );
     return (
@@ -2083,7 +2159,53 @@ export function QuestionPrintView({
 
           <MaterialDesignPicker value={md} onChange={chooseMd} />
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+          {schoolForm && examMeta ? (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs font-semibold text-slate-700">학교 시험지 양식 글귀</p>
+                <button
+                  type="button"
+                  className="text-xs text-brand-700 hover:underline"
+                  onClick={() => {
+                    setSchoolEdit({});
+                    try {
+                      localStorage.removeItem(schoolEditKey);
+                    } catch {
+                      /* ignore */
+                    }
+                  }}
+                >
+                  기본값으로
+                </button>
+              </div>
+              <div className="grid gap-2">
+                {SCHOOL_TEXT_FIELDS.map((f) => {
+                  const t = schoolTexts(examMeta);
+                  return (
+                    <label key={f.key} className="block text-xs text-slate-600">
+                      {f.label}
+                      {f.multi ? (
+                        <textarea
+                          className="ui-input mt-1 py-1.5 text-sm"
+                          rows={5}
+                          value={t[f.key]}
+                          onChange={(e) => patchSchoolEdit({ [f.key]: e.target.value })}
+                        />
+                      ) : (
+                        <input
+                          className="ui-input mt-1 py-1.5 text-sm"
+                          value={t[f.key]}
+                          onChange={(e) => patchSchoolEdit({ [f.key]: e.target.value })}
+                        />
+                      )}
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-[11px] leading-snug text-slate-500">비운 칸은 인쇄에서 빠집니다. 이 시험지에만 저장됩니다.</p>
+            </div>
+          ) : null}
+          <div className={`rounded-xl border border-slate-200 bg-slate-50 p-3${schoolForm ? " hidden" : ""}`}>
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs font-semibold text-slate-700">
                 머릿말 · 꼬릿말
