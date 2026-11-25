@@ -143,7 +143,14 @@ export function passageChangeFromSource(
   if (ex.length < 8) return model;
   const src = ` ${normWords(match.text).join(" ")} `;
   if (src.includes(` ${ex.join(" ")} `)) return model && !model.startsWith("none") ? model : "none";
-  return model && !model.startsWith("none") ? model : "light: 원문과 낱말 몇 개가 다르다(원문 대조)";
+  // 발췌는 빈칸·밑줄·기호를 빼고 적으므로 한 줄로 그대로 있지 않아도 원문일 수 있다.
+  // 3낱말 묶음이 원문에 얼마나 있는지로 가른다(11-26 정수학원 9개 분석 대조: 연속 일치만 보면 70문항이 light로 잘못 나옴).
+  const tri: string[] = [];
+  for (let i = 0; i + 3 <= ex.length; i++) tri.push(ex.slice(i, i + 3).join(" "));
+  const hit = tri.length ? tri.filter((t) => src.includes(` ${t} `)).length / tri.length : 0;
+  if (hit >= 0.75) return model && !model.startsWith("none") ? model : "none";
+  if (hit < 0.3) return model && model.startsWith("heavy") ? model : `heavy: 원문과 3낱말 묶음이 ${Math.round(hit * 100)}%만 겹친다(원문 대조)`;
+  return model && !model.startsWith("none") ? model : `light: 원문과 낱말 몇 개가 다르다(3낱말 묶음 ${Math.round(hit * 100)}% 겹침)`;
 }
 
 /** 읽어 둔 쪽 글자로 문항표를 만들어 저장하고, 수업자료와 대조한다 */
