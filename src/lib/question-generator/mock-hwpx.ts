@@ -8,6 +8,8 @@
  * 글꼴: 한글 HY신명조, 영어 Times New Roman(학교 시험지와 같게). 단위 HWPUNIT(1mm = 283.465).
  */
 
+import { figureSrcOf, figureSrcsIn, isolateFigureMarks } from "@/lib/question-generator/figure-mark";
+
 export type MockHwpxItem = {
   label: string; // "1." · "[서답형 1]"
   stem: string;
@@ -32,7 +34,56 @@ export type MockHwpxInput = {
   footLeft: string; // 아래 왼쪽
   items: MockHwpxItem[];
   closing?: string; // 마지막 확인 문구
+  /** 지문 속 그림 표시([[FIG:주소]])의 그림 바이트 — 주소별. 없으면 표시 줄은 빼고 찍는다 */
+  figures?: Record<string, MockFigure>;
 };
+
+/** 한글 파일에 넣을 그림 하나(PNG·JPEG) */
+export type MockFigure = { data: Uint8Array; width: number; height: number; ext: "png" | "jpg"; mime: string };
+
+/** PNG·JPEG 바이트에서 가로·세로 픽셀을 읽는다 */
+export function imageInfo(b: Uint8Array): Omit<MockFigure, "data"> | null {
+  if (b.length > 24 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) {
+    const v = new DataView(b.buffer, b.byteOffset, b.byteLength);
+    return { width: v.getUint32(16), height: v.getUint32(20), ext: "png", mime: "image/png" };
+  }
+  if (b.length > 4 && b[0] === 0xff && b[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < b.length) {
+      if (b[i] !== 0xff) {
+        i++;
+        continue;
+      }
+      const marker = b[i + 1]!;
+      const len = (b[i + 2]! << 8) | b[i + 3]!;
+      if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+        return { height: (b[i + 5]! << 8) | b[i + 6]!, width: (b[i + 7]! << 8) | b[i + 8]!, ext: "jpg", mime: "image/jpeg" };
+      }
+      i += 2 + len;
+    }
+  }
+  return null;
+}
+
+/** 문항 지문 속 그림 표시의 그림을 받아 온다(표시가 없으면 아무것도 받지 않음). 못 받은 그림은 빠진다 */
+export async function loadMockFigures(
+  items: Array<Pick<MockHwpxItem, "passage">>,
+  fetchImpl: (src: string) => Promise<Response> = (src) => fetch(src),
+): Promise<Record<string, MockFigure>> {
+  const out: Record<string, MockFigure> = {};
+  for (const src of figureSrcsIn(items.map((it) => it.passage))) {
+    try {
+      const res = await fetchImpl(src);
+      if (!res.ok) continue;
+      const data = new Uint8Array(await res.arrayBuffer());
+      const info = imageInfo(data);
+      if (info && info.width > 0 && info.height > 0) out[src] = { data, ...info };
+    } catch {
+      // 그림을 못 받아도 문제지는 만든다
+    }
+  }
+  return out;
+}
 
 const MM = 283.465;
 const mm = (v: number) => Math.round(v * MM);
@@ -341,6 +392,41 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
   const psgP = (text: string, size = SZ.passage) => P({ align: "JUSTIFY", line: 140 }, runs(text, { pt: size }));
   const labelP = (t: string) => P({ align: "LEFT", line: 140, next: mm(0.8) }, runs(t, { pt: SZ.extra, bold: true }));
 
+  /**
+   * 지문 속 도표 그림 — 지문 상자 안쪽 폭의 90%, 가운데, 글자처럼 취급(상자·단을 넘지 않게).
+   * 그림 바이트가 없으면(못 받음) 표시 줄을 빼고 찍는다.
+   */
+  const bins: Array<{ id: string; fig: MockFigure }> = [];
+  const binOf = new Map<string, string>();
+  function figureP(src: string): string {
+    const fig = input.figures?.[src];
+    if (!fig) return "";
+    let id = binOf.get(src);
+    if (!id) {
+      id = `image${bins.length + 1}`;
+      bins.push({ id, fig });
+      binOf.set(src, id);
+    }
+    const maxW = Math.round((BOX_W - 2 * mm(1.8)) * 0.9);
+    const maxH = mm(110);
+    const k = Math.min(maxW / fig.width, maxH / fig.height);
+    const w = Math.round(fig.width * k);
+    const h = Math.round(fig.height * k);
+    const pid = tblId++;
+    const pic =
+      `<hp:pic id="${pid}" zOrder="${pid - 1000}" numberingType="PICTURE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" href="" groupLevel="0" instid="${pid}" reverse="0">` +
+      `<hp:offset x="0" y="0"/><hp:orgSz width="${w}" height="${h}"/><hp:curSz width="${w}" height="${h}"/><hp:flip horizontal="0" vertical="0"/>` +
+      `<hp:rotationInfo angle="0" centerX="${Math.round(w / 2)}" centerY="${Math.round(h / 2)}" rotateimage="1"/>` +
+      `<hp:renderingInfo><hc:transMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/><hc:scaMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/><hc:rotMatrix e1="1" e2="0" e3="0" e4="0" e5="1" e6="0"/></hp:renderingInfo>` +
+      `<hc:img binaryItemIDRef="${id}" bright="0" contrast="0" effect="REAL_PIC" alpha="0"/>` +
+      `<hp:imgRect><hc:pt0 x="0" y="0"/><hc:pt1 x="${w}" y="0"/><hc:pt2 x="${w}" y="${h}"/><hc:pt3 x="0" y="${h}"/></hp:imgRect>` +
+      `<hp:imgClip left="0" right="0" top="0" bottom="0"/><hp:inMargin left="0" right="0" top="0" bottom="0"/><hp:imgDim dimwidth="0" dimheight="0"/><hp:effects/>` +
+      `<hp:sz width="${w}" widthRelTo="ABSOLUTE" height="${h}" heightRelTo="ABSOLUTE" protect="0"/>` +
+      `<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="CENTER" vertOffset="0" horzOffset="0"/>` +
+      `<hp:outMargin left="0" right="0" top="0" bottom="0"/></hp:pic>`;
+    return P({ align: "CENTER", line: 100, prev: mm(0.6), next: mm(1.8) }, `<hp:run charPrIDRef="${chars.get({ pt: SZ.passage })}">${pic}<hp:t/></hp:run>`);
+  }
+
   /** <조건>·<보기>·<요약문>·<표>·<답란> … 블록으로 나눈다(한 줄이 「<이름>」뿐이면 새 블록) */
   function splitBlocks(qt: string) {
     const out: Array<{ tag: string; lines: string[] }> = [{ tag: "", lines: [] }];
@@ -412,8 +498,16 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
     const pts = typeof it.points === "number" ? ` [${Math.round(it.points * 10) / 10}점]` : "";
     // 줄마다 문단 — <가>/<나>·Q/A·(가)~(차) 어휘 줄이 한 덩어리로 붙었다(구현고2 서비스 회차 2026-11-25). 빈 줄은 문단 사이 틈
     const passageBox = (text: string) => {
-      const ps = text.split(/\n/).map((x) => x.trim());
-      return boxed(ps.map((x, k) => (x ? psgP(x) : k > 0 && ps[k - 1] ? gap(1.2) : "")).join(""));
+      const ps = isolateFigureMarks(text).split(/\n/).map((x) => x.trim());
+      return boxed(
+        ps
+          .map((x, k) => {
+            const fig = x ? figureSrcOf(x) : null;
+            if (fig) return figureP(fig);
+            return x ? psgP(x) : k > 0 && ps[k - 1] && !figureSrcOf(ps[k - 1]!) ? gap(1.2) : "";
+          })
+          .join(""),
+      );
     };
     const stemP = P(
       { align: "LEFT", line: 150, left: mm(3.2), indent: -mm(3.2), next: mm(2.2) },
@@ -465,7 +559,7 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
   }
 
   const section = XML_HEAD + `<hs:sec ${NS}>${body}</hs:sec>`;
-  return { section, header: headerXml(chars.list, paras.list, tabs) };
+  return { section, header: headerXml(chars.list, paras.list, tabs), bins };
 }
 
 // ── 압축(저장만, 압축 없음) — mimetype 이 맨 앞 ──
@@ -532,12 +626,14 @@ function zipStore(files: Array<{ name: string; data: Uint8Array }>): Uint8Array 
 }
 
 export function buildMockHwpx(input: MockHwpxInput): Uint8Array {
-  const { section, header } = buildMockHwpxSection(input);
+  const { section, header, bins } = buildMockHwpxSection(input);
   const enc = new TextEncoder();
   const hpf =
     XML_HEAD +
     `<opf:package ${NS} version="" unique-identifier="" id=""><opf:metadata><opf:title>${esc(input.title)}</opf:title><opf:language>ko</opf:language></opf:metadata>` +
-    `<opf:manifest><opf:item id="header" href="Contents/header.xml" media-type="application/xml"/><opf:item id="section0" href="Contents/section0.xml" media-type="application/xml"/><opf:item id="settings" href="settings.xml" media-type="application/xml"/></opf:manifest>` +
+    `<opf:manifest><opf:item id="header" href="Contents/header.xml" media-type="application/xml"/>` +
+    bins.map((b) => `<opf:item id="${b.id}" href="BinData/${b.id}.${b.fig.ext}" media-type="${b.fig.mime}" isEmbeded="1"/>`).join("") +
+    `<opf:item id="section0" href="Contents/section0.xml" media-type="application/xml"/><opf:item id="settings" href="settings.xml" media-type="application/xml"/></opf:manifest>` +
     `<opf:spine><opf:itemref idref="header" linear="yes"/><opf:itemref idref="section0" linear="yes"/></opf:spine></opf:package>`;
   const files: Array<[string, string]> = [
     ["mimetype", "application/hwp+zip"],
@@ -561,5 +657,9 @@ export function buildMockHwpx(input: MockHwpxInput): Uint8Array {
         `<ha:HWPApplicationSetting xmlns:ha="http://www.hancom.co.kr/hwpml/2011/app" xmlns:config="urn:oasis:names:tc:opendocument:xmlns:config:1.0"><ha:CaretPosition listIDRef="0" paraIDRef="0" pos="0"/></ha:HWPApplicationSetting>`,
     ],
   ];
-  return zipStore(files.map(([name, s]) => ({ name, data: enc.encode(s) })));
+  return zipStore([
+    ...files.map(([name, s]) => ({ name, data: enc.encode(s) })),
+    // 지문 속 도표 그림(있을 때만)
+    ...bins.map((b) => ({ name: `BinData/${b.id}.${b.fig.ext}`, data: b.fig.data })),
+  ]);
 }

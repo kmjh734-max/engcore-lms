@@ -42,7 +42,8 @@ import { mergeMarkedPassages } from "@/lib/question-generator/passage-set-merge"
 import "./question-print-styles.css";
 import "@/components/lesson-materials/material-design.css";
 import { MaterialDesignPicker } from "@/components/lesson-materials/MaterialDesignPicker";
-import { buildMockHwpx, type MockHwpxItem } from "@/lib/question-generator/mock-hwpx";
+import { buildMockHwpx, loadMockFigures, type MockHwpxItem } from "@/lib/question-generator/mock-hwpx";
+import { figureSrcOf } from "@/lib/question-generator/figure-mark";
 import {
   QUESTION_BASE_STYLE,
   materialDesignClass,
@@ -426,7 +427,15 @@ function PassageUnits({
   return (
     <>
       {paras.map((p) =>
-        p.items.length === 1 && marked && parseTableParagraph(p.items[0]!.text) ? (
+        p.items.length === 1 && figureSrcOf(p.items[0]!.text) ? (
+          // 도표 그림([[FIG:주소]] 한 줄) — 지문 칸의 약 90%, 가운데(선생님 2026-11-26)
+          <div key={p.para} className={`${pClass} qg-print-fig`} data-qg-para="" style={{ textAlign: "center", margin: "1.5mm 0" }}>
+            <span data-qg-u={p.items[0]!.index}>
+              {/* eslint-disable-next-line @next/next/no-img-element -- 인쇄용 그대로 그림 */}
+              <img src={figureSrcOf(p.items[0]!.text)!} alt="" style={{ display: "inline-block", width: "90%", height: "auto", verticalAlign: "top" }} />
+            </span>
+          </div>
+        ) : p.items.length === 1 && marked && parseTableParagraph(p.items[0]!.text) ? (
           <div key={p.para} className={pClass} data-qg-para="">
             <span data-qg-u={p.items[0]!.index}>{renderMarkedText(p.items[0]!.text)}</span>
           </div>
@@ -1604,7 +1613,18 @@ export function QuestionPrintView({
     void document.fonts?.ready?.then(() => {
       window.setTimeout(run, 30);
     });
-    return () => window.clearTimeout(t);
+    // 도표 그림이 늦게 들어오면 높이가 달라지므로 다 들어온 뒤 한 번 더 잰다(그림 없는 작업은 그대로)
+    let imgAlive = true;
+    const pendingImgs = [...(measureRef.current?.querySelectorAll<HTMLImageElement>(".qg-print-fig img") ?? [])].filter((im) => !im.complete);
+    if (pendingImgs.length) {
+      void Promise.all(pendingImgs.map((im) => new Promise((r) => { im.addEventListener("load", r, { once: true }); im.addEventListener("error", r, { once: true }); }))).then(() => {
+        if (imgAlive) window.setTimeout(run, 30);
+      });
+    }
+    return () => {
+      imgAlive = false;
+      window.clearTimeout(t);
+    };
   }, [
     displayItems,
     mode,
@@ -1665,7 +1685,7 @@ export function QuestionPrintView({
   }
 
   /** 한글 파일(.hwpx) 받기 — 화면과 같은 글귀·문항 차례로 브라우저에서 바로 만든다(선생님 2026-11-24 「hwp만」) */
-  function downloadHwpx(m: SchoolExamMeta) {
+  async function downloadHwpx(m: SchoolExamMeta) {
     const t = schoolTexts(m);
     let objI = 0;
     const items: MockHwpxItem[] = displayItems.flatMap((it) => {
@@ -1708,7 +1728,10 @@ export function QuestionPrintView({
       }
       i = j;
     }
+    // 지문 속 도표 그림([[FIG:주소]])은 받아서 한글 파일 안에 넣는다 — 표시가 없으면 아무것도 받지 않는다
+    const figures = await loadMockFigures(items);
     const bytes = buildMockHwpx({
+      figures,
       t1: t.t1,
       title: [t.gradeBadge, t.subject].filter((x) => x.trim()).join("  "),
       left: t.left,
@@ -2283,7 +2306,7 @@ export function QuestionPrintView({
               <button
                 type="button"
                 className="mt-3 flex w-full items-center justify-center rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700"
-                onClick={() => downloadHwpx(examMeta)}
+                onClick={() => void downloadHwpx(examMeta)}
               >
                 한글 파일로 받기 (.hwpx)
               </button>

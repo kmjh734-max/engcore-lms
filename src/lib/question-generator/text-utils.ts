@@ -2,6 +2,7 @@ import {
   lemmaWordBankOnly,
   stripExtraWordHint,
 } from "@/lib/question-generator/word-order-normalize";
+import { isolateFigureMarks } from "@/lib/question-generator/figure-mark";
 
 /** 문장 중간의 <보기>의 → 보기의 (섹션 태그와 혼동 방지) */
 export function sanitizeInlineSectionMentions(text: string): string {
@@ -465,7 +466,8 @@ export function joinBrokenWords(line: string): string {
   return out.join(" ");
 }
 export function reflowPassageForPrint(text: string): string[] {
-  const raw = (text || "").replace(/\r\n/g, "\n").trim();
+  // 그림 표시([[FIG:…]])는 제 문단으로 떼어 둔다 — 표시가 없으면 그대로
+  const raw = isolateFigureMarks((text || "").replace(/\r\n/g, "\n")).trim();
   if (!raw) return [];
   return raw
     .split(/\n\s*\n+/)

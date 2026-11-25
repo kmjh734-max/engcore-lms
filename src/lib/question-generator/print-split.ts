@@ -7,6 +7,8 @@
  * 한 단에 들어가는 문항은 예전처럼 쪼개지 않는다.
  */
 
+import { FIG_LINE_RE } from "@/lib/question-generator/figure-mark";
+
 /** 지문의 한 조각(문단 번호와 그 문단 안의 문장 또는 어절 묶음). */
 export type PrintUnit = { para: number; text: string };
 
@@ -87,7 +89,8 @@ export function splitPrintUnits(paragraphs: string[]): PrintUnit[] {
   const units: PrintUnit[] = [];
   paragraphs.forEach((para, pi) => {
     // 표 문단(「[표] 칸 | 칸 // 칸 | 칸」, 중학교 문제 은행)은 쪼개지 않는다
-    if (para.startsWith(TABLE_MARK)) {
+    // 그림 표시([[FIG:…]]) 문단도 통째로
+    if (para.startsWith(TABLE_MARK) || FIG_LINE_RE.test(para)) {
       units.push({ para: pi, text: para });
       return;
     }
