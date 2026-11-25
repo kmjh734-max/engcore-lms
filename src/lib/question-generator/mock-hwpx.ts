@@ -19,6 +19,8 @@ export type MockHwpxItem = {
   extra?: string;
   choices?: string[];
   subjective?: boolean;
+  /** 같은 지문 묶음의 첫 문항 위에 찍는 머리글(「[3~5] 다음 글을 읽고, 물음에 답하시오.」) */
+  groupHead?: string;
 };
 
 export type MockHwpxInput = {
@@ -408,22 +410,27 @@ export function buildMockHwpxSection(input: MockHwpxInput) {
 
   for (const it of input.items) {
     const pts = typeof it.points === "number" ? ` [${Math.round(it.points * 10) / 10}점]` : "";
-    let inner = P(
+    // 줄마다 문단 — <가>/<나>·Q/A·(가)~(차) 어휘 줄이 한 덩어리로 붙었다(구현고2 서비스 회차 2026-11-25). 빈 줄은 문단 사이 틈
+    const passageBox = (text: string) => {
+      const ps = text.split(/\n/).map((x) => x.trim());
+      return boxed(ps.map((x, k) => (x ? psgP(x) : k > 0 && ps[k - 1] ? gap(1.2) : "")).join(""));
+    };
+    const stemP = P(
       { align: "LEFT", line: 150, left: mm(3.2), indent: -mm(3.2), next: mm(2.2) },
       `<hp:run charPrIDRef="${chars.get({ pt: SZ.stem, bold: true })}"><hp:t>${esc(it.label)} </hp:t></hp:run>` +
         runs((it.stem || "다음 물음에 답하시오.") + pts, { pt: SZ.stem }),
     );
-    if (it.given?.trim()) {
-      inner += boxed(psgP(it.given.trim())) + gap(2.4);
-    }
-    if (it.passage?.trim()) {
-      // 줄마다 문단 — <가>/<나>·Q/A·(가)~(차) 어휘 줄이 한 덩어리로 붙었다(구현고2 서비스 회차 2026-11-25). 빈 줄은 문단 사이 틈
-      const ps = it.passage.split(/\n/).map((x) => x.trim());
-      inner += boxed(
-        ps
-          .map((x, k) => (x ? psgP(x) : k > 0 && ps[k - 1] ? gap(1.2) : ""))
-          .join(""),
-      );
+    let inner = "";
+    if (it.groupHead) {
+      // 같은 지문 묶음: 머리글 → 지문 → 첫 문항(학교 시험지 [3~5] 꼴)
+      inner += P({ align: "LEFT", line: 150, next: mm(1.6) }, `<hp:run charPrIDRef="${chars.get({ pt: SZ.stem, bold: true })}"><hp:t>${esc(it.groupHead)}</hp:t></hp:run>`);
+      if (it.passage?.trim()) inner += passageBox(it.passage) + gap(2.4);
+      inner += stemP;
+      if (it.given?.trim()) inner += boxed(psgP(it.given.trim())) + gap(2.4);
+    } else {
+      inner += stemP;
+      if (it.given?.trim()) inner += boxed(psgP(it.given.trim())) + gap(2.4);
+      if (it.passage?.trim()) inner += passageBox(it.passage);
     }
     if (it.extra?.trim()) {
       for (const bl of splitBlocks(it.extra)) {

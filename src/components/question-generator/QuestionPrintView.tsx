@@ -1690,6 +1690,24 @@ export function QuestionPrintView({
         },
       ];
     });
+    /*
+     * 이어진 문항의 지문이 글자까지 같으면 학교 시험지처럼 「[3~5] 다음 글을 읽고, 물음에 답하시오.」 아래에
+     * 지문을 한 번만 찍는다(선생님 2026-11-25 — 같은 지문 문항이 다른 문항 지문에서 답을 보여 주던 문제를
+     * 한 지문에 표시를 모아 풀기로 했다). 지문이 다르면 예전처럼 문항마다 찍는다.
+     */
+    const normP = (t?: string) => (t ?? "").replace(/\s+/g, " ").trim();
+    for (let i = 0; i < items.length; ) {
+      const pass = normP(items[i]!.passage);
+      let j = i + 1;
+      // 삽입 문항도 묶음에 든다 — 주어진 문장 상자는 그 문항 발문 아래에 찍힌다(4차 2026-11-26)
+      while (pass && j < items.length && normP(items[j]!.passage) === pass) j++;
+      if (j - i >= 2) {
+        const nums = items.slice(i, j).map((x) => x.label.replace(/[.[\]]/g, "").trim());
+        items[i] = { ...items[i]!, groupHead: `[${nums[0]}~${nums[nums.length - 1]}] 다음 글을 읽고, 물음에 답하시오.` };
+        for (let k = i + 1; k < j; k++) items[k] = { ...items[k]!, passage: undefined };
+      }
+      i = j;
+    }
     const bytes = buildMockHwpx({
       t1: t.t1,
       title: [t.gradeBadge, t.subject].filter((x) => x.trim()).join("  "),
