@@ -839,11 +839,13 @@ function QuestionBlock({
           ) : (
             <p className="qg-print-extra" style={{ whiteSpace: "pre-line" }}>{renderMarkedText(extra)}</p>
           )
-        ) : /:답변가능개수$/.test(String(q.option_key ?? "")) ? (
+        ) : /:답변가능개수$/.test(String(q.option_key ?? "")) || /^\s*<\s*보\s*기\s*>\s*\n/.test(String(q.question_text ?? "")) ? (
+          // 답변 가능 개수, 그리고 「<보기>에서 있는 대로 고른 것」 같은 객관식 <보기>(2026-11-25 기말 대비 50문항)
           <div>
             <p className="qg-print-bogi-label">&lt; 보 기 &gt;</p>
             <div className="qg-print-count-box qg-print-bogi-box">
               {String(q.question_text ?? "")
+                .replace(/^\s*<\s*보\s*기\s*>\s*\n/, "")
                 .split(/\n+/)
                 .map((l) => l.trim())
                 .filter(Boolean)
