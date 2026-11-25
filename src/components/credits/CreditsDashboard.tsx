@@ -296,6 +296,14 @@ export function CreditsDashboard({
                       </span>
                       <span className="min-w-0 md:truncate">
                         <span className="block truncate text-[13px] text-slate-900">{t.text}</span>
+                        {t.material ? (
+                          <span
+                            className="mt-0.5 block truncate text-xs text-slate-500"
+                            title={t.material}
+                          >
+                            자료: {t.material}
+                          </span>
+                        ) : null}
                         <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500 md:hidden">
                           <span className="tabular-nums">{shortDateTime(t.createdAt)}</span>
                           <Pill {...pill} />

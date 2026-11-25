@@ -635,6 +635,12 @@ export async function chargeTestDrawAction(
     featureKey: TEST_DRAW_FEATURE,
     quantity,
     idempotencyKey: `${TEST_DRAW_FEATURE}:${seed}`,
+    // 크레딧 내역에 자료 이름을 보인다(선생님 2026-11-26) — 이름이 없으면 첫 지문 제목 외 N지문
+    metadata: {
+      material_name: String(input.name ?? "").trim().slice(0, 80) || null,
+      project_ids: [...new Set((input.projectIds ?? []).map(String).filter(Boolean))].slice(0, 3),
+      passage_count: passages,
+    },
     note: `테스트지 뽑기 · 지문 ${passages}개 · 문항 ${count.items}개 · 세트 ${count.sets}개${hasVocab ? ` · 단어 시험 ${passages}지문` : ""}`,
   });
   if (!ok) return { ok: false, message: "크레딧을 차감하지 못했습니다. 잠시 뒤 다시 눌러 주세요." };

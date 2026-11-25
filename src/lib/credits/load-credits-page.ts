@@ -21,6 +21,8 @@ export interface CreditTxnView {
   delta: number;
   balanceAfter: number;
   text: string;
+  /** 어느 자료에 썼나(지문 제목·변형문제 작업 이름·워크북 이름 등). 모르면 null */
+  material: string | null;
 }
 
 export interface CreditReceiptView {
@@ -123,6 +125,161 @@ async function loadMonthTxns(
   }
 }
 
+/** 쓴 내역마다 「어느 자료에 썼나」 이름을 찾는다(선생님 2026-11-26). 행에 남은 id로 한 번씩만 묻는다. */
+async function loadMaterialNames(
+  academyId: string,
+  txns: RawTxn[]
+): Promise<(t: RawTxn) => string | null> {
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : null);
+  const projectIds = new Set<string>();
+  const jobIds = new Set<string>();
+  const analysisIds = new Set<string>();
+  const setIds = new Set<string>();
+  for (const t of txns) {
+    if (t.type !== "debit") continue;
+    const m = t.metadata ?? {};
+    if (str(m.material_name)) continue;
+    const job = str(m.job_id);
+    const analysis = str(m.analysis_id);
+    const project = str(m.project_id);
+    const set = str(m.set_id);
+    if (job) jobIds.add(job);
+    else if (analysis) analysisIds.add(analysis);
+    else if (project) projectIds.add(project);
+    else if (set) setIds.add(set);
+    else if (Array.isArray(m.project_ids)) {
+      const first = str(m.project_ids[0]);
+      if (first) projectIds.add(first);
+    }
+  }
+  const admin = createAdminClient();
+  const chunk = (ids: Set<string>): string[][] => {
+    const all = [...ids];
+    const out: string[][] = [];
+    for (let i = 0; i < all.length; i += 200) out.push(all.slice(i, i + 200));
+    return out;
+  };
+  const names = new Map<string, string>();
+  const tasks: Promise<void>[] = [];
+  for (const ids of chunk(projectIds))
+    tasks.push(
+      (async () => {
+        const { data } = await admin
+          .from("lesson_material_projects")
+          .select("id, title, source")
+          .eq("academy_id", academyId)
+          .in("id", ids);
+        // 출처가 있으면 출처를 앞에(선생님 2026-11-26 「출처도 뜨도록」)
+        for (const r of data ?? []) {
+          const title = String(r.title ?? "").trim();
+          const source = String(r.source ?? "").trim();
+          const name = source && title && source !== title ? `${source} · ${title}` : source || title;
+          if (name) names.set(r.id as string, name);
+        }
+      })()
+    );
+  for (const ids of chunk(jobIds))
+    tasks.push(
+      (async () => {
+        const { data } = await admin
+          .from("question_generation_jobs")
+          .select("id, title:request_config->>title")
+          .eq("academy_id", academyId)
+          .in("id", ids);
+        for (const r of (data ?? []) as Array<{ id: string; title: string | null }>)
+          if (r.title) names.set(r.id, r.title.trim());
+      })()
+    );
+  for (const ids of chunk(analysisIds))
+    tasks.push(
+      (async () => {
+        const { data } = await admin
+          .from("school_exam_analyses")
+          .select("id, school_name, grade, subject, exam_label")
+          .eq("academy_id", academyId)
+          .in("id", ids);
+        for (const r of data ?? []) {
+          const g = r.grade != null && String(r.grade).trim() ? String(r.grade).trim() : "";
+          const name = [
+            r.school_name,
+            g ? (/^\d+$/.test(g) ? `${g}학년` : g) : "",
+            r.subject,
+            r.exam_label,
+          ]
+            .map((x) => (x == null ? "" : String(x).trim()))
+            .filter(Boolean)
+            .join(" ");
+          if (name) names.set(r.id as string, name);
+        }
+      })()
+    );
+  for (const ids of chunk(setIds))
+    tasks.push(
+      (async () => {
+        const { data } = await admin
+          .from("listening_sets")
+          .select("id, title")
+          .eq("academy_id", academyId)
+          .in("id", ids);
+        for (const r of data ?? []) if (r.title) names.set(r.id as string, String(r.title));
+      })()
+    );
+  // 예전 테스트지 뽑기(11-26 전)는 id가 없다 — 뽑자마자 저장한 파일(몇 초 뒤)의 이름으로 찾는다
+  const oldDraws = txns.filter(
+    (t) => t.type === "debit" && t.feature_key === "lesson_test_draw" && !str(t.metadata?.material_name)
+  );
+  const drawDocs: Array<{ at: number; name: string }> = [];
+  if (oldDraws.length) {
+    const times = oldDraws.map((t) => Date.parse(t.created_at));
+    tasks.push(
+      (async () => {
+        const { data } = await admin
+          .from("lesson_material_documents")
+          .select("name, created_at")
+          .eq("academy_id", academyId)
+          .eq("kind", "test_draw")
+          .gte("created_at", new Date(Math.min(...times)).toISOString())
+          .lte("created_at", new Date(Math.max(...times) + 120_000).toISOString())
+          .limit(1000);
+        for (const r of data ?? [])
+          if (r.name) drawDocs.push({ at: Date.parse(r.created_at as string), name: String(r.name) });
+      })()
+    );
+  }
+  try {
+    await Promise.all(tasks);
+  } catch {
+    // 이름을 못 찾아도 내역은 그대로 보인다
+  }
+
+  return (t) => {
+    if (t.type !== "debit") return null;
+    const m = t.metadata ?? {};
+    const own = str(m.material_name);
+    if (own) return own;
+    for (const key of ["job_id", "analysis_id", "project_id", "set_id"]) {
+      const id = str(m[key]);
+      if (id && names.has(id)) return names.get(id)!;
+    }
+    if (t.feature_key === "lesson_test_draw" && drawDocs.length) {
+      const at = Date.parse(t.created_at);
+      let best: { at: number; name: string } | null = null;
+      for (const d of drawDocs)
+        if (d.at >= at && d.at - at <= 120_000 && (!best || d.at < best.at)) best = d;
+      if (best) return best.name;
+    }
+    if (Array.isArray(m.project_ids)) {
+      const first = str(m.project_ids[0]);
+      const title = first ? names.get(first) : undefined;
+      if (title) {
+        const n = Number(m.passage_count ?? m.project_ids.length) || 1;
+        return n > 1 ? `${title} 외 ${n - 1}지문` : title;
+      }
+    }
+    return null;
+  };
+}
+
 export async function loadCreditsPageData(
   supabase: SupabaseClient,
   opts: { academyId: string; monthParam?: string; canCharge: boolean }
@@ -198,6 +355,8 @@ export async function loadCreditsPageData(
       })
     : null;
 
+  const materialOf = await loadMaterialNames(opts.academyId, selectedTxns ?? currentTxns);
+
   function view(t: RawTxn): CreditTxnView {
     const { kind, sign } = toKind(t);
     const meta = t.metadata ?? {};
@@ -230,6 +389,7 @@ export async function loadCreditsPageData(
       delta: sign * Number(t.amount),
       balanceAfter: Number(t.balance_after),
       text,
+      material: materialOf(t),
     };
   }
 

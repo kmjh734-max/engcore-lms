@@ -337,6 +337,14 @@ export async function generateWorkbookAction(
   const extraHolds: Array<{ amount: number; what: string }> = [];
   // 규칙으로만 만드는 유형도 유형마다 지문당 5(선생님 2026-10-28 「무료는 좀 그래」)
   const ruleTypes = types.filter((t) => WORKBOOK_RULE_TYPES.has(t));
+  // 크레딧 내역에 「어느 자료에 썼나」를 남긴다(선생님 2026-11-26) — 워크북 이름, 없으면 첫 지문 외 N지문
+  const creditMaterial =
+    input.title?.trim() ||
+    (passages[0]
+      ? `${[passages[0].source?.trim(), passages[0].title?.trim()].filter(Boolean).join(" · ")}${
+          passages.length > 1 ? ` 외 ${passages.length - 1}지문` : ""
+        }`
+      : null);
   for (const [want, feature, what, per] of [
     [wantBilingual && !freeStoredLineSwitch, LESSON_CREDIT_FEATURES.workbookLineTranslation, "한 줄 해석·전체 영작", 1],
     [wantWordOrder, LESSON_CREDIT_FEATURES.workbookWordOrder, "제시어 배열 영작", 1],
@@ -354,7 +362,7 @@ export async function generateWorkbookAction(
       actorId: profile!.id,
       featureKey: feature,
       quantity: passages.length * per,
-      metadata: { used_for: "workbook" },
+      metadata: { used_for: "workbook", material_name: creditMaterial },
       note: `워크북 ${what} · 지문 ${passages.length}개`,
     });
     if (!hold.ok) {
@@ -510,7 +518,7 @@ export async function generateWorkbookAction(
         actorId: profile!.id,
         featureKey: LESSON_CREDIT_FEATURES.workbookTf,
         quantity: tfCreditQty,
-        metadata: { used_for: "workbook" },
+        metadata: { used_for: "workbook", material_name: creditMaterial },
         note: `워크북 O/X · 지문 ${passages.length}개 · ${tfOptions.count}문항`,
       });
       if (!hold.ok) return { ok: false, message: hold.message };
