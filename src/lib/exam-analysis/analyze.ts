@@ -25,6 +25,14 @@ type RawItem = {
   subjective_conditions?: string;
   answer_guess?: string;
   confidence?: number;
+  answer_style?: string;
+  answer_text?: string;
+  choice_lang?: string;
+  choice_avg_words?: number;
+  choice_vocab?: string;
+  choice_note?: string;
+  distractor_method?: string;
+  passage_change?: string;
 };
 
 type RawResult = {
@@ -60,6 +68,15 @@ export function systemPrompt(): string {
 - subjective_conditions: 서술형이면 조건(단어 수, 보기 단어 모두 사용, 어형 변화 등)을 짧게.
 - answer_guess: 직접 풀어서 추정. 서술형은 모범답안 요지. 확신이 낮으면 confidence를 낮게. 학생 풀이 흔적은 정답 근거로 쓰지 않는다.
 - 지문 출처(교과서·모의고사 등)는 짐작하지 않는다.
+- 문항마다 「어떻게 냈는지」를 적는다(동형모의고사가 그대로 따라 만든다. 유형만 같으면 그 학교 시험 같지 않다).
+  · answer_text: 빈칸·요약 문항만. 정답 선지(요약은 정답 선지의 (A)·(B) 낱말)를 시험지 글 그대로 적는다(기호 ①~⑤는 빼고). 다른 유형은 "".
+  · answer_style: 빈칸·요약 문항만. 정답이 지문 속 표현 그대로면 "verbatim", 같은 뜻을 다른 말로 바꿨으면 "paraphrase", 일부 낱말만 같으면 "partial". 다른 유형은 "".
+  · choice_lang: 선택지가 영어면 "en", 한글이면 "ko", 섞였으면 "mixed", 선택지가 없거나 ①~⑤ 기호뿐이면 "".
+  · choice_avg_words: 영어 선택지 다섯 개의 평균 낱말 수(세어서). 한글 선택지나 기호뿐이면 0.
+  · choice_vocab: 선택지 어휘 수준 한 마디(예: 중3 교과서, 고1 교과서, 고2 모의고사, 수능, 수능 이상).
+  · choice_note: 선택지 난이도 한 문장 — 구문(절·분사구·명사구), 추상도, 오답이 얼마나 그럴듯한지.
+  · distractor_method: 오답을 만든 방법 한 마디(예: 본문 낱말 재활용, 정답 반대말, 반쯤 맞는 말, 정답과 낱말 하나 차이).
+  · passage_change: 지문을 원문에서 바꾼 정도. "none"(그대로) / "light: …"(낱말 몇 개) / "heavy: …"(문장 추가·삭제·바꿔 쓰기)처럼 짧게. 원문을 모르면 시험지 글이 교과서·모의고사 글로 자연스러운지로 판단하고, 판단이 어려우면 "".
 - 쪽 아래 "7-1", "2/8" 같은 쪽 번호와 문항 번호가 건너뛴 곳을 보고, 올라오지 않은 쪽·문항을 meta.missing 에 적는다(예: "7쪽 중 2·4·6쪽 없음 (6~9·15~20번)"). 빠짐이 없으면 "". 빠진 문항은 items에 넣지 않는다.
 - features: 출제 특징 3~5개, strategy: 다음 시험 대비 전략 3~5개. 선생님이 학부모 상담에 그대로 쓸 수 있게 구체적으로.
 - meta.vocab_level: 지문에 쓰인 어휘 수준을 한 마디로 (예: 중3 교과서, 고1 교과서, 고2 모의고사, 수능, 수능 이상). 세지 말고 읽은 느낌으로 정한다.
@@ -67,7 +84,8 @@ export function systemPrompt(): string {
 JSON 하나만 출력:
 {"meta":{"school":"","grade":"","subject":"","exam":"","total_points":0,"missing":"","note":"","vocab_level":"","level_summary":""},
  "items":[{"no":"1","points":2.9,"format":"objective|subjective","stem":"발문","passage_excerpt":"","passage_words":0,
-   "type_key":"","difficulty":3,"level":"중","difficulty_reason":"","grammar_point":"","subjective_conditions":"","answer_guess":"","confidence":0.0}],
+   "type_key":"","difficulty":3,"level":"중","difficulty_reason":"","grammar_point":"","subjective_conditions":"","answer_guess":"","confidence":0.0,
+   "answer_text":"","answer_style":"","choice_lang":"","choice_avg_words":0,"choice_vocab":"","choice_note":"","distractor_method":"","passage_change":""}],
  "features":[],"strategy":[]}
 
 유형 목록:
@@ -75,6 +93,58 @@ ${typeList}`;
 }
 
 const LEVELS = new Set(["상", "중", "하"]);
+
+/*
+ * 정답·지문이 원문 그대로인지 — 선생님 지적(2026-11-25).
+ *  「사용자가 파일을 올리면 난이도 분석부터 제대로 하는 게 중요해. 그 문제가 패러프레이징한 건지
+ *   아닌 건지도 파악해야 해. 패러프레이징한 게 있으면 동형 만들 때도 그렇게 해야 해.」
+ *  「어차피 DB가 있으니까 비교하기 쉽잖아.」
+ * 교과서·모의고사 원문이 DB에 있으니 모델 짐작 대신 원문과 낱말로 대 본다.
+ */
+const normWords = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[’']/g, "'")
+    .replace(/[^a-z' ]+/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+const STOP = new Set(["a", "an", "the", "of", "to", "in", "on", "for", "and", "or", "is", "are", "be", "it", "that", "with", "as", "by", "at", "their", "its", "his", "her", "they", "we", "you"]);
+
+/** 빈칸·요약 정답이 원문 표현 그대로인지. 원문이 없으면 모델 값 */
+export function answerStyleFromSource(it: { answer_text?: string; answer_style?: string }, source: string): "verbatim" | "paraphrase" | "partial" | null {
+  const modelValue = ["verbatim", "paraphrase", "partial"].includes(String(it.answer_style))
+    ? (String(it.answer_style) as "verbatim" | "paraphrase" | "partial")
+    : null;
+  const ans = String(it.answer_text ?? "").trim();
+  if (!modelValue && !ans) return null;
+  if (!ans || !source.trim()) return modelValue;
+  // 요약 (A)·(B)는 「a – b」로 오니 칸마다 따로 본다
+  const parts = ans.split(/\s+[–\-—]\s+|\s*\/\s*/).map((p) => normWords(p)).filter((w) => w.length > 0);
+  if (!parts.length) return modelValue;
+  const src = ` ${normWords(source).join(" ")} `;
+  const srcSet = new Set(normWords(source));
+  if (parts.every((w) => src.includes(` ${w.join(" ")} `))) return "verbatim";
+  const content = parts.flat().filter((w) => !STOP.has(w));
+  if (!content.length) return modelValue;
+  const inSrc = content.filter((w) => srcSet.has(w)).length / content.length;
+  return inSrc >= 0.5 ? "partial" : "paraphrase";
+}
+
+/** 지문을 원문에서 얼마나 바꿨는지. 원문을 바꿔 쓴 글로 잡혔으면 heavy, 발췌가 원문에 그대로 있으면 none */
+export function passageChangeFromSource(
+  it: { passage_excerpt?: string; passage_change?: string },
+  match: { how: "text" | "paraphrase"; text: string } | null
+): string | null {
+  const model = it.passage_change?.trim() || null;
+  if (!match || !match.text.trim()) return model;
+  if (match.how === "paraphrase") return `heavy: 원문을 바꿔 썼다(교과서·모의고사 원문 대조)${model && !model.startsWith("none") ? ` · ${model.replace(/^(heavy|light):?\s*/, "")}` : ""}`;
+  const ex = normWords(String(it.passage_excerpt ?? ""));
+  if (ex.length < 8) return model;
+  const src = ` ${normWords(match.text).join(" ")} `;
+  if (src.includes(` ${ex.join(" ")} `)) return model && !model.startsWith("none") ? model : "none";
+  return model && !model.startsWith("none") ? model : "light: 원문과 낱말 몇 개가 다르다(원문 대조)";
+}
 
 /** 읽어 둔 쪽 글자로 문항표를 만들어 저장하고, 수업자료와 대조한다 */
 export async function analyzeExam(admin: SupabaseClient, analysisId: string, academyId: string): Promise<void> {
@@ -162,6 +232,15 @@ export async function analyzeExam(admin: SupabaseClient, analysisId: string, aca
       conditions: it.subjective_conditions || null,
       answer_guess: it.answer_guess || null,
       confidence: typeof it.confidence === "number" ? it.confidence : null,
+      // 문항마다 「어떻게 냈는지」(선생님 2026-11-25) — 동형모의고사가 그 번호에 그대로 넘긴다
+      // 원문(교과서·모의고사 DB)이 잡혔으면 정답·지문을 원문과 코드로 대 본다. 못 잡았으면 모델이 본 값을 쓴다
+      answer_style: answerStyleFromSource(it, textbook?.text || mock?.text || ""),
+      choice_lang: ["en", "ko", "mixed"].includes(String(it.choice_lang)) ? String(it.choice_lang) : null,
+      choice_avg_words: typeof it.choice_avg_words === "number" && it.choice_avg_words > 0 ? Math.round(it.choice_avg_words * 10) / 10 : null,
+      vocab_level: it.choice_vocab?.trim() || null,
+      level_reason: it.choice_note?.trim() || null,
+      distractor_method: it.distractor_method?.trim() || null,
+      passage_change: passageChangeFromSource(it, textbook ?? mock ?? null),
       matched_item_id: match?.itemId ?? null,
       matched_label: match?.label ?? null,
       matched_mock_id: mock?.mockId ?? null,
@@ -169,8 +248,9 @@ export async function analyzeExam(admin: SupabaseClient, analysisId: string, aca
       matched_textbook_id: textbook?.textbookId ?? null,
       matched_textbook_label: textbook?.label ?? null,
       ...(() => {
-        // 지문 발췌로 이 문항의 수준을 잰다(발췌가 짧으면 렉사일은 내지 않는다)
-        const m = measureText(String(it.passage_excerpt ?? ""));
+        // 이 문항 지문의 수준. 교과서·모의고사 원문이 잡혔으면 원문 전체로 잰다(발췌 30낱말로는 렉사일이 안 나온다, 2026-11-25)
+        const full = textbook?.text || mock?.text || "";
+        const m = measureText(full.trim() ? full : String(it.passage_excerpt ?? ""));
         return {
           passage_sentence_words: m.wordCount > 0 ? m.sentenceWords : null,
           lexile: m.lexile,

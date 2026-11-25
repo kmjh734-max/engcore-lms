@@ -1350,6 +1350,40 @@ export function ExamReportView({
                                   난이도 근거: {i.difficulty_reason}
                                 </span>
                               ) : null}
+                              {/* 문항을 어떻게 냈는지(2026-11-25) — 동형모의고사가 이대로 따라 만든다 */}
+                              {i.answer_style ? (
+                                <span className="block text-[10px]" style={{ color: NAVY }}>
+                                  정답 꼴:{" "}
+                                  {i.answer_style === "verbatim" ? "본문 표현 그대로" : i.answer_style === "paraphrase" ? "바꿔 말하기(패러프레이징)" : "일부만 본문 표현"}
+                                </span>
+                              ) : null}
+                              {i.passage_change ? (
+                                <span className="block text-[10px]" style={{ color: SOFT }}>
+                                  지문 변형:{" "}
+                                  {i.passage_change.startsWith("none")
+                                    ? "원문 그대로"
+                                    : i.passage_change.startsWith("heavy")
+                                      ? `바꿔 씀 — ${i.passage_change.replace(/^heavy:?\s*/, "")}`
+                                      : `조금 바꿈 — ${i.passage_change.replace(/^light:?\s*/, "")}`}
+                                </span>
+                              ) : null}
+                              {i.choice_avg_words || i.vocab_level || i.level_reason ? (
+                                <span className="block text-[10px]" style={{ color: SOFT }}>
+                                  보기:{" "}
+                                  {[
+                                    i.choice_avg_words ? `평균 ${i.choice_avg_words}낱말` : "",
+                                    i.vocab_level ?? "",
+                                    i.level_reason ?? "",
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" · ")}
+                                </span>
+                              ) : null}
+                              {i.distractor_method ? (
+                                <span className="block text-[10px]" style={{ color: SOFT }}>
+                                  오답: {i.distractor_method}
+                                </span>
+                              ) : null}
                               {i.source_kind === "sub_material" ? (
                                 <span className="block text-[10px] font-semibold text-purple-700">
                                   부교재: {i.source_label || "부교재"}

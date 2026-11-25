@@ -17,6 +17,12 @@ export type MockSlot = BlueprintSlot & {
   substituted: boolean;
   /** 같은 지문 묶음 번호 */
   group: number;
+  /** 원래 시험지가 이 문항 지문을 바꿔 써서 냈는가(원문 대조) — 「지문 바꿔 쓰기」 기본값을 정한다 */
+  passageRewritten?: boolean;
+  /** 원래 시험지 이 문항 지문이 교과서였는지 모의고사·외부였는지 — 지문 배정 비율을 맞춘다 */
+  sourceKind?: "textbook" | "mock" | null;
+  /** 원래 문항 정답이 본문 그대로/바꿔 말함 — 설계도 화면에 보인다 */
+  answerStyle?: "verbatim" | "paraphrase" | "partial" | null;
 };
 
 type Pick = { key: string; substituted?: boolean };
@@ -173,7 +179,71 @@ const passageHead = (s: string | null) =>
     .slice(0, 8)
     .join(" ");
 
-export function buildMockSlots(items: ExamItemRow[]): { slots: MockSlot[]; groupCount: number } {
+/**
+ * 원래 시험지 그 번호 문항을 「어떻게 냈는지」 — 만드는 모델에게 그 번호에만 넘긴다.
+ *
+ * 선생님 지적(2026-11-25): 「유형과 개수만 맞추면 안 돼. 하나하나 기출을 분석해서 제대로 해야 해」.
+ * 발곡고 빈칸 3문항은 하나가 본문 그대로, 둘이 바꿔 말하기였는데 우리는 전부 바꿔 말하기로 냈다.
+ * 보기 길이·어휘·오답 만드는 법·지문 변형·난이도 근거까지 문항마다 넘긴다.
+ * 예전 분석(값 없음)은 아무것도 넘기지 않는다 — 지어내지 않는다.
+ */
+export function schoolItemNote(it: ExamItemRow, opts: { passageRewrite?: boolean } = {}): string {
+  const lines: string[] = [];
+  if (it.stem?.trim()) lines.push(`- 원래 발문: ${it.stem.trim().slice(0, 160)}`);
+  if (it.answer_style === "verbatim") {
+    lines.push(
+      "- 정답 꼴: 이 학교는 이 문항 정답을 **지문 속 표현 그대로** 냈다. 정답 선지는 비운 자리의 원문 어구를 그대로 쓴다(바꿔 말하지 않는다). 이 줄이 위의 「바꿔 말하라(reword/paraphrase)」 규칙보다 먼저다."
+    );
+  } else if (it.answer_style === "paraphrase") {
+    lines.push("- 정답 꼴: 이 학교는 이 문항 정답을 지문 표현을 **바꿔 말해** 냈다. 원문 어구를 그대로 옮기지 않는다.");
+  } else if (it.answer_style === "partial") {
+    lines.push("- 정답 꼴: 이 학교는 이 문항 정답에 지문 낱말을 일부만 살리고 나머지는 바꿔 말했다.");
+  }
+  const choice: string[] = [];
+  if (it.choice_lang === "en") choice.push("영어");
+  else if (it.choice_lang === "ko") choice.push("한글");
+  else if (it.choice_lang === "mixed") choice.push("영어·한글 섞임");
+  if (typeof it.choice_avg_words === "number" && it.choice_avg_words > 0) choice.push(`평균 ${it.choice_avg_words}낱말(±3 안으로 맞춘다)`);
+  if (it.vocab_level?.trim()) choice.push(`어휘 수준 ${it.vocab_level.trim()}`);
+  if (choice.length) lines.push(`- 선택지: ${choice.join(", ")}`);
+  if (it.level_reason?.trim()) lines.push(`- 선택지 난이도: ${it.level_reason.trim().slice(0, 200)}`);
+  if (it.distractor_method?.trim()) lines.push(`- 오답 만드는 법: ${it.distractor_method.trim().slice(0, 120)}`);
+  if (it.passage_change?.trim()) {
+    const pc = it.passage_change.trim();
+    lines.push(
+      `- 지문 변형: ${
+        pc.startsWith("none")
+          ? "원문 그대로 냈다(문항에 필요한 표시 말고는 지문을 바꾸지 않는다)"
+          : pc.startsWith("heavy")
+            ? `이 학교는 지문을 바꿔 써서 냈다(${pc.replace(/^heavy:?\s*/, "").slice(0, 140)}).${
+                opts.passageRewrite ? " 지문(passageModified)도 위 바꿔 쓰기 규칙 안에서 같은 정도로 바꿔 쓴다 — 뜻·흐름·정답 근거는 지킨다." : ""
+              }`
+            : `이 학교는 지문을 조금 바꿔 냈다(${pc.replace(/^light:?\s*/, "").slice(0, 140)}).${
+                opts.passageRewrite ? " 지문 낱말 몇 개를 같은 뜻 다른 말로 바꾼다." : ""
+              }`
+      }`
+    );
+  }
+  if (it.difficulty_reason?.trim()) lines.push(`- 난이도(${it.level}): ${it.difficulty_reason.trim().slice(0, 200)} — 이보다 쉽게 만들지 않는다.`);
+  // 발문·난이도만 있는 예전 분석은 넘기지 않는다(유형 규칙이 이미 다룬다)
+  const hasStyle = it.answer_style || it.choice_lang || it.choice_avg_words || it.level_reason || it.distractor_method || it.passage_change;
+  if (!hasStyle) return "";
+  return `이 문항은 원래 시험지 ${it.item_no}번을 따라 만든다. 그 문항을 이렇게 냈다 — 유형 규칙은 그대로 지키고, 아래와 같게 만든다.\n${lines.join("\n")}`;
+}
+
+/** 원래 문항 지문의 갈래: 선생님이 정한 것 먼저, 아니면 대조 결과 */
+export function itemSourceKind(it: ExamItemRow): "textbook" | "mock" | null {
+  if (it.source_kind === "textbook") return "textbook";
+  if (it.source_kind === "mock" || it.source_kind === "outside") return "mock";
+  if (it.matched_textbook_id) return "textbook";
+  if (it.matched_mock_id) return "mock";
+  return null;
+}
+
+export function buildMockSlots(
+  items: ExamItemRow[],
+  opts: { passageRewrite?: boolean } = {}
+): { slots: MockSlot[]; groupCount: number } {
   let group = -1;
   let lastHead = "__none__";
   const slots = items.map((it) => {
@@ -194,6 +264,10 @@ export function buildMockSlots(items: ExamItemRow[]): { slots: MockSlot[]; group
       typeLabel: typeNameFromKey(pick.key, it.is_subjective).name,
       substituted: pick.substituted,
       group,
+      schoolNote: schoolItemNote(it, opts) || undefined,
+      passageRewritten: String(it.passage_change ?? "").startsWith("heavy"),
+      sourceKind: itemSourceKind(it),
+      answerStyle: it.answer_style ?? null,
     } satisfies MockSlot;
   });
   return { slots, groupCount: group + 1 };

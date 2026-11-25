@@ -558,7 +558,7 @@ type WorkItem = {
    */
   copyIndex?: number;
   /** 설계도(동형모의고사) 칸 */
-  slot?: { index: number; itemNo: string; points: number | null; level: TargetLevel };
+  slot?: { index: number; itemNo: string; points: number | null; level: TargetLevel; schoolNote?: string };
   /** 1지문 다문항: 세트 안 차례(0부터)와 이 지문 세트의 첫 시험지 차례 */
   setPos?: number;
   setBase?: number;
@@ -1221,7 +1221,7 @@ export async function runGenerationJob(
           label: `${b.no}번 · ${option.label}`,
           diversitySlot: { index: 0, total: 0, label: option.label },
           typeTurn: 0,
-          slot: { index, itemNo: b.no, points: b.points ?? null, level: b.level },
+          slot: { index, itemNo: b.no, points: b.points ?? null, level: b.level, schoolNote: b.schoolNote },
         });
       });
     }
@@ -1482,6 +1482,8 @@ export async function runGenerationJob(
       targetLevel: item.slot?.level ?? null,
       paraphraseGrammarVocab: config.paraphraseGrammarVocab === true,
       levelBrief: config.levelBrief,
+      // 원래 시험지 그 번호를 어떻게 냈는지(선생님 2026-11-25)
+      schoolItemNote: item.slot?.schoolNote,
       grammarScope: config.grammarScope,
       grammarWritingMode: config.grammarWritingMode,
       wordOrderMode: config.wordOrderMode ?? "passage",

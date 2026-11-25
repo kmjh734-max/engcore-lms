@@ -93,6 +93,8 @@ export interface BlueprintSlot {
   optionKey: string;
   level: "상" | "중" | "하";
   points?: number | null;
+  /** 원래 시험지 그 번호 문항을 어떻게 냈는지(정답 꼴·보기 길이·어휘·오답·지문 변형). 만들 때 그대로 따른다 */
+  schoolNote?: string;
 }
 
 export interface GenerationRequestConfig {

@@ -52,6 +52,20 @@ export type ExamItemRow = {
   /** 점수가 갈린 문항(변별력 문항)으로 직접 지정되었는지 */
   is_decisive?: boolean;
   edited: boolean;
+  /*
+   * 문항마다 「어떻게 냈는지」(선생님 2026-11-25, 마이그레이션 210). 예전 분석에는 없다(null).
+   * 동형모의고사가 그 번호 문항에 그대로 넘긴다 — blueprint.ts schoolItemNote.
+   */
+  /** 빈칸·요약 정답이 지문 그대로(verbatim)·바꿔 말함(paraphrase)·일부만 같음(partial) */
+  answer_style?: "verbatim" | "paraphrase" | "partial" | null;
+  choice_lang?: "en" | "ko" | "mixed" | null;
+  choice_avg_words?: number | null;
+  /** 선택지 어휘 수준 한 마디 */
+  vocab_level?: string | null;
+  /** 선택지 구문·추상도·오답 매력도 한 문장 */
+  level_reason?: string | null;
+  distractor_method?: string | null;
+  passage_change?: string | null;
 };
 
 export type ExamAnalysisRow = {

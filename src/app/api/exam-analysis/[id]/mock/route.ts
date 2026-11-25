@@ -83,7 +83,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   if (!data || data.items.length === 0) {
     return NextResponse.json({ ok: false, message: "분석한 문항이 없어요." }, { status: 400 });
   }
-  const { slots, groupCount } = buildMockSlots(data.items);
+  const { slots, groupCount } = buildMockSlots(data.items, { passageRewrite: body.paraphraseGrammarVocab === true });
   const firstRound = (await countExamMocks(id, profile.academy_id)) + 1;
   const rounds = Math.min(10, Math.max(1, Math.floor(Number(body.rounds) || 1)));
   // 문장 삽입·무관한 문장은 6문장 이상 지문이 있어야 만들 수 있다. 짧으면 긴 지문으로 옮기고,
@@ -126,7 +126,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         if (alt >= 0) passageIndex = alt;
         else optionKey = `order:na:${level === "상" ? "high" : "low"}:순서추론`;
       }
-      return { no: s.no, passageIndex, optionKey, level, points: s.points ?? null };
+      // 원래 문항을 어떻게 냈는지는 유형을 그대로 둘 때만 넘긴다(선생님이 유형을 바꾸면 맞지 않는다)
+      const schoolNote = optionKey === s.optionKey ? s.schoolNote : undefined;
+      return { no: s.no, passageIndex, optionKey, level, points: s.points ?? null, ...(schoolNote ? { schoolNote } : {}) };
     });
   }
 

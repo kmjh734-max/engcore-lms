@@ -218,7 +218,7 @@ export async function matchTextbookPassages(
   admin: SupabaseClient,
   academyId: string,
   excerpts: { key: string; excerpt: string | null }[]
-): Promise<Map<string, { textbookId: string; label: string }>> {
+): Promise<Map<string, { textbookId: string; label: string; how: "text" | "paraphrase"; text: string }>> {
   if (!excerpts.some((e) => e.excerpt && words(e.excerpt).length >= 8)) return new Map();
   const ownerId = await resolveTextbookPassageAcademyId(admin, academyId);
   const rows: {
@@ -243,8 +243,10 @@ export async function matchTextbookPassages(
     label: `${m.publisher} ${m.subject} ${m.lesson} ${m.part}`,
     set: new Set(shingles(words(String(m.english_text ?? "")))),
   }));
-  const out = new Map<string, { textbookId: string; label: string }>();
-  for (const [k, v] of bestMatches(pool, excerpts)) out.set(k, { textbookId: v.id, label: v.label });
+  const textOf = new Map(rows.map((m) => [m.id, String(m.english_text ?? "")]));
+  const out = new Map<string, { textbookId: string; label: string; how: "text" | "paraphrase"; text: string }>();
+  for (const [k, v] of bestMatches(pool, excerpts))
+    out.set(k, { textbookId: v.id, label: v.label, how: "text", text: textOf.get(v.id) ?? "" });
 
   /*
    * 글자로 못 잡은 것은 고유명사로 한 번 더 본다 — 학교가 지문을 바꿔 써서 내는
@@ -263,7 +265,7 @@ export async function matchTextbookPassages(
     for (const p of paraPool) for (const w of p.rare) rareWords.add(w);
     for (const e of left) {
       const hit = bestParaphraseMatch(paraPool, e.excerpt!, rareWords);
-      if (hit) out.set(e.key, { textbookId: hit.id, label: hit.label });
+      if (hit) out.set(e.key, { textbookId: hit.id, label: hit.label, how: "paraphrase", text: textOf.get(hit.id) ?? "" });
     }
   }
   return out;
@@ -273,7 +275,7 @@ export async function matchTextbookPassages(
 export async function matchMockPassages(
   admin: SupabaseClient,
   excerpts: { key: string; excerpt: string | null }[]
-): Promise<Map<string, { mockId: string; label: string }>> {
+): Promise<Map<string, { mockId: string; label: string; how: "text" | "paraphrase"; text: string }>> {
   if (!excerpts.some((e) => e.excerpt && words(e.excerpt).length >= 8)) return new Map();
   const rows = await loadAllMockPassages(admin);
   const pool = rows.map((m) => ({
@@ -281,8 +283,10 @@ export async function matchMockPassages(
     label: mockPassageShortLabel(m),
     set: new Set(shingles(words(m.english_text))),
   }));
-  const out = new Map<string, { mockId: string; label: string }>();
-  for (const [k, v] of bestMatches(pool, excerpts)) out.set(k, { mockId: v.id, label: v.label });
+  const textOf = new Map(rows.map((m) => [m.id, String(m.english_text ?? "")]));
+  const out = new Map<string, { mockId: string; label: string; how: "text" | "paraphrase"; text: string }>();
+  for (const [k, v] of bestMatches(pool, excerpts))
+    out.set(k, { mockId: v.id, label: v.label, how: "text", text: textOf.get(v.id) ?? "" });
 
   /*
    * 글자로 못 잡은 것은 드문 낱말로 한 번 더 본다 — 교과서와 같은 방식이다.
@@ -304,7 +308,7 @@ export async function matchMockPassages(
     for (const p of paraPool) for (const w of p.rare) rareWords.add(w);
     for (const e of left) {
       const hit = bestParaphraseMatch(paraPool, e.excerpt!, rareWords);
-      if (hit) out.set(e.key, { mockId: hit.id, label: hit.label });
+      if (hit) out.set(e.key, { mockId: hit.id, label: hit.label, how: "paraphrase", text: textOf.get(hit.id) ?? "" });
     }
   }
   return out;

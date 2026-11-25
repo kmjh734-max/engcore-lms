@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/layout/NavIcon";
 import type { MockSlot } from "@/lib/exam-analysis/blueprint";
+import { passageKindFromLabel } from "@/lib/exam-analysis/passage-kind";
 import { billingFeatureFor } from "@/lib/question-generator/billing-buckets";
 import { QUESTION_TYPE_GROUPS } from "@/lib/question-generator/question-types";
 import type { MaterialPassage } from "@/lib/exam-analysis/load";
@@ -93,7 +94,12 @@ export function ExamMockBuilder({
    * 설정을 넣어 달라. 지금까지는 난이도가 「내신」으로 박혀 있었다.
    */
   const [overallDifficulty, setOverallDifficulty] = useState("내신");
-  const [paraphraseGV, setParaphraseGV] = useState(false);
+  /*
+   * 원래 시험지가 지문을 바꿔 써서 냈으면 바꿔 쓰기를 켠 채로 연다 — 선생님 지적(2026-11-25)
+   * 「패러프레이징한 게 있으면 동형 만들 때도 그렇게 해야 해」. 셋에 하나 이상이면 켠다.
+   */
+  const rewrittenCount = slots.filter((s) => s.passageRewritten).length;
+  const [paraphraseGV, setParaphraseGV] = useState(rewrittenCount > 0 && rewrittenCount * 3 >= slots.length);
   const [wordOrderMode, setWordOrderMode] = useState<"passage" | "paraphrase">("passage");
   /** 순서 배열 지문 — 문항 난이도대로 / 본문 그대로 / 주어진 글만 바꿔 쓰기 / 지문 일부만(Jayden 선생님 제안 2026-11-24) */
   const [orderMode, setOrderMode] = useState<"level" | "original" | "paraphrase" | "excerpt">("level");
@@ -214,11 +220,56 @@ export function ExamMockBuilder({
     for (const s of slots) out[s.group]!.push(s);
     return out;
   }, [slots, groupCount, perSlot]);
+  /*
+   * 교과서·모의고사 지문 비율을 원래 시험지에 맞춘다 — 선생님 지적(2026-11-25)
+   * 「교과서·모의고사 지문의 비율도 맞춰서 실제 동형도 그렇게 맞춰야 해」.
+   * 원래 문항이 모의고사(외부) 지문이면 고른 모의고사 지문을, 교과서면 교과서 지문을 먼저 붙인다.
+   * 갈래를 모르는 묶음·지문은 예전처럼 차례로 붙인다.
+   */
+  const chosenKinds = useMemo(
+    () => chosen.map((c) => passageKindFromLabel(c.kind === "material" ? c.label : c.title)),
+    [chosen]
+  );
+  const groupKinds = groups.map((gs) => {
+    const t = gs.filter((x) => x.sourceKind === "textbook").length;
+    const m = gs.filter((x) => x.sourceKind === "mock").length;
+    return t > m ? "textbook" : m > t ? "mock" : null;
+  });
+  const defaultAssignment = useMemo(() => {
+    const n = chosen.length;
+    if (!n) return groups.map(() => -1);
+    const pools = {
+      textbook: chosen.map((_, i) => i).filter((i) => chosenKinds[i] === "textbook"),
+      mock: chosen.map((_, i) => i).filter((i) => chosenKinds[i] === "mock"),
+    };
+    const turn = { textbook: round - 1, mock: round - 1 };
+    return groups.map((_, g) => {
+      const k = groupKinds[g];
+      const pool = k ? pools[k] : [];
+      // 같은 갈래 지문이 있으면 그 안에서 돌려 쓴다. 없으면 예전처럼 차례로
+      if (pool.length) return pool[turn[k!]++ % pool.length]!;
+      return (g + round - 1) % n;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chosen.length, chosenKinds, groups, round, groupKinds.join(",")]);
   const assignment = groups.map((_, g) => {
     const o = override[g];
     // 회차마다 한 칸씩 밀어 같은 지문이 같은 번호에 다시 오지 않게 한다
-    return chosen.length ? (o !== undefined && o < chosen.length ? o : (g + round - 1) % chosen.length) : -1;
+    return chosen.length ? (o !== undefined && o < chosen.length ? o : defaultAssignment[g]!) : -1;
   });
+  /** 원래 시험지와 지금 배정의 교과서·모의 문항 수 */
+  const sourceMix = useMemo(() => {
+    const orig = { textbook: 0, mock: 0 };
+    const now = { textbook: 0, mock: 0 };
+    groups.forEach((gs, g) => {
+      for (const x of gs) {
+        if (x.sourceKind) orig[x.sourceKind]++;
+        const k = chosenKinds[assignment[g] ?? -1];
+        if (k) now[k]++;
+      }
+    });
+    return { orig, now };
+  }, [groups, chosenKinds, assignment]);
 
   /*
    * 최다빈 선생님 요청(2026-09-29):
@@ -400,6 +451,11 @@ export function ExamMockBuilder({
                 <b className="block text-slate-800">지문 바꿔 쓰기 (어법·어휘)</b>
                 꺼 두면 지문이 원문 그대로 나오고 밑줄 자리만 바뀝니다. 켜면 밑줄 자리를
                 만들려고 문장도 바꿔 씁니다.
+                {rewrittenCount > 0 ? (
+                  <span className="mt-0.5 block text-brand-700">
+                    원래 시험지는 {slots.length}문항 중 {rewrittenCount}문항의 지문을 바꿔 써서 냈습니다(원문 대조).
+                  </span>
+                ) : null}
               </span>
             </label>
             {slots.some((s) => (slotEdit[s.no]?.optionKey ?? s.optionKey).startsWith("order:")) ? (
@@ -594,6 +650,13 @@ export function ExamMockBuilder({
                 </span>
               ) : null}
             </p>
+            {sourceMix.orig.textbook + sourceMix.orig.mock > 0 ? (
+              <p className="mt-0.5 text-[11px] text-slate-500">
+                원래 시험지 교과서 {sourceMix.orig.textbook} · 모의고사·외부 {sourceMix.orig.mock}문항 → 지금 배정 교과서{" "}
+                {sourceMix.now.textbook} · 모의고사 {sourceMix.now.mock}문항
+                {sourceMix.orig.mock > 0 && sourceMix.now.mock === 0 ? " (모의고사 지문을 고르면 그 번호에 붙습니다)" : ""}
+              </p>
+            ) : null}
             {chosen.length ? (
               <ol className="mt-1.5 space-y-1">
                 {chosen.map((c, i) => (
@@ -720,6 +783,11 @@ export function ExamMockBuilder({
                       <span className="shrink-0 tabular-nums text-slate-500">{s.points ?? "–"}점</span>
                       <span className={`w-full pl-11 text-[11px] ${s.substituted ? "text-amber-700" : "text-slate-400"}`}>
                         원래 시험지: {s.sourceType}
+                        {s.sourceKind ? ` · ${s.sourceKind === "textbook" ? "교과서" : "모의고사·외부"} 지문` : ""}
+                        {s.answerStyle
+                          ? ` · 정답 ${s.answerStyle === "verbatim" ? "본문 그대로" : s.answerStyle === "paraphrase" ? "바꿔 말하기" : "일부 본문 표현"}`
+                          : ""}
+                        {s.passageRewritten ? " · 지문 바꿔 씀" : ""}
                         {s.substituted ? " → 똑같은 유형이 없어 가장 가까운 유형으로 만들어요" : ""}
                       </span>
                     </li>
