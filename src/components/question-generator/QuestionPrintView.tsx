@@ -39,6 +39,7 @@ import {
 } from "@/lib/question-generator/text-utils";
 import { isSetMarkKey } from "@/lib/question-generator/passage-set";
 import { mergeMarkedPassages } from "@/lib/question-generator/passage-set-merge";
+import { mockSharedRuns } from "@/lib/question-generator/mock-shared-runs";
 import "./question-print-styles.css";
 import "@/components/lesson-materials/material-design.css";
 import { MaterialDesignPicker } from "@/components/lesson-materials/MaterialDesignPicker";
@@ -1330,6 +1331,32 @@ export function QuestionPrintView({
      */
     const spread = spreadPassages && !examMeta;
     /*
+     * 동형모의고사 학교 양식: 같은 지문의 어법·빈칸 같은 문항은 표시를 겹친 지문 하나 아래에 「[n~m] 다음 글을 읽고…」로 묶는다.
+     */
+    if (examMeta && mode === "exam" && printLayout === "mixed") {
+      const runs = mockSharedRuns(shown);
+      if (runs.length) {
+        const items: DisplayItem[] = [];
+        let r = 0;
+        for (let i = 0; i < shown.length; i++) {
+          const run = runs[r];
+          if (run && i === run.start) {
+            const nos = shown.slice(run.start, run.end).map((q, k) => qNo(q, run.start + k + 1));
+            items.push({
+              kind: "set",
+              id: `mockset:${shown[i]!.id}`,
+              head: `[${nos[0]}~${nos[nos.length - 1]}] 다음 글을 읽고, 물음에 답하시오.`,
+              passage: run.passage,
+            });
+          }
+          const inRun = run && i >= run.start && i < run.end;
+          items.push({ kind: "q", id: shown[i]!.id, q: shown[i]!, num: i + 1, ...(inRun ? { hidePassage: true } : {}) });
+          if (run && i === run.end - 1) r++;
+        }
+        return items;
+      }
+    }
+    /*
      * 지문 순서로 한 바퀴: 지문을 넣은 순서대로 한 문항씩 돌고, 다시 첫 지문으로 돌아온다.
      * (선생님 요청 2026-09-20: "전체 세트가 순서대로 한 바퀴 돌고 다시 18번 문제부터 쭉")
      */
@@ -1715,12 +1742,27 @@ export function QuestionPrintView({
      * 지문을 한 번만 찍는다(선생님 2026-11-25 — 같은 지문 문항이 다른 문항 지문에서 답을 보여 주던 문제를
      * 한 지문에 표시를 모아 풀기로 했다). 지문이 다르면 예전처럼 문항마다 찍는다.
      */
+    // 같은 지문의 표시형 문항(어법·빈칸 …)은 표시를 겹친 지문 하나로 — 웹 인쇄와 같은 묶음
+    const qsForRuns = displayItems.flatMap((it) => (it.kind === "q" ? [it.q] : []));
+    const covered = new Set<number>();
+    for (const run of mockSharedRuns(qsForRuns)) {
+      const nums = items.slice(run.start, run.end).map((x) => x.label.replace(/[.[\]]/g, "").trim());
+      items[run.start] = { ...items[run.start]!, passage: run.passage, groupHead: `[${nums[0]}~${nums[nums.length - 1]}] 다음 글을 읽고, 물음에 답하시오.` };
+      for (let k = run.start; k < run.end; k++) {
+        covered.add(k);
+        if (k > run.start) items[k] = { ...items[k]!, passage: undefined };
+      }
+    }
     const normP = (t?: string) => (t ?? "").replace(/\s+/g, " ").trim();
     for (let i = 0; i < items.length; ) {
+      if (covered.has(i)) {
+        i++;
+        continue;
+      }
       const pass = normP(items[i]!.passage);
       let j = i + 1;
       // 삽입 문항도 묶음에 든다 — 주어진 문장 상자는 그 문항 발문 아래에 찍힌다(4차 2026-11-26)
-      while (pass && j < items.length && normP(items[j]!.passage) === pass) j++;
+      while (pass && j < items.length && !covered.has(j) && normP(items[j]!.passage) === pass) j++;
       if (j - i >= 2) {
         const nums = items.slice(i, j).map((x) => x.label.replace(/[.[\]]/g, "").trim());
         items[i] = { ...items[i]!, groupHead: `[${nums[0]}~${nums[nums.length - 1]}] 다음 글을 읽고, 물음에 답하시오.` };

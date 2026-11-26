@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/layout/NavIcon";
-import type { MockSlot } from "@/lib/exam-analysis/blueprint";
+import { applySlotEdits, type MockSlot, type MockSlotEdit } from "@/lib/exam-analysis/blueprint";
 import { passageKindFromLabel } from "@/lib/exam-analysis/passage-kind";
 import { billingFeatureFor } from "@/lib/question-generator/billing-buckets";
 import { QUESTION_TYPE_GROUPS } from "@/lib/question-generator/question-types";
@@ -188,12 +188,15 @@ export function ExamMockBuilder({
     );
   }, []);
   const typeFamilies = useMemo(() => [...new Set(typeChoices.map((t) => t.family))], [typeChoices]);
-  const [slotEdit, setSlotEdit] = useState<
-    Record<string, { optionKey?: string; level?: "상" | "중" | "하" }>
-  >({});
+  const [slotEdit, setSlotEdit] = useState<Record<string, MockSlotEdit>>({});
   const editOf = (no: string) => slotEdit[no] ?? {};
-  const setEdit = (no: string, patch: { optionKey?: string; level?: "상" | "중" | "하" }) =>
-    setSlotEdit((p) => ({ ...p, [no]: { ...p[no], ...patch } }));
+  const setEdit = (no: string, patch: MockSlotEdit) => setSlotEdit((p) => ({ ...p, [no]: { ...p[no], ...patch } }));
+  /** 바꾼 유형·배점을 입힌 번호·배점 — 서버와 같은 함수(객관식↔서술형이 바뀌면 번호를 다시 매김) */
+  const editedSlots = useMemo(() => {
+    const valid = new Set(typeChoices.map((t) => t.key));
+    const rows = applySlotEdits(slots, slotEdit, (k) => valid.has(k));
+    return new Map(slots.map((s, i) => [s.no, rows[i]!]));
+  }, [slots, slotEdit, typeChoices]);
 
   /** 값 받는 갈래별 문항 수. 바꿔 둔 유형이 있으면 그것으로 센다(서버와 같은 잣대) */
   const mockBilling = useMemo(() => {
@@ -393,7 +396,7 @@ export function ExamMockBuilder({
     }
   }
 
-  const total = slots.reduce((s, x) => s + (x.points ?? 0), 0);
+  const total = slots.reduce((s, x) => s + (editedSlots.get(x.no)?.points ?? x.points ?? 0), 0);
   const substituted = slots.filter((s) => s.substituted).length;
 
   return (
@@ -714,6 +717,11 @@ export function ExamMockBuilder({
               문장 삽입·무관한 문장은 6문장 이상인 지문에서 만들어요. 고른 지문이 모두 짧으면 같은 난이도의 순서 배열로 만들어요.
             </p>
           ) : null}
+          {[...editedSlots.values()].some((r) => r.kindChanged) ? (
+            <p className="mt-1 text-xs text-slate-500">
+              객관식↔서술형을 바꾼 문항이 있어 번호를 다시 매겼어요(객관식 1, 2 … · 서술형 따로). 배점은 칸에서 고칠 수 있어요.
+            </p>
+          ) : null}
           <ul className="mt-3 space-y-2">
             {groups.map((g, gi) => (
               <li key={gi} className="rounded-lg border border-slate-200 p-2.5">
@@ -737,7 +745,9 @@ export function ExamMockBuilder({
                 <ul className="mt-1.5 space-y-1">
                   {g.map((s) => (
                     <li key={s.no} className="flex flex-wrap items-center gap-1.5 text-[13px]">
-                      <b className="w-10 shrink-0">{s.no}</b>
+                      <b className="w-10 shrink-0" title={editedSlots.get(s.no)?.no !== s.no ? `원래 시험지 ${s.no}번` : undefined}>
+                        {editedSlots.get(s.no)?.no ?? s.no}
+                      </b>
                       <select
                         aria-label={`${s.no}번 난이도`}
                         className={`h-7 shrink-0 rounded border px-1 text-[11px] font-bold ${LV[editOf(s.no).level ?? s.level]}`}
@@ -780,7 +790,24 @@ export function ExamMockBuilder({
                           </optgroup>
                         ))}
                       </select>
-                      <span className="shrink-0 tabular-nums text-slate-500">{s.points ?? "–"}점</span>
+                      {/* 배점 — 선생님이 고칠 수 있게(윌링 2026-11-26 「배점 수정도 가능하게」) */}
+                      <label className="flex shrink-0 items-center gap-0.5 text-slate-500">
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="0.1"
+                          min="0"
+                          max="100"
+                          aria-label={`${s.no}번 배점`}
+                          className="h-7 w-14 rounded border border-slate-300 px-1 text-right text-[12px] tabular-nums"
+                          value={editOf(s.no).points ?? editedSlots.get(s.no)?.points ?? ""}
+                          onChange={(e) => {
+                            const v = e.target.value.trim();
+                            setEdit(s.no, { points: v === "" ? undefined : Number(v) });
+                          }}
+                        />
+                        점
+                      </label>
                       <span className={`w-full pl-11 text-[11px] ${s.substituted ? "text-amber-700" : "text-slate-400"}`}>
                         원래 시험지: {s.sourceType}
                         {s.sourceKind ? ` · ${s.sourceKind === "textbook" ? "교과서" : "모의고사·외부"} 지문` : ""}

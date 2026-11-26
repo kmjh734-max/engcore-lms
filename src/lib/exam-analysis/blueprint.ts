@@ -272,3 +272,52 @@ export function buildMockSlots(
   });
   return { slots, groupCount: group + 1 };
 }
+
+/** 서답형(서술형) 유형인가 — 인쇄(QuestionPrintView)와 같은 잣대 */
+export const isSubjectiveOptionKey = (key: string | null | undefined) =>
+  /^(writing|summary_short):/.test(String(key ?? "")) || /:(어법오류수정\d|어법문장오류수정)$/.test(String(key ?? ""));
+
+export type MockSlotEdit = { optionKey?: string; level?: "상" | "중" | "하"; points?: number | null };
+
+/**
+ * 선생님이 바꾼 유형·난이도·배점을 설계도에 입힌다 — 만들기 화면과 서버가 같은 함수를 쓴다.
+ *
+ * 윌링 피드백(2026-11-26): 「서술형을 객관식으로 바꿔도 주관식으로 만들어짐」「객관식으로 바꿨는데 유형은
+ * 서술형 유지가 되어 배점이 6점」. 문항은 객관식으로 만들어졌지만 번호가 「서술 4」, 배점이 원래 서술형 6점으로
+ * 남아 시험지에서 서술형처럼 보였다.
+ *  - 객관식↔서술형이 바뀐 칸이 있으면 번호를 차례대로 다시 매긴다(객관식 1, 2 … / 서술 1, 2 …).
+ *  - 배점은 선생님이 적은 값이 먼저, 갈래가 바뀌었으면 원래 시험지에서 그 갈래 문항의 가운데 배점, 아니면 원래 배점.
+ */
+export function applySlotEdits(
+  slots: { no: string; optionKey: string; level: "상" | "중" | "하"; points?: number | null }[],
+  edits: Record<string, MockSlotEdit> | null | undefined,
+  validKey: (key: string) => boolean = () => true
+): { no: string; optionKey: string; level: "상" | "중" | "하"; points: number | null; kindChanged: boolean }[] {
+  const isNumNo = (no: string) => /^\d+$/.test(no.trim());
+  const subjPrefix = (slots.find((s) => !isNumNo(s.no))?.no.replace(/\d+\s*$/, "") || "서술 ").replace(/\s*$/, " ");
+  const median = (xs: number[]) => {
+    if (!xs.length) return null;
+    const a = [...xs].sort((x, y) => x - y);
+    return a[Math.floor((a.length - 1) / 2)]!;
+  };
+  const origSubj = (s: (typeof slots)[number]) => !isNumNo(s.no) || isSubjectiveOptionKey(s.optionKey);
+  const pts = (subj: boolean) =>
+    median(slots.filter((s) => origSubj(s) === subj && typeof s.points === "number").map((s) => s.points as number));
+  const objPts = pts(false);
+  const subjPts = pts(true);
+  const rows = slots.map((s) => {
+    const e = edits?.[s.no] ?? {};
+    const optionKey = e.optionKey && validKey(e.optionKey) ? e.optionKey : s.optionKey;
+    const subj = isSubjectiveOptionKey(optionKey);
+    const kindChanged = subj !== isSubjectiveOptionKey(s.optionKey);
+    const manual = typeof e.points === "number" && Number.isFinite(e.points) && e.points >= 0 ? Math.round(e.points * 10) / 10 : null;
+    const points = manual ?? (kindChanged ? ((subj ? subjPts : objPts) ?? s.points ?? null) : (s.points ?? null));
+    return { no: s.no, optionKey, level: (e.level ?? s.level) as "상" | "중" | "하", points, kindChanged, subj };
+  });
+  if (rows.some((r) => r.kindChanged)) {
+    let o = 0;
+    let q = 0;
+    for (const r of rows) r.no = r.subj ? `${subjPrefix}${++q}` : String(++o);
+  }
+  return rows.map(({ subj: _s, ...r }) => r);
+}

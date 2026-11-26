@@ -184,8 +184,16 @@ function charPrXml(id: number, c: CharSpec) {
 }
 
 function paraPrXml(id: number, p: ParaSpec) {
+  /*
+   * 한글의 내어쓰기(음수 intent)는 「첫 줄은 왼쪽 여백 자리, 둘째 줄부터 |intent| 만큼 더 안쪽」이다.
+   * 우리는 웹 CSS처럼 left = 둘째 줄 자리, indent = 첫 줄을 당기는 양으로 적어 왔다 — 그래서 문항 번호·①·○가
+   * 모두 |intent| 만큼 오른쪽으로 밀려 찍혔다(윌링 2026-11-26 「한글 다운시 번호가 오른쪽으로 밀려서」).
+   * 내어쓰기면 왼쪽 여백에서 그만큼 빼서 첫 줄이 제자리에 오게 한다.
+   */
+  const indent = p.indent ?? 0;
+  const left = indent < 0 ? Math.max(0, (p.left ?? 0) + indent) : (p.left ?? 0);
   const margin =
-    `<hh:margin><hc:intent value="${p.indent ?? 0}" unit="HWPUNIT"/><hc:left value="${p.left ?? 0}" unit="HWPUNIT"/>` +
+    `<hh:margin><hc:intent value="${indent}" unit="HWPUNIT"/><hc:left value="${left}" unit="HWPUNIT"/>` +
     `<hc:right value="${p.right ?? 0}" unit="HWPUNIT"/><hc:prev value="${p.prev ?? 0}" unit="HWPUNIT"/><hc:next value="${p.next ?? 0}" unit="HWPUNIT"/></hh:margin>` +
     `<hh:lineSpacing type="PERCENT" value="${p.line ?? 150}" unit="HWPUNIT"/>`;
   const off = p.borderOffset ?? 0;

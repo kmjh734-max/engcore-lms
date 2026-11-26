@@ -1771,7 +1771,7 @@ export async function runGenerationJob(
         status: "approved",
         validationScore: redo.payload.validation?.overallScore ?? null,
         errorMessage: null,
-        setSlotIndex: (it.setBase ?? 0) + (it.setPos ?? 0),
+        ...(it.slot ? { slot: it.slot } : { setSlotIndex: (it.setBase ?? 0) + (it.setPos ?? 0) }),
       });
       const { error } = await admin.from("generated_english_questions").update(row).eq("id", it.saved.id);
       if (!error) it.saved = { id: it.saved.id, payload: redo.payload };
@@ -1834,9 +1834,62 @@ export async function runGenerationJob(
       );
     };
 
+    /*
+     * 동형모의고사: 한 지문에 표시형 문항이 둘 이상(어법 ①~⑤ + 빈칸 등)이면 차례로 만들고, 뒤 문항은 앞 문항이
+     * 밑줄·빈칸을 친 문장을 피하게 한다 — 시험지에서 표시를 한 지문에 겹쳐 한 번만 찍을 수 있게
+     * (윌링 2026-11-26 「어법 틀린 유형 + 빈칸 유형으로 한 지문 다문항 출제시 선별이 잘 되는지」).
+     * 따로 만들면 어법 문항 지문에 빈칸 정답 문장이 그대로 보이거나, 같은 문장에 밑줄과 빈칸이 겹쳤다.
+     */
+    const makeMockChain = async (list: typeof work) => {
+      const SPREAD = /(어휘추론|어법추론|어법개수|어휘개수|어법오류수정2|어법오류수정3|어법통문장)$/;
+      const markers = [...list].sort((x, y) => Number(SPREAD.test(x.option.key)) - Number(SPREAD.test(y.option.key)));
+      const original = cleanSourcePassage(list[0]!.passageText);
+      const usedOf = (done: typeof work) =>
+        done.flatMap((d) =>
+          d.saved ? markedSentences(d.saved.payload.passageOriginal || original, d.saved.payload.passageModified ?? "") : []
+        );
+      const avoid = (done: typeof work) => {
+        const used = usedOf(done);
+        if (used.length === 0) return undefined;
+        return [
+          `Another question printed on this same passage already puts a blank or underlines in these sentences. Do NOT put any blank, underline or change in them — choose your spots only in the other sentences, and keep every other word of the passage exactly as it is:`,
+          ...used.map((t) => `- ${t}`),
+        ].join("\n");
+      };
+      const mergedOk = (done: typeof work) => {
+        const saved = done.filter((d) => d.saved);
+        if (saved.length < 2) return true;
+        const base = saved[0]!.saved!.payload.passageOriginal || original;
+        return mergeMarkedPassages(base, saved.map((d) => sharedPassageOf(d.saved!.payload, base))) !== null;
+      };
+      const done: typeof work = [];
+      for (const m of markers) {
+        m.setNote = avoid(done);
+        await makeOne(m);
+        for (let t = 0; t < 2 && m.saved && done.some((d) => d.saved) && !mergedOk([...done, m]) && !abandoned; t++) {
+          await redoSaved(m, `${avoid(done) ?? ""}\nYour previous version touched one of those sentences, so the marks could not share one printed passage.`);
+        }
+        done.push(m);
+      }
+    };
+
     const pool = (async () => {
       await primeCaches();
-      if (setCfg) {
+      if (blueprint && !setCfg) {
+        const markByPassage = new Map<string, typeof work>();
+        for (const it of work) {
+          if (!isSetMarkKey(it.option.key) || /^(order|sentence_insertion|irrelevant_sentence):/.test(it.option.key)) continue;
+          markByPassage.set(it.passageId, [...(markByPassage.get(it.passageId) ?? []), it]);
+        }
+        const chains = [...markByPassage.values()].filter((l) => l.length >= 2);
+        const chained = new Set(chains.flat());
+        type Unit = { chain: typeof work } | { one: (typeof work)[number] };
+        const units: Unit[] = [
+          ...chains.map((chain) => ({ chain })),
+          ...[...firstOfPassage, ...restOfWork].filter((it) => !chained.has(it)).map((one) => ({ one })),
+        ];
+        await runAdaptivePool(units, limit, (u) => ("chain" in u ? makeMockChain(u.chain) : makeOne(u.one)));
+      } else if (setCfg) {
         const byPassage = new Map<string, typeof work>();
         for (const it of work) byPassage.set(it.passageId, [...(byPassage.get(it.passageId) ?? []), it]);
         // 세트 하나가 문항을 둘씩 동시에 부르므로 세트 수는 절반으로

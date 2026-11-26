@@ -3,7 +3,7 @@ import { after, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { loadOwnAnalysis, requireExamStaff } from "@/lib/exam-analysis/access";
-import { buildMockSlots } from "@/lib/exam-analysis/blueprint";
+import { applySlotEdits, buildMockSlots, type MockSlotEdit } from "@/lib/exam-analysis/blueprint";
 import { levelBriefFor } from "@/lib/exam-analysis/reading-level";
 import { countExamMocks, loadExamAnalysis } from "@/lib/exam-analysis/load";
 import { extendShortMaterialPassages, loadAcademyMaterialPassages } from "@/lib/exam-analysis/material-passages";
@@ -44,7 +44,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     orderMode?: "level" | "original" | "paraphrase" | "excerpt";
     grammarWritingMode?: "passage" | "paraphrase";
     /** 문항 번호마다 바꾼 유형·난이도 */
-    slotEdit?: Record<string, { optionKey?: string; level?: "상" | "중" | "하" }>;
+    slotEdit?: Record<string, MockSlotEdit>;
     /** 한 번에 만들 회차 수 (선생님 요청 2026-10-10) */
     rounds?: number;
   };
@@ -106,6 +106,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   const unitOf = (s: (typeof slots)[number], slotIdx: number) => (perSlot || spread ? slotIdx : s.group);
   const unitCount = perSlot || spread ? slots.length : groupCount;
 
+  // 선생님이 바꾼 유형·난이도·배점 — 객관식↔서술형이 바뀌면 번호도 다시 매긴다(화면과 같은 함수)
+  const edited = applySlotEdits(slots, body.slotEdit, (k) => Boolean(findOptionByKey(k)));
   function buildBlueprint(assignment: number[], round: number) {
     return slots.map((s, slotIdx) => {
       const want = assignment[unitOf(s, slotIdx)];
@@ -114,9 +116,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
           ? want!
           : (unitOf(s, slotIdx) + round - 1) % passages.length;
       // 선생님이 그 번호의 유형·난이도를 바꿨으면 그것을 쓴다
-      const edit = body.slotEdit?.[s.no] ?? {};
-      const level = edit.level ?? s.level;
-      let optionKey = edit.optionKey && findOptionByKey(edit.optionKey) ? edit.optionKey : s.optionKey;
+      const e = edited[slotIdx]!;
+      const level = e.level;
+      let optionKey = e.optionKey;
       // 순서 배열을 한 방식으로 고르면 문항 난이도와 상관없이 그 버전으로
       if (optionKey.startsWith("order:") && (body.orderMode === "original" || body.orderMode === "paraphrase")) {
         optionKey = `order:na:${body.orderMode === "original" ? "low" : "high"}:순서추론`;
@@ -128,7 +130,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       }
       // 원래 문항을 어떻게 냈는지는 유형을 그대로 둘 때만 넘긴다(선생님이 유형을 바꾸면 맞지 않는다)
       const schoolNote = optionKey === s.optionKey ? s.schoolNote : undefined;
-      return { no: s.no, passageIndex, optionKey, level, points: s.points ?? null, ...(schoolNote ? { schoolNote } : {}) };
+      return { no: e.no, passageIndex, optionKey, level, points: e.points, ...(schoolNote ? { schoolNote } : {}) };
     });
   }
 
