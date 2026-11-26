@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import QRCode from "qrcode";
+import { findPhrase } from "@/lib/lesson-materials/teacher-notes-shared";
 import { msLectureUrl, msVocabUrl, type MsLectureSlug } from "@/lib/middle-school/qr-url";
 import type { TestBookProjectInput } from "@/lib/lesson-materials/test-book";
 import type { MaterialDesign } from "@/lib/lesson-materials/material-design";
@@ -241,11 +242,11 @@ function markDialogueLine(en: string, keys: string[], tips: Array<{ q: string; n
   type Ev = { at: number; end?: number; kind: "key" | "tip"; no?: number };
   const evs: Ev[] = [];
   for (const k of keys) {
-    const at = en.indexOf(k);
+    const at = findPhrase(en, k);
     if (at >= 0) evs.push({ at, end: at + k.length, kind: "key" });
   }
   for (const t of tips) {
-    const at = en.indexOf(t.q);
+    const at = findPhrase(en, t.q);
     if (at >= 0) evs.push({ at, kind: "tip", no: t.no });
   }
   if (!evs.length) return en;

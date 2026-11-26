@@ -7,7 +7,7 @@ import { usePdfSave } from "@/components/pdf/usePdfSave";
 import { collectPrintPages } from "@/lib/pdf/download-sheets-pdf";
 import type { TestBookProjectInput } from "@/lib/lesson-materials/test-book";
 import type { TeacherNotes, TeacherSpotKind } from "@/lib/lesson-materials/teacher-notes";
-import { isUsableAntonym } from "@/lib/lesson-materials/teacher-notes-shared";
+import { findPhrase, isUsableAntonym } from "@/lib/lesson-materials/teacher-notes-shared";
 import type { ClassGrammarMark } from "@/lib/lesson-materials/test-book-actions";
 import { placeFigures, type LessonFigure } from "@/lib/lesson-materials/lesson-figures";
 import { BlankNoteSheets, TEST_BOOK_CSS, TEST_BOOK_FONTS_HREF, TestBookBrand, partStyle } from "@/components/lesson-materials/test-book/TestBookSheets";
@@ -125,10 +125,7 @@ const RELATIVE_PRONOUN = /^(who|whom|whose|which|that|what|where|when)$/i;
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 function findIn(sentence: string, q: string): number {
-  if (!q) return -1;
-  const i = sentence.indexOf(q);
-  if (i >= 0) return i;
-  return sentence.toLowerCase().indexOf(q.toLowerCase());
+  return findPhrase(sentence, q);
 }
 
 /**

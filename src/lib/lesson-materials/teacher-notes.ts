@@ -1,6 +1,6 @@
 import { openAiFetch } from "@/lib/ai-usage/openai-fetch";
 import { engcoreLevelOf } from "@/lib/vocab/engcore-lemma";
-import { isUsableAntonym } from "@/lib/lesson-materials/teacher-notes-shared";
+import { findPhrase, isUsableAntonym } from "@/lib/lesson-materials/teacher-notes-shared";
 export { isUsableAntonym };
 
 /**
@@ -129,7 +129,7 @@ export function sanitizeTeacherNotes(
     .map((v) => ({ sentence: Number(o(v).sentence), q: str(o(v).q), kind: str(o(v).kind) as TeacherSpotKind, note: str(o(v).note) }))
     .map((s) => {
       // 문장 번호를 1부터 센 답도 있다 — 그 문장에 없고 다음 칸 문장에 있으면 옮긴다
-      const has = (i: number) => i >= 0 && i < sentences.length && norm(sentences[i]).includes(norm(s.q));
+      const has = (i: number) => i >= 0 && i < sentences.length && findPhrase(sentences[i]!, s.q) >= 0;
       if (!has(s.sentence) && has(s.sentence - 1)) return { ...s, sentence: s.sentence - 1 };
       if (!has(s.sentence)) {
         const found = sentences.findIndex((_, i) => has(i));
@@ -145,7 +145,7 @@ export function sanitizeTeacherNotes(
         s.sentence >= 0 &&
         s.sentence < sentences.length &&
         s.q.length > 0 &&
-        norm(sentences[s.sentence]).includes(norm(s.q));
+        findPhrase(sentences[s.sentence]!, s.q) >= 0;
       if (!ok) dropped.push(`spot: ${s.kind} 「${s.q}」(${s.sentence})`);
       return ok;
     });
