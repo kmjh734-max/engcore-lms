@@ -57,7 +57,7 @@ function countPassages(
 }
 
 /**
- * 학원(선생님은 자기 것)의 최근 변형문제 50개.
+ * 학원(선생님은 자기 것)의 변형문제 — 최근 1,000개(예전엔 50개라 정수학원 이전 자료가 목록에서 사라졌다, 선생님 2026-11-26).
  * 예전에는 request_config 를 통째로(지문 본문 두 벌 포함) 내려받아 1초마다 다시 읽었다.
  * 제목·학년·지문 id 만 JSON 경로로 읽고, 지문 id 가 없는 옛 작업만 지문 수를 따로 센다.
  */
@@ -72,7 +72,7 @@ export async function listGenerationJobs(
     )
     .eq("academy_id", opts.academyId)
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(1000);
 
   if (opts.role === "teacher") {
     query = query.eq("created_by", opts.viewerId);
