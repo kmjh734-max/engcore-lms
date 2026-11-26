@@ -1410,7 +1410,7 @@ export function QuestionGeneratorClient({
           </section>
 
           {sample?.shot ? (
-            <HoverPreview anchor={sample.box} width={720} height={Math.round((sample.shot.h * 696) / sample.shot.w) + 60}>
+            <HoverPreview anchor={sample.box} width={540} height={Math.round((sample.shot.h * 516) / sample.shot.w) + 60}>
               <p className="mb-2 text-[15px] font-bold text-slate-900">{sample.name}</p>
               <PreviewShot src={sample.shot.src} w={sample.shot.w} h={sample.shot.h} alt={`${sample.name} 예시`} />
             </HoverPreview>

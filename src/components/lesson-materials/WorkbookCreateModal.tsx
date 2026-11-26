@@ -856,7 +856,7 @@ function WorkbookTypeHover({ id, box }: { id: WorkbookTypeId; box: DOMRect }) {
   const meta = getWorkbookTypeMeta(id);
   if (!shot || !meta) return null;
   return (
-    <HoverPreview anchor={box} width={720} height={640}>
+    <HoverPreview anchor={box} width={540} height={480}>
       <p className="text-[15px] font-bold text-slate-900">{meta.title}</p>
       <p className="mb-2 mt-0.5 text-[12.5px] text-slate-500">{meta.subtitle}</p>
       <PreviewShot src={shot.src} w={shot.w} h={shot.h} alt={`${meta.title} 예시`} />

@@ -50,8 +50,8 @@ export function PreviewShot({ src, w, h, alt }: { src: string; w: number; h: num
       height={h}
       alt={alt}
       className="mx-auto block h-auto max-w-full rounded-md border border-slate-200"
-      // 칸 너비를 꽉 채운다 — 글씨가 작아 안 보였다(선생님 2026-11-24 「자세하게 잘 보이도록」). 너무 길면 화면 높이에 맞춘다
-      style={{ maxHeight: "calc(100vh - 90px)", width: "100%", objectFit: "contain" }}
+      // 칸 너비를 꽉 채운다(11-24 「자세하게 잘 보이도록」). 11-26 「너무 커서 화면을 가린다」 — 칸 540px·높이 화면 70%까지
+      style={{ maxHeight: "70vh", width: "100%", objectFit: "contain" }}
     />
   );
 }
