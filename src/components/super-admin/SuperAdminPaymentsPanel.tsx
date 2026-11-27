@@ -69,10 +69,36 @@ export function SuperAdminPaymentsPanel({
     void load();
   }, [load]);
 
-  async function cancelOrder(id: string) {
+  async function retryRecover(orderId: string) {
+    setBusy(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/super-admin/credits/payments/resync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id: orderId }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        setError(data.message ?? "회수하지 못했습니다.");
+        return;
+      }
+      setMessage("토스 상태로 다시 맞췄습니다.");
+      await load();
+    } catch {
+      setError("요청 실패");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function cancelOrder(id: string, partial = false) {
     if (
       !confirm(
-        "이 결제를 전체 취소할까요? (충전 이후 크레딧을 쓰지 않은 경우만 가능)"
+        partial
+          ? "이미 일부 취소된 결제입니다. 계속하면 남은 결제 금액이 고객에게 실제로 환불됩니다.\n크레딧만 거두려면 「회수 다시 시도」를 누르세요. 남은 금액도 취소할까요?"
+          : "이 결제를 전체 취소할까요? (충전 이후 크레딧을 쓰지 않은 경우만 가능)"
       )
     ) {
       return;
@@ -213,6 +239,18 @@ export function SuperAdminPaymentsPanel({
                     )}
                   </td>
                   <td>
+                    {o.failure_code === "toss_partial_credit_unrecovered" && (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        disabled={busy}
+                        onClick={() => void retryRecover(o.order_id)}
+                        className="mb-1"
+                      >
+                        회수 다시 시도
+                      </Button>
+                    )}
                     {(o.status === "approved" ||
                       o.status === "cancel_pending") && (
                       <Button
@@ -220,7 +258,12 @@ export function SuperAdminPaymentsPanel({
                         variant="danger"
                         size="sm"
                         disabled={busy}
-                        onClick={() => void cancelOrder(o.id)}
+                        onClick={() =>
+                          void cancelOrder(
+                            o.id,
+                            o.failure_code === "toss_partial_credit_unrecovered"
+                          )
+                        }
                       >
                         취소
                       </Button>

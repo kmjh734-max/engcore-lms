@@ -53,7 +53,18 @@ export async function POST(request: Request) {
         "[toss/webhook] sync failed",
         e instanceof Error ? e.message : e
       );
-      // 2xx so Toss does not hammer forever on business errors; ops can replay
+      // 토스 쪽 일시 오류(5xx·시간 초과·연결 끊김)면 500 — 토스가 웹훅을 다시 보내 놓치지 않게.
+      // 업무상 오류(크레딧 이미 씀·잔액 부족 등)는 주문에 표시를 남겼으니 2xx 로 끝낸다.
+      const status = (e as { status?: number })?.status;
+      const name = (e as { name?: string })?.name;
+      const transient =
+        (typeof status === "number" && status >= 500) ||
+        name === "AbortError" ||
+        name === "TimeoutError" ||
+        e instanceof TypeError;
+      if (transient) {
+        return NextResponse.json({ ok: false, retry: true }, { status: 503 });
+      }
       return NextResponse.json({
         ok: false,
         message: e instanceof Error ? e.message : "sync failed",

@@ -421,7 +421,7 @@ async function markRefundBlocked(
   tossStatus: string,
   reason: string
 ) {
-  const blocked = /credits_already_used|insufficient_balance_for_refund/.test(
+  const blocked = /credits_already_used|insufficient_balance_for_refund|insufficient_credits/.test(
     reason
   );
   await markOrder(
@@ -490,7 +490,9 @@ export async function cancelApprovedOrder(
     .select("balance")
     .eq("academy_id", o.academy_id)
     .maybeSingle();
-  if ((wallet?.balance ?? 0) < Number(o.total_credit)) {
+  // 부분 취소로 이미 거둔 만큼은 빼고 본다
+  const already = (await partialRecovered(admin, o)).sum;
+  if ((wallet?.balance ?? 0) < Number(o.total_credit) - already) {
     throw new Error(
       "잔액이 충전분보다 적어 자동 취소할 수 없습니다. 수동 확인이 필요합니다."
     );
@@ -538,6 +540,26 @@ export async function cancelApprovedOrder(
 }
 
 const PARTIAL_KEY = (orderId: string) => `toss_partial:${orderId}:`;
+/** LIKE 에서 _ · % 가 아무 글자로 읽히지 않게 */
+const PARTIAL_LIKE = (orderId: string) =>
+  PARTIAL_KEY(orderId).replace(/[\\%_]/g, (c) => "\\" + c) + "%";
+
+/** 부분 취소로 이미 거둔 크레딧 합 */
+async function partialRecovered(
+  admin: SupabaseClient,
+  order: CreditPaymentOrder
+): Promise<{ count: number; sum: number }> {
+  const { data } = await admin
+    .from("credit_transactions")
+    .select("amount")
+    .eq("academy_id", order.academy_id)
+    .like("idempotency_key", PARTIAL_LIKE(order.order_id));
+  const rows = data ?? [];
+  return {
+    count: rows.length,
+    sum: rows.reduce((t, r) => t + Number((r as { amount: number }).amount || 0), 0),
+  };
+}
 
 /**
  * 토스 취소(전액·부분)를 크레딧에 반영한다.
@@ -563,13 +585,9 @@ async function settleTossCancels(
       String(a.canceledAt ?? "").localeCompare(String(b.canceledAt ?? ""))
     );
 
-  const { count: partialDone } = await admin
-    .from("credit_transactions")
-    .select("id", { count: "exact", head: true })
-    .eq("academy_id", order.academy_id)
-    .like("idempotency_key", `${PARTIAL_KEY(order.order_id)}%`);
+  const { count: partialDone } = await partialRecovered(admin, order);
 
-  if (full && (partialDone ?? 0) === 0 && cancels.length <= 1) {
+  if (full && partialDone === 0 && cancels.length <= 1) {
     const { data, error } = await admin.rpc("refund_credit_payment_order", {
       p_order_uuid: order.id,
       p_actor_id: actorId,
@@ -629,13 +647,14 @@ async function settleTossCancels(
       },
       ["approved", "cancel_pending"]
     );
-  } else if (order.failure_code === "toss_partial_credit_unrecovered") {
-    await markOrder(
-      admin,
-      order.id,
-      { failure_code: null, failure_message: null },
-      ["approved", "cancel_pending"]
-    );
+  } else {
+    // 부분 취소 표시만 지운다(그사이 다른 표시가 붙었으면 그대로)
+    await admin
+      .from("credit_payment_orders")
+      .update({ failure_code: null, failure_message: null, updated_at: new Date().toISOString() })
+      .eq("id", order.id)
+      .eq("status", "approved")
+      .eq("failure_code", "toss_partial_credit_unrecovered");
   }
   return (await getOrderByOrderId(admin, order.order_id)) ?? order;
 }
@@ -653,7 +672,7 @@ async function markPartialBlocked(
       failure_code: "toss_partial_credit_unrecovered",
       failure_message: `토스 부분 취소 — 취소분 크레딧 회수 못 함: ${reason}`.slice(0, 500),
     },
-    ["approved", "cancel_pending"]
+    ["approved"]
   );
   console.error("[credit-orders] toss partial cancel, credits not recovered", {
     orderId: order.order_id,
