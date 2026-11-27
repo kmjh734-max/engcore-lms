@@ -13,6 +13,13 @@ export type TossPayment = {
   card?: { company?: string; number?: string } | null;
   fails?: Array<{ code?: string; message?: string }>;
   canceledAt?: string | null;
+  /** 취소 내역(부분 취소면 여러 개). 금액은 원 단위. */
+  cancels?: Array<{
+    cancelAmount?: number;
+    transactionKey?: string;
+    canceledAt?: string | null;
+    cancelStatus?: string | null;
+  }> | null;
 };
 
 function authHeader(secretKey: string): string {
@@ -115,6 +122,11 @@ export function isTossWaitingStatus(status: string | undefined | null): boolean 
 export function isTossCanceledStatus(status: string | undefined | null): boolean {
   const s = (status || "").toUpperCase();
   return s === "CANCELED" || s === "PARTIAL_CANCELED";
+}
+
+/** 일부만 취소(남은 금액은 결제 그대로). */
+export function isTossPartialCanceledStatus(status: string | undefined | null): boolean {
+  return (status || "").toUpperCase() === "PARTIAL_CANCELED";
 }
 
 /** 결제가 끝내 성립하지 않은 상태(입금 기한 지남·승인 실패). */

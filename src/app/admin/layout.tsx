@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
+import { createClient } from "@/lib/supabase/server";
 import { getAdminNavItems } from "@/lib/nav/menus";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Suspense } from "react";
@@ -17,6 +18,13 @@ export default async function AdminLayout({
 
   if (!profile || profile.role !== "admin") {
     redirect("/login");
+  }
+
+  // 교사·학생 화면과 같이: 사용 중지된 계정은 로그아웃하고 로그인 화면으로
+  if (profile.is_active === false) {
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    redirect("/login?inactive=1");
   }
 
   const navItems = await getAdminNavItems(profile.academy_id);

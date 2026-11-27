@@ -4,6 +4,7 @@ import {
   cancelTossPayment,
   confirmTossPayment,
   isTossCanceledStatus,
+  isTossPartialCanceledStatus,
   isTossPaidStatus,
   isTossVoidStatus,
   isTossWaitingStatus,
@@ -357,18 +358,7 @@ export async function syncPaymentFromToss(
   if (isTossCanceledStatus(toss.status)) {
     if (order.status === "canceled") return order;
     if (order.status === "approved" || order.status === "cancel_pending") {
-      const { data, error } = await admin.rpc("refund_credit_payment_order", {
-        p_order_uuid: order.id,
-        p_actor_id: order.requested_by,
-        p_force: false,
-      });
-      if (error) {
-        // 토스에서는 돈이 이미 돌아갔는데 크레딧을 못 거둠(이미 씀·잔액 부족 등).
-        // cancel_pending 으로 남겨 최고관리자 결제내역에서 보이게 하고 손으로 맞춘다.
-        await markRefundBlocked(admin, order, toss.status, error.message);
-        throw new Error(error.message);
-      }
-      return data as CreditPaymentOrder;
+      return settleTossCancels(admin, order, toss, order.requested_by);
     }
     // 충전 전 주문 — 크레딧을 준 적 없으니 취소로만 바꾼다
     await markOrder(
@@ -511,8 +501,9 @@ export async function cancelApprovedOrder(
     "cancel_pending",
   ]);
 
+  let canceled: TossPayment | null = null;
   try {
-    await cancelTossPayment({
+    canceled = await cancelTossPayment({
       paymentKey: o.payment_key,
       cancelReason: params.cancelReason,
     });
@@ -535,14 +526,138 @@ export async function cancelApprovedOrder(
     }
   }
 
-  const { data, error: rpcErr } = await admin.rpc("refund_credit_payment_order", {
-    p_order_uuid: o.id,
-    p_actor_id: params.actorId,
-    p_force: false,
-  });
-  if (rpcErr) {
-    await markRefundBlocked(admin, o, "CANCELED", rpcErr.message);
-    throw new Error(rpcErr.message);
+  // 취소 내역(부분 취소가 먼저 있었는지)은 토스 응답으로 본다. 이미 취소돼 있던 경우엔 다시 읽는다.
+  const toss =
+    canceled ?? (await retrieveTossPayment(o.payment_key).catch(() => null));
+  return settleTossCancels(
+    admin,
+    o,
+    toss ?? ({ status: "CANCELED", cancels: null } as unknown as TossPayment),
+    params.actorId
+  );
+}
+
+const PARTIAL_KEY = (orderId: string) => `toss_partial:${orderId}:`;
+
+/**
+ * 토스 취소(전액·부분)를 크레딧에 반영한다.
+ * - 부분 취소가 한 번도 없던 전액 취소: 예전과 같이 refund_credit_payment_order(사용 여부·잔액 확인 포함).
+ * - 부분 취소: 취소된 금액 비율만큼만 거둔다(취소 건마다 한 번, 같은 웹훅이 다시 와도 다시 거두지 않음).
+ *   누적 비율로 계산해 끝에 전액이 취소되면 정확히 충전량 전부가 된다.
+ */
+async function settleTossCancels(
+  admin: SupabaseClient,
+  order: CreditPaymentOrder,
+  toss: TossPayment,
+  actorId: string
+): Promise<CreditPaymentOrder> {
+  const full = !isTossPartialCanceledStatus(toss.status);
+  const cancels = (toss.cancels ?? [])
+    .filter(
+      (c) =>
+        Number(c.cancelAmount) > 0 &&
+        !!c.transactionKey &&
+        (!c.cancelStatus || c.cancelStatus.toUpperCase() === "DONE")
+    )
+    .sort((a, b) =>
+      String(a.canceledAt ?? "").localeCompare(String(b.canceledAt ?? ""))
+    );
+
+  const { count: partialDone } = await admin
+    .from("credit_transactions")
+    .select("id", { count: "exact", head: true })
+    .eq("academy_id", order.academy_id)
+    .like("idempotency_key", `${PARTIAL_KEY(order.order_id)}%`);
+
+  if (full && (partialDone ?? 0) === 0 && cancels.length <= 1) {
+    const { data, error } = await admin.rpc("refund_credit_payment_order", {
+      p_order_uuid: order.id,
+      p_actor_id: actorId,
+      p_force: false,
+    });
+    if (error) {
+      // 토스에서는 돈이 이미 돌아갔는데 크레딧을 못 거둠(이미 씀·잔액 부족 등).
+      // cancel_pending 으로 남겨 최고관리자 결제내역에서 보이게 하고 손으로 맞춘다.
+      await markRefundBlocked(admin, order, toss.status, error.message);
+      throw new Error(error.message);
+    }
+    return data as CreditPaymentOrder;
   }
-  return data as CreditPaymentOrder;
+
+  const totalWon = Number(order.payment_amount);
+  const totalCredit = Number(order.total_credit);
+  if (!(totalWon > 0) || cancels.length === 0) {
+    const reason = "토스 취소 내역을 읽지 못함";
+    if (full) await markRefundBlocked(admin, order, toss.status, reason);
+    else await markPartialBlocked(admin, order, reason);
+    throw new Error(reason);
+  }
+
+  let cumWon = 0;
+  let prevCredit = 0;
+  for (const c of cancels) {
+    cumWon = Math.min(totalWon, cumWon + Number(c.cancelAmount));
+    const target =
+      cumWon >= totalWon ? totalCredit : Math.floor((totalCredit * cumWon) / totalWon);
+    const amount = target - prevCredit;
+    prevCredit = target;
+    if (amount <= 0) continue;
+    const { error } = await admin.rpc("adjust_academy_credits", {
+      p_academy_id: order.academy_id,
+      p_amount: amount,
+      p_direction: "debit",
+      p_actor_id: actorId,
+      p_note: `토스페이먼츠 결제 부분 취소 회수 (${Number(c.cancelAmount).toLocaleString("ko-KR")}원)`,
+      p_idempotency_key: `${PARTIAL_KEY(order.order_id)}${c.transactionKey}`,
+    });
+    if (error) {
+      if (full) await markRefundBlocked(admin, order, toss.status, error.message);
+      else await markPartialBlocked(admin, order, error.message);
+      throw new Error(error.message);
+    }
+  }
+
+  if (full) {
+    await markOrder(
+      admin,
+      order.id,
+      {
+        status: "canceled",
+        canceled_at: new Date().toISOString(),
+        failure_code: null,
+        failure_message: null,
+      },
+      ["approved", "cancel_pending"]
+    );
+  } else if (order.failure_code === "toss_partial_credit_unrecovered") {
+    await markOrder(
+      admin,
+      order.id,
+      { failure_code: null, failure_message: null },
+      ["approved", "cancel_pending"]
+    );
+  }
+  return (await getOrderByOrderId(admin, order.order_id)) ?? order;
+}
+
+/** 부분 취소분 크레딧을 못 거둠 — 결제는 남아 있으니 상태는 그대로, 결제내역에 표시만. */
+async function markPartialBlocked(
+  admin: SupabaseClient,
+  order: CreditPaymentOrder,
+  reason: string
+) {
+  await markOrder(
+    admin,
+    order.id,
+    {
+      failure_code: "toss_partial_credit_unrecovered",
+      failure_message: `토스 부분 취소 — 취소분 크레딧 회수 못 함: ${reason}`.slice(0, 500),
+    },
+    ["approved", "cancel_pending"]
+  );
+  console.error("[credit-orders] toss partial cancel, credits not recovered", {
+    orderId: order.order_id,
+    academyId: order.academy_id,
+    reason,
+  });
 }

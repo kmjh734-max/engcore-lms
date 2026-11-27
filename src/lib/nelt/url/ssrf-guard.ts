@@ -1,4 +1,6 @@
 /** SSRF 방지: 공개 http(s)만, 내부망/localhost/파일 프로토콜 차단 */
+import { lookup } from "node:dns/promises";
+import { isIP } from "node:net";
 
 const BLOCKED_HOSTS = new Set([
   "localhost",
@@ -24,7 +26,42 @@ function isPrivateIpv4(host: string): boolean {
   if (a === 169 && b === 254) return true;
   if (a === 172 && b >= 16 && b <= 31) return true;
   if (a === 192 && b === 168) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true; // 통신사 공유 주소
+  if (a === 192 && b === 0 && parts[2] === 0) return true;
+  if (a === 198 && (b === 18 || b === 19)) return true;
+  if (a >= 224) return true; // 멀티캐스트·예약
   return false;
+}
+
+/** IPv6: 루프백·사설(fc00::/7)·링크로컬(fe80::/10)·IPv4 매핑 사설 주소 */
+function isPrivateIpv6(addr: string): boolean {
+  const a = addr.toLowerCase().replace(/^\[|\]$/g, "");
+  if (a === "::" || a === "::1") return true;
+  const mapped = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/.exec(a);
+  if (mapped) return isPrivateIpv4(mapped[1]);
+  if (/^::ffff:/.test(a)) return true;
+  if (/^f[cd]/.test(a)) return true;
+  if (/^fe[89ab]/.test(a)) return true;
+  if (/^ff/.test(a)) return true;
+  return false;
+}
+
+/**
+ * 이름이 내부 주소로 풀리는 경우(예: 사설 IP 를 가리키는 도메인)도 막는다.
+ * 주소를 찾지 못하면 fetch 가 어차피 실패하므로 여기서 같은 말로 멈춘다.
+ */
+async function assertResolvesPublic(host: string): Promise<void> {
+  if (isIP(host)) return; // 숫자 주소는 assertSafePublicUrl 이 이미 봄
+  let addrs: Array<{ address: string; family: number }>;
+  try {
+    addrs = await lookup(host, { all: true, verbatim: true });
+  } catch {
+    throw new Error("링크 주소를 찾을 수 없습니다.");
+  }
+  for (const { address, family } of addrs) {
+    const bad = family === 6 ? isPrivateIpv6(address) : isPrivateIpv4(address);
+    if (bad) throw new Error("내부 주소에는 접근할 수 없습니다.");
+  }
 }
 
 export function assertSafePublicUrl(raw: string): URL {
@@ -93,7 +130,7 @@ export async function fetchPublicUrlSafe(
   const cookieJar = new Map<string, string>();
 
   while (redirects <= NELT_URL_MAX_REDIRECTS) {
-    assertSafePublicUrl(current);
+    await assertResolvesPublic(assertSafePublicUrl(current).hostname);
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), NELT_URL_TIMEOUT_MS);
     try {

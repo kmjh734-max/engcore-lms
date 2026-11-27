@@ -186,7 +186,9 @@ export function SuperAdminPaymentsPanel({
                       >
                         {o.failure_code === "toss_canceled_credit_unrecovered"
                           ? "토스 취소됨 · 크레딧 회수 필요"
-                          : o.failure_code}
+                          : o.failure_code === "toss_partial_credit_unrecovered"
+                            ? "토스 부분 취소 · 크레딧 회수 필요"
+                            : o.failure_code}
                       </span>
                     ) : null}
                   </td>
