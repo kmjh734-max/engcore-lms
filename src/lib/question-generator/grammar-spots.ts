@@ -364,7 +364,26 @@ export function buildOrderPassage(
   if (lab.join("") === "ABC") return { error: "labels가 원래 차례 그대로(A-B-C)입니다. 섞어서 붙입니다." };
   const parts = [passage.slice(cut0, p2), passage.slice(p2, p3), passage.slice(p3)].map((x) => x.trim());
   if (parts.some((x) => !x)) return { error: "빈 부분이 있습니다." };
-  const lead = String(leadInText ?? "").trim() || passage.slice(0, cut0).trim();
+  const origLead = passage.slice(0, cut0).trim();
+  const lead = String(leadInText ?? "").trim() || origLead;
+  if (lead !== origLead) {
+    /*
+     * 바꿔 쓴 주어진 글이 끊은 자리 뒤 문장까지 담으면 (A)(B)(C) 첫 문장과 같은 말이 되풀이되고 순서가 드러난다
+     * (2026-11-28 시험 「Her mother operated a café.」 ↔ (C) 「Her mother ran a café…」).
+     */
+    const words = (t: string): string[] => t.toLowerCase().match(/[a-z]{4,}/g) ?? [];
+    if (words(lead).length > words(origLead).length * 1.6 + 4) {
+      return { error: "바꿔 쓴 주어진 글이 원래 주어진 글보다 너무 깁니다. 끊은 자리까지의 내용만 바꿔 씁니다." };
+    }
+    const leadSet = new Set(words(lead).filter((w) => !words(origLead).includes(w)));
+    for (const part of parts) {
+      const first = words(part.split(/(?<=[.!?]["'’”)]*)\s+/)[0] ?? "");
+      const hit = first.filter((w) => leadSet.has(w)).length;
+      if (first.length >= 3 && hit >= 3 && hit / first.length >= 0.3) {
+        return { error: "바꿔 쓴 주어진 글에 (A)(B)(C) 한 부분의 첫 문장 내용이 들어갔습니다. 끊은 자리까지의 내용만 바꿔 씁니다." };
+      }
+    }
+  }
   const byLabel = ["A", "B", "C"].map((L) => `(${L}) ${parts[lab.indexOf(L)]}`);
   return { passageModified: `${lead}\n\n${byLabel.join("\n\n")}`, answerOrder: lab.map((L) => `(${L})`).join("-") };
 }
