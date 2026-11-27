@@ -1,4 +1,4 @@
-import { blankSpotFormatLine, blankSpotMode, buildBlankPassage, buildGrammarSpotPassage, buildInsertionPassage, buildIrrelevantPassage, buildOrderPassage, grammarSpotFormatLine, GRAMMAR_SPOT_SCHEMA, insertionSpotFormatLine, irrelevantSpotFormatLine, orderSpotFormatLine, spotKindOf, structSpotMode } from "@/lib/question-generator/grammar-spots";
+import { blankSpotFormatLine, blankSpotMode, WORD_ORDER_SPOT_CODES, WRITING_BLANK_FILL, writingBlankFormatLine, buildBlankPassage, buildGrammarSpotPassage, buildInsertionPassage, buildIrrelevantPassage, buildOrderPassage, grammarSpotFormatLine, GRAMMAR_SPOT_SCHEMA, insertionSpotFormatLine, irrelevantSpotFormatLine, orderSpotFormatLine, spotKindOf, structSpotMode } from "@/lib/question-generator/grammar-spots";
 import { engcoreLevelOf } from "@/lib/vocab/engcore-lemma";
 import { isFunctionWord } from "@/lib/vocab/function-words";
 import { renumberMarksInOrder } from "@/lib/question-generator/renumber-marks";
@@ -1059,6 +1059,8 @@ LANGUAGE: 지문·정답 영어만.`;
          */
         // 지문 그대로가 기본이다(선생님 결정 2026-09-29)
         const wordOrderKeepPassage = wordOrderMode !== "paraphrase";
+        /** 지문 대신 지울 글귀만 받는다(grammar-spots.ts, 2026-11-28) */
+        const wordOrderSpotOn = !paraphraseOn && WORD_ORDER_SPOT_CODES.has(code);
         const catalog = wordOrderCatalogBrief();
         const modeRules =
           mode === "basic"
@@ -1100,7 +1102,8 @@ LANGUAGE: 지문·정답 영어만.`;
 서술형 · 제시어 배열 — 『고등영어 어법서술형』 반영
 
 형식 (수특·내신·교재 서술형 연습 동형):
-- passageModified = 영어 지문. 위 CASE에 맞는 **중요 문장/절** 한 곳을 ⓐ__________ 빈칸으로.
+${wordOrderSpotOn ? `${writingBlankFormatLine()}
+- 위 CASE에 맞는 **중요 문장/절** 한 곳을 고른다.` : "- passageModified = 영어 지문. 위 CASE에 맞는 **중요 문장/절** 한 곳을 ⓐ__________ 빈칸으로."}
   · 지문의 핵심 주장·결과·정의·조건 등 ‘중요 문장’을 대상으로 할 것 (사소한 연결 문장 금지).
   · ${wordOrderKeepPassage
     ? "그 문장을 **지문에 있는 그대로** 쓴다. 고쳐 쓰지 말 것 — correctAnswer가 지문에 그대로 있어야 한다."
@@ -3068,11 +3071,18 @@ const LIGHT_TYPES = new Set([
   "order",
   "sentence_insertion",
   "irrelevant_sentence",
+  // 요지도(2026-11-28): 10-01 세 모델 비교에서 요지는 가장 싼 모델도 형태·정답 100%였는데 목록에 빠져 sol로 돌고 있었다
+  "summary_mcq",
   // 시험용: QG_LIGHT_TYPES_EXTRA=writing 처럼 더 넣어 본다
   ...(process.env.QG_LIGHT_TYPES_EXTRA ?? "").split(",").map((s) => s.trim()).filter(Boolean),
 ]);
 /** 유형 전체가 아니라 갈래만 싼 모델로 — 위 시험에서 본 것만(어휘개수·목적·심경은 시험 안 함) */
-const LIGHT_CODES = new Set(["어휘추론", "어휘개수", "함축의미추론", ...(process.env.QG_LIGHT_CODES_EXTRA ?? "").split(",").map((s) => s.trim()).filter(Boolean)]);
+/*
+ * 객관식 어법도 싼 모델로(2026-11-28). 밑줄 자리만 받게 바꾼 뒤(grammar-spots.ts) 같은 3지문 12문항을 terra로 만들어
+ * 가린 채 풀어 보니 합격 10·조건부 2·불량 0(sol은 9문항 합격 7·조건부 2), 원가 −20~25%. 예전 시험(10-01)에서 싼 모델이
+ * 나빴던 것은 지문을 다시 쓰다 밑줄을 빠뜨린 탓이었다. 서술형 어법(오류 수정)은 시험 전이라 그대로.
+ */
+const LIGHT_CODES = new Set(["어휘추론", "어휘개수", "함축의미추론", "어법추론", "어법개수", "어법통문장", "어법모두고르기", ...(process.env.QG_LIGHT_CODES_EXTRA ?? "").split(",").map((s) => s.trim()).filter(Boolean)]);
 
 function modelForType(option: { type: string; aingkaCode?: string }): string {
   return LIGHT_TYPES.has(option.type) || (option.aingkaCode && LIGHT_CODES.has(option.aingkaCode)) ? QG_MODEL_LIGHT : QG_MODEL_MAIN;
@@ -3230,7 +3240,9 @@ export async function generateOneQuestion(opts: {
     "vocabulary",
   ]);
   const englishOnlyHint = isWordOrder
-    ? "- CRITICAL LANGUAGE: passageModified MUST be ENGLISH only (blank ⓐ__________). questionText may include Korean in <해석>. correctAnswer ENGLISH."
+    ? blankMode
+      ? "- CRITICAL LANGUAGE: blankText is ENGLISH copied from the passage. questionText may include Korean in <해석>. correctAnswer ENGLISH."
+      : "- CRITICAL LANGUAGE: passageModified MUST be ENGLISH only (blank ⓐ__________). questionText may include Korean in <해석>. correctAnswer ENGLISH."
     : isSummaryBlank
       ? "- CRITICAL LANGUAGE: <요약문> and correctAnswer ENGLISH only. <조건> may be Korean. Do NOT create old 요약문완성 MCQ with (A)/(B) …… pairs."
       : isReferenceWriting
@@ -3529,7 +3541,9 @@ export async function generateOneQuestion(opts: {
     : 'questionText usually "".';
 
   const passageModifiedRule = needsModified
-    ? isWordOrder || isGrammarWriting
+    ? blankMode
+      ? "Do NOT output passageModified — give blankText only; the code puts the blank into the original passage."
+      : isWordOrder || isGrammarWriting
       ? "passageModified MUST include blank ⓐ__________ in the ENGLISH passage."
       : isReferenceWriting
         ? "passageModified MUST underline the pronoun/expression with <u>…</u> (대명사는 ⓐ<u>it</u>)."
@@ -4169,7 +4183,13 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     delete raw.spots;
   }
   if (blankMode && (raw.blankText != null || !String(raw.passageModified ?? "").trim())) {
-    const built = buildBlankPassage(passage, raw.blankText, raw.blankCtx, option.aingkaCode === "빈칸단어");
+    const built = buildBlankPassage(
+      passage,
+      raw.blankText,
+      raw.blankCtx,
+      option.aingkaCode === "빈칸단어",
+      option.type === "sentence_blank" ? undefined : WRITING_BLANK_FILL
+    );
     if ("error" in built) throw new Error(built.error);
     raw.passageModified = built.passageModified;
     // 문장부호는 지문에 남겼으니 보기 끝 마침표는 뗀다

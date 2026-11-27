@@ -35,7 +35,7 @@ export function grammarSpotFormatLine(count: number, kind: SpotKind = "grammar")
   const show =
     kind === "vocab"
       ? "orig unchanged if this spot fits the context, or a DIFFERENT word/phrase (same part of speech, about the same length) that does not fit the context if this spot is wrong. The sentence must stay grammatical with it — it fits the same words around it (not \"starting to ignore to\" for \"pay attention to\"), so only the meaning is wrong"
-      : "orig unchanged if this spot is grammatical, or orig with ONLY its form changed if this spot is an error";
+      : "orig unchanged if this spot is grammatical, or orig with ONLY its form changed if this spot is an error — a real English form of the same word (were, to go, which, quickly), never a misspelling or a non-word (not \"farly\")";
   return `- Do NOT write the passage. Return "spots": exactly ${count} underline spots IN PASSAGE ORDER (first = ${marks[0]}, last = ${marks[count - 1]}). The code puts ${marks[0]}<u>…</u> marks into the original passage for you; everything outside the spots stays the original word for word.
 - Each spot: {"ctx": "4-10 consecutive words copied EXACTLY from the PASSAGE that contain the spot (unique in the passage)", "orig": "the original word(s) at the spot, 1-4 words, exactly as in ctx", "show": "what the student sees under the underline — ${show}"}.
 - Spots must not overlap and must be spread over the passage (not more than two in one sentence). In explanation${kind === "vocab" ? " and vocabularyJudgments" : ""} refer to spots by ${marks[0]}~${marks[count - 1]} in this order.`;
@@ -143,9 +143,14 @@ export function buildGrammarSpotPassage(
  * 빈칸 지문을 베껴 쓰는 데 출력 약 190토큰이 들었고, 밑줄 밖을 고쳐 써 다시 만드는 일도 있었다.
  */
 export const BLANK_SPOT_CODES = new Set(["빈칸추론", "빈칸단어"]);
+/** 서술형 제시어 배열도 문장 하나를 ⓐ__________로 비운다 */
+export const WORD_ORDER_SPOT_CODES = new Set(["제시어배열기본", "제시어배열어형변화", "제시어배열단어추가"]);
 export function blankSpotMode(option: Pick<QuestionTypeOption, "type" | "aingkaCode">, paraphraseOn: boolean): boolean {
-  return !paraphraseOn && option.type === "sentence_blank" && BLANK_SPOT_CODES.has(option.aingkaCode ?? "");
+  if (paraphraseOn) return false;
+  if (option.type === "sentence_blank") return BLANK_SPOT_CODES.has(option.aingkaCode ?? "");
+  return WORD_ORDER_SPOT_CODES.has(option.aingkaCode ?? "");
 }
+export const WRITING_BLANK_FILL = "ⓐ__________";
 export const SENTENCE_BLANK_FILL = "____________________________________";
 export const WORD_BLANK_FILL = "________";
 
@@ -155,7 +160,13 @@ export function blankSpotFormatLine(word: boolean): string {
     : `- Do NOT write the passage. Return "blankText": the exact words of the passage to blank, copied character for character (one sentence or a key clause, about 6~14 words; if part of a sentence, the rest stays). The code replaces them with ____________________________________; everything else stays the original word for word.`;
 }
 
-export function buildBlankPassage(passage: string, blankText: unknown, blankCtx: unknown, word: boolean): { passageModified: string } | { error: string } {
+export function buildBlankPassage(
+  passage: string,
+  blankText: unknown,
+  blankCtx: unknown,
+  word: boolean,
+  fill?: string
+): { passageModified: string } | { error: string } {
   const text = String(blankText ?? "").trim().replace(/^[\s"“]+|[\s"”]+$/g, "");
   if (!text) return { error: "blankText가 비었습니다. 지울 원문 글귀를 주세요." };
   if (word && /\s/.test(text)) return { error: `빈칸단어는 한 낱말만 지웁니다(「${text}」).` };
@@ -183,7 +194,7 @@ export function buildBlankPassage(passage: string, blankText: unknown, blankCtx:
       return { error: `빈칸 「${text.slice(-40)}」가 문장 중간에서 끝납니다(뒤에 「${next.slice(0, 25)}」). 문장 끝까지 지우거나 다른 문장을 고릅니다.` };
     }
   }
-  return { passageModified: `${passage.slice(0, at)}${word ? WORD_BLANK_FILL : SENTENCE_BLANK_FILL}${passage.slice(at + len)}` };
+  return { passageModified: `${passage.slice(0, at)}${fill ?? (word ? WORD_BLANK_FILL : SENTENCE_BLANK_FILL)}${passage.slice(at + len)}` };
 }
 
 /*
@@ -340,4 +351,8 @@ export function buildOrderPassage(
   const lead = String(leadInText ?? "").trim() || passage.slice(0, cut0).trim();
   const byLabel = ["A", "B", "C"].map((L) => `(${L}) ${parts[lab.indexOf(L)]}`);
   return { passageModified: `${lead}\n\n${byLabel.join("\n\n")}`, answerOrder: lab.map((L) => `(${L})`).join("-") };
+}
+
+export function writingBlankFormatLine(): string {
+  return `- Do NOT write the passage. Return "blankText": the exact words of the passage that the answer sentence replaces, copied character for character (the whole sentence, or the clause from a word to the sentence end). The code replaces them with ⓐ__________; everything else stays the original word for word. Remove the WHOLE target — leave no part of the answer next to the blank.`;
 }

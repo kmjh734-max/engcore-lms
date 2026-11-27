@@ -364,7 +364,7 @@ async function generateWithValidation(opts: {
             const first = await runSolve();
             if (first.verdict !== "pass" || opts.option.type !== "sentence_blank" || !blankChoicesCheckable(payload)) return first;
             const perChoice = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
-              verifyBlankChoices({ payload })
+              verifyBlankChoices({ payload, effort: opts.option.aingkaCode === "빈칸단어" ? "low" : undefined })
             );
             return perChoice.verdict === "drop" ? perChoice : first;
           };

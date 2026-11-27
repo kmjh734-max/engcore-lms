@@ -384,7 +384,11 @@ export function blankChoicesCheckable(payload: GeneratedQuestionPayload): boolea
   return hasChoices(payload) && (payload.choices?.length ?? 0) === 5 && Number.isInteger(key) && /_{3,}/.test(String(payload.passageModified ?? ""));
 }
 
-export async function verifyBlankChoices(opts: { payload: GeneratedQuestionPayload }): Promise<BlindSolveResult> {
+export async function verifyBlankChoices(opts: {
+  payload: GeneratedQuestionPayload;
+  /** 한 낱말 빈칸(빈칸단어)은 판단이 단순해 low로(호출당 추론 400~1,000토큰이 원가의 절반이었다, 2026-11-28) */
+  effort?: "low" | "medium";
+}): Promise<BlindSolveResult> {
   const { payload } = opts;
   const key = Number(payload.correctAnswer);
   const choiceLines = (payload.choices ?? [])
@@ -398,7 +402,7 @@ export async function verifyBlankChoices(opts: { payload: GeneratedQuestionPaylo
       user,
       temperature: 0,
       maxTokens: 2600,
-      reasoningEffort: (process.env.QG_SOLVE_EFFORT as "low" | "medium" | undefined) || "medium",
+      reasoningEffort: opts.effort ?? ((process.env.QG_SOLVE_EFFORT as "low" | "medium" | undefined) || "medium"),
       preferredModels: [SOLVE_MODEL],
       cacheKey: "qg-verify-blank",
     })) as Record<string, unknown>;
