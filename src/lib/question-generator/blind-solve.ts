@@ -511,6 +511,10 @@ export async function repairDistractors(opts: {
     `\nCHOICES:\n${choiceLines}`,
     `\nKEYED ANSWER: ${key}`,
     `\nWRONG CHOICES TO REWRITE: ${targets.join(", ")}`,
+    // 보기가 모두 한 낱말이면 고친 보기도 한 낱말(빈칸단어) — 여러 낱말로 고쳐 규칙 검사에 걸려 버려졌다(2026-11-28 시험)
+    ...((payload.choices ?? []).every((c) => !/\s/.test(String(c.text ?? "").trim()))
+      ? [`\nFORM: every choice is ONE English word with no space; each rewritten choice must also be exactly one word of the same part of speech and form.`]
+      : []),
     `\nEXPLANATION:\n${compact(payload.explanation, 1600)}`,
   ].join("\n");
   let raw: Record<string, unknown>;

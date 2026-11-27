@@ -362,7 +362,11 @@ async function generateWithValidation(opts: {
           // 빈칸추론은 풀이를 지난 뒤 보기를 하나씩 빈칸에 넣어 한 번 더 본다(정답처럼 읽히는 오답, 2026-11-12)
           const runChecks = async () => {
             const first = await runSolve();
-            if (first.verdict !== "pass" || opts.option.type !== "sentence_blank" || !blankChoicesCheckable(payload)) return first;
+            /*
+             * 한 낱말 빈칸(빈칸단어)은 보기별 판정을 하지 않는다(2026-11-28) — 직접 풀기가 「다른 보기도 답」을 이미 잡고,
+             * 보기별 판정이 한 낱말 보기의 어울림을 따지며 되돌리는 고리가 원가의 절반을 넘었다(문항당 63~73원, 110크레딧).
+             */
+            if (first.verdict !== "pass" || opts.option.type !== "sentence_blank" || opts.option.aingkaCode === "빈칸단어" || !blankChoicesCheckable(payload)) return first;
             const perChoice = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
               verifyBlankChoices({ payload, effort: opts.option.aingkaCode === "빈칸단어" ? "low" : undefined })
             );

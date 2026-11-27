@@ -8,7 +8,7 @@
  */
 import type { QuestionTypeOption } from "@/lib/question-generator/types";
 
-export const GRAMMAR_SPOT_CODES = new Set(["어법추론", "어법모두고르기", "어법개수"]);
+export const GRAMMAR_SPOT_CODES = new Set(["어법추론", "어법모두고르기", "어법개수", "어법오류수정2", "어법오류수정3"]);
 /** 어휘도 같은 꼴(①<u>낱말</u>, 문맥에 안 맞는 말로 바꾼 자리) — 2026-11-28 */
 export const VOCAB_SPOT_CODES = new Set(["어휘추론", "어휘개수"]);
 
@@ -144,7 +144,7 @@ export function buildGrammarSpotPassage(
  */
 export const BLANK_SPOT_CODES = new Set(["빈칸추론", "빈칸단어"]);
 /** 서술형 제시어 배열도 문장 하나를 ⓐ__________로 비운다 */
-export const WORD_ORDER_SPOT_CODES = new Set(["제시어배열기본", "제시어배열어형변화", "제시어배열단어추가"]);
+export const WORD_ORDER_SPOT_CODES = new Set(["제시어배열기본", "제시어배열어형변화", "제시어배열단어추가", "문법조건영작"]);
 export function blankSpotMode(option: Pick<QuestionTypeOption, "type" | "aingkaCode">, paraphraseOn: boolean): boolean {
   if (paraphraseOn) return false;
   if (option.type === "sentence_blank") return BLANK_SPOT_CODES.has(option.aingkaCode ?? "");
@@ -165,7 +165,9 @@ export function buildBlankPassage(
   blankText: unknown,
   blankCtx: unknown,
   word: boolean,
-  fill?: string
+  fill?: string,
+  /** 문장 첫머리에서 시작해야 하는가(문법조건영작: 정답이 대문자로 시작하는 한 문장) */
+  wholeSentence = false
 ): { passageModified: string } | { error: string } {
   const text = String(blankText ?? "").trim().replace(/^[\s"“]+|[\s"”]+$/g, "");
   if (!text) return { error: "blankText가 비었습니다. 지울 원문 글귀를 주세요." };
@@ -184,6 +186,12 @@ export function buildBlankPassage(
   if (!hit) return { error: `blankText 「${text.slice(0, 60)}」를 원문에서 찾지 못했습니다. 원문을 글자 그대로 옮겨 주세요.` };
   const at = hit.index!;
   let len = hit[0].length;
+  if (wholeSentence) {
+    const before = passage.slice(0, at).replace(/\s+$/, "");
+    if (before && !/[.!?]["'’”)]*$/.test(before)) {
+      return { error: `빈칸 「${text.slice(0, 30)}…」가 문장 첫머리에서 시작하지 않습니다(앞에 「${before.slice(-25)}」). 문장 하나를 통째로 고릅니다.` };
+    }
+  }
   if (!word) {
     // 끝 문장부호는 지문에 남긴다(보기는 마침표 없이) — 지운 글귀가 마침표까지 먹으면 보기 마침표와 겹친다
     const punct = /[.!?]["'’”)]*$/.exec(hit[0]);

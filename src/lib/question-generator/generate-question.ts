@@ -290,7 +290,7 @@ questionText empty.`;
         option.difficulty === "high" ? "exactly 8" : "exactly 6"
       }.
 - choices: omit or empty array. No ①~⑤ options.
-- REQUIRED OUTPUT ORDER: write "choicePlan" FIRST (one row per statement: n, quote, passageSays, change, refutedBy, verdict), then write questionText from that plan. An answer without choicePlan is rejected.
+- REQUIRED OUTPUT ORDER: write "choicePlan" FIRST (one row per statement: n, quote, change, refutedBy, verdict), then write questionText from that plan. An answer without choicePlan is rejected.
 - Do NOT change the passage; omit passageModified.
 - explanation: list which numbers are false and why (Korean, brief).
 - Every statement must be clearly true or clearly false from the passage alone: no vague references ("the opposite direction" of what?), no comparisons the passage never makes, no paraphrase that could be read either way. A false statement changes one checkable fact.
@@ -729,7 +729,7 @@ LANGUAGE: 지문 영어만.`;
 ${focusBlock}
 
 형식:
-- passageModified = 영어 지문. 밑줄 정확히 ${marks} → ⓐ<u>틀린형태또는맞는형태</u>
+${paraphraseOn ? `- passageModified = 영어 지문. 밑줄 정확히 ${marks} → ⓐ<u>틀린형태또는맞는형태</u>` : grammarSpotFormatLine(spotTotal)}
 - 틀린 곳 정확히 ${wrongN}개 — <u>안에는 틀린 형태</u>를 넣음. 위 ‘이번 문항’ 문법을 서로 다른 단원으로 하나씩.
 - 틀린 형태는 그 자리 **원문 낱말의 형태만** 바꿔 만든다(수·시제·태·품사·준동사). 다른 낱말로 바꾸거나 낱말을 끼워 넣지 말 것 — 바른 형태가 곧 원문이어야 고치는 답이 하나로 정해진다.
 ${spotLine}
@@ -986,9 +986,10 @@ ${
     → It - that 강조구문 → "It is curiosity that keeps a reader turning pages."
   · 뜻이 달라지거나 어색한 영어가 되면 <b>다른 문장</b>을 골라 다시 한다.`
 }
-- passageModified = 영어 지문. <b>고른 문장이 있던 자리를 ⓐ__________ 빈칸으로 바꾼다.</b>
+${paraphraseOn ? `- passageModified = 영어 지문. <b>고른 문장이 있던 자리를 ⓐ__________ 빈칸으로 바꾼다.</b>
   · 그 문장은 지문에서 <b>완전히 지운다</b>. 일부라도 남기면 안 된다(베껴 쓰게 된다).
-  · 나머지 지문은 원문 그대로 둔다.
+  · 나머지 지문은 원문 그대로 둔다.` : `${writingBlankFormatLine()}
+  · blankText는 고른 문장의 <b>원문</b>이다(고쳐 쓴 정답이 아니라). 코드가 그 원문 문장을 통째로 지운다.`}
 - questionText 형식(필수). 태그는 각각 <b>그 줄에 혼자</b> 있어야 한다:
 <조건>
 ○ [어법 이름]을 사용할 것
@@ -3150,6 +3151,18 @@ export async function generateOneQuestion(opts: {
   /** 어법 추론·개수는 지문 대신 밑줄 자리만 받는다(grammar-spots.ts, 2026-11-28) */
   const spotKind = spotKindOf(opts.option, opts.paraphraseGrammarVocab === true);
   const spotMode = spotKind !== null;
+  /*
+   * 심경추론은 이야기 글에서만 낸다(11-24 규칙). 설명문이면 모델이 다 생각한 뒤에야 건너뛰어 2번에 115원을 썼고
+   * (2026-11-28 시험), 저장된 심경 41문항 중 32문항이 사람 대명사·따옴표가 거의 없는 설명문에서 나왔다. 부르기 전에 거른다.
+   */
+  if (opts.option.aingkaCode === "심경추론" && !opts.offlineRaw) {
+    const ws = opts.passage.split(/\s+/).filter(Boolean);
+    const personal = ws.filter((w) => /^(i|me|my|he|him|his|she|her|we|our|us)$/i.test(w.replace(/[^a-z]/gi, ""))).length;
+    const quotes = (opts.passage.match(/[“"]/g) ?? []).length;
+    if (personal / Math.max(1, ws.length) < 0.02 && quotes < 2) {
+      throw new SkipQuestionError("심경 변화가 드러나는 이야기 글이 아닙니다.");
+    }
+  }
   /** 빈칸추론·빈칸단어는 지울 원문 글귀만 받는다(grammar-spots.ts) */
   const blankMode = blankSpotMode(opts.option, opts.paraphraseGrammarVocab === true);
   /** 문장삽입·무관한 문장·순서는 자리만 받고 지문은 코드가 만든다 */
@@ -4022,7 +4035,10 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
                             {
                               n: "integer — the choice number (or statement number for 일치개수)",
                               quote: "EXACT words copied from the passage sentence that decides this choice (6-25 words)",
-                              passageSays: "the proposition the passage states: who/what, action, object, condition, quantity, time, and who claims it",
+                              // 일치개수는 진술이 6~8개라 이 칸이 출력의 큰 몫이었다 — 코드 대조에 안 쓰여 뺀다(2026-11-28, 원가 2.5배)
+                              ...(option.type === "content_count"
+                                ? {}
+                                : { passageSays: "the proposition the passage states: who/what, action, object, condition, quantity, time, and who claims it" }),
                               change: "none (a true choice) | <element>: <before> → <after> — the ONE meaning element you changed to make it false (subject, action, object, quantity, condition, time, claimant, direction); never add a time frame, cause, comparison, person or premise the passage lacks",
                               refutedBy: "for a false choice: why it and the quoted words cannot both be true (empty for a true choice)",
                               verdict: "true | false — must be decidable from the quote alone",
@@ -4176,7 +4192,15 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
   // 자리 목록 대신 지문을 보내 왔으면 예전처럼 받는다(밑줄 밖이 바뀌었으면 뒤 검사가 잡는다)
   if (spotMode && (Array.isArray(raw.spots) || !String(raw.passageModified ?? "").trim())) {
     const want: number | [number, number] =
-      option.aingkaCode === "어법개수" ? (option.difficulty === "high" ? 8 : 6) : option.aingkaCode === "어휘개수" ? [5, 8] : 5;
+      option.aingkaCode === "어법개수"
+        ? option.difficulty === "high"
+          ? 8
+          : 6
+        : option.aingkaCode === "어휘개수"
+          ? [5, 8]
+          : option.aingkaCode === "어법오류수정3"
+            ? 7
+            : 5;
     const built = buildGrammarSpotPassage(passage, raw.spots, want, spotKind ?? "grammar");
     if ("error" in built) throw new Error(built.error);
     raw.passageModified = built.passageModified;
@@ -4188,7 +4212,8 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
       raw.blankText,
       raw.blankCtx,
       option.aingkaCode === "빈칸단어",
-      option.type === "sentence_blank" ? undefined : WRITING_BLANK_FILL
+      option.type === "sentence_blank" ? undefined : WRITING_BLANK_FILL,
+      option.aingkaCode === "문법조건영작"
     );
     if ("error" in built) throw new Error(built.error);
     raw.passageModified = built.passageModified;
