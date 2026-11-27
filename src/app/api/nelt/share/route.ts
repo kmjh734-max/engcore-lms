@@ -33,6 +33,7 @@ export const maxDuration = 90;
 
 /** 학부모용 공유 링크 생성 */
 export async function POST(request: Request) {
+  const startedAt = Date.now();
   const auth = await requireNeltStaff();
   if (!auth.ok) return auth.error;
 
@@ -181,7 +182,14 @@ export async function POST(request: Request) {
     if (shortfall) {
       return NextResponse.json({ ok: false, message: shortfall }, { status: 402 });
     }
-    const ai = await generateNeltParentMessageAi(snapshotAnalysis, meta);
+    // 라우트 한도 90초 — 서술 생성에 쓴 시간을 빼고 남은 만큼만 기다린다(넘으면 규칙 안내문으로 공유는 그대로)
+    const leftMs = Math.max(10_000, 82_000 - (Date.now() - startedAt));
+    const ai = await generateNeltParentMessageAi(
+      snapshotAnalysis,
+      meta,
+      undefined,
+      AbortSignal.timeout(leftMs)
+    );
     if (ai.ok) {
       await debitLessonCredits({
         academyId: auth.academyId,

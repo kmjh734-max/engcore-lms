@@ -37,6 +37,25 @@ type DailyTaskInsert = {
   total_count: number;
 };
 
+/**
+ * 진행 기록은 과제 100개 묶음이면 1000행(한 번에 돌려주는 최대)을 넘을 수 있다
+ * (예: 하루 20문항 × 100과제). 넘친 행이 빠지면 손댄 문항을 안 손댄 것으로 보고 덜어 낼 수 있어 끝까지 읽는다.
+ * 오류가 나면 예전처럼 읽은 데까지만 쓴다.
+ */
+async function pageProgressRows<T>(
+  query: (from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: unknown }>
+): Promise<T[]> {
+  const PAGE = 1000;
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await query(from, from + PAGE - 1);
+    if (error || !data) break;
+    rows.push(...(data as T[]));
+    if (data.length < PAGE) break;
+  }
+  return rows;
+}
+
 /** 진행 기록(객관식·받아쓰기 중 하나라도)이 있는 과제 id */
 const STARTED_PROGRESS_FILTER =
   "objective_completed.eq.true,dictation_completed.eq.true,completed.eq.true,dictation_score.not.is.null";
@@ -51,12 +70,15 @@ async function loadTouchedQuestionIds(
   for (let i = 0; i < taskIds.length; i += 100) chunks.push(taskIds.slice(i, i + 100));
   const parts = await Promise.all(
     chunks.map(async (chunk) => {
-      const { data } = await admin
-        .from("listening_daily_task_progress")
-        .select("question_id")
-        .in("daily_task_id", chunk)
-        .or(STARTED_PROGRESS_FILTER);
-      return data ?? [];
+      return pageProgressRows<{ question_id: string }>((from, to) =>
+        admin
+          .from("listening_daily_task_progress")
+          .select("question_id")
+          .in("daily_task_id", chunk)
+          .or(STARTED_PROGRESS_FILTER)
+          .order("id")
+          .range(from, to)
+      );
     })
   );
   for (const data of parts) {
@@ -75,12 +97,15 @@ export async function loadStartedTaskIds(
   // 읽기만 하므로 묶음끼리 동시에
   const parts = await Promise.all(
     chunks.map(async (chunk) => {
-      const { data } = await admin
-        .from("listening_daily_task_progress")
-        .select("daily_task_id")
-        .in("daily_task_id", chunk)
-        .or(STARTED_PROGRESS_FILTER);
-      return data ?? [];
+      return pageProgressRows<{ daily_task_id: string }>((from, to) =>
+        admin
+          .from("listening_daily_task_progress")
+          .select("daily_task_id")
+          .in("daily_task_id", chunk)
+          .or(STARTED_PROGRESS_FILTER)
+          .order("id")
+          .range(from, to)
+      );
     })
   );
   for (const data of parts) {
@@ -225,13 +250,17 @@ export async function ensureDailyTasksForStudentRange(
       .eq("student_id", studentId),
     Promise.all(
       queueChunks.map(async (chunk) => {
-        const { data: doneRows } = await admin
-          .from("listening_daily_task_progress")
-          .select("question_id, daily_task_id")
-          .eq("student_id", studentId)
-          .eq("completed", true)
-          .in("question_id", chunk);
-        return doneRows ?? [];
+        return pageProgressRows<{ question_id: string; daily_task_id: string }>(
+          (from, to) =>
+            admin
+              .from("listening_daily_task_progress")
+              .select("question_id, daily_task_id")
+              .eq("student_id", studentId)
+              .eq("completed", true)
+              .in("question_id", chunk)
+              .order("id")
+              .range(from, to)
+        );
       })
     ),
   ]);

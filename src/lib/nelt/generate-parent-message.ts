@@ -661,7 +661,9 @@ function getNeltParentMessageModels(): string[] {
 export async function generateNeltParentMessageAi(
   analysis: NeltGrowthAnalysis,
   academyNameOrMeta: string | NeltParentMessageMeta = ACADEMY_NAME,
-  tone: NeltParentMessageTone = "standard"
+  tone: NeltParentMessageTone = "standard",
+  /** 넘기면 이 신호로 모든 모델·재시도를 끊는다(부르는 라우트 시간 한도 안에서 끝내려고) */
+  signal?: AbortSignal
 ): Promise<
   | {
       ok: true;
@@ -779,8 +781,10 @@ ${JSON.stringify(facts, null, 2)}`;
           else delete body.reasoning_effort;
         }
 
+        if (signal?.aborted) return { ok: false, message: "시간 초과" };
         const res = await openAiFetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
+          ...(signal ? { signal } : {}),
           headers: {
             Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",
