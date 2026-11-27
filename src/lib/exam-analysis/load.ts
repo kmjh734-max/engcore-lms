@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 import { loadAcademyMaterialPassages } from "@/lib/exam-analysis/material-passages";
 import type { ExamAnalysisRow, ExamItemRow } from "@/lib/exam-analysis/types";
 import { measureVocabLevel } from "@/lib/vocab/engcore-level";
@@ -19,10 +20,15 @@ export async function loadExamAnalyses(academyId: string) {
   const ids = list.map((a) => a.id);
   const counts = new Map<string, { n: number; hard: number; subj: number; matched: number }>();
   if (ids.length) {
-    const { data: items } = await admin
-      .from("school_exam_items")
-      .select("analysis_id, level, is_subjective, matched_item_id")
-      .in("analysis_id", ids);
+    // 분석 200개 × 문항 25개면 1000행을 넘어 목록의 문항 수가 틀렸다 — 끝까지 읽는다
+    const { data: items } = await pageRows((from, to) =>
+      admin
+        .from("school_exam_items")
+        .select("analysis_id, level, is_subjective, matched_item_id")
+        .in("analysis_id", ids)
+        .order("id")
+        .range(from, to)
+    );
     for (const it of items ?? []) {
       const c = counts.get(it.analysis_id as string) ?? { n: 0, hard: 0, subj: 0, matched: 0 };
       c.n++;

@@ -928,7 +928,11 @@ export function StudentListeningPractice({
             <Icon name="check" size={14} strokeWidth={3} />
           </span>
           {scheduleMode
-            ? "오늘 듣기학습을 모두 끝냈어요. 잠시 후 목록으로 이동해요."
+            ? completeOnOpen.current
+              ? "이미 끝낸 과제예요. 다시 들으며 복습할 수 있어요."
+              : progressSaveFailed
+                ? "다 풀었어요. 다만 저장이 안 된 문항이 있어요 — 위 안내를 봐 주세요."
+                : "오늘 듣기학습을 모두 끝냈어요. 잠시 후 목록으로 이동해요."
             : "모든 문항의 문제와 받아쓰기를 끝냈어요."}
         </div>
       )}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { createClient } from "@/lib/supabase/server";
@@ -34,11 +35,18 @@ export default async function SuperAdminHomePage() {
 
   if (academyIds.length > 0) {
     const [{ data: profiles }, { data: courses }] = await Promise.all([
-      supabase
-        .from("profiles")
-        .select("academy_id, role")
-        .in("academy_id", academyIds),
-      supabase.from("courses").select("academy_id").in("academy_id", academyIds),
+      // 전체 인원이 1000명을 넘으면 학원별 인원이 적게 나왔다 — 끝까지 센다
+      pageRows((from, to) =>
+        supabase
+          .from("profiles")
+          .select("academy_id, role")
+          .in("academy_id", academyIds)
+          .order("id")
+          .range(from, to)
+      ),
+      pageRows((from, to) =>
+        supabase.from("courses").select("academy_id").in("academy_id", academyIds).order("id").range(from, to)
+      ),
     ]);
 
     for (const p of profiles ?? []) {
