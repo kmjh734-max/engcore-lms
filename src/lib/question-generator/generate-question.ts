@@ -424,7 +424,7 @@ LANGUAGE: choices ENGLISH, explanation Korean.`;
         return `사례 분류형 — 「다음 글의 내용을 바탕으로 할 때, 사례 ①~⑤ 중 나머지 넷과 성격이 다른 것은?」
 - Do NOT change the passage (omit passageModified). questionText "" (empty).
 - First find the passage's key concept or contrast (e.g. AI as a threat that replaces people vs. AI as a tool people control).
-- choices = 5 ENGLISH example sentences (15~28 words each), each a NEW concrete situation not in the passage (people, places, actions). Four show the SAME side of the concept; exactly one shows the OTHER side.
+- choices = 5 ENGLISH example sentences (15~28 words each), each a NEW concrete situation not in the passage (people, places, actions). Use only words a Korean 고1 student knows (no rare words such as insignia, feline) — rare words get the item thrown away. Four show the SAME side of the concept; exactly one shows the OTHER side.
 - The odd one out must differ in the concept itself, not in surface details (topic, setting, length). The four same-side examples should vary in setting so the odd one cannot be found by topic alone.
 - Every example must clearly belong to one side when judged by the passage's idea; no example that fits both.
 - correctAnswer = the odd one. explanation (Korean): name the two sides, which side the four show, and why the answer is the other side.
@@ -3083,7 +3083,7 @@ const LIGHT_TYPES = new Set([
  * 가린 채 풀어 보니 합격 10·조건부 2·불량 0(sol은 9문항 합격 7·조건부 2), 원가 −20~25%. 예전 시험(10-01)에서 싼 모델이
  * 나빴던 것은 지문을 다시 쓰다 밑줄을 빠뜨린 탓이었다. 서술형 어법(오류 수정)은 시험 전이라 그대로.
  */
-const LIGHT_CODES = new Set(["어휘추론", "어휘개수", "함축의미추론", "어법추론", "어법개수", "어법통문장", "어법모두고르기", ...(process.env.QG_LIGHT_CODES_EXTRA ?? "").split(",").map((s) => s.trim()).filter(Boolean)]);
+const LIGHT_CODES = new Set(["어휘추론", "어휘개수", "함축의미추론", "어법추론", "어법개수", "어법통문장", "어법모두고르기", "어법오류수정2", "어법오류수정3", "어법문장오류수정", ...(process.env.QG_LIGHT_CODES_EXTRA ?? "").split(",").map((s) => s.trim()).filter(Boolean)]);
 
 function modelForType(option: { type: string; aingkaCode?: string }): string {
   return LIGHT_TYPES.has(option.type) || (option.aingkaCode && LIGHT_CODES.has(option.aingkaCode)) ? QG_MODEL_LIGHT : QG_MODEL_MAIN;
@@ -4399,6 +4399,18 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     payload.choices = [2, 3, 4, 5, 6].map((k, i) => ({ number: i + 1, text: `${k}개` }));
     if (n >= 2 && n <= 6) payload.correctAnswer = n - 1;
   }
+  // 어휘빈칸공통: <답란>을 빠뜨리면 다시 만들었다 — 틀이 정해져 있으니 붙여 준다(2026-11-28)
+  if (option.aingkaCode === "어휘빈칸공통" && payload.questionText && !/(^|\n)\s*<답란>/.test(payload.questionText)) {
+    payload.questionText = `${payload.questionText.trimEnd()}\n\n<답란>\nⓐ\nⓑ`;
+  }
+  /*
+   * 어법문장오류수정: 번호가 문장 중간에 찍혀 세 번씩 다시 만들었다(2026-11-28 시험). 번호를 그 문장 첫머리로 옮긴다.
+   * 옮긴 뒤 한 문장에 번호가 둘이 되면 그대로 두어 검사에 걸리게 한다.
+   */
+  if (option.aingkaCode === "어법문장오류수정" && payload.passageModified) {
+    const moved = moveMarksToSentenceStart(payload.passageModified);
+    if (moved) payload.passageModified = moved;
+  }
   const shapeError = assertBasicQuestionShape(
     payload,
     option,
@@ -4454,6 +4466,36 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     payload.questionText = payload.questionText?.replace(/<\/?u>/g, "") ?? payload.questionText;
   }
   return payload;
+}
+
+/** 문장 중간의 ①~⑤를 그 문장 첫머리로 옮긴다. 옮길 것이 없거나 한 문장에 둘이 되면 null */
+export function moveMarksToSentenceStart(text: string): string | null {
+  const marks = [...text.matchAll(/\s*([①②③④⑤])\s*/g)];
+  if (!marks.length) return null;
+  let plain = text;
+  for (const m of [...marks].reverse()) plain = plain.slice(0, m.index) + " " + plain.slice(m.index! + m[0].length);
+  plain = plain.replace(/ {2,}/g, " ").trim();
+  // 다시 넣을 자리: 원래 번호 앞 글에서 마지막 문장 끝 뒤
+  const stripped = text.replace(/\s*[①②③④⑤]\s*/g, " ").replace(/ {2,}/g, " ").trim();
+  if (stripped !== plain) return null;
+  let changed = false;
+  const inserts: Array<{ at: number; mark: string }> = [];
+  for (const m of marks) {
+    const before = text.slice(0, m.index).replace(/\s*[①②③④⑤]\s*/g, " ").replace(/ {2,}/g, " ").trimStart();
+    const b = before.replace(/\s+$/, "");
+    let at = b.length;
+    if (b && !/[.!?]["'’”)]*$/.test(b)) {
+      const end = Math.max(...[".", "!", "?"].map((p) => b.lastIndexOf(p + " ")));
+      at = end >= 0 ? end + 2 : 0;
+      changed = true;
+    } else if (b) at = b.length + 1;
+    inserts.push({ at, mark: m[1]! });
+  }
+  if (!changed) return null;
+  if (new Set(inserts.map((x) => x.at)).size !== inserts.length) return null;
+  let out = plain;
+  for (const x of [...inserts].sort((a, c) => c.at - a.at)) out = `${out.slice(0, x.at)}${x.mark} ${out.slice(x.at)}`;
+  return out.replace(/ {2,}/g, " ").trim();
 }
 
 /**
