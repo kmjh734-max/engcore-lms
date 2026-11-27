@@ -1,4 +1,4 @@
-import { buildGrammarSpotPassage, grammarSpotFormatLine, grammarSpotMode, GRAMMAR_SPOT_SCHEMA } from "@/lib/question-generator/grammar-spots";
+import { blankSpotFormatLine, blankSpotMode, buildBlankPassage, buildGrammarSpotPassage, buildInsertionPassage, buildIrrelevantPassage, buildOrderPassage, grammarSpotFormatLine, GRAMMAR_SPOT_SCHEMA, insertionSpotFormatLine, irrelevantSpotFormatLine, orderSpotFormatLine, spotKindOf, structSpotMode } from "@/lib/question-generator/grammar-spots";
 import { engcoreLevelOf } from "@/lib/vocab/engcore-lemma";
 import { isFunctionWord } from "@/lib/vocab/function-words";
 import { renumberMarksInOrder } from "@/lib/question-generator/renumber-marks";
@@ -382,7 +382,8 @@ LANGUAGE: questionText + choices ENGLISH only. explanation Korean.`;
       if (code === "빈칸단어") {
         // 핵심 낱말 하나를 비우고 영어 한 낱말 보기 다섯(리얼영어 「빈칸 추론(단어)」 54문항)
         return `빈칸 추론(단어) — 「다음 빈칸에 들어갈 말로 가장 적절한 것은?」:
-- In passageModified, replace ONE key content word (noun/verb/adjective/adverb that carries the passage's main point) with ________. Exactly one blank. Everything else word for word.
+${paraphraseOn ? "- In passageModified, replace ONE key content word (noun/verb/adjective/adverb that carries the passage's main point) with ________. Exactly one blank. Everything else word for word." : `${blankSpotFormatLine(true)}
+- Blank ONE key content word (noun/verb/adjective/adverb that carries the passage's main point). Exactly one blank.`}
 - Choose a word whose meaning the rest of the passage clearly supports (a contrast, a repeated idea, an example that explains it). Do not blank a word that appears again elsewhere in the passage unchanged (it would give the answer away).
 - Every choice placed in the blank must make a grammatical, sensible-sounding sentence; it is wrong only because the passage rules it out. So do not blank a word inside a fixed frame where the wrong choices turn into nonsense ("20 times as ___ as the price" → "20 times as modest as"), and do not blank a number or a plain comparison word (high/low, more/less).
 - Blank a word that stands alone: never one word of a phrasal verb ("caught up"), a fixed two-word term ("lactic acid", "student council") or a hyphenated word, so the answer is ONE word.
@@ -448,7 +449,7 @@ LANGUAGE: passageModified + choices MUST be ENGLISH only (no Korean).`;
 - 빈칸으로 지운 문장에만 나오는 고유명사(사람·곳 이름)·연도는 바꿔 쓴 정답에 넣지 않는다. 학생 지문에 없는 정보다 — 그 문장이 글의 흐름에서 하는 말로 쓴다.`;
       if (option.difficulty === "high") {
         return `문장빈칸 HIGH (상) — 효자 기출동형:
-- In passageModified, blank ONE important sentence (or key clause) with ____________________________________.
+${paraphraseOn ? "- In passageModified, blank ONE important sentence (or key clause) with ____________________________________." : blankSpotFormatLine(false)}
 - The blanked content must be a flow-critical sentence from the passage.
 - What to blank (학교 기출 2026-11-24): the claim/topic sentence or its key clause — most often the LAST sentence or a MIDDLE claim sentence, rarely an example detail. Blank a span of about 6~14 words of the original. Never blank the FIRST sentence. In a claim → example → conclusion passage (모의고사 빈칸 지문의 모양), good targets are the sentence right before "For example" or a sentence starting with Thus/Therefore/In short.
 - 5 ENGLISH full-sentence/phrase choices.
@@ -459,7 +460,7 @@ ${choiceExplanationRules()}
 LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean in passage or choices.`;
       }
       return `문장빈칸 LOW (하) — 효자 기출동형:
-- In passageModified, blank ONE important sentence (or key clause) with ____________________________________.
+${paraphraseOn ? "- In passageModified, blank ONE important sentence (or key clause) with ____________________________________." : blankSpotFormatLine(false)}
 - The blanked content must be a flow-critical sentence from the passage (like mock-exam sentence blanks).
 - What to blank (학교 기출 2026-11-24): the claim/topic sentence or its key clause — most often the LAST sentence or a MIDDLE claim sentence, rarely an example detail. Blank a span of about 6~14 words of the original. Never blank the FIRST sentence. In a claim → example → conclusion passage (모의고사 빈칸 지문의 모양), good targets are the sentence right before "For example" or a sentence starting with Thus/Therefore/In short.
 - 5 ENGLISH full-sentence/phrase choices that fit the blank. The correct answer keeps the original MEANING but rewords it with COMMON words (학교 기출 빈칸 정답의 68%가 원문 낱말 30% 미만, 원문 그대로는 7%) — do not copy the blanked words; keep it easy by using everyday vocabulary, not by copying.
@@ -478,7 +479,8 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
 - Format: lead-in paragraph (지시문) + paragraphs (A)(B)(C) + 5 order choices like (A)-(C)-(B).
 - CRITICAL: PARAPHRASE the lead-in (지시문) only — reword synonyms/structure; do NOT copy it verbatim from the passage.
 - Keep (A)(B)(C) body paragraphs as ORIGINAL wording from the passage (do not paraphrase A/B/C).
-- Exactly one correct order. Put lead-in+(A)(B)(C) in passageModified. questionText empty.
+${paraphraseOn ? "- Exactly one correct order. Put lead-in+(A)(B)(C) in passageModified. questionText empty." : `- Exactly one correct order. questionText empty.
+${orderSpotFormatLine(true)}`}
 - Paragraph size (학교 기출 2026-11-24): each of (A)(B)(C) is usually TWO sentences (1~3); keep the three roughly even rather than one long and two one-line paragraphs.
 - CHOOSE THE CUT POINTS so that only one order works (고정 시험지 2026-11-10: 두 순서가 다 읽히는 문항이 많았다). Start each of the 2nd and 3rd paragraphs in the correct order with a sentence that cannot stand right after the lead-in or another paragraph: a reference back (this/these/such/the + a noun just introduced, he/she/they), an addition or contrast word (also, In addition, however, Instead), or a time step (Then, Later). Do not cut where the next paragraph opens with a fresh general statement.
 - Before answering, read each of the other four orders: if any of them also reads naturally, move the cut points (or skip with {"skip":true,"reason":"순서 단서 없음"}).
@@ -488,7 +490,8 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
 - Format: lead-in paragraph (지시문) + paragraphs (A)(B)(C) + 5 order choices like (A)-(C)-(B).
 - Keep the lead-in (지시문) as ORIGINAL wording from the passage (do not paraphrase).
 - Keep (A)(B)(C) as ORIGINAL wording from the passage.
-- Exactly one correct order. Put lead-in+(A)(B)(C) in passageModified. questionText empty.
+${paraphraseOn ? "- Exactly one correct order. Put lead-in+(A)(B)(C) in passageModified. questionText empty." : `- Exactly one correct order. questionText empty.
+${orderSpotFormatLine(false)}`}
 - Paragraph size (학교 기출 2026-11-24): each of (A)(B)(C) is usually TWO sentences (1~3); keep the three roughly even rather than one long and two one-line paragraphs.
 - CHOOSE THE CUT POINTS so that only one order works (고정 시험지 2026-11-10: 두 순서가 다 읽히는 문항이 많았다). Start each of the 2nd and 3rd paragraphs in the correct order with a sentence that cannot stand right after the lead-in or another paragraph: a reference back (this/these/such/the + a noun just introduced, he/she/they), an addition or contrast word (also, In addition, however, Instead), or a time step (Then, Later). Do not cut where the next paragraph opens with a fresh general statement.
 - Before answering, read each of the other four orders: if any of them also reads naturally, move the cut points (or skip with {"skip":true,"reason":"순서 단서 없음"}).
@@ -514,8 +517,8 @@ LANGUAGE: passageModified + ALL choices MUST be ENGLISH only. Never write Korean
         return `문장삽입 HIGH (상) — 효자 기출동형 (PDF: 위치):
 - Pick a flow-critical sentence from the passage as the sentence to insert.
 ${givenRule}
-- passageModified = remaining ENGLISH passage with five insertion slots marked ① ② ③ ④ ⑤ in the text.
-- NEVER add a sentence that is not in the original passage to make room for slots (no new closing or bridging sentences). If there are too few sentence boundaries, you may split ONE long original sentence at a clause boundary, keeping its words.
+${paraphraseOn ? `- passageModified = remaining ENGLISH passage with five insertion slots marked ① ② ③ ④ ⑤ in the text.
+- NEVER add a sentence that is not in the original passage to make room for slots (no new closing or bridging sentences). If there are too few sentence boundaries, you may split ONE long original sentence at a clause boundary, keeping its words.` : insertionSpotFormatLine()}
 - choices: omit or empty array — slots IN the passage are the options; do NOT invent separate choice texts.
 ${insertionChoiceCraft()}
 LANGUAGE: questionText + passageModified MUST be ENGLISH only.
@@ -526,8 +529,8 @@ ${slotRule}`;
       return `문장삽입 LOW (하) — 효자 기출동형 (PDF: 위치):
 - Pick a flow-critical sentence from the passage as the sentence to insert.
 - questionText = that sentence in ORIGINAL ENGLISH wording (do not paraphrase).
-- passageModified = remaining ENGLISH passage with five insertion slots marked ① ② ③ ④ ⑤ in the text.
-- NEVER add a sentence that is not in the original passage to make room for slots (no new closing or bridging sentences). If there are too few sentence boundaries, you may split ONE long original sentence at a clause boundary, keeping its words.
+${paraphraseOn ? `- passageModified = remaining ENGLISH passage with five insertion slots marked ① ② ③ ④ ⑤ in the text.
+- NEVER add a sentence that is not in the original passage to make room for slots (no new closing or bridging sentences). If there are too few sentence boundaries, you may split ONE long original sentence at a clause boundary, keeping its words.` : insertionSpotFormatLine()}
 - choices: omit or empty array — slots IN the passage are the options; do NOT invent separate choice texts.
 ${insertionChoiceCraft()}
 LANGUAGE: questionText + passageModified MUST be ENGLISH only.
@@ -557,7 +560,7 @@ ${irrelevantChoiceCraft()}`;
        */
       const keepRule = paraphraseOn
         ? ""
-        : "- KEEP THE PASSAGE VERBATIM: copy every original sentence word for word and in order. INSERT the one irrelevant sentence between two original sentences; do not replace, delete, shorten, merge or reword any original sentence.";
+        : irrelevantSpotFormatLine();
       if (option.difficulty === "high") {
         return `무관한문장 HIGH (상) — 효자 기출동형:
 ${paraphraseOn ? "- CRITICAL: PARAPHRASE the ENTIRE passage in passageModified (ENGLISH synonyms/rewording throughout)." : keepRule}
@@ -779,7 +782,7 @@ ${explainRules}`;
 
 --- 이번 문항 ---
 어휘 개수 — 고1 학력평가·내신 고퀄리티 (A4 변형동형):
-- passageModified = FULL ENGLISH passage with exactly ${spots} vocabulary spots ${marks} as ①<u>word/phrase</u>.
+${paraphraseOn ? `- passageModified = FULL ENGLISH passage with exactly ${spots} vocabulary spots ${marks} as ①<u>word/phrase</u>.` : grammarSpotFormatLine(spots, "vocab")}
 - 문맥에 맞지 않는 곳을 <b>정확히 ${wrongN}개</b> 두고, 나머지 ${spots - wrongN}개는 <b>반드시</b> 문맥에 맞게 쓴다.
 - 이 개수는 바꾸지 않는다. ${wrongN}개보다 많이도 적게도 두지 않는다.
 - correctAnswer = ${wrongN}.
@@ -796,7 +799,7 @@ LANGUAGE: passage ENGLISH only.`;
       }
       // 어휘추론 (어색한 것 고르기) — PDF형 ①~⑤, 하단 보기 없음
       return `어휘 어색한 것 고르기 — 고1 학력평가·내신 고퀄리티 (A4 변형동형):
-- passageModified = FULL ENGLISH passage with exactly five vocabulary spots ① ② ③ ④ ⑤ as ①<u>word/phrase</u>.
+${paraphraseOn ? "- passageModified = FULL ENGLISH passage with exactly five vocabulary spots ① ② ③ ④ ⑤ as ①<u>word/phrase</u>." : grammarSpotFormatLine(5, "vocab")}
 - Exactly ONE is contextually WRONG; the other four are clearly correct in context.
 - WRONG 기법: (1) 반의·방향 반전(기본) (2) 문맥만 틀린 유의어형.
 ${vocabChoiceCraft(paraphraseOn)}
@@ -3069,7 +3072,7 @@ const LIGHT_TYPES = new Set([
   ...(process.env.QG_LIGHT_TYPES_EXTRA ?? "").split(",").map((s) => s.trim()).filter(Boolean),
 ]);
 /** 유형 전체가 아니라 갈래만 싼 모델로 — 위 시험에서 본 것만(어휘개수·목적·심경은 시험 안 함) */
-const LIGHT_CODES = new Set(["어휘추론", "함축의미추론"]);
+const LIGHT_CODES = new Set(["어휘추론", "어휘개수", "함축의미추론", ...(process.env.QG_LIGHT_CODES_EXTRA ?? "").split(",").map((s) => s.trim()).filter(Boolean)]);
 
 function modelForType(option: { type: string; aingkaCode?: string }): string {
   return LIGHT_TYPES.has(option.type) || (option.aingkaCode && LIGHT_CODES.has(option.aingkaCode)) ? QG_MODEL_LIGHT : QG_MODEL_MAIN;
@@ -3135,7 +3138,12 @@ export async function generateOneQuestion(opts: {
   anchorPlan?: AnchorPlan | null;
 }): Promise<GeneratedQuestionPayload> {
   /** 어법 추론·개수는 지문 대신 밑줄 자리만 받는다(grammar-spots.ts, 2026-11-28) */
-  const spotMode = grammarSpotMode(opts.option, opts.paraphraseGrammarVocab === true);
+  const spotKind = spotKindOf(opts.option, opts.paraphraseGrammarVocab === true);
+  const spotMode = spotKind !== null;
+  /** 빈칸추론·빈칸단어는 지울 원문 글귀만 받는다(grammar-spots.ts) */
+  const blankMode = blankSpotMode(opts.option, opts.paraphraseGrammarVocab === true);
+  /** 문장삽입·무관한 문장·순서는 자리만 받고 지문은 코드가 만든다 */
+  const structMode = structSpotMode(opts.option, opts.paraphraseGrammarVocab === true);
   const { option, analysis } = opts;
   // 시험지 흔적(정답 표기·문장 번호)을 걷어 낸 지문으로 만든다
   const passage = cleanSourcePassage(opts.passage);
@@ -3531,6 +3539,10 @@ export async function generateOneQuestion(opts: {
           : "passageModified = the passage with the two spots replaced by ⓐ__________ and ⓑ__________; everything else word for word."
         : spotMode
         ? "Do NOT output passageModified — give spots only; the code builds the underlined passage."
+        : blankMode
+        ? "Do NOT output passageModified — give blankText only; the code puts the blank into the original passage."
+        : structMode
+        ? "Do NOT output passageModified — give the positions the type rules ask for; the code builds the passage from the original."
         : "Use passageModified when needed."
     : "Do NOT change passage; omit passageModified.";
 
@@ -3603,7 +3615,9 @@ export async function generateOneQuestion(opts: {
      * 밑줄 자리만 바꾼다. 재진술은 선생님이 켰을 때만 한다.
      */
     spotMode
-      ? `- Pick the underline spots from structures the passage ALREADY has (수일치·관계사·준동사·병렬·태·시제·비교 등 원문에 있는 것). If a target grammar point does not exist in this passage, choose another point that does. An error spot changes ONLY the form of the original word(s) at that spot.`
+      ? spotKind === "vocab"
+        ? `- Pick content words that carry the passage's logic (direction·cause·contrast words). A wrong spot replaces the original with a word that clearly breaks the context; a correct spot keeps the original word exactly.`
+        : `- Pick the underline spots from structures the passage ALREADY has (수일치·관계사·준동사·병렬·태·시제·비교 등 원문에 있는 것). If a target grammar point does not exist in this passage, choose another point that does. An error spot changes ONLY the form of the original word(s) at that spot.`
       : (option.type === "grammar" || option.type === "vocabulary") && !opts.paraphraseGrammarVocab
       ? `- KEEP THE PASSAGE VERBATIM: copy the original passage word for word into passageModified. The ONLY allowed change is the wording inside the marked spots (ⓐ~/①~). Do not reword, shorten, merge, split or reorder any sentence.
 - Pick the marked spots from structures the passage ALREADY has (수일치·관계사·준동사·병렬·태·시제·비교 등 원문에 있는 것). If a target grammar point does not exist in this passage, choose another point that does — never rewrite a sentence to plant one.`
@@ -3623,7 +3637,7 @@ export async function generateOneQuestion(opts: {
      * 위 줄이 어법·어휘에만 있어서 무관한문장·순서추론·빈칸추론이 지문을 고쳐 썼다(10-06 작업).
      * 유형마다 바꿔도 되는 자리만 적어 준다. 검사는 validate-question.ts의 passageRewriteProblem.
      */
-    needsModified && option.type !== "grammar" && option.type !== "vocabulary" && !opts.paraphraseGrammarVocab
+    needsModified && !blankMode && !structMode && option.type !== "grammar" && option.type !== "vocabulary" && !opts.paraphraseGrammarVocab
       ? `- KEEP THE PASSAGE VERBATIM (지문 바꿔 쓰기 꺼짐): outside the parts this type changes, passageModified copies the original passage word for word — never reword, shorten, merge, split or drop any sentence or phrase. The ONLY allowed change: ${
           option.aingkaCode === "연결어빈칸"
             ? "the connective words replaced by (A)/(B). Use connectives that already start a clause in the passage; the rest of each sentence stays as it is"
@@ -3894,23 +3908,36 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
     forcedInstruction,
     schema: {
       ...(option.type === "sentence_insertion"
-        ? {
-            questionText: "ENGLISH given sentence",
-            passageModified: "ENGLISH passage with ① ② ③ ④ ⑤ slots",
-            choices: [],
-            correctAnswer: "integer 1-5",
-          }
+        ? structMode
+          ? {
+              givenText: "the sentence to take out, copied exactly",
+              slotsBefore: ["first 3~6 words of the sentence after slot ①", "…②", "…③", "…④", "…⑤ (or END)"],
+              choices: [],
+              correctAnswer: "integer 1-5 (the slot where givenText was)",
+            }
+          : {
+              questionText: "ENGLISH given sentence",
+              passageModified: "ENGLISH passage with ① ② ③ ④ ⑤ slots",
+              choices: [],
+              correctAnswer: "integer 1-5",
+            }
         : option.type === "irrelevant_sentence"
           ? {
-              passageModified:
-                "ENGLISH passage with ⓐ ⓑ ⓒ ⓓ ⓔ; one sentence similar in wording but off-point",
+              ...(structMode
+                ? {
+                    irrelevantText: "the ONE new sentence, similar in wording but off-point",
+                    insertBefore: "first 3~6 words of the original sentence it goes before (or END)",
+                    marksBefore: ["first 3~6 words of the sentence marked ⓐ", "…ⓑ", "…ⓒ", "…ⓓ", "…ⓔ"],
+                  }
+                : { passageModified: "ENGLISH passage with ⓐ ⓑ ⓒ ⓓ ⓔ; one sentence similar in wording but off-point" }),
               choices: [],
               correctAnswer: "integer 1-5 (ⓐ=1 … ⓔ=5)",
             }
           : option.aingkaCode === "어휘추론"
             ? {
-                passageModified:
-                  "ENGLISH passage with ①<u>…</u> … ⑤<u>…</u>; exactly one wrong",
+                ...(spotMode
+                  ? { spots: GRAMMAR_SPOT_SCHEMA }
+                  : { passageModified: "ENGLISH passage with ①<u>…</u> … ⑤<u>…</u>; exactly one wrong" }),
                 choices: [],
                 correctAnswer: "integer 1-5",
                 vocabularyJudgments: [
@@ -4006,9 +4033,20 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
                         : {}),
                     // 자리부터 고르고 정답을 쓴다
                     ...(spotMode ? { spots: GRAMMAR_SPOT_SCHEMA } : {}),
+                    ...(blankMode
+                      ? { blankText: "exact words of the passage to blank", ...(option.aingkaCode === "빈칸단어" ? { blankCtx: "4-10 exact words around it" } : {}) }
+                      : {}),
+                    ...(structMode && option.type === "order"
+                      ? {
+                          leadInEnd: "last 3~6 words of the lead-in, exactly",
+                          ...(option.difficulty === "high" ? { leadIn: "the lead-in paraphrased" } : {}),
+                          partStarts: ["first 3~6 words of the 2nd part", "first 3~6 words of the 3rd part"],
+                          labels: ["B", "C", "A"],
+                        }
+                      : {}),
                     choices: [{ number: 1, text: "string" }],
                     correctAnswer: "integer 1-5 (vary; not always 1)",
-                    ...(!spotMode && needsModified ? { passageModified: "string" } : {}),
+                    ...(!spotMode && !blankMode && !structMode && needsModified ? { passageModified: "string" } : {}),
                     /*
                      * 일치개수 틀(진술 (1)~(6)·틀린 개수)이 questionText를 쓰는 서술형 모두에 나가고 있었다 —
                      * 제시어 배열·요약문·어법 수정이 유형 규칙과 다른 틀을 받았다(2026-10-13 점검).
@@ -4123,11 +4161,51 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
 
   // 자리 목록 대신 지문을 보내 왔으면 예전처럼 받는다(밑줄 밖이 바뀌었으면 뒤 검사가 잡는다)
   if (spotMode && (Array.isArray(raw.spots) || !String(raw.passageModified ?? "").trim())) {
-    const want = option.aingkaCode === "어법개수" ? (option.difficulty === "high" ? 8 : 6) : 5;
-    const built = buildGrammarSpotPassage(passage, raw.spots, want);
+    const want: number | [number, number] =
+      option.aingkaCode === "어법개수" ? (option.difficulty === "high" ? 8 : 6) : option.aingkaCode === "어휘개수" ? [5, 8] : 5;
+    const built = buildGrammarSpotPassage(passage, raw.spots, want, spotKind ?? "grammar");
     if ("error" in built) throw new Error(built.error);
     raw.passageModified = built.passageModified;
     delete raw.spots;
+  }
+  if (blankMode && (raw.blankText != null || !String(raw.passageModified ?? "").trim())) {
+    const built = buildBlankPassage(passage, raw.blankText, raw.blankCtx, option.aingkaCode === "빈칸단어");
+    if ("error" in built) throw new Error(built.error);
+    raw.passageModified = built.passageModified;
+    // 문장부호는 지문에 남겼으니 보기 끝 마침표는 뗀다
+    if (option.aingkaCode !== "빈칸단어" && Array.isArray(raw.choices)) {
+      for (const c of raw.choices as Array<{ text?: unknown }>) if (typeof c?.text === "string") c.text = c.text.replace(/\s*[.!]\s*$/, "");
+    }
+    delete raw.blankText;
+    delete raw.blankCtx;
+  }
+  if (structMode && !String(raw.passageModified ?? "").trim()) {
+    const say = Number(String(raw.correctAnswer ?? "").replace(/[^0-9]/g, ""));
+    if (option.type === "sentence_insertion") {
+      const built = buildInsertionPassage(passage, raw.givenText, raw.slotsBefore);
+      if ("error" in built) throw new Error(built.error);
+      if (say && say !== built.answer) throw new Error(`정답을 ${say}번이라 했지만 주어진 문장이 있던 자리는 ${built.answer}번입니다.`);
+      raw.passageModified = built.passageModified;
+      raw.questionText = built.questionText;
+      raw.correctAnswer = built.answer;
+    } else if (option.type === "irrelevant_sentence") {
+      const built = buildIrrelevantPassage(passage, raw.irrelevantText, raw.insertBefore, raw.marksBefore);
+      if ("error" in built) throw new Error(built.error);
+      if (say && say !== built.answer) throw new Error(`정답을 ${say}번이라 했지만 끼워 넣은 문장은 ${built.answer}번 자리입니다.`);
+      raw.passageModified = built.passageModified;
+      raw.correctAnswer = built.answer;
+    } else if (option.type === "order") {
+      const built = buildOrderPassage(passage, raw.leadInEnd, raw.partStarts, raw.labels, option.difficulty === "high" ? raw.leadIn : undefined);
+      if ("error" in built) throw new Error(built.error);
+      const choices = Array.isArray(raw.choices) ? (raw.choices as Array<{ number?: unknown; text?: unknown }>) : [];
+      const norm = (t: unknown) => String(t ?? "").replace(/\s+/g, "").replace(/[–—−]/g, "-");
+      const keyChoice = choices.find((c) => norm(c.text) === norm(built.answerOrder));
+      if (!keyChoice) throw new Error(`보기에 맞는 순서 ${built.answerOrder}가 없습니다.`);
+      if (say && say !== Number(keyChoice.number)) throw new Error(`정답을 ${say}번이라 했지만 맞는 순서 ${built.answerOrder}는 ${keyChoice.number}번 보기입니다.`);
+      raw.passageModified = built.passageModified;
+      raw.correctAnswer = Number(keyChoice.number);
+    }
+    for (const k of ["givenText", "slotsBefore", "irrelevantText", "insertBefore", "marksBefore", "leadInEnd", "leadIn", "partStarts", "labels"]) delete raw[k];
   }
   // 보기 계획 대조(보기를 섞기 전 원래 번호로) — 틀리면 까닭을 남기고 다시 만든다
   const planTypes = CONTENT_PLAN_TYPES.has(option.type) || GIST_PLAN_TYPES.has(option.type);

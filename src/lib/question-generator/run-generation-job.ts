@@ -1520,7 +1520,7 @@ export async function runGenerationJob(
               ? "qg_generate_writing"
               : "qg_generate_job",
           usedFor: "question_generator",
-          meta: { qgJobId: jobId },
+          meta: { qgJobId: jobId, qgType: item.option.key }, // 유형별 원가를 보려고(2026-11-28)
         });
         await generateOneQuestion({ ...optsFor(item), primeOnly: true }).catch(() => undefined);
       });
@@ -1556,7 +1556,7 @@ export async function runGenerationJob(
             ? "qg_generate_writing"
             : "qg_generate_job",
         usedFor: "question_generator",
-        meta: { qgJobId: jobId },
+        meta: { qgJobId: jobId, qgType: item.option.key }, // 유형별 원가를 보려고(2026-11-28)
       });
 
       const sigOf = (p: GeneratedQuestionPayload) =>
@@ -1756,7 +1756,7 @@ export async function runGenerationJob(
               ? "qg_generate_writing"
               : "qg_generate_job",
           usedFor: "question_generator",
-          meta: { qgJobId: jobId },
+          meta: { qgJobId: jobId, qgType: it.option.key }, // 유형별 원가를 보려고(2026-11-28)
         },
         () => generateWithValidation({ ...optsFor(it), retries: 1, setNote: note })
       );
