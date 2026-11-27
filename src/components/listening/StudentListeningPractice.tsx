@@ -112,6 +112,7 @@ export function StudentListeningPractice({
   }, [scheduleMode]);
 
   const [index, setIndex] = useState(0);
+  const [progressSaveFailed, setProgressSaveFailed] = useState(false);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [objectiveSubmitted, setObjectiveSubmitted] =
     useState<Record<string, boolean>>(initialObjective);
@@ -171,18 +172,33 @@ export function StudentListeningPractice({
       }
     ) => {
       if (!scheduleMode) return;
-      await fetch("/api/listening/daily-task/progress", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dailyTaskId: scheduleMode.dailyTaskId,
-          questionId,
-          objectiveCompleted: patch.objectiveCompleted,
-          selectedAnswer: patch.selectedAnswer ?? undefined,
-          dictationCompleted: patch.dictationCompleted,
-          dictationScore: patch.dictationScore,
-        }),
+      const body = JSON.stringify({
+        dailyTaskId: scheduleMode.dailyTaskId,
+        questionId,
+        objectiveCompleted: patch.objectiveCompleted,
+        selectedAnswer: patch.selectedAnswer ?? undefined,
+        dictationCompleted: patch.dictationCompleted,
+        dictationScore: patch.dictationScore,
       });
+      // 와이파이가 잠깐 끊겨도 진행이 사라지지 않게 두 번 더 보낸다. 끝내 안 되면 알려 준다
+      // (전에는 실패해도 화면은 「완료」로 넘어가고 서버엔 미완료로 남았다)
+      for (const wait of [0, 800, 2000]) {
+        if (wait) await new Promise((r) => setTimeout(r, wait));
+        try {
+          const res = await fetch("/api/listening/daily-task/progress", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body,
+          });
+          const data = (await res.json().catch(() => ({}))) as { ok?: boolean };
+          if (res.ok && data.ok !== false) {
+            return;
+          }
+        } catch {
+          /* 다시 보낸다 */
+        }
+      }
+      setProgressSaveFailed(true);
     },
     [scheduleMode]
   );
@@ -394,15 +410,21 @@ export function StudentListeningPractice({
     );
 
   const scheduleRedirectStarted = useRef(false);
+  // 이미 끝낸 과제를 「복습하기」로 열었을 때는 목록으로 보내지 않는다 — 이 화면에서 막 끝냈을 때만
+  const completeOnOpen = useRef<boolean | null>(null);
+  if (completeOnOpen.current === null) completeOnOpen.current = allComplete;
 
   useEffect(() => {
     if (!scheduleMode || !allComplete || scheduleRedirectStarted.current) return;
+    if (completeOnOpen.current) return;
+    // 진행 저장이 안 된 채로 목록에 가면 그 문항이 미완료로 남는다 — 안내를 보고 다시 하게 둔다
+    if (progressSaveFailed) return;
     scheduleRedirectStarted.current = true;
     const timer = setTimeout(() => {
       router.push("/student/listening");
     }, 1200);
     return () => clearTimeout(timer);
-  }, [allComplete, scheduleMode, router]);
+  }, [allComplete, scheduleMode, router, progressSaveFailed]);
 
   const missingIncomplete =
     scheduleMode?.initialProgress &&
@@ -853,6 +875,17 @@ export function StudentListeningPractice({
 
   return (
     <div className="space-y-5">
+      {progressSaveFailed && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+          <Icon name="alert" size={16} className="mt-0.5" />
+          <span>
+            풀이 기록이 저장되지 않았어요. 인터넷 연결을 확인한 뒤 화면을 새로 고쳐 저장 안 된 문항을 다시 풀어 주세요.
+          </span>
+        </div>
+      )}
       {missingIncomplete && missingIncomplete.length > 0 && (
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
           <Icon name="alert" size={16} className="mt-0.5" />

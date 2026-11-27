@@ -229,9 +229,12 @@ export async function getStudentScheduleTodaySummaryReadOnly(
     const effectiveStart =
       effectiveStartByAssignment.get(assignment.id) ?? assignment.start_date;
     if (todayIso < effectiveStart) continue;
+    // 오늘 과제가 둘 이상이면 아직 안 끝낸 것을 먼저(달력과 같은 기준) — 전에는 첫 줄만 보여 끝낸 것이 뽑히기도 했다
+    const done = (row as { status?: string }).status === "completed";
+    if (todayRow && done) continue;
     todayRow = row as Record<string, unknown>;
     todayAssignment = assignment;
-    break;
+    if (!done) break;
   }
 
   // 세트 제목 · 문항 번호(와 문항의 세트) · 오늘 과제 진행은 서로 기다릴 필요가 없다

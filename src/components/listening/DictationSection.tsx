@@ -257,23 +257,31 @@ export function DictationSection({
 
     setUiState("submitting");
     setError(null);
-    const res = await fetch("/api/listening/dictation/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        attemptId,
-        studentAnswers: answers,
-        passScore,
-        dailyTaskId,
-      }),
-    });
-    const data = (await res.json()) as {
+    let data: {
       ok?: boolean;
       message?: string;
       score?: number;
       passed?: boolean;
       results?: DictationBlankScoreResult[];
     };
+    try {
+      const res = await fetch("/api/listening/dictation/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          attemptId,
+          studentAnswers: answers,
+          passScore,
+          dailyTaskId,
+        }),
+      });
+      data = await res.json();
+    } catch {
+      // 인터넷이 끊겨도 「제출 중」에 멈추지 않게 — 쓴 답은 그대로 두고 다시 누르게 한다
+      setError("인터넷 연결을 확인하고 다시 제출해 주세요. 쓴 답은 그대로 있어요.");
+      setUiState("ready");
+      return;
+    }
 
     if (!data.ok) {
       setError(data.message ?? "제출하지 못했어요. 다시 눌러 주세요.");

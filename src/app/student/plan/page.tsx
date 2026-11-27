@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getKoreaYearMonth } from "@/lib/date/korea-today";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
@@ -36,9 +37,10 @@ export default async function StudentPlanPage({ searchParams }: PageProps) {
   const [profile, sp] = await Promise.all([getCurrentProfile(), searchParams]);
   if (!(await isStudyPlanEnabled(profile?.academy_id))) notFound();
   const admin = createAdminClient();
-  const now = new Date();
-  const year = Number(sp.year) || now.getFullYear();
-  const month = Number(sp.month) || now.getMonth() + 1;
+  // 서버는 UTC라 매달 1일 0~9시에 지난달이 보였다 — 한국 날짜로
+  const now = getKoreaYearMonth();
+  const year = Number(sp.year) || now.year;
+  const month = Number(sp.month) || now.month;
 
   const [plan, months] = await Promise.all([
     loadStudyPlan(admin, profile!.id, year, month),

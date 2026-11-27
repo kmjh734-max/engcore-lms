@@ -46,7 +46,27 @@ export async function reconcileDailyTaskDictationProgress(
     dictationPassScore: number;
   }
 ): Promise<void> {
-  if (!opts.requireDictation) return;
+  if (!opts.requireDictation) {
+    // 받아쓰기가 필요 없는 과제인데 객관식만 끝낸 문항이 미완료로 남아 있으면 완료로 맞춘다
+    // (예전 서버가 두 세트에 걸친 과제를 「받아쓰기 필요」로 보아 영영 안 끝나던 것 되살리기)
+    const { data: stuck } = await admin
+      .from("listening_daily_task_progress")
+      .update({ completed: true, completed_at: new Date().toISOString() })
+      .eq("daily_task_id", opts.dailyTaskId)
+      .eq("student_id", opts.studentId)
+      .eq("objective_completed", true)
+      .eq("completed", false)
+      .select("question_id");
+    if (stuck && stuck.length > 0) {
+      const { data: t } = await admin
+        .from("listening_daily_tasks")
+        .select("total_count")
+        .eq("id", opts.dailyTaskId)
+        .maybeSingle();
+      if (t) await refreshDailyTaskCounts(admin, opts.dailyTaskId, t.total_count as number);
+    }
+    return;
+  }
 
   const { data: task } = await admin
     .from("listening_daily_tasks")
@@ -208,22 +228,29 @@ export async function updateDailyTaskQuestionProgress(
     return { ok: false, message: "이 과제의 문항이 아닙니다." };
   }
 
-  const [{ data: assignment }, { data: set }] = await Promise.all([
+  const [{ data: assignment }, { data: qRows }] = await Promise.all([
     admin
       .from("listening_schedule_assignments")
       .select("require_dictation_pass, dictation_pass_score")
       .eq("id", task.assignment_id)
       .maybeSingle(),
-    admin
-      .from("listening_sets")
-      .select("dictation_enabled")
-      .eq("id", task.set_id as string)
-      .maybeSingle(),
+    admin.from("listening_questions").select("set_id").in("id", questionIds),
   ]);
+  // 화면(student/listening/daily/[taskId])과 같은 기준: 과제 세트 + 과제 문항들의 세트 중
+  // 하나라도 받아쓰기가 꺼져 있으면 받아쓰기 없이 끝낸다. 전에는 과제 세트 하나만 봐서
+  // 두 세트에 걸친 과제가 화면은 「완료」, 서버는 「받아쓰기 필요」로 영영 안 끝났다.
+  const taskSetIds = [
+    ...new Set([task.set_id as string, ...(qRows ?? []).map((r) => r.set_id as string)]),
+  ].filter(Boolean);
+  const { data: taskSets } = await admin
+    .from("listening_sets")
+    .select("dictation_enabled")
+    .in("id", taskSetIds);
+  const anyDictationDisabled = (taskSets ?? []).some((s) => s.dictation_enabled === false);
 
   const requireDictation =
     (assignment?.require_dictation_pass ?? opts.requireDictationPass) &&
-    set?.dictation_enabled !== false;
+    !anyDictationDisabled;
   const passScore =
     assignment?.dictation_pass_score ?? opts.dictationPassScore;
 
@@ -288,12 +315,25 @@ export async function updateDailyTaskQuestionProgress(
     progressPatch.selected_answer = selectedAnswer;
   }
 
-  await admin
+  const { data: updatedRows } = await admin
     .from("listening_daily_task_progress")
     .update(progressPatch)
     .eq("daily_task_id", opts.dailyTaskId)
     .eq("question_id", opts.questionId)
-    .eq("student_id", opts.studentId);
+    .eq("student_id", opts.studentId)
+    .select("id");
+  if (updatedRows && updatedRows.length === 0) {
+    // 과제를 만들 때 진행 줄이 빠졌으면(넣기 실패) 지금 만든다 — 전에는 0줄 갱신으로 과제가 0/N에서 멈췄다
+    await admin.from("listening_daily_task_progress").upsert(
+      {
+        daily_task_id: opts.dailyTaskId,
+        student_id: opts.studentId,
+        question_id: opts.questionId,
+        ...progressPatch,
+      },
+      { onConflict: "daily_task_id,question_id" }
+    );
+  }
 
   const { allDone } = await refreshDailyTaskCounts(
     admin,

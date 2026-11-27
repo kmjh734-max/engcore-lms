@@ -30,6 +30,7 @@ export function VocabReviewClient({ cards, graduated }: { cards: ReviewCard[]; g
   const [shown, setShown] = useState<null | { correct: boolean }>(null);
   const [done, setDone] = useState<Answered[]>([]);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [result, setResult] = useState<{ graduated: number; right: number } | null>(null);
 
   const card = cards[index];
@@ -43,16 +44,24 @@ export function VocabReviewClient({ cards, graduated }: { cards: ReviewCard[]; g
   }
 
   async function next() {
-    setShown(null);
-    setAnswer("");
+    if (saving) return;
     if (index + 1 < cards.length) {
+      setShown(null);
+      setAnswer("");
       setIndex(index + 1);
       return;
     }
+    // 마지막 카드: 저장이 실패하면 「끝내기」를 다시 누를 수 있게 그대로 둔다(전에는 「저장하는 중…」에 멈춤)
     setSaving(true);
-    const r = await submitVocabReview(done.map((d) => ({ reviewId: d.reviewId, answer: d.answer })));
-    setSaving(false);
-    setResult({ graduated: r.graduated, right: r.results.filter((x) => x.correct).length });
+    setSaveError(null);
+    try {
+      const r = await submitVocabReview(done.map((d) => ({ reviewId: d.reviewId, answer: d.answer })));
+      setResult({ graduated: r.graduated, right: r.results.filter((x) => x.correct).length });
+    } catch {
+      setSaveError("저장하지 못했어요. 인터넷 연결을 확인하고 「끝내기」를 다시 눌러 주세요.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (result) {
@@ -126,6 +135,7 @@ export function VocabReviewClient({ cards, graduated }: { cards: ReviewCard[]; g
         >
           {saving ? "저장하는 중…" : shown ? (index + 1 < cards.length ? "다음" : "끝내기") : "확인"}
         </button>
+        {saveError ? <p className="mt-2 text-center text-xs text-red-600">{saveError}</p> : null}
       </div>
     </div>
   );

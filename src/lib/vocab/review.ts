@@ -15,7 +15,17 @@ const GRADUATE_STREAK = 2;
 /** 하루에 내보낼 최대 개수 */
 export const DAILY_REVIEW_LIMIT = 20;
 
-const dayAfter = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString();
+/**
+ * 한국 날짜로 n일 뒤 0시. 「내일 다시 나와요」가 정말 내일 나오게 —
+ * 전에는 지금 시각 + 24시간이라 밤 9시에 틀리면 다음 날 저녁엔 아직 안 나오고 하루가 밀렸다.
+ */
+const dayAfter = (days: number) => {
+  const kst = new Date(Date.now() + 9 * 3_600_000); // 한국 시각을 UTC 칸에 놓고 날짜만 쓴다
+  const y = kst.getUTCFullYear();
+  const m = kst.getUTCMonth();
+  const d = kst.getUTCDate() + days;
+  return new Date(Date.UTC(y, m, d) - 9 * 3_600_000).toISOString();
+};
 
 export type ReviewCard = {
   id: string;
@@ -69,7 +79,11 @@ export async function recordVocabWrong(
   );
   const fresh = payload.filter((p) => !seen.has(`${p.item_id}|${p.stage}`));
   if (fresh.length > 0) {
-    await admin.from("vocab_review_items").insert(fresh);
+    // 동시에 온 다른 요청이 같은 단어를 먼저 넣었으면 그 줄만 건너뛰고 나머지는 넣는다
+    // (전에는 insert 하나가 겹쳐 묶음 전체가 빠졌다)
+    await admin
+      .from("vocab_review_items")
+      .upsert(fresh, { onConflict: "student_id,item_id,stage", ignoreDuplicates: true });
   }
   await Promise.all(
     payload
