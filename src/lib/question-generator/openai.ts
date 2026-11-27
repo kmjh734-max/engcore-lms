@@ -27,7 +27,28 @@ type RequestProfile = {
   includeTemperature: boolean;
   includeJsonMode: boolean;
   includeReasoningEffort: boolean;
+  /** flex 처리(값 절반, 같은 모델) — 자리가 없다는 429를 받으면 끄고 보통 처리로 다시 보낸다 */
+  flex: boolean;
 };
+
+/*
+ * flex 처리(2026-11-28, 선생님 「모든 유형 3배」): gpt-5.6 sol·terra·luna는 service_tier "flex"로 부르면 같은 모델을
+ * 입력·캐시·출력 모두 절반 값에 쓴다(가격표 developers.openai.com/api/docs/pricing). 모델이 같으니 문항 품질은 그대로다.
+ * 대신 OpenAI 자리가 모자랄 때 429(Resource Unavailable, 값 안 받음)를 주므로 그때는 바로 보통 처리로 다시 보낸다.
+ * 끄려면 QG_FLEX=0. 실측 06시: flex 3.8~4.3초, 보통 4.3~5.7초.
+ */
+/** 문항 생성은 보통 10~40초 — 이보다 오래 걸리는 flex 요청은 끊고 보통 처리로 */
+const FLEX_TIMEOUT_MS = 120_000;
+/** flex가 자리 없음·늦음으로 한 번 실패하면 이 프로세스는 5분 동안 보통 처리로만 보낸다(작업 전체가 느려지지 않게) */
+const FLEX_PAUSE_MS = 5 * 60_000;
+let flexPausedUntil = 0;
+function pauseFlex() {
+  flexPausedUntil = Date.now() + FLEX_PAUSE_MS;
+}
+
+export function flexEnabledFor(model: string): boolean {
+  return process.env.QG_FLEX !== "0" && /^gpt-5\.6-/.test(model) && Date.now() >= flexPausedUntil;
+}
 
 function defaultProfile(model: string): RequestProfile {
   const gpt5 = isGpt5FamilyModel(model);
@@ -35,6 +56,7 @@ function defaultProfile(model: string): RequestProfile {
     includeTemperature: listeningModelSupportsCustomTemperature(model),
     includeJsonMode: true,
     includeReasoningEffort: gpt5,
+    flex: flexEnabledFor(model),
   };
 }
 
@@ -61,6 +83,9 @@ function buildBody(
   // 같은 자리로 모인다. 안 붙인 문항 생성만 캐시 적중이 0%였다.
   if (cacheKey) {
     body.prompt_cache_key = cacheKey;
+  }
+  if (profile.flex) {
+    body.service_tier = "flex";
   }
   if (profile.includeJsonMode) {
     body.response_format = { type: "json_object" };
@@ -105,6 +130,10 @@ function relaxProfile(
     isUnsupportedParameterError(bodyText, "reasoning_effort")
   ) {
     next.includeReasoningEffort = false;
+    changed = true;
+  }
+  if (next.flex && isUnsupportedParameterError(bodyText, "service_tier")) {
+    next.flex = false;
     changed = true;
   }
   return changed ? next : null;
@@ -309,6 +338,8 @@ export async function questionGeneratorChatJson(opts: {
             Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",
           },
+          // flex가 몰려 늦으면 오래 붙잡지 않고 끊어 보통 처리로 다시 보낸다(아래 연결 오류 갈래)
+          ...(profile.flex ? { signal: AbortSignal.timeout(FLEX_TIMEOUT_MS) } : {}),
           body: JSON.stringify(
             buildBody(
               model,
@@ -331,6 +362,11 @@ export async function questionGeneratorChatJson(opts: {
         lastError = "생성 서버와 연결하지 못했습니다.";
         if (!transientRetried && attempts < MAX_ATTEMPTS_PER_MODEL) {
           transientRetried = true;
+          // flex가 늦어 끊겼을 수 있다 — 다시 보낼 때는 보통 처리로
+          if (profile.flex) {
+            profile = { ...profile, flex: false };
+            pauseFlex();
+          }
           await sleep(transientBackoffMs(null));
           continue;
         }
@@ -346,6 +382,12 @@ export async function questionGeneratorChatJson(opts: {
         if (relaxed) {
           profile = relaxed;
           relaxes++;
+          continue;
+        }
+        // flex 자리가 없으면(429, 값 안 받음) 기다리지 않고 보통 처리로 다시 보낸다
+        if (profile.flex && (res.status === 429 || res.status === 503) && !bodyText.toLowerCase().includes("insufficient_quota")) {
+          profile = { ...profile, flex: false };
+          pauseFlex();
           continue;
         }
         if (isListeningModelUnavailableError(res.status, bodyText)) {

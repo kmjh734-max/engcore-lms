@@ -27,6 +27,11 @@ const CLASSES: string[][] = [
   ["good", "well"],
   ["although", "though", "despite", "because", "while", "whereas", "unless", "during", "since", "after", "before", "until"],
   ["can", "could", "will", "would", "shall", "should", "may", "might", "must"],
+  /*
+   * 관계대명사 ↔ 인칭대명사(접속사 없이 두 절을 잇는 자리: most of whom/them, which/it) — 학교 어법의 단골 자리다.
+   * 2026-11-28 시험에서 who → they가 「다른 낱말」로 버려졌다.
+   */
+  ["who", "whom", "which", "whose", "they", "them", "it", "he", "him", "she", "her", "their", "its", "his"],
 ];
 
 const IRREG: Record<string, string> = {
@@ -41,6 +46,18 @@ const IRREG: Record<string, string> = {
   bore: "bear", born: "bear", borne: "bear", led: "lead", meant: "mean", sent: "send",
   spent: "spend", became: "become", stood: "stand", got: "get", gotten: "get", froze: "freeze",
   frozen: "freeze", built: "build", caught: "catch", taught: "teach", sought: "seek",
+  // 앞 세 글자가 달라지는 불규칙 동사(2026-11-28 시험: been stealing → been stolen이 「다른 낱말」로 버려졌다)
+  stole: "steal", stolen: "steal", broke: "break", broken: "break", drew: "draw", drawn: "draw",
+  drove: "drive", driven: "drive", ate: "eat", eaten: "eat", sang: "sing", sung: "sing",
+  rang: "ring", rung: "ring", swam: "swim", swum: "swim", drank: "drink", drunk: "drink",
+  sank: "sink", sunk: "sink", struck: "strike", woke: "wake", woken: "wake", wore: "wear", worn: "wear",
+  tore: "tear", torn: "tear", swore: "swear", sworn: "swear", won: "win", sold: "sell",
+  paid: "pay", fought: "fight", flew: "fly", flown: "fly", met: "meet", sat: "sit", shot: "shoot",
+  slept: "sleep", bit: "bite", bitten: "bite", hung: "hang", dug: "dig", fed: "feed", fled: "flee",
+  wept: "weep", swept: "sweep", rode: "ride", ridden: "ride", arose: "arise", arisen: "arise",
+  stuck: "stick", shook: "shake", shaken: "shake", hid: "hide", hidden: "hide", forgot: "forget",
+  forgotten: "forget", forgave: "forgive", forgiven: "forgive", threw: "throw", thrown: "throw",
+  understood: "understand", lost: "lose", heard: "hear", dealt: "deal"
 };
 
 // don't·doesn't·can't는 n't를 떼고 견준다(don't → doesn't가 「don」·「doe」로 갈렸다)

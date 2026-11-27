@@ -32,7 +32,8 @@ export async function openAiFetch(
     const reasoning = Number(u?.completion_tokens_details?.reasoning_tokens ?? u?.output_tokens_details?.reasoning_tokens ?? 0);
     if (u && body?.model) {
       recordAiUsage({
-        model: String(body.model),
+        // flex로 처리된 호출은 값이 절반이라 이름에 표시해 둔다(model-price.ts가 「@flex」를 보고 반값으로 센다, 2026-11-28)
+        model: String(body.model) + (body.service_tier === "flex" ? "@flex" : ""),
         inputTokens: Number(u.prompt_tokens ?? u.input_tokens ?? 0),
         cachedInputTokens: Number(
           u.prompt_tokens_details?.cached_tokens ?? u.input_tokens_details?.cached_tokens ?? 0
@@ -54,6 +55,7 @@ export async function openAiFetch(
 
 type OpenAiBody = {
   model?: string;
+  service_tier?: string;
   usage?: {
     prompt_tokens?: number;
     completion_tokens?: number;

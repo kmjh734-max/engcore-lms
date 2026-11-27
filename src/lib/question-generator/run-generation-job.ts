@@ -514,6 +514,7 @@ async function generateWithValidation(opts: {
        * (정수학원 273문항 작업 2026-10-04: 어휘개수 6개가 세 번씩 같은 까닭으로 버려짐).
        */
       issues.push(lastError);
+      if (process.env.QG_DEBUG_ATTEMPTS === "1") console.log(`[시도 ${attempt}] ${opts.option.key} 만들다 던짐: ${lastError}`);
     }
   }
 

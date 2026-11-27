@@ -87,8 +87,19 @@ export const MODEL_PRICES: Record<string, ModelPrice> = {
 export const WON_PER_USD = 1400;
 
 /** 모델 이름 앞부분으로 단가를 찾는다(gpt-5-mini-2025-08-07 → gpt-5-mini) */
+/*
+ * flex 처리(service_tier "flex")는 같은 모델을 입력·캐시·출력 모두 절반 값에 쓴다(가격표 2026-11-28, sol·terra·luna).
+ * openai-fetch.ts가 그런 호출의 모델 이름 끝에 「@flex」를 붙여 기록한다.
+ */
+const FLEX_SUFFIX = "@flex";
+
 export function modelPrice(model: string): ModelPrice | null {
-  const m = String(model ?? "").toLowerCase();
+  const raw = String(model ?? "").toLowerCase();
+  if (raw.endsWith(FLEX_SUFFIX)) {
+    const base = modelPrice(raw.slice(0, -FLEX_SUFFIX.length));
+    return base ? { ...base, in: base.in / 2, cachedIn: base.cachedIn / 2, out: base.out / 2 } : null;
+  }
+  const m = raw;
   for (const key of Object.keys(MODEL_PRICES).sort((a, b) => b.length - a.length)) {
     if (m.startsWith(key)) return MODEL_PRICES[key]!;
   }
