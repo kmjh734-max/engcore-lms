@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { fetchAllRowsSoft } from "@/lib/supabase/fetch-all-rows";
 import { getTodayIsoKorea } from "@/lib/date/korea-today";
 import {
   addDaysIso,
@@ -43,16 +44,19 @@ export async function clearIncompleteTasksFromDate(
   fromDateIso: string,
   studentId?: string | null
 ): Promise<number> {
-  let query = admin
-    .from("listening_daily_tasks")
-    .select("id")
-    .eq("assignment_id", assignmentId)
-    .gte("task_date", fromDateIso)
-    .in("status", ["pending", "in_progress"]);
-  if (studentId) query = query.eq("student_id", studentId);
-  const { data: rows } = await query;
+  // 반 전체를 멈추면 학생 × 앞으로 날짜가 1000개를 넘어 일부 학생 과제가 남았다 — 끝까지 읽는다
+  const rows = await fetchAllRowsSoft<{ id: string }>((from, to) => {
+    let query = admin
+      .from("listening_daily_tasks")
+      .select("id")
+      .eq("assignment_id", assignmentId)
+      .gte("task_date", fromDateIso)
+      .in("status", ["pending", "in_progress"]);
+    if (studentId) query = query.eq("student_id", studentId);
+    return query.order("id").range(from, to);
+  });
 
-  const ids = (rows ?? []).map((r) => r.id as string);
+  const ids = rows.map((r) => r.id);
   for (let i = 0; i < ids.length; i += 100) {
     // 진행 기록은 FK cascade
     await admin.from("listening_daily_tasks").delete().in("id", ids.slice(i, i + 100));

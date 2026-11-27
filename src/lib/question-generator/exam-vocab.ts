@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 import { lemmaEnglishToken } from "@/lib/question-generator/word-order-normalize";
 
 export type HardWord = { word: string; meaning: string };
@@ -635,13 +636,17 @@ export async function syncExamVocabSetFromJob(
   // QR 접속: 이미 있는 단어장은 그대로
   if (setId && mode === "ensure") return setId;
 
-  const { data: questions } = await admin
-    .from("generated_english_questions")
-    .select(
-      "hard_words, choices, instruction, question_type, option_key, question_text, choice_language"
-    )
-    .eq("generation_job_id", jobId)
-    .order("created_at", { ascending: true });
+  const { data: questions } = await pageRows((from, to) =>
+    admin
+      .from("generated_english_questions")
+      .select(
+        "hard_words, choices, instruction, question_type, option_key, question_text, choice_language"
+      )
+      .eq("generation_job_id", jobId)
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
 
   if (!questions?.length) return setId;
 
@@ -785,13 +790,17 @@ export async function ensureExamCompactStageSkip(
 export async function diversifyJobHardWords(jobId: string): Promise<void> {
   const admin = createAdminClient();
 
-  const { data: questions } = await admin
-    .from("generated_english_questions")
-    .select(
-      "id, passage_id, hard_words, choices, question_type, option_key, question_text, choice_language"
-    )
-    .eq("generation_job_id", jobId)
-    .order("created_at", { ascending: true });
+  const { data: questions } = await pageRows((from, to) =>
+    admin
+      .from("generated_english_questions")
+      .select(
+        "id, passage_id, hard_words, choices, question_type, option_key, question_text, choice_language"
+      )
+      .eq("generation_job_id", jobId)
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
 
   if (!questions?.length) return;
 

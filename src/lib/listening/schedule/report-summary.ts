@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { fetchAllRowsSoft } from "@/lib/supabase/fetch-all-rows";
 import { getTodayIsoKorea } from "@/lib/date/korea-today";
 import {
   getReportRangeBounds,
@@ -287,18 +288,30 @@ export async function loadStudentListeningSetIdsForReport(
           .select("set_id")
           .in("class_id", classIds)
       : Promise.resolve({ data: [] as { set_id: string }[] }),
-    supabase
-      .from("listening_daily_tasks")
-      .select("set_id")
-      .eq("student_id", studentId),
-    supabase
-      .from("listening_dictation_attempts")
-      .select("set_id")
-      .eq("student_id", studentId),
-    supabase
-      .from("listening_exam_attempts")
-      .select("set_id")
-      .eq("student_id", studentId),
+    fetchAllRowsSoft<{ set_id: string }>((from, to) =>
+      supabase
+        .from("listening_daily_tasks")
+        .select("set_id")
+        .eq("student_id", studentId)
+        .order("id")
+        .range(from, to)
+    ).then((data) => ({ data })),
+    fetchAllRowsSoft<{ set_id: string }>((from, to) =>
+      supabase
+        .from("listening_dictation_attempts")
+        .select("set_id")
+        .eq("student_id", studentId)
+        .order("id")
+        .range(from, to)
+    ).then((data) => ({ data })),
+    fetchAllRowsSoft<{ set_id: string }>((from, to) =>
+      supabase
+        .from("listening_exam_attempts")
+        .select("set_id")
+        .eq("student_id", studentId)
+        .order("id")
+        .range(from, to)
+    ).then((data) => ({ data })),
   ]);
 
   const scheduleAssignments = await loadAssignmentsForStudent(

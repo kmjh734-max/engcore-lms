@@ -27,6 +27,7 @@ import type {
   ListeningStatusTable,
 } from "@/lib/learning-status/types";
 import { listReportStudents } from "@/lib/reports/list-students";
+import { fetchAllRowsSoft } from "@/lib/supabase/fetch-all-rows";
 import type { UserRole } from "@/types/database";
 
 type TaskRow = {
@@ -366,23 +367,32 @@ export async function loadListeningMonthlyStatusTable(
         ...new Set([...loaded.byStudent.values()].flat().map((a) => a.id)),
       ]),
     })),
-    admin
-      .from("listening_daily_tasks")
-      .select(
-        "id, student_id, task_date, status, completed_count, total_count, assignment_id"
-      )
-      .in("student_id", studentIds)
-      .gte("task_date", start)
-      .lte("task_date", end),
-    admin
-      .from("listening_exam_attempts")
-      .select(
-        "student_id, set_id, score, correct_count, total_count, submitted_at"
-      )
-      .in("student_id", studentIds)
-      .gte("submitted_at", monthBounds.start)
-      .lte("submitted_at", monthBounds.end)
-      .order("submitted_at", { ascending: false }),
+    // 학원 전체(반 고르지 않음)면 학생 × 한 달 과제가 1000행을 넘어 칸이 비었다 — 끝까지 읽는다
+    fetchAllRowsSoft<TaskRow>((from, to) =>
+      admin
+        .from("listening_daily_tasks")
+        .select(
+          "id, student_id, task_date, status, completed_count, total_count, assignment_id"
+        )
+        .in("student_id", studentIds)
+        .gte("task_date", start)
+        .lte("task_date", end)
+        .order("id")
+        .range(from, to)
+    ).then((data) => ({ data })),
+    fetchAllRowsSoft<ExamAttemptRow>((from, to) =>
+      admin
+        .from("listening_exam_attempts")
+        .select(
+          "student_id, set_id, score, correct_count, total_count, submitted_at"
+        )
+        .in("student_id", studentIds)
+        .gte("submitted_at", monthBounds.start)
+        .lte("submitted_at", monthBounds.end)
+        .order("submitted_at", { ascending: false })
+        .order("id")
+        .range(from, to)
+    ).then((data) => ({ data })),
     teacherSetIdsPromise,
   ]);
 
@@ -428,12 +438,19 @@ export async function loadListeningMonthlyStatusTable(
       : Promise.resolve({ data: [] as { id: string; title: string }[] }),
     Promise.all(
       taskIdChunks.map(async (chunk) => {
-        const { data } = await admin
-          .from("listening_daily_task_progress")
-          .select("student_id, objective_completed, objective_correct")
-          .in("daily_task_id", chunk)
-          .eq("objective_completed", true);
-        return data ?? [];
+        return fetchAllRowsSoft<{
+          student_id: string;
+          objective_completed: boolean;
+          objective_correct: boolean | null;
+        }>((from, to) =>
+          admin
+            .from("listening_daily_task_progress")
+            .select("student_id, objective_completed, objective_correct")
+            .in("daily_task_id", chunk)
+            .eq("objective_completed", true)
+            .order("id")
+            .range(from, to)
+        );
       })
     ),
   ]);

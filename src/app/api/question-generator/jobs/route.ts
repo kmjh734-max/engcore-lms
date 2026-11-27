@@ -10,6 +10,7 @@ import { listGenerationJobs } from "@/lib/question-generator/list-jobs";
 import { createJobFromConfig } from "@/lib/question-generator/create-job";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 
 export async function GET() {
   try {
@@ -78,11 +79,19 @@ export async function POST(req: Request) {
           .select("id")
           .single();
         if (jErr || !job) return jsonError(jErr?.message ?? "복사하지 못했습니다.", 500);
-        const { data: questions, error: qErr } = await supabase
-          .from("generated_english_questions")
-          .select("*")
-          .eq("generation_job_id", id);
-        if (qErr) return jsonError(qErr.message, 500);
+        // 1000문항 넘는 작업도 전부 옮긴다(전에는 1000문항만 옮기고 성공으로 끝남)
+        const { data: questions, error: qErr } = await pageRows<Record<string, unknown>>((from, to) =>
+          supabase
+            .from("generated_english_questions")
+            .select("*")
+            .eq("generation_job_id", id)
+            .order("id", { ascending: true })
+            .range(from, to)
+        );
+        if (qErr) {
+          await supabase.from("question_generation_jobs").delete().eq("id", job.id);
+          return jsonError(qErr.message, 500);
+        }
         const rows = (questions ?? []).map((row) => {
           const { id: _qid, created_at: _qc, updated_at: _qu, ...rest } = row as Record<string, unknown>;
           void _qid;

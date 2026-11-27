@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { chunkIds, fetchAllRowsSoft } from "@/lib/supabase/fetch-all-rows";
 import type {
   DailyTaskSlice,
   QuestionQueueItem,
@@ -60,14 +61,26 @@ export async function buildQuestionQueueForAssignment(
   }
   const setIds = sortSetIdsByRound(orderedIds, titleById);
 
-  const { data: questions } = await admin
-    .from("listening_questions")
-    .select("id, order_index, set_id")
-    .in("set_id", setIds)
-    .order("order_index", { ascending: true });
+  // 세트가 많으면(17문항 × 59세트 이상) 1000행을 넘어 뒷번호 문항이 빠졌다 — 끝까지 읽는다
+  const questions = (
+    await Promise.all(
+      chunkIds(setIds, 80).map((chunk) =>
+        fetchAllRowsSoft<{ id: string; order_index: number; set_id: string }>(
+          (from, to) =>
+            admin
+              .from("listening_questions")
+              .select("id, order_index, set_id")
+              .in("set_id", chunk)
+              .order("order_index", { ascending: true })
+              .order("id", { ascending: true })
+              .range(from, to)
+        )
+      )
+    )
+  ).flat();
 
   const bySet = new Map<string, QuestionQueueItem[]>();
-  for (const q of questions ?? []) {
+  for (const q of questions) {
     const setId = q.set_id as string;
     const list = bySet.get(setId) ?? [];
     list.push({

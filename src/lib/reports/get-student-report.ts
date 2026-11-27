@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { fetchAllRowsSoft } from "@/lib/supabase/fetch-all-rows";
 import {
   buildEnrollmentProgressRows,
   normalizeEnrollmentInputs,
@@ -170,10 +171,14 @@ export async function getStudentReport(
       ? supabase.from("vocab_sets").select("id, title").in("id", setIds)
       : { data: [] },
     setIds.length > 0
-      ? supabase
-          .from("vocab_items")
-          .select("id, set_id, word, meaning")
-          .in("set_id", setIds)
+      ? fetchAllRowsSoft<Record<string, unknown>>((from, to) =>
+          supabase
+            .from("vocab_items")
+            .select("id, set_id, word, meaning")
+            .in("set_id", setIds)
+            .order("id")
+            .range(from, to)
+        ).then((data) => ({ data }))
       : { data: [] },
     setIds.length > 0
       ? supabase
@@ -183,24 +188,36 @@ export async function getStudentReport(
           .in("set_id", setIds)
       : { data: [] },
     setIds.length > 0
-      ? supabase
-          .from("vocab_progress")
-          .select("item_id, status, last_studied_at, studied_count")
-          .eq("student_id", studentId)
+      ? fetchAllRowsSoft<Record<string, unknown>>((from, to) =>
+          supabase
+            .from("vocab_progress")
+            .select("item_id, status, last_studied_at, studied_count")
+            .eq("student_id", studentId)
+            .order("id")
+            .range(from, to)
+        ).then((data) => ({ data }))
       : { data: [] },
     setIds.length > 0
-      ? supabase
-          .from("vocab_spelling_attempts")
-          .select("item_id, created_at, is_correct")
-          .eq("student_id", studentId)
-          .eq("is_correct", false)
+      ? fetchAllRowsSoft<Record<string, unknown>>((from, to) =>
+          supabase
+            .from("vocab_spelling_attempts")
+            .select("item_id, created_at, is_correct")
+            .eq("student_id", studentId)
+            .eq("is_correct", false)
+            .order("id")
+            .range(from, to)
+        ).then((data) => ({ data }))
       : { data: [] },
     setIds.length > 0
-      ? supabase
-          .from("vocab_example_attempts")
-          .select("item_id, created_at, is_correct")
-          .eq("student_id", studentId)
-          .eq("is_correct", false)
+      ? fetchAllRowsSoft<Record<string, unknown>>((from, to) =>
+          supabase
+            .from("vocab_example_attempts")
+            .select("item_id, created_at, is_correct")
+            .eq("student_id", studentId)
+            .eq("is_correct", false)
+            .order("id")
+            .range(from, to)
+        ).then((data) => ({ data }))
       : { data: [] },
     setIds.length > 0
       ? supabase
@@ -566,8 +583,13 @@ export async function getStudentReport(
     }
   }
   const [{ data: examTimes }, { data: dictationTimes }] = await Promise.all([
-    supabase.from("listening_exam_attempts").select("submitted_at, score").eq("student_id", studentId),
-    supabase.from("listening_dictation_attempts").select("submitted_at").eq("student_id", studentId),
+    fetchAllRowsSoft<{ submitted_at: string; score: number | null }>((from, to) =>
+      supabase.from("listening_exam_attempts").select("submitted_at, score").eq("student_id", studentId).order("id").range(from, to)
+    ).then((data) => ({ data })),
+    // 받아쓰기는 문항마다 한 행이라 수천 행 — 활동 달력이 무작위로 비었다
+    fetchAllRowsSoft<{ submitted_at: string }>((from, to) =>
+      supabase.from("listening_dictation_attempts").select("submitted_at").eq("student_id", studentId).order("id").range(from, to)
+    ).then((data) => ({ data })),
   ]);
   for (const r of examTimes ?? []) mark(r.submitted_at as string);
   for (const r of dictationTimes ?? []) mark(r.submitted_at as string);

@@ -14,6 +14,7 @@
  * 모델을 부르지 않는다 — 값이 들지 않는다.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 import {
   shouldRegenerate,
   validateGeneratedQuestion,
@@ -34,13 +35,18 @@ export async function sweepSavedQuestions(
   jobId: string,
   allowParaphrase: boolean
 ): Promise<string[]> {
-  const { data } = await admin
-    .from("generated_english_questions")
-    .select(
-      "id, passage_id, option_key, instruction, question_text, passage_original, passage_modified, choices, correct_answer, explanation"
-    )
-    .eq("generation_job_id", jobId)
-    .order("created_at");
+  // 1000문항 넘는 작업도 끝까지 본다(전에는 앞 1000문항만 점검)
+  const { data } = await pageRows((from, to) =>
+    admin
+      .from("generated_english_questions")
+      .select(
+        "id, passage_id, option_key, instruction, question_text, passage_original, passage_modified, choices, correct_answer, explanation"
+      )
+      .eq("generation_job_id", jobId)
+      .order("created_at")
+      .order("id")
+      .range(from, to)
+  );
   if (!data?.length) return [];
 
   const badIds: string[] = [];

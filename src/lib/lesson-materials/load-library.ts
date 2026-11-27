@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 import type { LessonMaterialDocumentRow } from "@/lib/lesson-materials/documents";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -106,7 +107,7 @@ export async function loadLessonMaterialsLibraryData(
     .from("lesson_material_folders")
     .select("id,name,parent_id,created_at")
     .order("created_at", { ascending: false });
-  let projectsQuery = supabase
+  const projectsBase = () => supabase
     .from("lesson_material_projects")
     .select(
       "id,title,title_en,source,folder_id,created_at,updated_at,deleted_at,order_index,analysis_first:analysis_json->0->>title,pack_vocab_first:lesson_pack_json->vocab->0,pack_header:lesson_pack_json->>headerLabel,report_first:analysis_report_json->sentences->0->>itemId"
@@ -118,16 +119,25 @@ export async function loadLessonMaterialsLibraryData(
    * 예전엔 단어 목록 전체와 첫 항목 통째를 읽어 456지문에 820KB·0.7~1.4초였다(전 학원 820지문 판정 같음 확인).
    * 지문마다 문장 수를 세던 조회(문장 행 전부)는 화면이 쓰지 않아 뺐다.
    */
-  let documentsQuery = supabase
+  const documentsBase = () => supabase
     .from("lesson_material_documents")
     .select("id,kind,name,project_ids,created_at,updated_at")
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
   if (academyId) {
     foldersQuery = foldersQuery.eq("academy_id", academyId);
-    projectsQuery = projectsQuery.eq("academy_id", academyId);
-    documentsQuery = documentsQuery.eq("academy_id", academyId);
   }
+  // 지문·문서가 1000개를 넘으면 새로 넣은 지문이 자료함에서 사라졌다 — 끝까지 읽는다
+  const projectsQuery = pageRows<Record<string, unknown>>((from, to) =>
+    (academyId ? projectsBase().eq("academy_id", academyId) : projectsBase())
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
+  const documentsQuery = pageRows<Record<string, unknown>>((from, to) =>
+    (academyId ? documentsBase().eq("academy_id", academyId) : documentsBase())
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
 
   const [foldersRes, projectsRes, documentsRes, questionJobsRes] = await Promise.all([
     foldersQuery,

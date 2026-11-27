@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { chunkIds, fetchAllRowsSoft } from "@/lib/supabase/fetch-all-rows";
 import type { DictationBlankItem } from "@/lib/listening/dictation/types";
 import { normalizeDictationText } from "@/lib/listening/dictation/normalize-text";
 import { loadStudentListeningSetIdsForReport } from "@/lib/listening/schedule/report-summary";
@@ -41,25 +42,46 @@ export async function buildListeningDictationReport(
     .select("id, title, dictation_enabled")
     .in("id", setIds);
 
-  const { data: attempts } = await supabase
-    .from("listening_dictation_attempts")
-    .select(
-      "set_id, question_id, score, passed, attempt_no, submitted_at, blank_items, student_answers"
+  // 학생 한 명이라도 받아쓰기 기록은 수천 행이 된다 — 끝까지 읽는다
+  const attempts = (
+    await Promise.all(
+      chunkIds(setIds, 80).map((chunk) =>
+        fetchAllRowsSoft<Record<string, unknown>>((from, to) =>
+          supabase
+            .from("listening_dictation_attempts")
+            .select(
+              "set_id, question_id, score, passed, attempt_no, submitted_at, blank_items, student_answers"
+            )
+            .eq("student_id", studentId)
+            .in("set_id", chunk)
+            .not("submitted_at", "is", null)
+            .order("id")
+            .range(from, to)
+        )
+      )
     )
-    .eq("student_id", studentId)
-    .in("set_id", setIds)
-    .not("submitted_at", "is", null);
+  ).flat();
 
-  const attemptsInRange = (attempts ?? []).filter((a) =>
+  const attemptsInRange = attempts.filter((a) =>
     range === "all"
       ? true
       : isIsoInReportRange(a.submitted_at as string, bounds)
   );
 
-  const { data: questions } = await supabase
-    .from("listening_questions")
-    .select("id, set_id, order_index, question_type")
-    .in("set_id", setIds);
+  const questions = (
+    await Promise.all(
+      chunkIds(setIds, 80).map((chunk) =>
+        fetchAllRowsSoft<Record<string, unknown>>((from, to) =>
+          supabase
+            .from("listening_questions")
+            .select("id, set_id, order_index, question_type")
+            .in("set_id", chunk)
+            .order("id")
+            .range(from, to)
+        )
+      )
+    )
+  ).flat();
 
   const sections: ListeningDictationReportSection[] = [];
 
@@ -68,7 +90,7 @@ export async function buildListeningDictationReport(
     const setAttempts = attemptsInRange.filter((a) => a.set_id === setId);
     if (setAttempts.length === 0) continue;
 
-    const setQuestions = (questions ?? []).filter((q) => q.set_id === setId);
+    const setQuestions = questions.filter((q) => q.set_id === setId);
 
     const wrongWords: string[] = [];
     const byQuestion = new Map<

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { createClient } from "@/lib/supabase/server";
 
@@ -18,14 +19,19 @@ export async function GET() {
   }
 
   const supabase = await createClient();
-  const setsQuery =
-    profile.role === "admin"
-      ? supabase.from("vocab_sets").select("id, title, folder_id").order("title")
+  // 지문마다 단어장이 생겨 1000개를 넘으면 뒤쪽 단어장이 빠져 폴더째 배정이 일부만 됐다 — 끝까지 읽는다
+  const setsQuery = pageRows<{ id: string; title: string; folder_id: string | null }>((from, to) =>
+    (profile.role === "admin"
+      ? supabase.from("vocab_sets").select("id, title, folder_id")
       : supabase
           .from("vocab_sets")
           .select("id, title, folder_id")
           .or(`teacher_id.eq.${profile.id},created_by.eq.${profile.id}`)
-          .order("title");
+    )
+      .order("title")
+      .order("id")
+      .range(from, to)
+  );
 
   const [setsRes, foldersRes] = await Promise.all([
     setsQuery,

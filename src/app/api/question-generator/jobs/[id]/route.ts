@@ -14,6 +14,7 @@ import { lessonCreditShortfall } from "@/lib/credits/lesson-credits";
 import type { GenerationRequestConfig } from "@/lib/question-generator/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 
 export const maxDuration = 300;
 
@@ -58,17 +59,23 @@ export async function GET(
       if (!pollMode) return jsonOk({ job: { ...rest, request_config: { title } } });
 
       // 순서(id만)는 매번 전부, 본문이 있는 행은 since 이후 것만
-      let orderQuery = supabase
-        .from("generated_english_questions")
-        .select("id,slot_index,passage_id")
-        .eq("generation_job_id", id)
-        .neq("status", "archived")
-        .order("slot_index", { ascending: true, nullsFirst: false })
-        .order("created_at", { ascending: true })
-        .order("id", { ascending: true });
-      if (profile.role === "teacher") orderQuery = orderQuery.eq("created_by", profile.id);
-      const { data: orderRows, error: orderErr } = await orderQuery;
-      if (orderErr) return jsonError("조회에 실패했습니다.", 500);
+      // 1000문항 넘는 작업도 끝까지(한 번에 1000행까지만 온다)
+      const orderPage = await pageRows<{ id: string; slot_index: number | null; passage_id: string | null }>(
+        (from, to) => {
+          let q = supabase
+            .from("generated_english_questions")
+            .select("id,slot_index,passage_id")
+            .eq("generation_job_id", id)
+            .neq("status", "archived")
+            .order("slot_index", { ascending: true, nullsFirst: false })
+            .order("created_at", { ascending: true })
+            .order("id", { ascending: true });
+          if (profile.role === "teacher") q = q.eq("created_by", profile.id);
+          return q.range(from, to);
+        }
+      );
+      if (orderPage.error) return jsonError("조회에 실패했습니다.", 500);
+      const orderRows = orderPage.data;
       const { data: cfgRow } = await supabase
         .from("question_generation_jobs")
         .select("passageIds:request_config->passageIds")
@@ -91,17 +98,20 @@ export async function GET(
         })
         .map((x) => String(x.q.id));
 
-      let newQuery = supabase
-        .from("generated_english_questions")
-        .select("*")
-        .eq("generation_job_id", id)
-        .neq("status", "archived");
       const since = sp.get("since");
-      // 새로 생긴 문항 + 생성 중 다시 고쳐 쓴 문항(redo·검수 반영)도 함께 — 화면이 옛 글을 붙들지 않게
-      if (since) newQuery = newQuery.or(`created_at.gte.${since},updated_at.gte.${since}`);
-      if (profile.role === "teacher") newQuery = newQuery.eq("created_by", profile.id);
-      const { data: newQuestions, error: newErr } = await newQuery;
-      if (newErr) return jsonError("조회에 실패했습니다.", 500);
+      const newPage = await pageRows<Record<string, unknown>>((from, to) => {
+        let q = supabase
+          .from("generated_english_questions")
+          .select("*")
+          .eq("generation_job_id", id)
+          .neq("status", "archived");
+        // 새로 생긴 문항 + 생성 중 다시 고쳐 쓴 문항(redo·검수 반영)도 함께 — 화면이 옛 글을 붙들지 않게
+        if (since) q = q.or(`created_at.gte.${since},updated_at.gte.${since}`);
+        if (profile.role === "teacher") q = q.eq("created_by", profile.id);
+        return q.order("id", { ascending: true }).range(from, to);
+      });
+      if (newPage.error) return jsonError("조회에 실패했습니다.", 500);
+      const newQuestions = newPage.data;
       return jsonOk({
         job: { ...rest, request_config: { title } },
         order,
@@ -125,23 +135,21 @@ export async function GET(
     const resume = resumeGenerationJobIfIdle(job, origin);
     if (resume) after(resume);
 
-    let qQuery = supabase
-      .from("generated_english_questions")
-      .select("*")
-      .eq("generation_job_id", id)
-      // 숨긴 문항(같은 지문의 사실상 같은 문항 등)은 상세·문제지에 내지 않는다
-      .neq("status", "archived")
-      // 동형모의고사(설계도)는 시험지 번호 순서, 나머지는 만든 순서
-      .order("slot_index", { ascending: true, nullsFirst: false })
-      .order("created_at", { ascending: true })
-      // 같은 시각에 한꺼번에 넣은 문항은 순서가 불러올 때마다 바뀌어 문제지·해설지 번호가 어긋났다(2026-11-24)
-      .order("id", { ascending: true });
-
-    if (profile.role === "teacher") {
-      qQuery = qQuery.eq("created_by", profile.id);
-    }
-
-    const { data: rawQuestions } = await qQuery;
+    const { data: rawQuestions } = await pageRows<Record<string, unknown>>((from, to) => {
+      let q = supabase
+        .from("generated_english_questions")
+        .select("*")
+        .eq("generation_job_id", id)
+        // 숨긴 문항(같은 지문의 사실상 같은 문항 등)은 상세·문제지에 내지 않는다
+        .neq("status", "archived")
+        // 동형모의고사(설계도)는 시험지 번호 순서, 나머지는 만든 순서
+        .order("slot_index", { ascending: true, nullsFirst: false })
+        .order("created_at", { ascending: true })
+        // 같은 시각에 한꺼번에 넣은 문항은 순서가 불러올 때마다 바뀌어 문제지·해설지 번호가 어긋났다(2026-11-24)
+        .order("id", { ascending: true });
+      if (profile.role === "teacher") q = q.eq("created_by", profile.id);
+      return q.range(from, to);
+    });
     /*
      * 지문은 넣은 순서대로. 문항은 32개씩 동시에 만들어 「만든 시각」 순서가 지문 순서와 어긋난다
      * (윌링어학원 30지문 150문항, 2026-11-20 「입력한 순서대로 지문이 안 나옴」). 설계도(slot_index)가

@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { chunkIds, fetchAllRowsSoft } from "@/lib/supabase/fetch-all-rows";
 import { loadStudentListeningSetIdsForReport } from "@/lib/listening/schedule/report-summary";
 import { getReportRangeBounds, isIsoInReportRange } from "@/lib/reports/date-range";
 import type { ReportRange } from "@/lib/reports/types";
@@ -41,13 +42,24 @@ export async function buildListeningExamReport(
     .select("id, title")
     .in("id", setIds);
 
-  const { data: questions } = await supabase
-    .from("listening_questions")
-    .select("id, set_id")
-    .in("set_id", setIds);
+  // 세트가 60개쯤 넘으면 문항이 1000행을 넘어 문항 수가 틀렸다 — 끝까지 읽는다
+  const questions = (
+    await Promise.all(
+      chunkIds(setIds, 80).map((chunk) =>
+        fetchAllRowsSoft<{ id: string; set_id: string }>((from, to) =>
+          supabase
+            .from("listening_questions")
+            .select("id, set_id")
+            .in("set_id", chunk)
+            .order("id")
+            .range(from, to)
+        )
+      )
+    )
+  ).flat();
 
   const qCountBySet = new Map<string, number>();
-  for (const q of questions ?? []) {
+  for (const q of questions) {
     const sid = q.set_id as string;
     qCountBySet.set(sid, (qCountBySet.get(sid) ?? 0) + 1);
   }

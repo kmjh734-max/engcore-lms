@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 import type {
   ClassStudentVocabRow,
   VocabSetOption,
@@ -21,22 +22,31 @@ export async function loadClassVocabPanelData(
       )
       .eq("class_id", classId)
       .order("created_at"),
-    supabase
-      .from("vocab_assignments")
-      .select("id, set_id, student_id, set:vocab_sets(id, title)")
-      .eq("class_id", classId)
-      .not("student_id", "is", null)
-      .order("created_at", { ascending: false }),
-    role === "admin"
-      ? supabase
-          .from("vocab_sets")
-          .select("id, title, folder:vocab_folders(name)")
-          .order("title")
-      : supabase
-          .from("vocab_sets")
-          .select("id, title, folder:vocab_folders(name)")
-          .or(`teacher_id.eq.${userId},created_by.eq.${userId}`)
-          .order("title"),
+    // 반 학생 × 세트, 학원 단어장 모두 1000개를 넘을 수 있다 — 끝까지 읽는다
+    pageRows<Record<string, unknown>>((from, to) =>
+      supabase
+        .from("vocab_assignments")
+        .select("id, set_id, student_id, set:vocab_sets(id, title)")
+        .eq("class_id", classId)
+        .not("student_id", "is", null)
+        .order("created_at", { ascending: false })
+        .order("id")
+        .range(from, to)
+    ),
+    pageRows<Record<string, unknown>>((from, to) =>
+      (role === "admin"
+        ? supabase
+            .from("vocab_sets")
+            .select("id, title, folder:vocab_folders(name)")
+        : supabase
+            .from("vocab_sets")
+            .select("id, title, folder:vocab_folders(name)")
+            .or(`teacher_id.eq.${userId},created_by.eq.${userId}`)
+      )
+        .order("title")
+        .order("id")
+        .range(from, to)
+    ),
   ]);
 
   const assignmentsByStudent = new Map<
