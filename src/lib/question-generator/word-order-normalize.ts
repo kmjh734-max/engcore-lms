@@ -592,6 +592,8 @@ const NOUN_SLOT_BEFORE = new Set([
   "about", "among", "between", "through", "without", "within", "under", "over", "after", "before", "to",
 ]);
 
+const IRREGULAR_NOUN_PLURALS = new Set(["men", "women", "children", "people", "feet", "teeth", "mice", "geese", "oxen"]);
+
 export function buildWordBankFromAnswer(
   correctAnswer: string,
   mode: WordOrderBankMode,
@@ -637,6 +639,8 @@ export function buildWordBankFromAnswer(
   };
   const inflectToken = (tokens: string[], i: number): string => {
     const t = tokens[i]!;
+    // 불규칙 명사 복수(men·children·people)는 동사가 아니다 — 문장 첫 「Men」을 man으로 깎아 단어추가가 세 번 다 버려졌다(2026-11-28)
+    if (IRREGULAR_NOUN_PLURALS.has(t.toLowerCase())) return t.toLowerCase();
     const prev = (tokens[i - 1] ?? "").toLowerCase();
     if (/s$/i.test(t)) {
       const base = lem(t);
@@ -650,6 +654,10 @@ export function buildWordBankFromAnswer(
       const hit = guesses.find((g) => g.length >= 2 && givenLower.has(g));
       if (hit) return hit;
     }
+    // 명사 자리의 -s 꼴은 그대로(their lives가 life로 깎였다, 2026-11-28)
+    if (/[^’']s$/i.test(t) && nounSlot(tokens, i)) return low;
+    // -ves(lives·leaves·wolves)를 life·leaf로 깎으면 명사 복수다 — 동사 -s는 위에서 주어 대명사 뒤일 때만 뗐다(2026-11-28 시험 「our daily lives」)
+    if (/ves$/i.test(t)) return low;
     return lemVerb(t);
   };
 

@@ -137,7 +137,8 @@ function paraphraseChoiceRules(
   const easy = difficulty === "low";
   const langHint =
     lang === "korean"
-      ? "Korean choices: translate the idea, then reword — never paste English phrases from the passage."
+      ? // 고유명사를 정답에만 영어로 써서(Monuments Men) 「정답만 꼴이 다르다」로 세 번 버려졌다(2026-11-28)
+        "Korean choices: translate the idea, then reword — never paste English phrases from the passage. Write names and terms in Korean too (Monuments Men → 모뉴먼츠 맨, greenhouse → 온실); no Latin letters in any choice except acronyms like AI·DNA."
       : lang === "english"
         ? easy
           ? "English choices: reword sentence structure; reusing single easy passage words is fine, but do not lift long chunks."
@@ -315,7 +316,7 @@ Difficulty: ${
     }
     case "topic":
       return `${en ? "5 ENGLISH" : "5 Korean"} topic phrases. Exactly one correct.
-${craft}
+${en ? "" : "- All five are noun phrases of the same shape (…의 중요성, …하는 방법) — never a question (…는가?, 어떻게 …) for any choice.\n"}${craft}
 ${topicChoiceCraft(en)}
 ${balancedGistRule()}
 ${paraphrase}
@@ -988,7 +989,7 @@ ${
 }
 ${paraphraseOn ? `- passageModified = 영어 지문. <b>고른 문장이 있던 자리를 ⓐ__________ 빈칸으로 바꾼다.</b>
   · 그 문장은 지문에서 <b>완전히 지운다</b>. 일부라도 남기면 안 된다(베껴 쓰게 된다).
-  · 나머지 지문은 원문 그대로 둔다.` : `${writingBlankFormatLine()}
+  · 나머지 지문은 원문 그대로 둔다.` : `${writingBlankFormatLine(true)}
   · blankText는 고른 문장의 <b>원문</b>이다(고쳐 쓴 정답이 아니라). 코드가 그 원문 문장을 통째로 지운다.`}
 - questionText 형식(필수). 태그는 각각 <b>그 줄에 혼자</b> 있어야 한다:
 <조건>
@@ -1294,9 +1295,14 @@ function checkChoicePlan(raw: Record<string, unknown>, option: QuestionTypeOptio
       const parts = String(row.quote ?? "").split(/\s+\/\s+/).filter((s) => s.trim());
       if (parts.length === 0) return `보기 ${row.n}의 근거 인용이 없습니다. 지문 문장에서 그대로 옮깁니다.`;
       for (const part of parts) {
-        const q = planNorm(part);
-        if (q.split(" ").length < 4) return `보기 ${row.n}의 근거 인용이 너무 짧습니다. 지문 문장에서 그대로 옮깁니다.`;
-        if (!p.includes(q)) return `보기 ${row.n}의 근거 인용 「${part.slice(0, 60)}」이 지문에 없습니다. 지문에서 글자 그대로 옮깁니다.`;
+        /*
+         * 인용 중간을 「...」로 줄인 것(cognition ... is actually a key building block)은 조각마다 지문에 있으면 받는다 —
+         * 통째로 대조해 「지문에 없다」로 일치개수를 두 번 버렸다(2026-11-28 시험). 길이는 조각을 합쳐 잰다.
+         */
+        const pieces = part.split(/\s*(?:\.\.\.|…)\s*/).map((x) => planNorm(x)).filter(Boolean);
+        const words = pieces.reduce((a, x) => a + x.split(" ").length, 0);
+        if (words < 4) return `보기 ${row.n}의 근거 인용이 너무 짧습니다. 지문 문장에서 그대로 옮깁니다.`;
+        if (pieces.some((q) => !p.includes(q))) return `보기 ${row.n}의 근거 인용 「${part.slice(0, 60)}」이 지문에 없습니다. 지문에서 글자 그대로 옮깁니다.`;
       }
       // 거짓 보기는 바꾼 의미 요소가 있어야 한다(「언급 없음」·덧붙이기로 만든 거짓을 막는다)
       if (String(row.verdict ?? "").toLowerCase().startsWith("f") && option.type !== "content_count") {
@@ -3786,6 +3792,8 @@ export async function generateOneQuestion(opts: {
       // 묻는 문장·따옴표 대화는 배열할 핵심 문장이 아니다
       if (/\?\s*["”’]?$/.test(t)) s -= 4;
       if (/["“”]/.test(t)) s -= 2;
+      // 뒤에 올 글을 예고하는 문장(The following story …)은 빈칸으로 지우면 늘 버려진다 — 후보에서 뺀다(2026-11-28 시험: 빈칸추론 상 세 번)
+      if (/\b(following|below|as follows)\b|\bnext (story|example|section|part|passage|paragraph)\b/i.test(t)) s -= 20;
       if (n >= 10 && n <= 22) s += 1;
       if (titleMerged(t)) s -= 10;
       return s;

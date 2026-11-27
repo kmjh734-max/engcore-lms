@@ -59,6 +59,8 @@ function fit(kind: AnchorKind, t: string, i: number, n: number): number {
   const question = /\?\s*["”’]?$/.test(t);
   const example = /^(For example|For instance|To illustrate)\b/i.test(t);
   const important = (CLAIM.test(t) ? 3 : 0) + (/^(However|But|Yet|Instead|In fact|Actually)\b/.test(t) ? 2 : 0) + (i === n - 1 ? 2 : 0);
+  // 뒤에 올 글을 예고하는 문장(The following story …)은 근거가 지문 밖이다 — 빈칸·영작·밑줄로 쓰면 늘 버려졌다(2026-11-28 시험: 빈칸추론 상 세 번)
+  if (/\b(following|below|as follows)\b|\bnext (story|example|section|part|passage|paragraph)\b/i.test(t) && kind !== "insert") return -99;
   switch (kind) {
     case "blank":
       // 빈칸: 주제문·끝 문장 6~14낱말이 기출 꼴, 첫 문장은 비우지 않는다(2026-11-24 모의고사 분석). 같으면 뒤쪽 문장

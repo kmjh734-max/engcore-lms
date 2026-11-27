@@ -157,7 +157,7 @@ export const WORD_BLANK_FILL = "________";
 export function blankSpotFormatLine(word: boolean): string {
   return word
     ? `- Do NOT write the passage. Return "blankText": the ONE word to blank, exactly as it appears, and "blankCtx": 4-10 consecutive words copied EXACTLY from the passage that contain it (unique in the passage). The code replaces that word with ________; everything else stays the original word for word.`
-    : `- Do NOT write the passage. Return "blankText": the exact words of the passage to blank, copied character for character (one sentence or a key clause, about 6~14 words; if part of a sentence, the rest stays). The code replaces them with ____________________________________; everything else stays the original word for word.`;
+    : `- Do NOT write the passage. Return "blankText": the exact words of the passage to blank, copied character for character (one sentence, or the last part of a sentence running to its end, about 6~14 words; it must end where the sentence ends — right before . ! ? ; or : — never before a comma; if part of a sentence, the rest stays). The code replaces them with ____________________________________; everything else stays the original word for word.`;
 }
 
 export function buildBlankPassage(
@@ -388,6 +388,13 @@ export function buildOrderPassage(
   return { passageModified: `${lead}\n\n${byLabel.join("\n\n")}`, answerOrder: lab.map((L) => `(${L})`).join("-") };
 }
 
-export function writingBlankFormatLine(): string {
-  return `- Do NOT write the passage. Return "blankText": the exact words of the passage that the answer sentence replaces, copied character for character (the whole sentence, or the clause from a word to the sentence end). The code replaces them with ⓐ__________; everything else stays the original word for word. Remove the WHOLE target — leave no part of the answer next to the blank.`;
+export function writingBlankFormatLine(wholeSentence = false): string {
+  /*
+   * 문법조건영작은 코드가 문장 첫머리부터 받는다 — 「절도 된다」고 써 두어 「Thanks to their efforts,」 뒤에서 시작한 빈칸이
+   * 두 번씩 버려졌다(2026-11-28 시험). 지시와 검사를 맞춘다.
+   */
+  const span = wholeSentence
+    ? "the WHOLE sentence, from its very first word (include an opening phrase such as \"Thanks to their efforts,\") to its final period"
+    : "the whole sentence, or the clause from a word to the sentence end";
+  return `- Do NOT write the passage. Return "blankText": the exact words of the passage that the answer sentence replaces, copied character for character (${span}). The code replaces them with ⓐ__________; everything else stays the original word for word. Remove the WHOLE target — leave no part of the answer next to the blank.`;
 }

@@ -30,7 +30,8 @@ export const WRITING_GRAMMARS: WritingGrammar[] = [
     form: "be + p.p.",
     hint: "주어가 동작을 당하는 쪽이면 be동사 뒤에 과거분사를 쓴다.",
     // be 와 분사 사이에 부사가 끼어도 알아본다 — can be <b>continuously</b> updated
-    check: /\b(am|is|are|was|were|be|been|being)\s+(?:\w+ly\s+|not\s+|also\s+|already\s+|still\s+|often\s+|never\s+|always\s+){0,2}(\w+ed|\w+en|done|made|given|taken|written|built|held|kept|told)\b/i,
+    check: /\b(am|is|are|was|were|be|been|being)\s+(?:\w+ly\s+|not\s+|also\s+|already\s+|still\s+|often\s+|never\s+|always\s+){0,2}(\w+ed|\w+en|done|made|given|taken|written|built|held|kept|told|sought|bought|brought|thought|taught|caught|fought|found|paid|said|sold|left|lost|meant|met|sent|spent|felt|heard|led|read|set|put|cut|hit|hurt|shut|spread|understood|won|hung|struck|stuck|dug|fed|bound|sung|rung|begun|drunk|sunk|spun|run|come|become|overcome|born|borne|worn|torn|sworn|shown|known|grown|thrown|drawn|flown|blown|laid|shot|bent|lent|dealt|swept|wept|slept)\b/i,
+    // 불규칙 과거분사를 더 넣었다 — 「is always sought by」를 수동태가 아니라며 세 번 버렸다(2026-11-28 시험)
     textbookBooks: 2,
   },
   {
