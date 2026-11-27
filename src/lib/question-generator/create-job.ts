@@ -4,7 +4,7 @@ import {
   MAX_TOTAL_QUESTIONS,
   MIN_PASSAGE_WORDS,
 } from "@/lib/question-generator/constants";
-import { resolvePassages, wordCount } from "@/lib/question-generator/passages";
+import { resolvePassages, truncatedPassageEnd, wordCount } from "@/lib/question-generator/passages";
 import { findOptionByKey, sanitizeCounts, sumCounts } from "@/lib/question-generator/question-types";
 import { passageSetCounts, passageSetProblem } from "@/lib/question-generator/passage-set";
 import type { GenerationRequestConfig } from "@/lib/question-generator/types";
@@ -53,6 +53,13 @@ export async function createJobFromConfig(
     if (wc < Math.min(15, MIN_PASSAGE_WORDS)) {
       return {
         error: `지문 ${i + 1}이(가) 너무 짧습니다. 더 긴 영어 지문을 입력해 주세요.`,
+        status: 400,
+      };
+    }
+    const cut = truncatedPassageEnd(passages[i]!.text);
+    if (cut) {
+      return {
+        error: `지문 ${i + 1}이(가) 「…${cut}」에서 마침표 없이 끝납니다. 글이 잘리지 않았는지 확인하고, 끝 문장까지 넣거나 마침표를 찍어 주세요.`,
         status: 400,
       };
     }
