@@ -292,7 +292,20 @@ async function generateWithValidation(opts: {
   const maxAttempts = (opts.retries ?? MAX_REGENERATION_ATTEMPTS) + 1;
   /** 앞 시도들이 버려진 까닭 — 다음 시도 프롬프트에 붙이고, 통과한 문항에 기록한다 */
   const issues: string[] = [];
+  const brokenKey = opts.passage.slice(0, 400);
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    // 원문에 깨진 문장이 있다고 두 번 걸린 지문은 더 부르지 않는다(값만 쌓인다)
+    const broken = BROKEN_PASSAGES.get(brokenKey);
+    if (broken && broken.count >= 2) {
+      return { payload: null, status: "approved", attempt, error: `원문에 깨진 문장이 있어 만들지 않았습니다 — ${broken.reason}` };
+    }
+    if (attempt > 1 && issues.length && BROKEN_SOURCE_RE.test(issues[issues.length - 1]!)) {
+      const prev = BROKEN_PASSAGES.get(brokenKey);
+      BROKEN_PASSAGES.set(brokenKey, { count: (prev?.count ?? 0) + 1, reason: issues[issues.length - 1]!.slice(0, 120) });
+      if ((prev?.count ?? 0) + 1 >= 2) {
+        return { payload: null, status: "approved", attempt, error: `원문에 깨진 문장이 있어 만들지 않았습니다 — ${issues[issues.length - 1]!.slice(0, 120)}` };
+      }
+    }
     opts.onStage?.(attempt === 1 ? "make" : "redo");
     try {
       const payload = await generateOneQuestion({
@@ -506,6 +519,14 @@ async function generateWithValidation(opts: {
     error: lastError ?? "생성 실패 — 문항 폐기",
   };
 }
+
+/*
+ * 원문 문장이 깨져 있다(「Sai and Jenny were taken Centillion to」)는 검수 까닭 — 이런 지문은 어떤 유형으로 만들어도
+ * 되돌려져 호출만 쌓였다(2026-11-27 시험 두 번, 미금 「in face-to-face」 948호출). 같은 지문에서 두 번 나오면 그 지문은 멈춘다.
+ * 서버가 오래 떠 있어도 지문 앞 400자로만 세므로 다음 작업에서 같은 지문이 고쳐 들어오면 새로 센다(글자가 바뀌니 다른 열쇠).
+ */
+const BROKEN_SOURCE_RE = /(원문|지문|본문|제시문)[^.\n]{0,60}(미완성|훼손|절단|잘린|잘려|끊겨|끊긴|비문|문법적으로\s*(틀|어색|불완전|미))/;
+const BROKEN_PASSAGES = new Map<string, { count: number; reason: string }>();
 
 /** 문항 하나가 지금 있는 단계 — 진행 문구에 센다 */
 type QgStage = "make" | "check" | "redo" | "swap";
