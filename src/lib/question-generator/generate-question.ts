@@ -2224,7 +2224,9 @@ export function assertBasicQuestionShape(
     option.type === "underlined_inference" &&
     option.aingkaCode === "함축의미추론"
   ) {
-    const mod = q.passageModified || "";
+    // 밑줄 안에 (A)를 또 쓴 답(「(A)<u>(A) a little…」)은 안쪽 것을 걷는다 — 발문에 「(A) (A)」로 찍혔다(2026-11-28 시험)
+    const mod = (q.passageModified || "").replace(/<u>\s*\(A\)\s*/gi, "<u>").replace(/(\(A\)\s*)+<u>/gi, "(A)<u>");
+    q.passageModified = mod;
     if (!/<u>[\s\S]*?<\/u>/i.test(mod)) {
       return "함축의미추론은 본문에 <u>밑줄</u> 표시가 필요합니다.";
     }
@@ -2241,7 +2243,7 @@ export function assertBasicQuestionShape(
     // 발문에 밑줄 표현 반영
     const um = (q.passageModified || "").match(/<u>([\s\S]*?)<\/u>/i);
     const phrase = (um?.[1] || "").replace(/\s+/g, " ").trim();
-    if (phrase && !q.instruction.includes(phrase)) {
+    if (phrase && (!q.instruction.includes(phrase) || /\(A\)\s*\(A\)/.test(q.instruction))) {
       q.instruction = `다음 글의 밑줄 친 (A) ${phrase}가 의미하는 바로 가장 적절한 것은?`;
     }
   } else if (
@@ -3047,10 +3049,29 @@ export const TAGGED_WRITING_CODES = new Set(["어휘빈칸공통", "주제문작
 /** 지문은 그대로 두고 문제 글(questionText)+객관식 보기를 내는 sentence_blank 갈래 코드 */
 export const QT_MCQ_CODES = new Set(["요약완성AB", "답변가능개수", "사례분류", "비유대응"]);
 
-const LIGHT_TYPES = new Set(["title", "topic", "sentence_blank", "content_false", "content_true", "content_count"]);
+const LIGHT_TYPES = new Set([
+  "title",
+  "topic",
+  "sentence_blank",
+  "content_false",
+  "content_true",
+  "content_count",
+  /*
+   * 순서·삽입·무관한 문장도 싼 모델로(2026-11-28, 선생님 「원가를 줄이자」). 같은 5지문에 순서·삽입·어휘추론·
+   * 무관한문장·함축 25문항씩 두 모델로 만들어 가린 채 풀어 보니 sol 합격 21·조건부 2·불량 1, terra 합격 21·조건부 3·불량 0,
+   * 만든 수 24/25로 같고 원가는 1,507원 → 1,055원(−30%).
+   */
+  "order",
+  "sentence_insertion",
+  "irrelevant_sentence",
+  // 시험용: QG_LIGHT_TYPES_EXTRA=writing 처럼 더 넣어 본다
+  ...(process.env.QG_LIGHT_TYPES_EXTRA ?? "").split(",").map((s) => s.trim()).filter(Boolean),
+]);
+/** 유형 전체가 아니라 갈래만 싼 모델로 — 위 시험에서 본 것만(어휘개수·목적·심경은 시험 안 함) */
+const LIGHT_CODES = new Set(["어휘추론", "함축의미추론"]);
 
-function modelForType(option: { type: string }): string {
-  return LIGHT_TYPES.has(option.type) ? QG_MODEL_LIGHT : QG_MODEL_MAIN;
+function modelForType(option: { type: string; aingkaCode?: string }): string {
+  return LIGHT_TYPES.has(option.type) || (option.aingkaCode && LIGHT_CODES.has(option.aingkaCode)) ? QG_MODEL_LIGHT : QG_MODEL_MAIN;
 }
 
 const QUESTION_WRITER_SHARED_SYSTEM = `Korean HS English exam writer. ONE question JSON only. Fast & concise.
