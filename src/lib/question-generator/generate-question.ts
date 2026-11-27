@@ -1,3 +1,4 @@
+import { buildGrammarSpotPassage, grammarSpotFormatLine, grammarSpotMode, GRAMMAR_SPOT_SCHEMA } from "@/lib/question-generator/grammar-spots";
 import { engcoreLevelOf } from "@/lib/vocab/engcore-lemma";
 import { isFunctionWord } from "@/lib/vocab/function-words";
 import { renumberMarksInOrder } from "@/lib/question-generator/renumber-marks";
@@ -625,7 +626,7 @@ LANGUAGE: 지문은 영어만.`;
 ${focusBlock}
 
 형식:
-- passageModified = 영어 지문, 밑줄 정확히 5개 ⓐⓑⓒⓓⓔ → ⓐ<u>대상</u>
+${paraphraseOn ? "- passageModified = 영어 지문, 밑줄 정확히 5개 ⓐⓑⓒⓓⓔ → ⓐ<u>대상</u>" : grammarSpotFormatLine(5)}
 - 어법상 틀린 곳 정확히 1개 — 위 ‘이번 문항’ 문법 반영
 - 나머지 4개 밑줄은 어법상 맞음 (함정처럼 보이되 옳음)
 - choices: omit or empty array — 기호 IN the passage are the options; do NOT invent bottom combination choices
@@ -650,7 +651,7 @@ LANGUAGE: 지문은 영어만.`;
 ${focusBlock}
 
 형식:
-- passageModified = 영어 지문, 밑줄 정확히 ${eight ? "8개 ⓐ~ⓗ" : "6개 ⓐ~ⓕ"} → ⓐ<u>대상</u>${eight ? " (지문 앞뒤에 고르게, 한 문장에 둘 넘게 몰지 않는다)" : ""}
+${paraphraseOn ? `- passageModified = 영어 지문, 밑줄 정확히 ${eight ? "8개 ⓐ~ⓗ" : "6개 ⓐ~ⓕ"} → ⓐ<u>대상</u>${eight ? " (지문 앞뒤에 고르게, 한 문장에 둘 넘게 몰지 않는다)" : ""}` : grammarSpotFormatLine(eight ? 8 : 6)}
 - 틀린 곳 정확히 ${wrongN}개 — 위 ‘이번 문항’ 문법 (단원 중복 없이). 나머지 맞음
 - choices 고정: 1:"1개" 2:"2개" 3:"3개" 4:"4개" 5:"5개"
 - correctAnswer = ${wrongN}. questionText 빈칸
@@ -3133,6 +3134,8 @@ export async function generateOneQuestion(opts: {
   /** 같은 지문 문항끼리 나눠 맡긴 근거 문장(sentence-plan.ts) — 있으면 구역 힌트 대신 쓴다 */
   anchorPlan?: AnchorPlan | null;
 }): Promise<GeneratedQuestionPayload> {
+  /** 어법 추론·개수는 지문 대신 밑줄 자리만 받는다(grammar-spots.ts, 2026-11-28) */
+  const spotMode = grammarSpotMode(opts.option, opts.paraphraseGrammarVocab === true);
   const { option, analysis } = opts;
   // 시험지 흔적(정답 표기·문장 번호)을 걷어 낸 지문으로 만든다
   const passage = cleanSourcePassage(opts.passage);
@@ -3225,7 +3228,9 @@ export async function generateOneQuestion(opts: {
       : isReferenceWriting
         ? "- CRITICAL LANGUAGE: passageModified ENGLISH with <u>underline</u>. correctAnswer = exact words from passage. questionText = <지칭답란>."
     : englishBodyTypes.has(option.type)
-    ? option.type === "grammar" || option.type === "vocabulary"
+    ? spotMode
+      ? "- CRITICAL LANGUAGE: spots (ctx·orig·show) are ENGLISH copied from the passage. Choice texts may be Korean (개수). explanation is Korean."
+      : option.type === "grammar" || option.type === "vocabulary"
       ? "- CRITICAL LANGUAGE: passageModified MUST be ENGLISH only. Choice texts may be Korean (조합/개수) or empty numbers. Never put Hangul in the passage."
       : "- CRITICAL LANGUAGE: passageModified, questionText (if any), and choices MUST be ENGLISH only. Never put Korean Hangul in passage or choices. Only instruction/explanation may be Korean."
     : "";
@@ -3524,6 +3529,8 @@ export async function generateOneQuestion(opts: {
         ? taggedCode === "구문변환"
           ? "passageModified = the passage with the target sentence underlined as ⓐ<u>…</u>; everything else word for word."
           : "passageModified = the passage with the two spots replaced by ⓐ__________ and ⓑ__________; everything else word for word."
+        : spotMode
+        ? "Do NOT output passageModified — give spots only; the code builds the underlined passage."
         : "Use passageModified when needed."
     : "Do NOT change passage; omit passageModified.";
 
@@ -3595,7 +3602,9 @@ export async function generateOneQuestion(opts: {
      * 선생님 지적(2026-09-20): 어법·어휘가 지문을 재진술한다. 기본은 원문 그대로 두고
      * 밑줄 자리만 바꾼다. 재진술은 선생님이 켰을 때만 한다.
      */
-    (option.type === "grammar" || option.type === "vocabulary") && !opts.paraphraseGrammarVocab
+    spotMode
+      ? `- Pick the underline spots from structures the passage ALREADY has (수일치·관계사·준동사·병렬·태·시제·비교 등 원문에 있는 것). If a target grammar point does not exist in this passage, choose another point that does. An error spot changes ONLY the form of the original word(s) at that spot.`
+      : (option.type === "grammar" || option.type === "vocabulary") && !opts.paraphraseGrammarVocab
       ? `- KEEP THE PASSAGE VERBATIM: copy the original passage word for word into passageModified. The ONLY allowed change is the wording inside the marked spots (ⓐ~/①~). Do not reword, shorten, merge, split or reorder any sentence.
 - Pick the marked spots from structures the passage ALREADY has (수일치·관계사·준동사·병렬·태·시제·비교 등 원문에 있는 것). If a target grammar point does not exist in this passage, choose another point that does — never rewrite a sentence to plant one.`
       : "",
@@ -3916,7 +3925,7 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
             : option.aingkaCode === "어법개수" ||
                 option.aingkaCode === "어휘개수"
               ? {
-                  passageModified: "ENGLISH passage with underlined spots",
+                  ...(spotMode ? { spots: GRAMMAR_SPOT_SCHEMA } : { passageModified: "ENGLISH passage with underlined spots" }),
                   choices: [
                     { number: 1, text: "1개" },
                     { number: 2, text: "2개" },
@@ -3995,9 +4004,11 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
                             ],
                           }
                         : {}),
+                    // 자리부터 고르고 정답을 쓴다
+                    ...(spotMode ? { spots: GRAMMAR_SPOT_SCHEMA } : {}),
                     choices: [{ number: 1, text: "string" }],
                     correctAnswer: "integer 1-5 (vary; not always 1)",
-                    ...(needsModified ? { passageModified: "string" } : {}),
+                    ...(!spotMode && needsModified ? { passageModified: "string" } : {}),
                     /*
                      * 일치개수 틀(진술 (1)~(6)·틀린 개수)이 questionText를 쓰는 서술형 모두에 나가고 있었다 —
                      * 제시어 배열·요약문·어법 수정이 유형 규칙과 다른 틀을 받았다(2026-10-13 점검).
@@ -4110,6 +4121,14 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     );
   }
 
+  // 자리 목록 대신 지문을 보내 왔으면 예전처럼 받는다(밑줄 밖이 바뀌었으면 뒤 검사가 잡는다)
+  if (spotMode && (Array.isArray(raw.spots) || !String(raw.passageModified ?? "").trim())) {
+    const want = option.aingkaCode === "어법개수" ? (option.difficulty === "high" ? 8 : 6) : 5;
+    const built = buildGrammarSpotPassage(passage, raw.spots, want);
+    if ("error" in built) throw new Error(built.error);
+    raw.passageModified = built.passageModified;
+    delete raw.spots;
+  }
   // 보기 계획 대조(보기를 섞기 전 원래 번호로) — 틀리면 까닭을 남기고 다시 만든다
   const planTypes = CONTENT_PLAN_TYPES.has(option.type) || GIST_PLAN_TYPES.has(option.type);
   // 근거 인용은 한국어 보기여도 영어 원문이라 내용일치류는 언어와 상관없이 대조한다
