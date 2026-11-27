@@ -86,3 +86,27 @@ export function truncatedPassageEnd(text: string): string | null {
   if (words.filter((w) => /^[a-z]/.test(w)).length / words.length < 0.5) return null;
   return words.slice(-6).join(" ");
 }
+
+/** 이보다 긴 지문은 나눠 넣게 한다 — 지난 지문 5,893개 중 가장 긴 것이 346낱말(99%가 244낱말 이하, 2026-11-28) */
+export const MAX_PASSAGE_WORDS = 350;
+
+/**
+ * 만들기 전에 막는 지문 문제(선생님 2026-11-28 「이상한 지문이나 너무 긴 지문은 쪼개라고」). 잘못된 지문은 검수가 계속
+ * 되돌려 호출만 쌓인다. 고칠 말을 돌려주고, 문제가 없으면 null.
+ */
+export function passageInputProblem(text: string): string | null {
+  const words = wordCount(text);
+  if (words > MAX_PASSAGE_WORDS) {
+    return `${words}낱말로 너무 깁니다. ${MAX_PASSAGE_WORDS}낱말 이하가 되게 문단이 바뀌는 곳에서 두 지문으로 나눠 넣어 주세요.`;
+  }
+  const body = text
+    .replace(/\r/g, "")
+    .split("\n")
+    .filter((l) => !/^\s*(\*|※|\[\[FIG|\(?출처)/.test(l));
+  const ko = body.map((l) => /[가-힣]{2,}[^\n]{0,12}/.exec(l)?.[0]).find(Boolean);
+  if (ko) return `영어 본문에 한글이 섞여 있습니다(「${ko}」). 영어 원문만 넣어 주세요(낱말 풀이는 * 로 시작하는 줄에).`;
+  const glued = body.join(" ").match(/\b[a-z]{2,}\.[a-z]{2,}\b/g)?.find((g) => !/^(e\.g|i\.e|www|[a-z]+\.(com|org|net|kr|edu|gov))$/i.test(g));
+  if (glued) return `「${glued}」처럼 마침표 뒤 띄어쓰기가 빠진 곳이 있습니다. 문장이 붙었거나 잘못 옮겨진 곳을 고쳐 넣어 주세요.`;
+  return null;
+}
+

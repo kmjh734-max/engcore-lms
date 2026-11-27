@@ -4,7 +4,7 @@ import {
   MAX_TOTAL_QUESTIONS,
   MIN_PASSAGE_WORDS,
 } from "@/lib/question-generator/constants";
-import { resolvePassages, truncatedPassageEnd, wordCount } from "@/lib/question-generator/passages";
+import { passageInputProblem, resolvePassages, truncatedPassageEnd, wordCount } from "@/lib/question-generator/passages";
 import { findOptionByKey, sanitizeCounts, sumCounts } from "@/lib/question-generator/question-types";
 import { passageSetCounts, passageSetProblem } from "@/lib/question-generator/passage-set";
 import type { GenerationRequestConfig } from "@/lib/question-generator/types";
@@ -56,6 +56,8 @@ export async function createJobFromConfig(
         status: 400,
       };
     }
+    const odd = passageInputProblem(passages[i]!.text);
+    if (odd) return { error: `지문 ${i + 1}이(가) ${odd}`, status: 400 };
     const cut = truncatedPassageEnd(passages[i]!.text);
     if (cut) {
       return {

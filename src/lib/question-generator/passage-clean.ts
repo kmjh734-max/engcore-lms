@@ -19,6 +19,8 @@ export function cleanSourcePassage(text: string): string {
   // 눈에 안 보이는 소프트 하이픈(well-documented)은 화면에 「welldocumented」로 붙어 보인다.
   // 저장 지문 3개에서 모두 진짜 하이픈 자리였다(too-cold, non-human 등, 2026-10-04).
   out = out.replace(/\u00AD/g, "-");
+  // PDF\uC5D0\uC11C \uC62E\uAE38 \uB54C \uB0B1\uB9D0 \uC548\uC5D0 \uB07C\uB294 \uC587\uC740 \uACF5\uBC31(\u300CRef lecting\u300D, \uD638\uC6D0\uACE02 6\uACFC 2026-11-23)\uC740 \uC9C0\uC6B4\uB2E4
+  out = out.replace(/([A-Za-z])[\u2009\u200A\u200B\u202F]+(?=[a-z])/g, "$1");
   // 붙여 넣을 때 딸려 온 한국어 머리말(「영어 원문 Our business…」, 「이미지 속 텍스트는 다음과 같습니다. I started…」)을 뗀다(2026-10-04).
   out = out.replace(/^\s*(?:영어\s*원문|이미지 속 텍스트는 다음과 같습니다\.?)\s*[:：]?\s*/, "");
   // 대화 지문의 문장 표지 「S1 Hi, … S2 Hello! …」가 학생 화면에 그대로 나왔다(불곡중2, 2026-10-04). 셋 이상이면 뗀다.
