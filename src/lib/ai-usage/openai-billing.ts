@@ -29,6 +29,8 @@ type UsageBucket = {
   start_time: number;
   results?: Array<{
     model?: string;
+    /** 「flex-tier」면 값이 절반(2026-11-28부터 변형문제가 flex로 부른다) */
+    service_tier?: string | null;
     input_tokens?: number;
     input_cached_tokens?: number;
     output_tokens?: number;
@@ -59,7 +61,7 @@ export async function loadOpenAiBilling(days: number): Promise<BillingReport> {
         cache: "no-store",
       }),
       fetch(
-        `https://api.openai.com/v1/organization/usage/completions?start_time=${start}&bucket_width=1d&group_by=model&limit=${limit}`,
+        `https://api.openai.com/v1/organization/usage/completions?start_time=${start}&bucket_width=1d&group_by=model&group_by=service_tier&limit=${limit}`,
         { headers, cache: "no-store" }
       ),
     ]);
@@ -91,7 +93,7 @@ export async function loadOpenAiBilling(days: number): Promise<BillingReport> {
       const d = ymd(b.start_time);
       for (const r of b.results ?? []) {
         const won = usageWon({
-          model: String(r.model ?? ""),
+          model: String(r.model ?? "") + (String(r.service_tier ?? "").startsWith("flex") ? "@flex" : ""),
           input_tokens: Number(r.input_tokens ?? 0),
           cached_input_tokens: Number(r.input_cached_tokens ?? 0),
           output_tokens: Number(r.output_tokens ?? 0),

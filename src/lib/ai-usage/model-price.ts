@@ -38,7 +38,8 @@ export const MODEL_PRICES: Record<string, ModelPrice> = {
    * terra는 같은 셈으로 1.145라 그대로 둔다. 다시 재는 스크립트: scripts/tmp-rv/goldset/_oai-reconcile.mts
    */
   "gpt-5.6-sol": { in: 4, cachedIn: 0.4, out: 20, writeUplift: 1.23 },
-  "gpt-5.6-terra": { in: 2, cachedIn: 0.2, out: 12, writeUplift: GPT56_WRITE_UPLIFT },
+  // terra 1.2(2026-11-28 사용량 대조: 처음 보는 입력 1,002,895토큰 중 캐시 쓰기 786,283 → 1+0.25×0.784=1.196). 1.15로는 원가를 3%쯤 낮게 셌다
+  "gpt-5.6-terra": { in: 2, cachedIn: 0.2, out: 12, writeUplift: 1.2 },
   "gpt-5.6-luna": { in: 0.2, cachedIn: 0.02, out: 1.2, writeUplift: GPT56_WRITE_UPLIFT },
   "gpt-5.5": { in: 5, cachedIn: 0.5, out: 30 },
   "gpt-5.4-nano": { in: 0.05, cachedIn: 0.005, out: 0.4 },
