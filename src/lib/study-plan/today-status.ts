@@ -6,6 +6,7 @@ import {
 } from "@/lib/listening/schedule/today-summary";
 import { fetchStudentVocabSummaries } from "@/lib/vocab/student-sets";
 import { studentStageSteps } from "@/lib/vocab/stage-progress-fields";
+import { chunkIds, fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 import type { StudentVocabSetSummary } from "@/types/database";
 
 /**
@@ -215,24 +216,31 @@ async function courseItem(admin: SupabaseClient, studentId: string, todayIso: st
     return { kind: "course", state: "none", title: "수강 중인 강좌 없음", detail: "", details: [] };
   }
   const courseIds = courses.map((c) => c.id);
-  const { data: lessons } = await admin
-    .from("lessons")
-    .select("id, course_id, title, order_index")
-    .in("course_id", courseIds)
-    .eq("is_published", true)
-    .order("order_index")
-    .limit(5000);
-  const lessonRows = (lessons ?? []) as { id: string; course_id: string; title: string; order_index: number }[];
+  // 서버는 한 번에 1,000줄까지 — 끝까지 넘겨 읽는다
+  const lessons = await fetchAllRows<{ id: string; course_id: string; title: string; order_index: number }>((from, to) =>
+    admin
+      .from("lessons")
+      .select("id, course_id, title, order_index")
+      .in("course_id", courseIds)
+      .eq("is_published", true)
+      .order("order_index")
+      .order("id")
+      .range(from, to)
+  ).catch(() => []);
+  const lessonRows = lessons as { id: string; course_id: string; title: string; order_index: number }[];
   if (lessonRows.length === 0) {
     return { kind: "course", state: "none", title: "강좌에 올라온 영상 없음", detail: "", details: [] };
   }
   const lessonIds = lessonRows.map((l) => l.id);
-  const { data: progress } = await admin
-    .from("lesson_progress")
-    .select("lesson_id, is_completed, completed_at, last_watched_at, progress_percent")
-    .eq("student_id", studentId)
-    .in("lesson_id", lessonIds)
-    .limit(5000);
+  const progress: Record<string, unknown>[] = [];
+  for (const part of chunkIds(lessonIds)) {
+    const { data } = await admin
+      .from("lesson_progress")
+      .select("lesson_id, is_completed, completed_at, last_watched_at, progress_percent")
+      .eq("student_id", studentId)
+      .in("lesson_id", part);
+    progress.push(...((data ?? []) as Record<string, unknown>[]));
+  }
   const progRows = (progress ?? []) as {
     lesson_id: string;
     is_completed: boolean;

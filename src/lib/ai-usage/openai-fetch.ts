@@ -1,5 +1,8 @@
 import { recordAiUsage } from "@/lib/ai-usage/record";
 
+/** signal 없이 부른 OpenAI 호출의 마지막 안전판(10분) */
+const OPENAI_DEFAULT_TIMEOUT_MS = 600_000;
+
 /**
  * OpenAI를 부르는 공통 창구.
  *
@@ -11,7 +14,15 @@ export async function openAiFetch(
   input: string | URL | Request,
   init?: RequestInit
 ): Promise<Response> {
-  const res = await fetch(input, init);
+  /*
+   * 부르는 자리에서 signal을 안 넘기면 10분 뒤 끊는다(2026-11-28). 응답이 멈춘 채 붙잡혀
+   * 있지 않게 하는 마지막 안전판이다. 직접 넘긴 signal(Request에 든 것 포함)은 그대로 쓴다.
+   */
+  const hasOwnSignal = Boolean(init?.signal) || (typeof Request !== "undefined" && input instanceof Request);
+  const res = await fetch(
+    input,
+    hasOwnSignal ? init : { ...init, signal: AbortSignal.timeout(OPENAI_DEFAULT_TIMEOUT_MS) }
+  );
   // 실패한 응답은 사용량이 없다. 읽어서 본문을 건드리지 않는다.
   if (!res.ok) return res;
   try {

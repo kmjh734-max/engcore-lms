@@ -3,6 +3,7 @@
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { getTodayIsoKorea } from "@/lib/date/korea-today";
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 export interface StudentDetailEnrollment {
   id: string;
@@ -75,11 +76,15 @@ export async function loadStudentDetail(
       .select("id, course_id, created_at, course:courses(title)")
       .eq("student_id", studentId)
       .order("created_at", { ascending: true }),
-    supabase
-      .from("lesson_progress")
-      .select("lesson_id, is_completed, completed_at")
-      .eq("student_id", studentId)
-      .limit(5000),
+    // 서버는 한 번에 1,000줄까지 — 끝까지 넘겨 읽는다
+    fetchAllRows<{ lesson_id: string; is_completed: boolean | null; completed_at: string | null }>((from, to) =>
+      supabase
+        .from("lesson_progress")
+        .select("lesson_id, is_completed, completed_at")
+        .eq("student_id", studentId)
+        .order("lesson_id")
+        .range(from, to)
+    ).then((data) => ({ data }), () => ({ data: null })),
     supabase
       .from("listening_daily_tasks")
       .select("task_date, status")
@@ -114,12 +119,15 @@ export async function loadStudentDetail(
           .in("course_id", courseIds)
       : Promise.resolve({ data: [] as { course_id: string }[] }),
     courseIds.length
-      ? supabase
-          .from("lessons")
-          .select("id, course_id")
-          .in("course_id", courseIds)
-          .eq("is_published", true)
-          .limit(5000)
+      ? fetchAllRows<{ id: string; course_id: string }>((from, to) =>
+          supabase
+            .from("lessons")
+            .select("id, course_id")
+            .in("course_id", courseIds)
+            .eq("is_published", true)
+            .order("id")
+            .range(from, to)
+        ).then((data) => ({ data }), () => ({ data: null }))
       : Promise.resolve({ data: [] as { id: string; course_id: string }[] }),
   ]);
 

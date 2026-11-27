@@ -68,9 +68,9 @@ export async function assertListeningSetAccess(
 
   if (
     profile.role === "admin" &&
-    profile.academy_id &&
-    setRow.academy_id &&
-    setRow.academy_id !== profile.academy_id
+    (!profile.academy_id ||
+      !setRow.academy_id ||
+      setRow.academy_id !== profile.academy_id)
   ) {
     return {
       ok: false,

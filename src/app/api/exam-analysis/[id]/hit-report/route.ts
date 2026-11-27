@@ -71,10 +71,18 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   );
 
   const at = new Date().toISOString();
-  await admin
+  const { error: saveErr } = await admin
     .from("school_exam_analyses")
     .update({ hit_report: report, hit_report_at: at })
     .eq("id", id);
+  // 담지 못했으면 값을 받지 않는다(다시 누르면 처음부터 돈다)
+  if (saveErr) {
+    console.error("[hit-report] save failed", id, saveErr.message);
+    return NextResponse.json(
+      { ok: false, message: "대조 결과를 저장하지 못했습니다. 잠시 뒤 다시 시도해 주세요." },
+      { status: 500 }
+    );
+  }
 
   // 만든 뒤에 받는다(후불) — 돌다 실패하면 값이 나가지 않는다
   await debitLessonCredits({

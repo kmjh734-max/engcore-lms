@@ -35,7 +35,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const body = (await req.json()) as { dataUrl?: string; label?: string };
   const dataUrl = String(body.dataUrl ?? "");
-  if (!dataUrl.startsWith("data:image/")) {
+  if (!dataUrl.startsWith("data:image/") || dataUrl.length > 6_000_000) {
     return NextResponse.json({ ok: false, message: "그림을 받지 못했습니다." }, { status: 400 });
   }
 
@@ -44,6 +44,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     actorId: profile.id,
     featureKey: "exam_hit_report",
     usedFor: "exam_hit_report_upload",
+    projectId: id,
   });
   try {
     const { text } = await readMaterialImage(dataUrl, String(body.label ?? "올린 자료"));

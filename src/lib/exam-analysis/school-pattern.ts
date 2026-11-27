@@ -8,6 +8,7 @@
  * 이미 분석해 둔 것을 모으기만 한다 — 모델을 부르지 않으므로 값이 들지 않는다.
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 export type TypeStat = {
   name: string;
@@ -67,14 +68,21 @@ export async function loadSchoolPatterns(
   const ids = list.map((a) => String(a.id));
   const items: Array<Record<string, unknown>> = [];
   for (let i = 0; i < ids.length; i += 50) {
-    const { data } = await admin
-      .from("school_exam_items")
-      .select(
-        "analysis_id, item_no, type_name, points, is_subjective, matched_label, matched_mock_label, matched_textbook_label"
-      )
-      .in("analysis_id", ids.slice(i, i + 50))
-      .limit(8000);
-    items.push(...((data ?? []) as typeof items));
+    const chunk = ids.slice(i, i + 50);
+    // 서버는 한 번에 1,000줄까지 — 50회분이면 넘는다. 끝까지 넘겨 읽는다
+    const data = await fetchAllRows<Record<string, unknown>>((from, to) =>
+      admin
+        .from("school_exam_items")
+        .select(
+          "analysis_id, item_no, type_name, points, is_subjective, matched_label, matched_mock_label, matched_textbook_label"
+        )
+        .in("analysis_id", chunk)
+        .order("analysis_id")
+        .order("item_no")
+        .order("id")
+        .range(from, to)
+    );
+    items.push(...data);
   }
   const byAnalysis = new Map<string, typeof items>();
   for (const it of items) {

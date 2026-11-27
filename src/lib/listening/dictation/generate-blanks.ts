@@ -93,6 +93,8 @@ export async function generateDictationBlanks(
           blankMax: max,
           previousBlankWords: input.previousBlankWords,
         }),
+        // 받아쓰기 라우트가 120초라 그보다 짧게
+        timeoutMs: 90_000,
         temperature: 0.5,
       }
     );

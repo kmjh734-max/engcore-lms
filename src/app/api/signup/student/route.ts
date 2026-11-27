@@ -79,9 +79,31 @@ export async function POST(request: Request) {
   }
 }
 
-/** 코드가 맞는지 먼저 확인해 학원 이름을 보여 준다 */
+/**
+ * 코드가 맞는지 먼저 확인해 학원 이름을 보여 준다.
+ * 코드를 하나씩 대 보며 학원을 찾지 못하게, 「틀린 코드」만 세어 막는다(같은 서버 안 간단한 제한).
+ * 한 교실이 같은 와이파이로 한꺼번에 가입해도 맞는 코드는 세지 않으므로 막히지 않는다.
+ */
+const missedLookups = new Map<string, number[]>();
+const MISS_WINDOW_MS = 10 * 60 * 1000;
+function recentMisses(ip: string): number[] {
+  const now = Date.now();
+  const list = (missedLookups.get(ip) ?? []).filter((t) => now - t < MISS_WINDOW_MS);
+  if (list.length === 0) missedLookups.delete(ip);
+  else missedLookups.set(ip, list);
+  return list;
+}
+
 export async function GET(request: Request) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const code = new URL(request.url).searchParams.get("code") ?? "";
+  if (recentMisses(ip).length >= 200) {
+    return NextResponse.json({ ok: false, academyName: null }, { status: 429 });
+  }
   const academy = await academyByJoinCode(createAdminClient(), code);
+  if (!academy && code.trim().length >= 6) {
+    missedLookups.set(ip, [...recentMisses(ip), Date.now()]);
+  }
+  // 학원 이름만 — 다른 값은 내보내지 않는다
   return NextResponse.json({ ok: !!academy, academyName: academy?.name ?? null });
 }

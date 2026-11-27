@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       attemptId?: string;
       studentAnswers?: Record<string, string>;
-      /** 스케줄 배정 등 UI 통과 기준 — 세트 설정과 다를 수 있음 */
+      /** 화면이 보내도 쓰지 않는다 — 통과 기준은 서버(배정·세트 설정)에서만 정한다 */
       passScore?: number;
       dailyTaskId?: string;
     };
@@ -74,11 +74,6 @@ export async function POST(request: Request) {
           passScore = assignment.dictation_pass_score as number;
         }
       }
-    } else if (
-      typeof body.passScore === "number" &&
-      Number.isFinite(body.passScore)
-    ) {
-      passScore = body.passScore;
     }
 
     const blankItems = filterWordOnlyBlankItems(

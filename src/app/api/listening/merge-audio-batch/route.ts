@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { assertListeningSetAccess } from "@/lib/listening/listening-api-auth";
 import {
   ensureSegmentFilesExist,
   mergeQuestionAudioFromSegments,
@@ -23,6 +24,9 @@ export async function POST(request: Request) {
     const body = (await request.json()) as { setId?: string };
     const setId = body.setId?.trim();
     if (!setId) return jsonError("setId가 필요합니다.");
+
+    const access = await assertListeningSetAccess(setId);
+    if (!access.ok) return jsonError(access.message, access.status);
 
     const admin = createAdminClient();
     const { data: questions, error } = await admin

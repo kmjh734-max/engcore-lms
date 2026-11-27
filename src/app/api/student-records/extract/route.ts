@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { flushAiUsage, setAiUsage } from "@/lib/ai-usage/context";
+import { aiDailyCapError } from "@/lib/ai-usage/daily-cap";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { extractStudentRecordContent } from "@/lib/student-records/extract-content";
 import { parseStudentRecordUpload } from "@/lib/student-records/parse-upload";
@@ -77,6 +78,17 @@ export async function POST(request: Request) {
         studentId: target.studentId,
         studentName: target.studentName,
       });
+    }
+
+    // 읽기는 값을 따로 받지 않으므로 학원마다 하루 호출 3000번까지(2026-11-28)
+    if (parsed.imageDataUrls.length > 0 || parsed.pdfDocuments.length > 0) {
+      const capped = await aiDailyCapError({
+        academyId,
+        usedFor: "student_record_read",
+        maxPerDay: 3000,
+        requireBalance: false,
+      });
+      if (capped) return capped;
     }
 
     /*

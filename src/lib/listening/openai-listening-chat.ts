@@ -18,6 +18,8 @@ export interface ListeningChatOptions {
   maxCompletionTokens?: number;
   /** 모델 후보 (미지정 시 기본 후보). 유형별 모델 등급에서 넘긴다 */
   models?: string[];
+  /** 호출 하나의 시간 한도(ms). 미지정 시 150초 — 듣기 생성 라우트(최대 300초)보다 짧게 */
+  timeoutMs?: number;
 }
 
 type RequestProfile = {
@@ -103,6 +105,7 @@ async function postChatCompletion(
 ): Promise<Response> {
   return openAiFetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
+    signal: AbortSignal.timeout(opts.timeoutMs ?? 150_000),
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",

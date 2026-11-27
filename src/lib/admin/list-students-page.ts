@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 export const STUDENTS_PAGE_SIZE = 50;
 
@@ -132,13 +133,18 @@ export async function loadStudentsPageData(
   if (scope.createdBy) list = list.eq("created_by", scope.createdBy);
   if (scope.teacherVisible) {
     const { teacherId, academyId } = scope.teacherVisible;
-    const { data: mine } = await supabase
-      .from("class_students")
-      .select("student_id, classes!inner(teacher_id, is_active)")
-      .eq("classes.teacher_id", teacherId)
-      .eq("classes.is_active", true)
-      .limit(3000);
-    const memberIds = [...new Set((mine ?? []).map((r) => r.student_id as string))];
+    // 서버는 한 번에 1,000줄까지 — 끝까지 넘겨 읽는다
+    const mine = await fetchAllRows<{ student_id: string }>((from, to) =>
+      supabase
+        .from("class_students")
+        .select("student_id, classes!inner(teacher_id, is_active)")
+        .eq("classes.teacher_id", teacherId)
+        .eq("classes.is_active", true)
+        .order("class_id")
+        .order("student_id")
+        .range(from, to)
+    ).catch(() => [] as { student_id: string }[]);
+    const memberIds = [...new Set(mine.map((r) => r.student_id as string))];
     list = list.eq("academy_id", academyId);
     list = memberIds.length
       ? list.or(`created_by.eq.${teacherId},id.in.(${memberIds.join(",")})`)
@@ -177,7 +183,9 @@ export async function loadStudentsPageData(
       .from("class_students")
       .select("student_id, class:classes(name)")
       .in("student_id", ids),
-    supabase.from("enrollments").select("student_id").in("student_id", ids).limit(10000),
+    fetchAllRows<{ student_id: string }>((from, to) =>
+      supabase.from("enrollments").select("student_id").in("student_id", ids).order("id").range(from, to)
+    ).then((data) => ({ data }), () => ({ data: null })),
   ]);
 
   const classNames = new Map<string, string[]>();

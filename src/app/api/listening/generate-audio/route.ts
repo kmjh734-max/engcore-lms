@@ -3,12 +3,13 @@ import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateQuestionAudio } from "@/lib/listening/generate-audio";
 import { EXAM_DEFAULT_SPEECH_SPEED } from "@/lib/listening/speech-speed";
-import {
-  chargeFeatureOrError,
-  CREDIT_FEATURES,
-} from "@/lib/credits/charge";
+import { CREDIT_FEATURES } from "@/lib/credits/charge";
 import { flushAiUsage, setAiUsage } from "@/lib/ai-usage/context";
-import { adjustAcademyCredits, getFeatureCost } from "@/lib/credits";
+import {
+  adjustAcademyCredits,
+  creditsErrorResponse,
+  debitFeatureCredits,
+} from "@/lib/credits";
 import { assertListeningSetWritable } from "@/lib/listening/listening-api-auth";
 
 export const maxDuration = 180;
@@ -79,14 +80,29 @@ export async function POST(request: Request) {
 
     // 문항·권한을 다 확인한 뒤 차감하고, 음성을 못 만들면 되돌려 준다.
     const chargeKey = `listening_generate_audio:${questionId}:${Date.now()}`;
-    const chargeErr = await chargeFeatureOrError({
-      academyId: profile.academy_id,
-      featureKey: CREDIT_FEATURES.listening_generate_audio,
-      actorId: profile.id,
-      idempotencyKey: chargeKey,
-      metadata: { set_id: setId, question_id: questionId },
-    });
-    if (chargeErr) return chargeErr;
+    if (!profile.academy_id) {
+      return NextResponse.json(
+        { ok: false, message: "소속 학원 정보가 없습니다.", code: "no_academy" },
+        { status: 403 }
+      );
+    }
+    // 실제로 차감한 만큼만 되돌리려고 차감 결과를 받아 둔다(무료 학원·가격 꺼짐이면 0).
+    let chargedAmount = 0;
+    try {
+      const debit = await debitFeatureCredits(admin, {
+        academyId: profile.academy_id,
+        featureKey: CREDIT_FEATURES.listening_generate_audio,
+        actorId: profile.id,
+        idempotencyKey: chargeKey,
+        metadata: { set_id: setId, question_id: questionId },
+      });
+      if (!debit.skipped && debit.transaction) {
+        chargedAmount = Math.abs(Number(debit.transaction.amount) || 0);
+      }
+    } catch (err) {
+      const mapped = creditsErrorResponse(err);
+      return NextResponse.json(mapped.body, { status: mapped.status });
+    }
     setAiUsage({
       academyId: profile.academy_id,
       actorId: profile.id,
@@ -103,11 +119,10 @@ export async function POST(request: Request) {
         speechSpeed,
       });
     } catch (genErr) {
-      const pricing = await getFeatureCost(admin, CREDIT_FEATURES.listening_generate_audio).catch(() => null);
-      if (profile.academy_id && pricing && pricing.cost > 0) {
+      if (chargedAmount > 0) {
         await adjustAcademyCredits(admin, {
           academyId: profile.academy_id,
-          amount: pricing.cost,
+          amount: chargedAmount,
           direction: "grant",
           actorId: profile.id,
           note: "듣기 음성 만들기 실패 — 차감 취소",

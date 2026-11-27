@@ -334,7 +334,7 @@ export async function generateWorkbookAction(
    * 한 줄 해석·전체 영작·제시어 배열 영작은 「값이 들지 않는 갈래」로 두었는데
    * 실제로는 모델을 부른다. 값을 먼저 잡아 두고 만든다.
    */
-  const extraHolds: Array<{ amount: number; what: string }> = [];
+  const extraHolds: Array<{ amount: number; what: string; key: string }> = [];
   // 규칙으로만 만드는 유형도 유형마다 지문당 5(선생님 2026-10-28 「무료는 좀 그래」)
   const ruleTypes = types.filter((t) => WORKBOOK_RULE_TYPES.has(t));
   // 크레딧 내역에 「어느 자료에 썼나」를 남긴다(선생님 2026-11-26) — 워크북 이름, 없으면 첫 지문 외 N지문
@@ -371,12 +371,13 @@ export async function generateWorkbookAction(
           academyId: profile!.academy_id!,
           actorId: profile!.id,
           amount: h.amount,
+          reservationKey: h.key,
           note: `워크북을 만들지 못해 되돌림 (${h.what})`,
         });
       }
       return { ok: false, message: hold.message };
     }
-    extraHolds.push({ amount: hold.charged, what });
+    extraHolds.push({ amount: hold.charged, what, key: hold.idempotencyKey });
   }
   const giveBackExtras = async (why: string) => {
     for (const h of extraHolds) {
@@ -384,10 +385,41 @@ export async function generateWorkbookAction(
         academyId: profile!.academy_id!,
         actorId: profile!.id,
         amount: h.amount,
+        reservationKey: h.key,
         note: `워크북 ${h.what}을 만들지 못해 되돌림 (${why})`,
       });
     }
     extraHolds.length = 0;
+  };
+  // T/F 값은 아래에서 따로 잡는다. 되돌리면 0으로 두어 두 번 되돌리지 않는다.
+  let tfHold = 0;
+  let tfHoldKey = "";
+  const giveBackTf = async (note: string) => {
+    if (tfHold <= 0) return;
+    const amount = tfHold;
+    tfHold = 0;
+    await refundLessonCredits({
+      academyId: profile!.academy_id!,
+      actorId: profile!.id,
+      amount,
+      reservationKey: tfHoldKey,
+      note,
+    });
+  };
+  /** 실패로 끝날 때마다 부른다 — 잡아 둔 값을 모두 되돌리고 결과를 그대로 돌려준다. */
+  const failWith = async (
+    result: {
+      ok: false;
+      message: string;
+      code?: "MISSING_TRANSLATION" | "MISSING_LINE_TRANSLATION";
+      lineTranslationExcludeIds?: string[];
+    },
+    why: string
+  ) => {
+    await giveBackExtras(why);
+    await giveBackTf(`O/X 값 되돌림 (${why})`);
+    await flushAiUsage();
+    return result;
   };
 
   try {
@@ -511,7 +543,6 @@ export async function generateWorkbookAction(
     // T/F는 만들 때마다 새로 생성한다(지문당, 10문항을 넘으면 2배). 모자라면 시작하지 않는다.
     const tfCreditQty = passages.length * (tfOptions.count > 10 ? 2 : 1);
     // 값을 먼저 잡아 둔다 — 모자라면 만들지 않는다(잔액이 마이너스로 내려가지 않게).
-    let tfHold = 0;
     if (wantTf) {
       const hold = await reserveLessonCredits({
         academyId: profile!.academy_id!,
@@ -521,8 +552,11 @@ export async function generateWorkbookAction(
         metadata: { used_for: "workbook", material_name: creditMaterial },
         note: `워크북 O/X · 지문 ${passages.length}개 · ${tfOptions.count}문항`,
       });
-      if (!hold.ok) return { ok: false, message: hold.message };
+      if (!hold.ok) {
+        return failWith({ ok: false, message: hold.message }, "크레딧 부족");
+      }
       tfHold = hold.charged;
+      tfHoldKey = hold.idempotencyKey;
     }
     const blankTask = wantBlank
       ? settle(
@@ -659,12 +693,7 @@ export async function generateWorkbookAction(
       try {
         tf = unwrap(await tfTask!);
       } catch (e) {
-        await refundLessonCredits({
-          academyId: profile!.academy_id!,
-          actorId: profile!.id,
-          amount: tfHold,
-          note: "O/X 문항을 만들지 못해 되돌림",
-        });
+        await giveBackTf("O/X 문항을 만들지 못해 되돌림");
         throw e;
       }
       workbook.sections = tf.sections;
@@ -685,15 +714,7 @@ export async function generateWorkbookAction(
           );
         }
       } catch (e) {
-        if (tfHold > 0) {
-          await refundLessonCredits({
-            academyId: profile!.academy_id!,
-            actorId: profile!.id,
-            amount: tfHold,
-            note: "제목·주제·요지를 만들지 못해 O/X 값 되돌림",
-          });
-          tfHold = 0;
-        }
+        await giveBackTf("제목·주제·요지를 만들지 못해 O/X 값 되돌림");
         throw e;
       }
       workbook.gistSections = gist.sections;
@@ -733,14 +754,14 @@ export async function generateWorkbookAction(
 
       if (bilingual.blocking.length > 0) {
         const message = bilingual.blocking.map((b) => b.reason).join("\n");
-        return {
+        return failWith({
           ok: false,
           message:
             message ||
             "저장된 한글 해석이 없거나 영어 원문이 변경되었습니다. 수업용자료에서 해석을 확인해 주세요.",
           code: "MISSING_LINE_TRANSLATION",
           lineTranslationExcludeIds: bilingual.blocking.map((b) => b.projectId),
-        };
+        }, "만들기 실패");
       }
 
       const skipped = bilingual.skipped.map((s) => ({
@@ -812,16 +833,16 @@ export async function generateWorkbookAction(
       wantGrammarChoice &&
       (workbook.grammarChoiceSections?.length ?? 0) === 0
     ) {
-      return {
+      return failWith({
         ok: false,
         message: "어법 선택 문항을 만들지 못했습니다. 다시 시도해 주세요.",
-      };
+      }, "만들기 실패");
     }
     if (wantBlank && workbook.blankSections.length === 0) {
-      return { ok: false, message: "빈칸 채우기 결과를 만들지 못했습니다." };
+      return failWith({ ok: false, message: "빈칸 채우기 결과를 만들지 못했습니다." }, "만들기 실패");
     }
     if (wantTf && workbook.sections.length === 0) {
-      return { ok: false, message: "T/F 결과를 만들지 못했습니다." };
+      return failWith({ ok: false, message: "T/F 결과를 만들지 못했습니다." }, "만들기 실패");
     }
     if (
       wantSentenceOrder &&
@@ -831,56 +852,57 @@ export async function generateWorkbookAction(
         workbook.sentenceOrderSkipped
           ?.map((s) => `「${s.title}」 ${s.reason}`)
           .join(" ") ?? SENTENCE_ORDER_SKIP_TOO_FEW;
-      return {
+      return failWith({
         ok: false,
         message: detail || "문장 순서 배열 결과를 만들지 못했습니다.",
-      };
+      }, "만들기 실패");
     }
     if (
       wantLineKo &&
       (workbook.lineTranslationSections?.length ?? 0) === 0
     ) {
-      return {
+      return failWith({
         ok: false,
         message:
           "한줄해석 결과를 만들지 못했습니다. 해석이 있는 지문을 선택해 주세요.",
-      };
+      }, "만들기 실패");
     }
     if (
       wantFullEn &&
       (workbook.fullEnWritingSections?.length ?? 0) === 0
     ) {
-      return {
+      return failWith({
         ok: false,
         message:
           "통문장 영작 결과를 만들지 못했습니다. 해석이 있는 지문을 선택해 주세요.",
-      };
+      }, "만들기 실패");
     }
     if (
       wantKeyWordOrder &&
       (workbook.keyWordOrderSections?.length ?? 0) === 0
     ) {
-      return {
+      return failWith({
         ok: false,
         message:
           "중요문장 어순배열 결과를 만들지 못했습니다. 해석이 있는 지문을 선택해 주세요.",
-      };
+      }, "만들기 실패");
     }
     if (
       wantFullWordOrder &&
       (workbook.wordOrderWritingSections?.length ?? 0) === 0
     ) {
-      return {
+      return failWith({
         ok: false,
         message:
           "어순배열 영작 결과를 만들지 못했습니다. 해석이 있는 지문을 선택해 주세요.",
-      };
+      }, "만들기 실패");
     }
 
     await flushAiUsage();
     return { ok: true, workbook };
   } catch (e) {
     await giveBackExtras("만들기 실패");
+    await giveBackTf("O/X 값 되돌림 (만들기 실패)");
     await flushAiUsage();
     const code =
       e && typeof e === "object" && "code" in e
@@ -985,6 +1007,7 @@ export async function generateGrammarChoicePassageAction(
       academyId: profile!.academy_id!,
       actorId: profile!.id,
       amount: hold.charged,
+      reservationKey: hold.idempotencyKey,
       note: `어법 선택을 만들지 못해 되돌림 (${why})`,
     });
   const selection = resolveGrammarChoiceEngineVersion();
@@ -1168,6 +1191,7 @@ export async function generateVocabChoicePassageAction(
       academyId: profile!.academy_id!,
       actorId: profile!.id,
       amount: hold.charged,
+      reservationKey: hold.idempotencyKey,
       note: `어휘 선택을 만들지 못해 되돌림 (${why})`,
     });
 

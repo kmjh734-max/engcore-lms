@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 /**
  * 슈퍼관리자 홈 맨 위 "운영 현황" — 가입·매출·크레딧 사용을 이번 달 기준으로 한눈에.
@@ -16,7 +17,10 @@ export async function SuperAdminStats() {
     await Promise.all([
       admin.from("academies").select("id, created_at, settings"),
       admin.from("credit_payment_orders").select("payment_amount, status, approved_at").eq("status", "approved").gte("approved_at", since),
-      admin.from("credit_transactions").select("amount, feature_key").eq("type", "debit").gte("created_at", since).limit(20000),
+      // 한 번에 1,000행까지만 와서 합계가 모자랐다 — 끝까지 넘겨 받는다
+      fetchAllRows<{ amount: number | null; feature_key: string | null }>((from, to) =>
+        admin.from("credit_transactions").select("amount, feature_key").eq("type", "debit").gte("created_at", since).order("id").range(from, to)
+      ).then((data) => ({ data }), () => ({ data: null })),
       admin.from("feature_pricing").select("feature_key, label"),
       admin.from("profiles").select("id", { count: "exact", head: true }).eq("role", "student").eq("is_active", true),
     ]);

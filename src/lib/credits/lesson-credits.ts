@@ -158,7 +158,7 @@ export async function reserveLessonCredits(params: {
   const quantity = Math.max(1, Math.floor(params.quantity ?? 1));
   const idempotencyKey = `${params.featureKey}:${params.projectId ?? "-"}:${randomUUID()}`;
   try {
-    await debitFeatureCredits(admin, {
+    const debit = await debitFeatureCredits(admin, {
       academyId: params.academyId,
       featureKey: params.featureKey,
       actorId: params.actorId,
@@ -172,7 +172,15 @@ export async function reserveLessonCredits(params: {
       // 잔액이 모자라면 차감하지 않고 막는다 — 마이너스로 내려가지 않게.
       allowNegative: false,
     });
-    return { ok: true, charged: pricing.cost * quantity, idempotencyKey };
+    // 무료 학원 등으로 차감을 건너뛰었으면 잡은 값이 없다(되돌릴 것도 없다).
+    if (debit.skipped) return { ok: true, charged: 0, idempotencyKey: "" };
+    // 실제로 빠진 양(거래의 amount)을 돌려준다 — 그사이 값이 바뀌어도 되돌릴 양이 어긋나지 않게.
+    const debited = Math.abs(Number((debit.transaction as { amount?: number } | null)?.amount ?? NaN));
+    return {
+      ok: true,
+      charged: Number.isFinite(debited) && debited > 0 ? debited : pricing.cost * quantity,
+      idempotencyKey,
+    };
   } catch (e) {
     if (e instanceof InsufficientCreditsError) {
       const { data } = await admin
@@ -192,12 +200,17 @@ export async function reserveLessonCredits(params: {
   }
 }
 
-/** 잡아 둔 값을 되돌린다(만들다 실패했을 때). 되돌리지 못해도 만들기를 막지는 않는다. */
+/**
+ * 잡아 둔 값을 되돌린다(만들다 실패했을 때). 되돌리지 못해도 만들기를 막지는 않는다.
+ * reservationKey(reserveLessonCredits 의 idempotencyKey)를 주면 되돌림 키가 그 잡기에 묶여
+ * 같은 잡기를 두 번 되돌리지 않는다.
+ */
 export async function refundLessonCredits(params: {
   academyId: string;
   actorId: string;
   amount: number;
   note: string;
+  reservationKey?: string;
 }): Promise<void> {
   if (!(params.amount > 0)) return;
   try {
@@ -207,7 +220,9 @@ export async function refundLessonCredits(params: {
       direction: "grant",
       actorId: params.actorId,
       note: params.note,
-      idempotencyKey: `refund:${randomUUID()}`,
+      idempotencyKey: params.reservationKey
+        ? `refund:${params.reservationKey}`
+        : `refund:${randomUUID()}`,
     });
   } catch (e) {
     console.error("[credits] 되돌리기 실패", e);

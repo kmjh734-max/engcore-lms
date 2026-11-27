@@ -49,8 +49,14 @@ export async function POST(request: Request) {
         .select("academy_id")
         .eq("id", studentId)
         .maybeSingle();
-      academyId =
-        (studentProfile?.academy_id as string | null) ?? academyId;
+      if (
+        !studentProfile ||
+        !studentProfile.academy_id ||
+        studentProfile.academy_id !== profile.academy_id
+      ) {
+        return jsonError("우리 학원 학생이 아닙니다.", 403);
+      }
+      academyId = studentProfile.academy_id as string;
     }
     const branding = await getAcademyBranding(academyId);
 

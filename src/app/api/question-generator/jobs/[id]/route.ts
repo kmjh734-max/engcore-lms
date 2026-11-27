@@ -28,7 +28,10 @@ export async function GET(
     const origin = new URL(req.url).origin;
 
     // 진행 막대용 가벼운 조회: 문항·지문 본문 없이 상태만 (몇 초마다 불린다)
-    if (new URL(req.url).searchParams.get("lite") === "1") {
+    // poll=1: 생성 중 상세 화면용 — 상태 + 문항 id 순서 + since 이후 새 문항만 (지문 본문·옛 문항 다시 안 보냄)
+    const sp = new URL(req.url).searchParams;
+    const pollMode = sp.get("poll") === "1";
+    if (sp.get("lite") === "1" || pollMode) {
       let liteQuery = supabase
         .from("question_generation_jobs")
         .select(
@@ -52,7 +55,58 @@ export async function GET(
       if (resumeLite) after(resumeLite);
       const { run: _run, title, ...rest } = row;
       void _run;
-      return jsonOk({ job: { ...rest, request_config: { title } } });
+      if (!pollMode) return jsonOk({ job: { ...rest, request_config: { title } } });
+
+      // 순서(id만)는 매번 전부, 본문이 있는 행은 since 이후 것만
+      let orderQuery = supabase
+        .from("generated_english_questions")
+        .select("id,slot_index,passage_id")
+        .eq("generation_job_id", id)
+        .neq("status", "archived")
+        .order("slot_index", { ascending: true, nullsFirst: false })
+        .order("created_at", { ascending: true })
+        .order("id", { ascending: true });
+      if (profile.role === "teacher") orderQuery = orderQuery.eq("created_by", profile.id);
+      const { data: orderRows, error: orderErr } = await orderQuery;
+      if (orderErr) return jsonError("조회에 실패했습니다.", 500);
+      const { data: cfgRow } = await supabase
+        .from("question_generation_jobs")
+        .select("passageIds:request_config->passageIds")
+        .eq("id", id)
+        .single();
+      const pollInputIds = ((cfgRow as { passageIds?: unknown } | null)?.passageIds ?? []) as unknown;
+      const pollRank = new Map<string, number>();
+      (Array.isArray(pollInputIds) ? pollInputIds : []).forEach((pid, i) => {
+        if (typeof pid === "string" && !pollRank.has(pid)) pollRank.set(pid, i);
+      });
+      const order = (orderRows ?? [])
+        .map((q, i) => ({ q, i }))
+        .sort((a, b) => {
+          const sa = a.q.slot_index as number | null;
+          const sb = b.q.slot_index as number | null;
+          if (sa != null || sb != null) return a.i - b.i;
+          const ra = pollRank.get(String(a.q.passage_id ?? "")) ?? Number.MAX_SAFE_INTEGER;
+          const rb = pollRank.get(String(b.q.passage_id ?? "")) ?? Number.MAX_SAFE_INTEGER;
+          return ra - rb || a.i - b.i;
+        })
+        .map((x) => String(x.q.id));
+
+      let newQuery = supabase
+        .from("generated_english_questions")
+        .select("*")
+        .eq("generation_job_id", id)
+        .neq("status", "archived");
+      const since = sp.get("since");
+      // 새로 생긴 문항 + 생성 중 다시 고쳐 쓴 문항(redo·검수 반영)도 함께 — 화면이 옛 글을 붙들지 않게
+      if (since) newQuery = newQuery.or(`created_at.gte.${since},updated_at.gte.${since}`);
+      if (profile.role === "teacher") newQuery = newQuery.eq("created_by", profile.id);
+      const { data: newQuestions, error: newErr } = await newQuery;
+      if (newErr) return jsonError("조회에 실패했습니다.", 500);
+      return jsonOk({
+        job: { ...rest, request_config: { title } },
+        order,
+        newQuestions: newQuestions ?? [],
+      });
     }
 
     let jobQuery = supabase

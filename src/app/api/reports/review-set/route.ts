@@ -36,13 +36,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "이 학생에게 접근할 수 없어요." }, { status: 403 });
   }
 
+  const callerAcademyId = (profile.academy_id as string | null) ?? null;
+  if (!callerAcademyId) {
+    return NextResponse.json({ ok: false, message: "소속 학원 정보가 없습니다." }, { status: 403 });
+  }
+
   const admin = createAdminClient();
   const [{ data: student }, { data: items }] = await Promise.all([
     admin.from("profiles").select("name, academy_id").eq("id", studentId).maybeSingle(),
+    // 우리 학원 단어장의 낱말만
     admin
       .from("vocab_items")
-      .select("id, word, meaning, part_of_speech, example_sentence, example_meaning, synonyms, antonyms")
-      .in("id", itemIds),
+      .select("id, word, meaning, part_of_speech, example_sentence, example_meaning, synonyms, antonyms, vocab_sets!inner(academy_id)")
+      .in("id", itemIds)
+      .eq("vocab_sets.academy_id", callerAcademyId),
   ]);
   if (!items?.length) {
     return NextResponse.json({ ok: false, message: "단어를 찾지 못했어요." }, { status: 404 });

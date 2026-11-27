@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 /**
  * 수업자료 하나(lesson_material_projects) = 지문 하나. 지문은 문장 단위(lesson_material_items)로 나뉘어
@@ -21,14 +22,16 @@ export async function loadAcademyMaterialPassages(
   academyId: string,
   projectIds?: string[]
 ): Promise<MaterialPassageFull[]> {
-  let pq = admin
-    .from("lesson_material_projects")
-    .select("id, title, source, updated_at, folder:lesson_material_folders(name)")
-    .eq("academy_id", academyId)
-    .limit(2000);
-  if (projectIds?.length) pq = pq.in("id", projectIds);
-  const { data: projects } = await pq;
-  const list = projects ?? [];
+  // 1,000개 상한을 넘겨 끝까지 읽는다
+  type ProjectRow = { id: string; title: string | null; source: string | null; updated_at: string | null; folder: { name: string } | { name: string }[] | null };
+  const list = await fetchAllRows<ProjectRow>((from, to) => {
+    let pq = admin
+      .from("lesson_material_projects")
+      .select("id, title, source, updated_at, folder:lesson_material_folders(name)")
+      .eq("academy_id", academyId);
+    if (projectIds?.length) pq = pq.in("id", projectIds);
+    return pq.order("id").range(from, to);
+  });
   if (list.length === 0) return [];
 
   /*
@@ -131,11 +134,14 @@ export async function extendShortMaterialPassages(
 /** 짧은 본문들이 속한 과의 모든 본문 출처 이름 */
 async function sourcesOfUnits(admin: SupabaseClient, academyId: string, short: MaterialPassageFull[]): Promise<string[]> {
   const units = new Set(short.map((p) => unitOfSource(p.source)));
-  const { data } = await admin
-    .from("lesson_material_projects")
-    .select("source")
-    .eq("academy_id", academyId)
-    .like("source", "%본문%")
-    .limit(5000);
-  return [...new Set((data ?? []).map((r) => String(r.source ?? "")).filter((s) => units.has(unitOfSource(s))))];
+  const data = await fetchAllRows<{ source: string | null }>((from, to) =>
+    admin
+      .from("lesson_material_projects")
+      .select("source")
+      .eq("academy_id", academyId)
+      .like("source", "%본문%")
+      .order("id")
+      .range(from, to)
+  );
+  return [...new Set(data.map((r) => String(r.source ?? "")).filter((s) => units.has(unitOfSource(s))))];
 }

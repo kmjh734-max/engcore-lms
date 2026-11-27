@@ -20,6 +20,7 @@ import type { ExamAnalysisRow, ExamItemRow } from "@/lib/exam-analysis/types";
 import { onePageSentences, type OnePageContent } from "@/lib/lesson-materials/one-page";
 import { findPassageAll, sameStem, stemsFor } from "@/lib/exam-analysis/uploaded-material";
 import { examChat } from "@/lib/exam-analysis/openai";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 export type BookVerdict = "same" | "similar" | "none";
 
@@ -963,12 +964,17 @@ async function materialHits(admin: SupabaseClient, academyId: string, ctx: MatCt
   }
 
   // 1장 요약자료 — 지문마다 저장된 재료
-  const { data: sents } = await admin
-    .from("lesson_material_items")
-    .select("project_id, english_text, korean_text, order_index")
-    .in("project_id", pids)
-    .order("order_index")
-    .limit(5000);
+  // 서버는 한 번에 1,000줄까지 — 끝까지 넘겨 읽는다
+  const sents = await fetchAllRows<{ project_id: string; english_text: string; korean_text: string | null; order_index: number }>(
+    (from, to) =>
+      admin
+        .from("lesson_material_items")
+        .select("project_id, english_text, korean_text, order_index")
+        .in("project_id", pids)
+        .order("order_index")
+        .order("id")
+        .range(from, to)
+  );
   for (const pr of projects ?? []) {
     const c = ((pr.lesson_pack_json ?? {}) as { onePageContent?: OnePageContent | null }).onePageContent;
     if (!c || !before(c.createdAt)) continue;
@@ -1321,13 +1327,17 @@ async function ourQuestions(
   const out: Made[] = [];
   const list = [...ids];
   for (let i = 0; i < list.length; i += 100) {
-    const { data } = await admin
-      .from("generated_english_questions")
-      .select("id, option_key, instruction, question_text, passage_modified, passage_original, choices, correct_answer, created_at, item_no, generation_job_id")
-      .eq("academy_id", academyId)
-      .in("passage_id", list.slice(i, i + 100))
-      .limit(3000);
-    for (const q of (data ?? []) as Made[]) {
+    const chunk = list.slice(i, i + 100);
+    const data = await fetchAllRows<Made>((from, to) =>
+      admin
+        .from("generated_english_questions")
+        .select("id, option_key, instruction, question_text, passage_modified, passage_original, choices, correct_answer, created_at, item_no, generation_job_id")
+        .eq("academy_id", academyId)
+        .in("passage_id", chunk)
+        .order("id")
+        .range(from, to)
+    );
+    for (const q of data) {
       const t = q.created_at ? new Date(q.created_at).getTime() : NaN;
       if (Number.isFinite(t) && t < cutoffMs) out.push(q);
     }
@@ -1556,9 +1566,9 @@ export async function buildHitBook(
   const loadJobs = async (qs: Made[]) => {
     const need = [...new Set(qs.map((q) => q.generation_job_id).filter((x): x is string => !!x && !jobTitle.has(x)))];
     for (let i = 0; i < need.length; i += 200) {
-      const { data } = await admin.from("question_generation_jobs").select("id, request_config").in("id", need.slice(i, i + 200));
+      const { data } = await admin.from("question_generation_jobs").select("id, rc_title:request_config->>title").in("id", need.slice(i, i + 200));
       for (const j of data ?? []) {
-        jobTitle.set(String(j.id), String((j.request_config as { title?: string } | null)?.title ?? "변형문제"));
+        jobTitle.set(String(j.id), String((j.rc_title as string | null) ?? "변형문제"));
       }
     }
   };

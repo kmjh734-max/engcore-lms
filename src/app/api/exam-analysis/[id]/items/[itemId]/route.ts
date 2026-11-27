@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { loadOwnAnalysis, requireExamStaff } from "@/lib/exam-analysis/access";
 import { categoryOfName, EXAM_LEVELS } from "@/lib/exam-analysis/types";
 import { mockPassageShortLabel } from "@/lib/mock-passages";
+import { resolveTextbookPassageAcademyId } from "@/lib/textbooks/shared-passages";
 
 export const runtime = "nodejs";
 
@@ -71,10 +72,13 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       let tbLabel = label || "교과서";
       let tbId: string | null = null;
       if (body.source.passageId) {
+        // 이 학원이 볼 수 있는 교과서 본문만 (출처 고르기 목록과 같은 기준)
+        const ownerId = await resolveTextbookPassageAcademyId(admin, auth.profile.academy_id);
         const { data: tb } = await admin
           .from("textbook_passages")
           .select("id, subject, publisher, lesson, part")
           .eq("id", String(body.source.passageId))
+          .eq("academy_id", ownerId)
           .maybeSingle();
         if (tb) {
           tbId = tb.id;

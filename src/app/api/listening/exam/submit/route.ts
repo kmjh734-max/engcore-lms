@@ -3,6 +3,7 @@ import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { scheduleStudentMonthlySeat } from "@/lib/credits/monthly-seat";
 import { gradeListeningExamAnswers } from "@/lib/listening/exam/grade-answers";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isStudentAssignedListeningSet } from "@/lib/listening/student-set-access";
 
 export const maxDuration = 60;
 
@@ -37,12 +38,35 @@ export async function POST(request: Request) {
 
     const { data: setRow } = await admin
       .from("listening_sets")
-      .select("id, title")
+      .select("id, title, academy_id, is_published")
       .eq("id", setId)
       .maybeSingle();
 
     if (!setRow) {
       return jsonError("듣기 세트를 찾을 수 없습니다.");
+    }
+
+    // 배정된 세트이거나, 같은 학원에 공개된 세트(종이 시험 QR)만 제출할 수 있다
+    const sameAcademyPublished =
+      setRow.is_published === true &&
+      !!profile.academy_id &&
+      setRow.academy_id === profile.academy_id;
+    if (
+      !sameAcademyPublished &&
+      !(await isStudentAssignedListeningSet(admin, profile.id, setId))
+    ) {
+      return jsonError("배정된 듣기 세트가 아닙니다.", 403);
+    }
+
+    const dailyTaskId = body.dailyTaskId?.trim() || null;
+    if (dailyTaskId) {
+      const { data: task } = await admin
+        .from("listening_daily_tasks")
+        .select("id")
+        .eq("id", dailyTaskId)
+        .eq("student_id", profile.id)
+        .maybeSingle();
+      if (!task) return jsonError("오늘 과제를 찾을 수 없습니다.", 403);
     }
 
     const { data: questions, error: qErr } = await admin
@@ -70,7 +94,7 @@ export async function POST(request: Request) {
         student_id: profile.id,
         set_id: setId,
         source,
-        daily_task_id: body.dailyTaskId ?? null,
+        daily_task_id: dailyTaskId,
         score: graded.score,
         correct_count: graded.correctCount,
         total_count: graded.totalCount,

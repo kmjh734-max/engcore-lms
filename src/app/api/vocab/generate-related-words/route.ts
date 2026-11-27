@@ -6,6 +6,8 @@ import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { openAiErrorMessage } from "@/lib/vocab/openai-error-message";
 import { openAiFetch } from "@/lib/ai-usage/openai-fetch";
 
+export const maxDuration = 300;
+
 interface RequestItem {
   word: string;
   meaning: string;
@@ -106,6 +108,7 @@ ${JSON.stringify(items.map((i) => ({ word: i.word.trim(), meaning: i.meaning.tri
 
     const response = await openAiFetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
+      signal: AbortSignal.timeout(280_000),
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",

@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ScheduleAssignmentRow } from "@/lib/listening/schedule/types";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 async function refreshDailyTaskCounts(
   admin: SupabaseClient,
@@ -64,25 +65,45 @@ export async function reconcileDailyTaskDictationProgress(
 
   let changed = false;
 
+  // 문항마다 따로 묻던 것(학생 화면을 열 때마다 N번)을 한 번에 읽는다 — 문항별 최고 점수 시도
+  const checkIds = (rows ?? [])
+    .filter((row) => row.completed || row.dictation_completed)
+    .map((row) => row.question_id as string);
+  const bestAttempt = new Map<string, { score: number | null; passed: boolean | null }>();
+  if (checkIds.length > 0) {
+    const attempts = await fetchAllRows<{ question_id: string; score: number | null; passed: boolean | null }>(
+      (from, to) =>
+        admin
+          .from("listening_dictation_attempts")
+          .select("question_id, score, passed")
+          .eq("student_id", opts.studentId)
+          .in("question_id", checkIds)
+          .not("submitted_at", "is", null)
+          .order("score", { ascending: false })
+          .order("id")
+          .range(from, to)
+    ).catch(() => null);
+    // 못 읽었으면 고치지 않는다(빈 결과로 보면 완료 문항을 잘못 되돌린다)
+    if (!attempts) return;
+    for (const a of attempts) {
+      const k = String(a.question_id);
+      if (!bestAttempt.has(k)) bestAttempt.set(k, a);
+    }
+  }
+  const writes: PromiseLike<unknown>[] = [];
+  const resetPassedIds: string[] = [];
+
   for (const row of rows ?? []) {
     if (!row.completed && !row.dictation_completed) continue;
 
-    const { data: attempt } = await admin
-      .from("listening_dictation_attempts")
-      .select("score, passed")
-      .eq("student_id", opts.studentId)
-      .eq("question_id", row.question_id as string)
-      .not("submitted_at", "is", null)
-      .order("score", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const attempt = bestAttempt.get(String(row.question_id)) ?? null;
 
     const score = attempt?.score != null ? (attempt.score as number) : null;
     const dictationOk = score != null && score >= opts.dictationPassScore;
 
     if (dictationOk) {
       if (!row.completed || !row.dictation_completed) {
-        await admin
+        writes.push(admin
           .from("listening_daily_task_progress")
           .update({
             dictation_completed: true,
@@ -95,7 +116,7 @@ export async function reconcileDailyTaskDictationProgress(
           })
           .eq("daily_task_id", opts.dailyTaskId)
           .eq("question_id", row.question_id as string)
-          .eq("student_id", opts.studentId);
+          .eq("student_id", opts.studentId));
         changed = true;
       }
       continue;
@@ -113,7 +134,7 @@ export async function reconcileDailyTaskDictationProgress(
 
     // 실제 통과 점수 미달인데 완료로 남아 있으면 되돌림
     if (row.completed || row.dictation_completed) {
-      await admin
+      writes.push(admin
         .from("listening_daily_task_progress")
         .update({
           dictation_completed: false,
@@ -123,21 +144,28 @@ export async function reconcileDailyTaskDictationProgress(
         })
         .eq("daily_task_id", opts.dailyTaskId)
         .eq("question_id", row.question_id as string)
-        .eq("student_id", opts.studentId);
+        .eq("student_id", opts.studentId));
       changed = true;
     }
 
     // 세트 기준 passed=true 이지만 배정 점수 미달인 시도는 재도전 가능하도록 표시 해제
     if (attempt?.passed && score != null && score < opts.dictationPassScore) {
-      await admin
+      resetPassedIds.push(row.question_id as string);
+    }
+  }
+
+  if (resetPassedIds.length > 0) {
+    writes.push(
+      admin
         .from("listening_dictation_attempts")
         .update({ passed: false })
         .eq("student_id", opts.studentId)
-        .eq("question_id", row.question_id as string)
+        .in("question_id", resetPassedIds)
         .eq("passed", true)
-        .lt("score", opts.dictationPassScore);
-    }
+        .lt("score", opts.dictationPassScore)
+    );
   }
+  await Promise.all(writes);
 
   if (changed) {
     await refreshDailyTaskCounts(

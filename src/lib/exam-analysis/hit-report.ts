@@ -13,6 +13,7 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ExamItemRow } from "@/lib/exam-analysis/types";
+import { chunkIds, fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 import { examTypeToOptionKey } from "@/lib/exam-analysis/blueprint";
 import { getWorkbookTypeMeta } from "@/lib/lesson-materials/workbook-types";
 import { matchUploads } from "@/lib/exam-analysis/uploaded-material";
@@ -183,22 +184,49 @@ export async function buildHitReport(
   }
 
   // ── 내 변형문제 지문과 그 지문으로 만든 문항
-  const { data: passages } = await admin
-    .from("english_source_passages")
-    .select("id, title, passage")
-    .limit(4000);
-  const { data: made } = await admin
-    .from("generated_english_questions")
-    .select("id, passage_id, option_key, instruction, created_at, passage_modified, correct_answer, question_text, choices")
-    .eq("academy_id", academyId)
-    .limit(20000);
-  const madeByPassage = new Map<string, NonNullable<typeof made>>();
-  for (const q of made ?? []) {
+  // 1,000행 상한을 넘겨 끝까지 · 무거운 칸(지문 본문·보기)은 같은 지문으로 맞은 것만 나중에(2026-11-28)
+  type MadeRow = { id: string; passage_id: string | null; option_key: string | null; instruction: string | null; created_at: string | null };
+  const made = await fetchAllRows<MadeRow>((from, to) =>
+    admin
+      .from("generated_english_questions")
+      .select("id, passage_id, option_key, instruction, created_at")
+      .eq("academy_id", academyId)
+      .order("id")
+      .range(from, to)
+  );
+  const madeByPassage = new Map<string, MadeRow[]>();
+  for (const q of made) {
     const k = String(q.passage_id ?? "");
     if (!k) continue;
     madeByPassage.set(k, [...(madeByPassage.get(k) ?? []), q]);
   }
-  const passagePool = (passages ?? [])
+  const passages: Array<{ id: string; title: string | null; passage: string | null }> = [];
+  for (const ids of chunkIds([...madeByPassage.keys()])) {
+    const { data, error } = await admin
+      .from("english_source_passages")
+      .select("id, title, passage")
+      .in("id", ids);
+    if (error) throw new Error(error.message);
+    passages.push(...((data ?? []) as typeof passages));
+  }
+  type MadeDetail = { passage_modified: string | null; correct_answer: unknown; question_text: string | null; choices: unknown };
+  const detailByPassage = new Map<string, Map<string, MadeDetail>>();
+  const madeDetails = async (passageId: string) => {
+    const hit = detailByPassage.get(passageId);
+    if (hit) return hit;
+    const { data, error } = await admin
+      .from("generated_english_questions")
+      .select("id, passage_modified, correct_answer, question_text, choices")
+      .eq("academy_id", academyId)
+      .eq("passage_id", passageId);
+    if (error) throw new Error(error.message);
+    const m = new Map<string, MadeDetail>(
+      ((data ?? []) as Array<MadeDetail & { id: string }>).map((r) => [String(r.id), r])
+    );
+    detailByPassage.set(passageId, m);
+    return m;
+  };
+  const passagePool = passages
     .filter((p) => madeByPassage.has(String(p.id)))
     .map((p) => ({
       id: String(p.id),
@@ -207,36 +235,63 @@ export async function buildHitReport(
     }));
 
   // ── 수업자료 지문과 그 지문으로 만든 자료
-  const { data: projects } = await admin
-    .from("lesson_material_projects")
-    .select("id, title")
-    .eq("academy_id", academyId)
-    .limit(3000);
-  const projectIds = (projects ?? []).map((p) => String(p.id));
-  const projectTitle = new Map(projectIds.map((id, i) => [id, String(projects![i]!.title ?? "수업자료")]));
+  const projects = await fetchAllRows<{ id: string; title: string | null }>((from, to) =>
+    admin
+      .from("lesson_material_projects")
+      .select("id, title")
+      .eq("academy_id", academyId)
+      .order("id")
+      .range(from, to)
+  );
+  const projectIds = projects.map((p) => String(p.id));
+  const projectTitle = new Map(projectIds.map((id, i) => [id, String(projects[i]!.title ?? "수업자료")]));
   const sentences: Array<{ project_id: string; english_text: string }> = [];
   for (let i = 0; i < projectIds.length; i += 200) {
-    const { data } = await admin
-      .from("lesson_material_items")
-      .select("project_id, english_text, order_index")
-      .in("project_id", projectIds.slice(i, i + 200))
-      .order("order_index")
-      .limit(20000);
-    sentences.push(...((data ?? []) as typeof sentences));
+    const chunk = projectIds.slice(i, i + 200);
+    const rows = await fetchAllRows<{ project_id: string; english_text: string }>((from, to) =>
+      admin
+        .from("lesson_material_items")
+        .select("project_id, english_text, order_index")
+        .in("project_id", chunk)
+        .order("order_index")
+        .order("id")
+        .range(from, to)
+    );
+    sentences.push(...rows);
   }
   const textByProject = new Map<string, string>();
   for (const s of sentences) {
     const k = String(s.project_id);
     textByProject.set(k, `${textByProject.get(k) ?? ""} ${s.english_text ?? ""}`);
   }
-  const { data: docs } = await admin
-    .from("lesson_material_documents")
-    .select("id, kind, name, project_ids, payload, created_at")
-    .eq("academy_id", academyId)
-    .is("deleted_at", null)
-    .limit(3000);
-  const docsByProject = new Map<string, NonNullable<typeof docs>>();
-  for (const d of docs ?? []) {
+  // payload 는 크다 — 묶는 데는 안 쓰고, 지문이 맞은 자료만 나중에 읽는다(2026-11-28)
+  type DocRow = { id: string; kind: string | null; name: string | null; project_ids: string[] | null; created_at: string | null };
+  const docs = await fetchAllRows<DocRow>((from, to) =>
+    admin
+      .from("lesson_material_documents")
+      .select("id, kind, name, project_ids, created_at")
+      .eq("academy_id", academyId)
+      .is("deleted_at", null)
+      .order("id")
+      .range(from, to)
+  );
+  const payloadByDoc = new Map<string, Record<string, unknown>>();
+  const docPayloads = async (ids: string[]) => {
+    const need = ids.filter((id) => !payloadByDoc.has(id));
+    for (const part of chunkIds(need)) {
+      const { data, error } = await admin
+        .from("lesson_material_documents")
+        .select("id, selectedTypes:payload->selectedTypes")
+        .in("id", part);
+      if (error) throw new Error(error.message);
+      for (const r of (data ?? []) as Array<{ id: string; selectedTypes: unknown }>) {
+        payloadByDoc.set(String(r.id), { selectedTypes: r.selectedTypes });
+      }
+    }
+    for (const id of need) if (!payloadByDoc.has(id)) payloadByDoc.set(id, {});
+  };
+  const docsByProject = new Map<string, DocRow[]>();
+  for (const d of docs) {
     for (const pid of (d.project_ids as string[] | null) ?? []) {
       docsByProject.set(String(pid), [...(docsByProject.get(String(pid)) ?? []), d]);
     }
@@ -256,7 +311,9 @@ export async function buildHitReport(
     if (examSet.size > 0) {
       for (const p of passagePool) {
         if (!samePassage(examSet, p.set)) continue;
-        for (const q of madeByPassage.get(p.id) ?? []) {
+        const details = await madeDetails(p.id);
+        for (const q0 of madeByPassage.get(p.id) ?? []) {
+          const q = { ...q0, ...details.get(String(q0.id)) };
           const code = String(q.option_key).split(":").pop() ?? "";
           const wantCode = want.key.split(":").pop() ?? "";
           const sameType = !want.substituted && code === wantCode;
@@ -296,8 +353,10 @@ export async function buildHitReport(
       }
       for (const m of materialPool) {
         if (!samePassage(examSet, m.set)) continue;
-        for (const d of docsByProject.get(m.id) ?? []) {
-          const payload = (d.payload ?? {}) as Record<string, unknown>;
+        const mDocs = docsByProject.get(m.id) ?? [];
+        await docPayloads(mDocs.map((d) => String(d.id)));
+        for (const d of mDocs) {
+          const payload = payloadByDoc.get(String(d.id)) ?? {};
           // 워크북은 selectedTypes 에 고른 갈래가 들어 있다(2026-10-01 확인)
           const kinds = Array.isArray(payload.selectedTypes) ? (payload.selectedTypes as string[]) : [];
           const name = String(d.name ?? "수업자료");

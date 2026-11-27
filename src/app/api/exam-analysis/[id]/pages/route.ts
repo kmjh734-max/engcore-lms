@@ -34,11 +34,45 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
    * 빠질 수 있었다. 그래서 시험분석 원가에는 읽기 값이 들어 있지 않았다.
    * 값은 분석이 끝날 때 한 번만 받으므로, 읽기는 같은 기능에 원가로만 붙인다.
    */
+  /*
+   * 값은 분석(analyze)에서 받으므로, 분석을 끝내지 않고 쪽 읽기만 되풀이하면 값 없이 원가만 나간다(2026-11-28).
+   * 분석이 시작된 뒤에는 읽지 않고, 이미 읽어 둔 쪽은 다시 읽지 않으며(두 단 다시 읽기는 그대로),
+   * 분석 하나에서 읽는 횟수에 테두리를 둔다(쪽마다 한 번 + 두 단 한 번, 한 번에 호출 둘까지).
+   */
+  if (analysis.status !== "reading") {
+    return NextResponse.json({ ok: false, message: "이미 분석을 시작한 시험지예요. 새로 올려 주세요." }, { status: 409 });
+  }
+  const admin = createAdminClient();
+  const { data: prev } = await admin
+    .from("school_exam_pages")
+    .select("text")
+    .eq("analysis_id", id)
+    .eq("page_no", pageNo)
+    .maybeSingle();
+  const wantsHalves = Array.isArray(body.halves);
+  if (prev && !wantsHalves && String(prev.text ?? "").trim()) {
+    return NextResponse.json({ ok: true, complete: true });
+  }
+  const { count: readCalls } = await admin
+    .from("ai_usage_logs")
+    .select("id", { count: "exact", head: true })
+    .eq("academy_id", auth.profile.academy_id)
+    .eq("project_id", id)
+    .eq("used_for", "exam_page_read")
+    .gte("created_at", new Date(Date.now() - 3 * 86_400_000).toISOString());
+  if ((readCalls ?? 0) >= analysis.page_count * 6 + 4) {
+    return NextResponse.json(
+      { ok: false, message: "이 시험지는 더 읽을 수 없어요. 새로 올려 분석해 주세요." },
+      { status: 429 }
+    );
+  }
+
   setAiUsage({
     academyId: auth.profile.academy_id,
     actorId: auth.profile.id,
     featureKey: "school_exam_analysis",
     usedFor: "exam_page_read",
+    projectId: id,
   });
 
   try {
@@ -59,13 +93,6 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     }
 
     // 덜 읽었어도 일단 저장해 둔다(두 단으로 다시 읽으면 더 긴 쪽으로 바꾼다)
-    const admin = createAdminClient();
-    const { data: prev } = await admin
-      .from("school_exam_pages")
-      .select("text")
-      .eq("analysis_id", id)
-      .eq("page_no", pageNo)
-      .maybeSingle();
     if (!prev || text.length >= String(prev.text ?? "").length) {
       await admin.from("school_exam_pages").upsert({ analysis_id: id, page_no: pageNo, text });
     }

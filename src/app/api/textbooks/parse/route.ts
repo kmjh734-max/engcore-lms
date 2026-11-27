@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import ExcelJS from "exceljs";
 import { flushAiUsage, setAiUsage } from "@/lib/ai-usage/context";
+import { aiDailyCapError } from "@/lib/ai-usage/daily-cap";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { examChat } from "@/lib/exam-analysis/openai";
 
@@ -77,6 +78,14 @@ export async function POST(request: Request) {
     if (body.kind === "image") {
       const dataUrl = String(body.dataUrl ?? "");
       if (!dataUrl.startsWith("data:image/")) return jsonError("사진을 읽지 못했어요.");
+      // 값 없는 보조 호출이라 학원마다 하루 300번까지(2026-11-28)
+      const capped = await aiDailyCapError({
+        academyId: profile.academy_id,
+        usedFor: "textbook_toc_read",
+        maxPerDay: 300,
+        requireBalance: false,
+      });
+      if (capped) return capped;
       /*
        * 선생님 물음(2026-10-01): 원가가 제대로 책정되고 있는가.
        * 목차 사진 읽기는 그림을 높은 해상도로 보는 호출인데 테두리가 없어, 어느 학원

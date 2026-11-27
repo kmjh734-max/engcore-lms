@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { repairSetMwDialogueInDb } from "@/lib/listening/ensure-mw-dialogue";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { assertListeningSetAccess } from "@/lib/listening/listening-api-auth";
 
 function jsonError(message: string, status = 200) {
   return NextResponse.json({ ok: false, message }, { status });
@@ -19,14 +20,10 @@ export async function POST(request: Request) {
     const setId = body.setId?.trim();
     if (!setId) return jsonError("setId가 필요합니다.");
 
+    const access = await assertListeningSetAccess(setId);
+    if (!access.ok) return jsonError(access.message, access.status);
+    const setRow = access.setRow;
     const admin = createAdminClient();
-    const { data: setRow } = await admin
-      .from("listening_sets")
-      .select("teacher_id, created_by")
-      .eq("id", setId)
-      .maybeSingle();
-
-    if (!setRow) return jsonError("세트를 찾을 수 없습니다.");
 
     if (
       profile.role === "teacher" &&

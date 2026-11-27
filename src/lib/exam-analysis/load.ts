@@ -86,7 +86,7 @@ export async function countExamMocks(analysisId: string, academyId: string): Pro
 export async function loadExamMocks(analysisId: string, academyId: string) {
   const { data } = await createAdminClient()
     .from("question_generation_jobs")
-    .select("id, status, created_at, request_config")
+    .select("id, status, created_at, rc_title:request_config->>title")
     .eq("academy_id", academyId)
     .eq("request_config->>examAnalysisId", analysisId)
     .order("created_at", { ascending: false })
@@ -95,6 +95,6 @@ export async function loadExamMocks(analysisId: string, academyId: string) {
     id: j.id as string,
     status: j.status as string,
     created_at: j.created_at as string,
-    title: String((j.request_config as { title?: string } | null)?.title ?? "동형모의고사"),
+    title: String((j.rc_title as string | null) ?? "동형모의고사"),
   }));
 }

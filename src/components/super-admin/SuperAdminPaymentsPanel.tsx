@@ -180,8 +180,13 @@ export function SuperAdminPaymentsPanel({
                   <td className="text-xs">
                     {o.status}
                     {o.failure_code ? (
-                      <span className="block text-red-600">
-                        {o.failure_code}
+                      <span
+                        className="block text-red-600"
+                        title={o.failure_message ?? undefined}
+                      >
+                        {o.failure_code === "toss_canceled_credit_unrecovered"
+                          ? "토스 취소됨 · 크레딧 회수 필요"
+                          : o.failure_code}
                       </span>
                     ) : null}
                   </td>

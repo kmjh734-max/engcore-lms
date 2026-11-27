@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { assertListeningSetAccess } from "@/lib/listening/listening-api-auth";
 import {
   ensureSegmentFilesExist,
   mergeQuestionAudioFromSegments,
@@ -27,21 +28,26 @@ export async function POST(request: Request) {
       return jsonError("setId와 questionId가 필요합니다.");
     }
 
-    const admin = createAdminClient();
-    const { data: setRow } = await admin
-      .from("listening_sets")
-      .select("teacher_id, created_by")
-      .eq("id", setId)
-      .maybeSingle();
+    const access = await assertListeningSetAccess(setId);
+    if (!access.ok) return jsonError(access.message, access.status);
+    const setRow = access.setRow;
 
     if (
       profile.role === "teacher" &&
-      setRow &&
       setRow.teacher_id !== profile.id &&
       setRow.created_by !== profile.id
     ) {
       return jsonError("권한이 없습니다.", 403);
     }
+
+    const admin = createAdminClient();
+    const { data: qRow } = await admin
+      .from("listening_questions")
+      .select("id")
+      .eq("id", questionId)
+      .eq("set_id", setId)
+      .maybeSingle();
+    if (!qRow) return jsonError("이 세트의 문항이 아닙니다.", 403);
 
     await ensureSegmentFilesExist(setId, questionId);
     const audioUrl = await mergeQuestionAudioFromSegments({ setId, questionId });

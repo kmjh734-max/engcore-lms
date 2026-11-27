@@ -100,12 +100,25 @@ export async function cancelTossPayment(params: {
   );
 }
 
+/** 돈이 실제로 들어온 상태만. WAITING_FOR_DEPOSIT(가상계좌 입금 전)은 아직 아님 — 입금되면 DONE 웹훅으로 충전. */
 export function isTossPaidStatus(status: string | undefined | null): boolean {
   const s = (status || "").toUpperCase();
-  return s === "DONE" || s === "WAITING_FOR_DEPOSIT";
+  return s === "DONE";
+}
+
+/** 입금 대기(가상계좌). 주문은 processing 그대로 두고 DONE 이 오면 충전. */
+export function isTossWaitingStatus(status: string | undefined | null): boolean {
+  const s = (status || "").toUpperCase();
+  return s === "WAITING_FOR_DEPOSIT";
 }
 
 export function isTossCanceledStatus(status: string | undefined | null): boolean {
   const s = (status || "").toUpperCase();
   return s === "CANCELED" || s === "PARTIAL_CANCELED";
+}
+
+/** 결제가 끝내 성립하지 않은 상태(입금 기한 지남·승인 실패). */
+export function isTossVoidStatus(status: string | undefined | null): boolean {
+  const s = (status || "").toUpperCase();
+  return s === "EXPIRED" || s === "ABORTED";
 }

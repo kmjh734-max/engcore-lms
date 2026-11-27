@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { chunkIds } from "@/lib/supabase/fetch-all-rows";
 
 /** 변형문제 목록 한 줄 — 목록 화면이 쓰는 칸만 */
 export interface GenerationJobListRow {
@@ -87,11 +88,16 @@ export async function listGenerationJobs(
     .filter((r) => !(Array.isArray(r.rc_passage_ids) && r.rc_passage_ids.length > 0))
     .map((r) => r.id);
   const legacyCounts = new Map<string, number>();
-  if (legacyIds.length > 0) {
-    const { data: legacy } = await supabase
+  // 옛 작업은 지문 본문을 담고 있어 무겁다 — 조금씩 나눠 읽고, 실패하면 그 묶음은 1지문으로 둔다
+  for (const part of chunkIds(legacyIds, 50)) {
+    const { data: legacy, error: legacyErr } = await supabase
       .from("question_generation_jobs")
       .select("id, rc_passages:request_config->passages, rc_passage:request_config->>passage")
-      .in("id", legacyIds);
+      .in("id", part);
+    if (legacyErr) {
+      console.error("[listGenerationJobs] legacy passage count", legacyErr.message);
+      continue;
+    }
     for (const row of (legacy ?? []) as unknown as Array<{
       id: string;
       rc_passages: unknown;

@@ -26,6 +26,23 @@ export async function POST(request: Request) {
   const shortfall = await lessonCreditShortfall(profile.academy_id, "school_exam_analysis");
   if (shortfall) return NextResponse.json({ ok: false, message: shortfall, code: "insufficient_credits" }, { status: 402 });
 
+  // 쪽 읽기는 값을 분석이 끝날 때 받으므로, 끝내지 않은 분석을 끝없이 만들지 못하게 하루 테두리를 둔다(2026-11-28).
+  const since = new Date(Date.now() - 86_400_000).toISOString();
+  const recent = () =>
+    createAdminClient()
+      .from("school_exam_analyses")
+      .select("id", { count: "exact", head: true })
+      .eq("academy_id", profile.academy_id)
+      .gte("created_at", since);
+  // 업로드 실패로 reading 에 남은 분석도 세어지므로 넉넉히 잡는다(보통 학원은 하루 몇 건).
+  const [{ count: dayCount }, { count: unfinished }] = await Promise.all([recent(), recent().eq("status", "reading")]);
+  if ((dayCount ?? 0) >= 300 || (unfinished ?? 0) >= 150) {
+    return NextResponse.json(
+      { ok: false, message: "하루에 올릴 수 있는 시험지 수를 넘었어요. 내일 다시 올려 주세요.", code: "daily_limit" },
+      { status: 429 }
+    );
+  }
+
   const clean = (s?: string) => (s ?? "").trim().slice(0, 60) || null;
   const { data, error } = await createAdminClient()
     .from("school_exam_analyses")

@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import { StudentListeningExamHub } from "@/components/listening/StudentListeningExamHub";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isStudentAssignedListeningSet } from "@/lib/listening/student-set-access";
 
 export default async function ListenHubPage({
   params,
@@ -24,11 +25,32 @@ export default async function ListenHubPage({
 
   const { data: set } = await admin
     .from("listening_sets")
-    .select("id, title")
+    .select("id, title, academy_id, is_published")
     .eq("id", setId)
     .maybeSingle();
 
   if (!set) notFound();
+
+  if (profile.role === "student") {
+    // 종이 시험 QR: 같은 학원에 공개된 세트이거나 배정된 세트만 (제출 API와 같은 기준)
+    const sameAcademyPublished =
+      set.is_published === true &&
+      !!profile.academy_id &&
+      set.academy_id === profile.academy_id;
+    if (
+      !sameAcademyPublished &&
+      !(await isStudentAssignedListeningSet(admin, profile.id, setId))
+    ) {
+      notFound();
+    }
+  } else if (
+    (profile.role === "admin" || profile.role === "teacher") &&
+    profile.academy_id &&
+    set.academy_id &&
+    set.academy_id !== profile.academy_id
+  ) {
+    notFound();
+  }
 
   const { data: questions } = await admin
     .from("listening_questions")

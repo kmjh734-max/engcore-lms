@@ -108,7 +108,9 @@ export async function POST(request: Request) {
       primary_color: "#2563EB",
       secondary_color: "#2563EB",
       status: "active",
-      settings: { signup: signupInfo },
+      // 가입 축하 크레딧 자리를 먼저 잡아 둔다(bonus: claimed) — 같은 IP에서 동시에 가입해도
+      // 서로의 자리를 보게 되어 두 곳 모두에 주지 않는다.
+      settings: { signup: ip === "unknown" ? signupInfo : { ...signupInfo, bonus: "claimed" } },
     })
     .select("id, slug")
     .single();
@@ -130,18 +132,27 @@ export async function POST(request: Request) {
 
   // 3) 가입 축하 크레딧 — 같은 학원에 두 번, 같은 IP에 두 번 주지 않는다
   //    (한 곳에서 계정을 여러 개 만들어 무료 크레딧만 받아 가는 것을 막는다)
+  //    자리를 잡은(claimed) 곳이나 받은(granted) 곳이 같은 IP에 하나라도 있으면 주지 않는다.
+  //    동시에 둘이 가입하면 둘 다 못 받을 수는 있어도 둘 다 받지는 않는다. 조회가 실패해도 주지 않는다.
   let bonusGranted = false;
-  const { data: sameIp } =
+  const { data: sameIp, error: sameIpError } =
     ip === "unknown"
-      ? { data: [{ id: "x" }] }
+      ? { data: [{ id: "x" }], error: null }
       : await admin
           .from("academies")
           .select("id")
           .eq("settings->signup->>ip", ip)
-          .eq("settings->signup->>bonus", "granted")
+          .in("settings->signup->>bonus", ["granted", "claimed"])
           .neq("id", academy.id)
           .limit(1);
-  if (ownerId && (sameIp ?? []).length === 0) {
+  const bonusAllowed = !sameIpError && (sameIp ?? []).length === 0;
+  if (ip !== "unknown" && (!ownerId || !bonusAllowed)) {
+    await admin
+      .from("academies")
+      .update({ settings: { signup: { ...signupInfo, bonus: "skipped" } } })
+      .eq("id", academy.id);
+  }
+  if (ownerId && bonusAllowed) {
     try {
       await grantAcademyCredits(admin, {
         academyId: academy.id as string,
@@ -157,6 +168,12 @@ export async function POST(request: Request) {
         .eq("id", academy.id);
     } catch (e) {
       console.error("[signup] bonus credits failed", e);
+      if (!bonusGranted) {
+        await admin
+          .from("academies")
+          .update({ settings: { signup: { ...signupInfo, bonus: "failed" } } })
+          .eq("id", academy.id);
+      }
     }
   }
 

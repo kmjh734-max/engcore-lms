@@ -67,6 +67,8 @@ export async function verifySceneFigure(
     try {
       const res = await openAiFetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
+        // 그림 한 장 검수라 보통 수십 초 — 멈추면 다음 모델로
+        signal: AbortSignal.timeout(90_000),
         headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify(
           buildVerifyBody(model, [

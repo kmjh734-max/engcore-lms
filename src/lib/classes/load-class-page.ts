@@ -8,6 +8,7 @@ import {
   type ClassStudentStat,
 } from "@/lib/classes/load-class-detail";
 import { unwrapRelation } from "@/lib/progress/enrollment-progress";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 export type ClassTab = "students" | "courses" | "settings";
 
@@ -76,14 +77,18 @@ export async function loadClassPageData(
   );
 
   // 반에 넣을 학생은 같은 학원 학생 모두에서 고른다 (원장님이 등록한 학생도 강사가 반에 넣을 수 있게)
-  const studentQuery = admin
-    .from("profiles")
-    .select("id, name, username, email")
-    .eq("role", "student")
-    .eq("is_active", true)
-    .eq("academy_id", classRow.academy_id as string)
-    .order("name")
-    .limit(3000);
+  // 서버는 한 번에 1,000줄까지 — 큰 학원도 끝까지 넘겨 읽는다
+  const studentQuery = fetchAllRows<{ id: string; name: string; username: string | null; email: string | null }>((from, to) =>
+    admin
+      .from("profiles")
+      .select("id, name, username, email")
+      .eq("role", "student")
+      .eq("is_active", true)
+      .eq("academy_id", classRow.academy_id as string)
+      .order("name")
+      .order("id")
+      .range(from, to)
+  ).then((data) => ({ data }), () => ({ data: null }));
 
   const [{ data: memberRows }, { data: courseRows }, { data: studentRows }, vocabSetCount] =
     await Promise.all([

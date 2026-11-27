@@ -5,6 +5,8 @@ import {
   confirmTossPayment,
   isTossCanceledStatus,
   isTossPaidStatus,
+  isTossVoidStatus,
+  isTossWaitingStatus,
   retrieveTossPayment,
   retrieveTossPaymentByOrderId,
   type TossPayment,
@@ -123,15 +125,38 @@ export async function getOrderByOrderId(
   return (data as CreditPaymentOrder) || null;
 }
 
+/** 아직 충전 전인 주문 상태 */
+const OPEN_STATUSES = ["ready", "processing"];
+
+/**
+ * 주문 행 고치기. fromStatuses 를 주면 지금 상태가 그중 하나일 때만 바꾼다 —
+ * 승인·취소된 주문을 늦게 온 요청이 덮어쓰지 않게. 실제로 바뀐 행이 있으면 true.
+ */
+/** 토스가 응답을 주며 분명히 거절했는가(4xx). 시간 초과·네트워크·5xx 는 아님 */
+function isDefiniteTossReject(e: unknown): boolean {
+  const s = (e as { status?: number })?.status;
+  return typeof s === "number" && s >= 400 && s < 500;
+}
+
 async function markOrder(
   admin: SupabaseClient,
   id: string,
-  patch: Record<string, unknown>
-) {
-  await admin
+  patch: Record<string, unknown>,
+  fromStatuses?: string[]
+): Promise<boolean> {
+  let q = admin
     .from("credit_payment_orders")
     .update({ ...patch, updated_at: new Date().toISOString() })
     .eq("id", id);
+  if (fromStatuses && fromStatuses.length > 0) {
+    q = q.in("status", fromStatuses);
+  }
+  const { data, error } = await q.select("id");
+  if (error) {
+    console.error("[credit-orders] markOrder", id, error.message);
+    return false;
+  }
+  return (data?.length ?? 0) > 0;
 }
 
 export async function approveOrderInDb(
@@ -188,15 +213,33 @@ export async function confirmAndCreditOrder(
   }
 
   if (Number(order.payment_amount) !== Number(params.amountFromClient)) {
-    await markOrder(admin, order.id, {
-      status: "failed",
-      failure_code: "AMOUNT_mismatch",
-      failure_message: "결제 금액이 주문과 일치하지 않습니다.",
-    });
+    await markOrder(
+      admin,
+      order.id,
+      {
+        status: "failed",
+        failure_code: "AMOUNT_mismatch",
+        failure_message: "결제 금액이 주문과 일치하지 않습니다.",
+      },
+      OPEN_STATUSES
+    );
     throw new Error("결제 금액이 주문과 일치하지 않습니다.");
   }
 
-  await markOrder(admin, order.id, { status: "processing" });
+  const claimed = await markOrder(
+    admin,
+    order.id,
+    { status: "processing" },
+    OPEN_STATUSES
+  );
+  if (!claimed) {
+    // 그사이 웹훅 등이 먼저 처리했을 수 있다
+    const fresh = await getOrderByOrderId(admin, order.order_id);
+    if (fresh?.status === "approved") {
+      return { order: fresh, alreadyApproved: true };
+    }
+    throw new Error("주문 상태가 바뀌었습니다. 결제 내역을 확인해 주세요.");
+  }
 
   let tossPayment: TossPayment;
   try {
@@ -215,12 +258,45 @@ export async function confirmAndCreditOrder(
     ) {
       tossPayment = await retrieveTossPayment(params.paymentKey);
     } else {
-      await markOrder(admin, order.id, {
-        status: "failed",
-        failure_code: code || "confirm_failed",
-        failure_message: msg.slice(0, 500),
-      });
-      throw e;
+      // 시간 초과·네트워크·토스 5xx 면 결제가 실제로 됐을 수 있다 → 토스에 다시 물어본다.
+      const recovered = await retrieveTossPayment(params.paymentKey).catch(
+        () => null
+      );
+      if (
+        recovered &&
+        recovered.orderId === order.order_id &&
+        (isTossPaidStatus(recovered.status) ||
+          isTossWaitingStatus(recovered.status))
+      ) {
+        tossPayment = recovered;
+      } else {
+        const httpStatus = (e as { status?: number })?.status;
+        // 다른 요청(두 번 누름·다른 탭)이 승인 중이면 토스가 IN_PROGRESS·READY 로 보인다 → failed 로 덮지 않는다.
+        const otherInFlight =
+          recovered?.orderId === order.order_id &&
+          ["IN_PROGRESS", "READY"].includes(String(recovered?.status));
+        const definite =
+          !otherInFlight &&
+          typeof httpStatus === "number" && httpStatus >= 400 && httpStatus < 500;
+        // 토스가 분명히 거절(4xx)했을 때만 failed. 응답을 못 받은 경우는 processing 으로 두어
+        // 웹훅(DONE)이 오면 충전되게 한다. failed 여도 토스가 DONE 이면 syncPaymentFromToss 가 되살린다.
+        await markOrder(
+          admin,
+          order.id,
+          definite
+            ? {
+                status: "failed",
+                failure_code: code || "confirm_failed",
+                failure_message: msg.slice(0, 500),
+              }
+            : {
+                failure_code: code || "confirm_unknown",
+                failure_message: msg.slice(0, 500),
+              },
+          ["processing"]
+        );
+        throw e;
+      }
     }
   }
 
@@ -230,16 +306,32 @@ export async function confirmAndCreditOrder(
   if (Number(tossPayment.totalAmount) !== Number(order.payment_amount)) {
     throw new Error("토스 승인 금액이 주문과 일치하지 않습니다.");
   }
-  if (tossPayment.status !== "DONE" && !isTossPaidStatus(tossPayment.status)) {
+  if (isTossWaitingStatus(tossPayment.status)) {
+    // 입금 전 — 주문은 processing 그대로. 입금되면 웹훅(DONE)에서 충전한다.
+    throw new Error("입금이 확인되면 크레딧이 충전됩니다.");
+  }
+  if (!isTossPaidStatus(tossPayment.status)) {
     throw new Error(`결제 상태가 승인 완료가 아닙니다: ${tossPayment.status}`);
   }
 
-  const approved = await approveOrderInDb(admin, {
-    orderUuid: order.id,
-    paymentKey: tossPayment.paymentKey,
-    paymentMethod: paymentMethodLabel(tossPayment),
-    receiptUrl: tossPayment.receipt?.url ?? null,
-  });
+  let approved: CreditPaymentOrder;
+  try {
+    approved = await approveOrderInDb(admin, {
+      orderUuid: order.id,
+      paymentKey: tossPayment.paymentKey,
+      paymentMethod: paymentMethodLabel(tossPayment),
+      receiptUrl: tossPayment.receipt?.url ?? null,
+    });
+  } catch (e) {
+    // 그사이 다른 요청이 주문을 failed 등으로 바꿨으면, 토스 실제 상태(DONE)로 다시 맞춘다.
+    const synced = await syncPaymentFromToss(admin, {
+      paymentKey: tossPayment.paymentKey,
+    }).catch(() => null);
+    if (synced?.status === "approved") {
+      return { order: synced, alreadyApproved: true };
+    }
+    throw e;
+  }
 
   return { order: approved, alreadyApproved: false };
 }
@@ -259,7 +351,7 @@ export async function syncPaymentFromToss(
   }
   if (!toss) return null;
 
-  const order = await getOrderByOrderId(admin, toss.orderId);
+  let order = await getOrderByOrderId(admin, toss.orderId);
   if (!order) return null;
 
   if (isTossCanceledStatus(toss.status)) {
@@ -271,28 +363,54 @@ export async function syncPaymentFromToss(
         p_force: false,
       });
       if (error) {
-        // Mark cancel_pending for manual follow-up
-        await markOrder(admin, order.id, {
-          status: "cancel_pending",
-          failure_code: "refund_db_failed",
-          failure_message: error.message.slice(0, 500),
-        });
+        // 토스에서는 돈이 이미 돌아갔는데 크레딧을 못 거둠(이미 씀·잔액 부족 등).
+        // cancel_pending 으로 남겨 최고관리자 결제내역에서 보이게 하고 손으로 맞춘다.
+        await markRefundBlocked(admin, order, toss.status, error.message);
         throw new Error(error.message);
       }
       return data as CreditPaymentOrder;
     }
-    await markOrder(admin, order.id, {
-      status: "canceled",
-      canceled_at: new Date().toISOString(),
-    });
+    // 충전 전 주문 — 크레딧을 준 적 없으니 취소로만 바꾼다
+    await markOrder(
+      admin,
+      order.id,
+      {
+        status: "canceled",
+        canceled_at: new Date().toISOString(),
+      },
+      [...OPEN_STATUSES, "failed"]
+    );
     return (await getOrderByOrderId(admin, order.order_id))!;
   }
 
-  if (isTossPaidStatus(toss.status) || toss.status === "DONE") {
+  if (isTossVoidStatus(toss.status)) {
+    // 입금 기한 지남·승인 실패 — 충전 없이 실패로
+    await markOrder(
+      admin,
+      order.id,
+      {
+        status: "failed",
+        failure_code: `toss_${toss.status.toLowerCase()}`,
+        failure_message: `토스 결제 상태: ${toss.status}`,
+      },
+      OPEN_STATUSES
+    );
+    return (await getOrderByOrderId(admin, order.order_id))!;
+  }
+
+  if (isTossPaidStatus(toss.status)) {
     if (Number(toss.totalAmount) !== Number(order.payment_amount)) {
       return order;
     }
     if (order.status === "approved") return order;
+    if (order.status === "failed") {
+      // 승인 요청이 실패로 남았지만 토스는 DONE — 다시 열어 충전한다(승인 RPC는 ready/processing만 받음)
+      await markOrder(admin, order.id, { status: "processing" }, ["failed"]);
+      const fresh = await getOrderByOrderId(admin, order.order_id);
+      if (!fresh) return null;
+      order = fresh;
+      if (order.status === "approved") return order;
+    }
     if (order.status === "ready" || order.status === "processing") {
       return approveOrderInDb(admin, {
         orderUuid: order.id,
@@ -304,6 +422,40 @@ export async function syncPaymentFromToss(
   }
 
   return order;
+}
+
+/** 토스는 취소됐는데 크레딧 회수가 막힌 주문을 cancel_pending 으로 남긴다(최고관리자 확인용). */
+async function markRefundBlocked(
+  admin: SupabaseClient,
+  order: CreditPaymentOrder,
+  tossStatus: string,
+  reason: string
+) {
+  const blocked = /credits_already_used|insufficient_balance_for_refund/.test(
+    reason
+  );
+  await markOrder(
+    admin,
+    order.id,
+    {
+      status: "cancel_pending",
+      failure_code: blocked
+        ? "toss_canceled_credit_unrecovered"
+        : "refund_db_failed",
+      failure_message:
+        `토스 결제 취소(${tossStatus}) — 크레딧 ${Number(order.total_credit)} 회수 못 함: ${reason}`.slice(
+          0,
+          500
+        ),
+    },
+    ["approved", "cancel_pending"]
+  );
+  console.error("[credit-orders] toss canceled but credits not recovered", {
+    orderId: order.order_id,
+    academyId: order.academy_id,
+    totalCredit: order.total_credit,
+    reason,
+  });
 }
 
 export async function cancelApprovedOrder(
@@ -354,7 +506,10 @@ export async function cancelApprovedOrder(
     );
   }
 
-  await markOrder(admin, o.id, { status: "cancel_pending" });
+  await markOrder(admin, o.id, { status: "cancel_pending" }, [
+    "approved",
+    "cancel_pending",
+  ]);
 
   try {
     await cancelTossPayment({
@@ -365,10 +520,17 @@ export async function cancelApprovedOrder(
     const msg = e instanceof Error ? e.message : "토스 취소 실패";
     const code = (e as { code?: string })?.code || "";
     if (!/ALREADY_CANCELED|이미 취소/i.test(`${code} ${msg}`)) {
-      await markOrder(admin, o.id, {
-        failure_code: code || "cancel_failed",
-        failure_message: msg.slice(0, 500),
-      });
+      await markOrder(
+        admin,
+        o.id,
+        {
+          // 토스가 분명히 거절(4xx)했으면 돈도 크레딧도 그대로이니 approved 로 되돌린다.
+          ...(isDefiniteTossReject(e) ? { status: "approved" } : {}),
+          failure_code: code || "cancel_failed",
+          failure_message: msg.slice(0, 500),
+        },
+        ["cancel_pending"]
+      );
       throw e;
     }
   }
@@ -379,11 +541,7 @@ export async function cancelApprovedOrder(
     p_force: false,
   });
   if (rpcErr) {
-    await markOrder(admin, o.id, {
-      status: "cancel_pending",
-      failure_code: "refund_db_failed",
-      failure_message: rpcErr.message.slice(0, 500),
-    });
+    await markRefundBlocked(admin, o, "CANCELED", rpcErr.message);
     throw new Error(rpcErr.message);
   }
   return data as CreditPaymentOrder;

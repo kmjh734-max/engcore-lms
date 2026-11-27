@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 
 /**
  * 학생이 며칠 연속으로 공부했는지(학생 홈의 동기부여 카드).
@@ -26,8 +27,11 @@ export async function loadStudentStreak(studentId: string): Promise<StudentStrea
   const admin = createAdminClient();
   const since = new Date(Date.now() - 70 * 86400000).toISOString();
   const pick = async (table: string, col: string) => {
-    const { data } = await admin.from(table).select(col).eq("student_id", studentId).gte(col, since).limit(3000);
-    return ((data ?? []) as unknown as Array<Record<string, string | null>>).map((r) => r[col]).filter(Boolean) as string[];
+    // 서버는 한 번에 1,000줄까지 — 70일치를 끝까지 넘겨 읽는다
+    const data = await fetchAllRows<unknown>((from, to) =>
+      admin.from(table).select(col).eq("student_id", studentId).gte(col, since).order(col).range(from, to)
+    ).catch(() => [] as unknown[]);
+    return (data as unknown as Array<Record<string, string | null>>).map((r) => r[col]).filter(Boolean) as string[];
   };
   const stamps = (
     await Promise.all([

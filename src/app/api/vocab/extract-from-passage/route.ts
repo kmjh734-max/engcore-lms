@@ -13,6 +13,8 @@ import { lessonCreditShortfall } from "@/lib/credits/lesson-credits";
 import { flushAiUsage, setAiUsage } from "@/lib/ai-usage/context";
 import { openAiFetch } from "@/lib/ai-usage/openai-fetch";
 
+export const maxDuration = 120;
+
 function jsonError(message: string, status = 200) {
   return NextResponse.json({ ok: false, message }, { status });
 }
@@ -74,6 +76,7 @@ export async function POST(request: Request) {
 
     const response = await openAiFetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
+      signal: AbortSignal.timeout(110_000),
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",

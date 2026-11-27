@@ -29,11 +29,11 @@ async function loadAccessibleRecord(id: string) {
     return { error: NextResponse.json({ ok: false, message: "본인 기록만 접근할 수 있습니다." }, { status: 403 }) };
   }
 
-  if (
-    profile.academy_id &&
-    data.academy_id &&
-    data.academy_id !== profile.academy_id
-  ) {
+  // 학원 없는 옛 기록은 만든 사람만
+  const academyMismatch = data.academy_id
+    ? data.academy_id !== profile.academy_id
+    : data.created_by !== profile.id;
+  if (academyMismatch) {
     return {
       error: NextResponse.json(
         { ok: false, message: "다른 학원 기록에는 접근할 수 없습니다." },

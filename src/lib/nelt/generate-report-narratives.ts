@@ -259,6 +259,8 @@ export async function generateNeltReportNarrativesAi(
   const user = `다음 JSON 사실만으로 학부모용 NELT 성장 리포트 서술을 작성하세요.\n${JSON.stringify(buildFacts(analysis), null, 2)}`;
   const candidates = getStudentRecordModelCandidates();
   let lastErr = "AI 생성 실패";
+  // 부르는 라우트(report-narratives·share)가 90초라, 모델·재시도를 다 합쳐 70초 안에 끝낸다(넘으면 규칙 서술로)
+  const deadline = AbortSignal.timeout(70_000);
 
   for (const model of candidates) {
     try {
@@ -279,6 +281,7 @@ export async function generateNeltReportNarrativesAi(
 
         const res = await openAiFetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
+          signal: deadline,
           headers: {
             Authorization: `Bearer ${apiKey}`,
             "Content-Type": "application/json",

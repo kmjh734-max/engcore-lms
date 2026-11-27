@@ -55,6 +55,7 @@ export async function translateLessonMaterialLinesAction(input: {
       academyId: profile.academy_id!,
       actorId: profile.id,
       amount: hold.charged,
+      reservationKey: hold.idempotencyKey,
       note: "문장 해석을 만들지 못해 되돌림",
     });
     return {

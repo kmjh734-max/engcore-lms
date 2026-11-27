@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -35,6 +35,7 @@ type QuestionRow = {
   status: string;
   error_message: string | null;
   option_key: string | null;
+  created_at?: string;
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -140,23 +141,71 @@ export function GenerationDetailClient({
     );
   }, [job, questions.length, basePath, jobId, router]);
 
+  const questionsRef = useRef<QuestionRow[]>([]);
   useEffect(() => {
-    if (!job) return;
+    questionsRef.current = questions;
+  }, [questions]);
+
+  const poll = useCallback(async () => {
+    let since = "";
+    for (const q of questionsRef.current) {
+      if (q.created_at && q.created_at > since) since = q.created_at;
+      const upd = (q as { updated_at?: string | null }).updated_at;
+      if (upd && upd > since) since = upd;
+    }
+    // 32개씩 묶어 넣어 created_at 이 앞선 행이 늦게 보일 수 있다 → 1분 겹쳐 받는다(중복은 id로 합침).
+    if (since) since = new Date(new Date(since).getTime() - 60_000).toISOString();
+    const qs = since ? `&since=${encodeURIComponent(since)}` : "";
+    const res = await fetch(`/api/question-generator/jobs/${jobId}?poll=1${qs}`).catch(() => null);
+    const data = res ? await res.json().catch(() => null) : null;
+    if (!data?.ok) return;
+    const polledJob = data.job as {
+      status: string;
+      request_config?: { title?: string };
+      english_source_passages?: { title?: string };
+    };
+    if (!["pending", "analyzing", "generating", "validating"].includes(polledJob.status)) {
+      await load();
+      return;
+    }
+    setJob((prev) =>
+      prev
+        ? {
+            ...prev,
+            ...polledJob,
+            request_config: { ...prev.request_config, ...polledJob.request_config },
+            english_source_passages: prev.english_source_passages ?? polledJob.english_source_passages,
+          }
+        : prev
+    );
+    const order = (data.order ?? []) as string[];
+    const fresh = (data.newQuestions ?? []) as QuestionRow[];
+    setQuestions((prev) => {
+      const byId = new Map(prev.map((q) => [q.id, q]));
+      for (const q of fresh) byId.set(q.id, q);
+      return order.map((id) => byId.get(id)).filter((q): q is QuestionRow => Boolean(q));
+    });
+  }, [jobId, load]);
+
+  const jobStatus = job?.status;
+  useEffect(() => {
+    if (!jobStatus) return;
     const running = ["pending", "analyzing", "generating", "validating"].includes(
-      job.status
+      jobStatus
     );
     if (!running) return;
     // 만들어진 문항을 차례로 보여 준다. 진행 막대는 useQgJobProgress가 따로 가볍게 본다.
+    // 생성 중에는 상태 + 새 문항만 받고(poll=1), 끝나면 한 번 전체를 다시 부른다.
     let inFlight = false;
     const t = window.setInterval(() => {
       if (inFlight || document.hidden) return;
       inFlight = true;
-      void load().finally(() => {
+      void poll().finally(() => {
         inFlight = false;
       });
     }, 3000);
     return () => window.clearInterval(t);
-  }, [job, load]);
+  }, [jobStatus, poll]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, QuestionRow[]>();

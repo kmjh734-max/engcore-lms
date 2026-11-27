@@ -11,6 +11,7 @@ import { engcoreWordPos } from "@/lib/vocab/engcore-level";
 import { callGrammarChoiceV2Json } from "@/lib/lesson-materials/grammar-choice-v2/openai-call";
 import { resolveV2AnalyzerModel } from "@/lib/lesson-materials/grammar-choice-v2/generate";
 import { flushAiUsage, withAiUsage } from "@/lib/ai-usage/context";
+import { aiCallsLastDay } from "@/lib/ai-usage/daily-cap";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -47,6 +48,9 @@ const SCHEMA = {
   properties: { suggestions: { type: "array", maxItems: 3, items: { type: "string" } } },
 } as const;
 
+/** 값 없는 보조 호출이라 학원마다 하루 호출 수에 테두리를 둔다(「새로 추천받기」를 되풀이해도, 2026-11-28) */
+const SUGGEST_DAILY_CAP = 600;
+
 async function askModel(input: {
   kind: "grammar" | "vocab";
   word: string;
@@ -62,6 +66,7 @@ async function askModel(input: {
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey || !input.sentence) return [];
   try {
+    if ((await aiCallsLastDay(input.academyId, "workbook_choice_suggest")) >= SUGGEST_DAILY_CAP) return [];
     const called = await withAiUsage(
       { academyId: input.academyId, actorId: input.actorId, usedFor: "workbook_choice_suggest", projectId: input.projectId },
       () =>
@@ -146,6 +151,9 @@ export async function POST(request: Request) {
     };
 
     if (fresh) {
+      if ((await aiCallsLastDay(profile.academy_id, "workbook_choice_suggest")) >= SUGGEST_DAILY_CAP) {
+        return NextResponse.json({ ok: false, message: "오늘 새로 추천받을 수 있는 횟수를 넘었어요. 내일 다시 시도해 주세요." });
+      }
       const suggestions = clean(await model());
       const ordered =
         kind === "vocab"
