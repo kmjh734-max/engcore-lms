@@ -4228,6 +4228,20 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     // 문장부호는 지문에 남겼으니 보기 끝 마침표는 뗀다
     if (option.aingkaCode !== "빈칸단어" && Array.isArray(raw.choices)) {
       for (const c of raw.choices as Array<{ text?: unknown }>) if (typeof c?.text === "string") c.text = c.text.replace(/\s*[.!]\s*$/, "");
+      /*
+       * 빈칸이 문장 중간(; : , 뒤)에서 시작하면 보기 첫 글자를 소문자로 — 「pocketbook strain; ____」에 「But reducing …」처럼
+       * 대문자 보기가 붙었다(2026-11-28 직접 풀기). 지문 중간에도 대문자로 나오는 낱말(고유명사)과 I는 그대로 둔다.
+       */
+      const beforeBlank = String(raw.passageModified ?? "").split(/_{5,}|ⓐ_+/)[0]!.replace(/\s+$/, "");
+      if (option.type === "sentence_blank" && beforeBlank && !/[.!?]["'’”)]*$/.test(beforeBlank)) {
+        for (const c of raw.choices as Array<{ text?: unknown }>) {
+          if (typeof c?.text !== "string") continue;
+          const first = c.text.match(/^[A-Z][a-z’']*/)?.[0];
+          if (!first || first === "I" || /^I[’']/.test(first)) continue;
+          if (new RegExp(`[a-z,;]\\s+${first}\\b`).test(passage)) continue;
+          c.text = first[0]!.toLowerCase() + c.text.slice(1);
+        }
+      }
     }
     delete raw.blankText;
     delete raw.blankCtx;
