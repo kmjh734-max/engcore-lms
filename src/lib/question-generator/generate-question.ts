@@ -329,7 +329,9 @@ Difficulty: ${
             : "standard"
       }.`;
     case "title":
+      // 꼴 맞추기 줄: 「정답만 …: … 꼴」로 한 작업에서 세 번 버려졌다(2026-11-28 시험)
       return `${en ? "5 ENGLISH Title Case titles" : "5 Korean titles"}. Exactly one correct.
+- All five titles have one shape: either all five use a colon subtitle (A: B) or none does; either all five are questions or none is — the key must not stand out by its form.
 ${craft}
 ${titleChoiceCraft(en)}
 ${balancedGistRule()}
