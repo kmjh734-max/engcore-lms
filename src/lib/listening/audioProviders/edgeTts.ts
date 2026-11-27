@@ -1,7 +1,8 @@
-import { createHash, randomUUID } from "crypto";
+import { randomUUID } from "crypto";
 import WebSocket from "ws";
 import { replaceSpokenFillers } from "@/lib/listening/spoken-fillers";
 import type { ListeningSpeakerType } from "@/lib/listening/types";
+import { edgeMuid, secMsGecV2 } from "@/lib/listening/audioProviders/edgeSecMsGec";
 
 /**
  * Edge 읽어주기 음성(Microsoft 신경망 목소리)으로 대사를 mp3로 만든다.
@@ -26,15 +27,6 @@ export function edgeVoiceFor(speaker: ListeningSpeakerType, override?: string | 
   const picked = override?.trim();
   if (picked && /^[a-z]{2}-[A-Z]{2}-\w+$/.test(picked)) return picked;
   return EDGE_VOICES[speaker] ?? EDGE_VOICES.M;
-}
-
-/** 창구가 요구하는 시각 기반 확인값 — 5분 단위로 내린 윈도 파일시각을 해시한다 */
-function secMsGec(): string {
-  // 초 단위에서 먼저 5분으로 내린 뒤 100나노초 단위로 바꾼다(순서를 바꾸면 자릿수가 넘쳐 값이 틀어진다)
-  let ticks = Date.now() / 1000 + 11_644_473_600;
-  ticks -= ticks % 300;
-  ticks *= 1e9 / 100;
-  return createHash("sha256").update(`${ticks.toFixed(0)}${TRUSTED_TOKEN}`).digest("hex").toUpperCase();
 }
 
 /** 배속 0.9 → "-10%" 처럼 바꾼다 */
@@ -81,7 +73,7 @@ export async function generateEdgeSpeechSegment(
   const rate = edgeRate(opts.speed);
   const url =
     `${WSS}?TrustedClientToken=${TRUSTED_TOKEN}` +
-    `&Sec-MS-GEC=${secMsGec()}&Sec-MS-GEC-Version=1-${CHROMIUM_VERSION}` +
+    `&Sec-MS-GEC=${secMsGecV2()}&Sec-MS-GEC-Version=2-${CHROMIUM_VERSION}` +
     `&ConnectionId=${randomUUID().replace(/-/g, "")}`;
 
   const chunks: Buffer[] = [];
@@ -91,6 +83,8 @@ export async function generateEdgeSpeechSegment(
         "User-Agent":
           `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${CHROMIUM_VERSION.split(".")[0]}.0.0.0 Safari/537.36 Edg/${CHROMIUM_VERSION.split(".")[0]}.0.0.0`,
         Origin: "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
+        // 2026-11 창구가 v2 확인값과 함께 muid 쿠키를 요구한다(없으면 403)
+        Cookie: `muid=${edgeMuid()};`,
       },
     });
     ws.binaryType = "arraybuffer";
