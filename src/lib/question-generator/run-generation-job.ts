@@ -449,7 +449,9 @@ async function generateWithValidation(opts: {
                 passage: cleanSourcePassage(opts.passage),
                 option: opts.option,
                 payload,
-                allowParaphrase: opts.paraphraseGrammarVocab === true,
+                // 순서(상)는 주어진 글만 바꿔 쓰는 것이 유형 규칙이다 — (A)(B)(C)는 코드가 원문으로 만든다(2026-11-28, 검수가 「원문을 바꿨다」며 버렸다)
+                allowParaphrase:
+                  opts.paraphraseGrammarVocab === true || (opts.option.type === "order" && opts.option.difficulty === "high"),
               })
           );
           validation.review = { verdict: review.verdict, reason: review.reason, fixed: review.fixed };

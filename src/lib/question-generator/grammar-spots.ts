@@ -219,12 +219,17 @@ const SENT_END = /[.!?]["'’”)]*$/;
 
 /** 문장 머리(첫 3~6낱말)로 문장이 시작하는 자리를 찾는다 — 앞이 글 처음이거나 문장 끝이어야 한다 */
 function findSentenceStart(text: string, head: string, from: number): number {
-  const re = looseRe(head, true);
+  // 머리에 여는 따옴표를 붙였든 안 붙였든 같은 문장을 찾는다(대화문 “Yes, please cease.”, 2026-11-28 시험)
+  const bare = head.trim().replace(/^["“‘']+/, "");
+  const re = looseRe(bare, true);
   if (!re) return -1;
   re.lastIndex = from;
   for (let m = re.exec(text); m; m = re.exec(text)) {
-    const before = text.slice(0, m.index).replace(/\s+$/, "");
-    if (!before || SENT_END.test(before)) return m.index;
+    // 바로 앞의 여는 따옴표는 문장에 딸린 것으로 보고, 문장 시작은 그 따옴표 자리다
+    let at = m.index;
+    while (at > 0 && /["“‘']/.test(text[at - 1]!) && (at < 2 || /\s/.test(text[at - 2]!))) at -= 1;
+    const before = text.slice(0, at).replace(/\s+$/, "");
+    if (at >= from && (!before || SENT_END.test(before) || /[:;]$/.test(before))) return at;
     re.lastIndex = m.index + 1;
   }
   return -1;
@@ -345,6 +350,9 @@ export function buildOrderPassage(
   const tail = /^["'’”)]*[.!?]?["'’”)]*/.exec(passage.slice(cut0));
   cut0 += tail ? tail[0].length : 0;
   if (!SENT_END.test(passage.slice(0, cut0).trimEnd())) return { error: "주어진 글이 문장 끝에서 끊기지 않았습니다." };
+  // 첫째 부분 머리까지 셋을 주거나 「A / B」 한 줄로 준 답도 받는다(2026-11-28 시험 5문항 중 2번)
+  if (typeof partStarts === "string") partStarts = partStarts.split(/\s*[/|]\s*/).filter(Boolean);
+  if (Array.isArray(partStarts) && partStarts.length === 3) partStarts = partStarts.slice(1);
   if (!Array.isArray(partStarts) || partStarts.length !== 2) return { error: "partStarts는 둘째·셋째 부분의 머리 두 개여야 합니다." };
   const p2 = findSentenceStart(passage, String(partStarts[0] ?? ""), cut0 + 1);
   const p3 = p2 >= 0 ? findSentenceStart(passage, String(partStarts[1] ?? ""), p2 + 1) : -1;
