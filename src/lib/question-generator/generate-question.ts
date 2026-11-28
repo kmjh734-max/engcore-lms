@@ -4401,8 +4401,11 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     if (n >= 2 && n <= 6) payload.correctAnswer = n - 1;
   }
   // 어휘빈칸공통: <답란>을 빠뜨리면 다시 만들었다 — 틀이 정해져 있으니 붙여 준다(2026-11-28)
-  if (option.aingkaCode === "어휘빈칸공통" && payload.questionText && !/(^|\n)\s*<답란>/.test(payload.questionText)) {
-    payload.questionText = `${payload.questionText.trimEnd()}\n\n<답란>\nⓐ\nⓑ`;
+  // 문제 글을 통째로 비워 보내도 붙인다(2026-11-28 전 유형 4차 시험) — 칸 기호는 정답에 쓴 기호를 따른다
+  if (option.aingkaCode === "어휘빈칸공통" && !/(^|\n)\s*<답란>/.test(payload.questionText ?? "")) {
+    const marks = [...new Set([...String(payload.correctAnswer ?? "").matchAll(/([ⓐ-ⓔ])\s*[:：]/g)].map((m) => m[1]!))];
+    const box = (marks.length ? marks : ["ⓐ", "ⓑ"]).join("\n");
+    payload.questionText = `${String(payload.questionText ?? "").trimEnd()}${payload.questionText?.trim() ? "\n\n" : ""}<답란>\n${box}`;
   }
   /*
    * 어법문장오류수정: 번호가 문장 중간에 찍혀 세 번씩 다시 만들었다(2026-11-28 시험). 번호를 그 문장 첫머리로 옮긴다.
