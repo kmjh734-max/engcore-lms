@@ -61,7 +61,8 @@ export async function POST(request: Request) {
         (typeof status === "number" && status >= 500) ||
         name === "AbortError" ||
         name === "TimeoutError" ||
-        e instanceof TypeError;
+        // fetch 연결 실패만(코드 버그로 난 TypeError 는 다시 받아도 같으니 제외)
+        (e instanceof TypeError && /fetch failed|network|ECONN|ETIMEDOUT|socket/i.test(e.message));
       if (transient) {
         return NextResponse.json({ ok: false, retry: true }, { status: 503 });
       }

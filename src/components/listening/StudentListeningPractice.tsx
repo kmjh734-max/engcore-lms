@@ -412,7 +412,13 @@ export function StudentListeningPractice({
   const scheduleRedirectStarted = useRef(false);
   // 이미 끝낸 과제를 「복습하기」로 열었을 때는 목록으로 보내지 않는다 — 이 화면에서 막 끝냈을 때만
   const completeOnOpen = useRef<boolean | null>(null);
-  if (completeOnOpen.current === null) completeOnOpen.current = allComplete;
+  if (completeOnOpen.current === null) {
+    // 서버 기록으로도 다 끝난 과제만 「이미 끝낸 과제」로 본다(받아쓰기가 남았으면 아님)
+    const serverDone =
+      !scheduleMode?.initialProgress ||
+      Object.values(scheduleMode.initialProgress).every((p) => p.completed);
+    completeOnOpen.current = allComplete && serverDone;
+  }
 
   useEffect(() => {
     if (!scheduleMode || !allComplete || scheduleRedirectStarted.current) return;
