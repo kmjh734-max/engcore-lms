@@ -8,7 +8,9 @@ import {
   featureGroup,
   featureLabel,
   featurePriceUnit,
+  featureUnit,
   featureUsageText,
+  usedForLabel,
 } from "@/lib/credits/feature-labels";
 
 export type CreditKind = "use" | "charge" | "grant" | "adjust" | "refund";
@@ -23,7 +25,15 @@ export interface CreditTxnView {
   text: string;
   /** 어느 자료에 썼나(지문 제목·변형문제 작업 이름·워크북 이름 등). 모르면 null */
   material: string | null;
+  /**
+   * 작업 한 번을 한 줄로 묶었을 때의 세부 차감(선생님 2026-11-28 「한 번 작업당 크레딧, 지금은 너무 세분화」).
+   * 두 줄 이상 묶였을 때만 있다.
+   */
+  parts?: { id: string; createdAt: string; delta: number; text: string; material: string | null }[];
 }
+
+/** 같은 작업으로 볼 차감 사이 간격(워크북 하나는 지문·유형마다 1분 안팎으로 나눠 차감된다) */
+const SAME_WORK_GAP_MS = 5 * 60_000;
 
 export interface CreditReceiptView {
   id: string;
@@ -393,6 +403,96 @@ export async function loadCreditsPageData(
     };
   }
 
+  /**
+   * 작업 한 번 = 한 줄. 변형문제는 작업 id 로, 나머지는 같은 기능 묶음(·같은 화면)이
+   * 몇 분 안에 잇달아 차감된 것을 한 작업으로 본다. 충전·지급 등은 그대로 한 줄씩.
+   */
+  function workKey(t: RawTxn): string | null {
+    if (t.type !== "debit") return null;
+    const m = t.metadata ?? {};
+    const job = typeof m.job_id === "string" && m.job_id ? m.job_id : "";
+    if (job) return `job:${job}`;
+    // 화면 표시(used_for)는 같은 워크북 안에서도 붙은 줄·안 붙은 줄이 섞여 있어 묶음 기준에서 뺀다
+    return `grp:${featureGroup(t.feature_key)}`;
+  }
+
+  function groupWork(raw: RawTxn[]): CreditTxnView[] {
+    const out: CreditTxnView[] = [];
+    let run: RawTxn[] = [];
+    const flush = () => {
+      if (!run.length) return;
+      if (run.length === 1) out.push(view(run[0]!));
+      else out.push(mergeRun(run));
+      run = [];
+    };
+    for (const t of raw) {
+      const k = workKey(t);
+      const prev = run[run.length - 1];
+      const same =
+        k != null &&
+        prev != null &&
+        workKey(prev) === k &&
+        (k.startsWith("job:") ||
+          Math.abs(Date.parse(prev.created_at) - Date.parse(t.created_at)) <= SAME_WORK_GAP_MS);
+      if (!same) flush();
+      if (k == null) out.push(view(t));
+      else run.push(t);
+    }
+    flush();
+    return out;
+  }
+
+  function mergeRun(run: RawTxn[]): CreditTxnView {
+    // raw 는 최근 것이 앞이다 — 첫 줄이 작업이 끝난 때·그 뒤 잔액
+    const parts = run.map(view);
+    const head = run[0]!;
+    const meta = head.metadata ?? {};
+    const isJob = typeof meta.job_id === "string" && !!meta.job_id;
+    const where = run.map((t) => usedForLabel(t.metadata?.used_for)).find(Boolean) ?? "";
+    const keys = new Set(run.map((t) => t.feature_key));
+    const oneKey = keys.size === 1 ? head.feature_key : null;
+    // 한 기능만 여러 번이면 그 기능 이름, 섞였으면 화면(워크북 등)이나 묶음 이름
+    const title = oneKey
+      ? `${where ? `${where} · ` : ""}${featureLabel(oneKey, dbLabels.get(oneKey ?? ""))}`
+      : where || featureGroup(head.feature_key);
+    // 수량: 모두 「문항」이면 문항 수를 더하고, 아니면 지문 수(자료 id 가짓수)
+    const units = new Set(run.map((t) => featureUnit(t.feature_key)));
+    let count = "";
+    if (oneKey && featureUnit(oneKey) && featureUnit(oneKey) !== "문항") {
+      const q = run.reduce((s, t) => s + (Number(t.metadata?.quantity ?? 0) || 0), 0);
+      if (q > 0) count = `${q.toLocaleString("ko-KR")}${featureUnit(oneKey)}`;
+    } else if (units.size === 1 && units.has("문항")) {
+      const q = run.reduce((s, t) => s + (Number(t.metadata?.quantity ?? 0) || 0), 0);
+      if (q > 0) count = `${q.toLocaleString("ko-KR")}문항`;
+    } else {
+      const ids = new Set(
+        run.map((t) => t.metadata?.project_id).filter((v): v is string => typeof v === "string" && !!v)
+      );
+      if (ids.size > 0) count = `${ids.size.toLocaleString("ko-KR")}지문`;
+    }
+    // 자료 이름: 작업 이름 → 직접 적힌 이름 → 지문 이름(여러 개면 「외 n지문」)
+    let material: string | null = null;
+    if (isJob) material = parts.find((p) => p.material)?.material ?? null;
+    if (!material) {
+      const named = run.find((t) => typeof t.metadata?.material_name === "string" && t.metadata.material_name);
+      if (named) material = String(named.metadata!.material_name);
+    }
+    if (!material) {
+      const names = [...new Set(parts.map((p) => p.material).filter((x): x is string => !!x))];
+      if (names.length) material = names.length > 1 ? `${names[0]} 외 ${names.length - 1}지문` : names[0]!;
+    }
+    return {
+      id: head.id,
+      createdAt: head.created_at,
+      kind: "use",
+      delta: parts.reduce((s, p) => s + p.delta, 0),
+      balanceAfter: Number(head.balance_after),
+      text: count ? `${title} · ${count}` : title,
+      material,
+      parts: parts.map((p) => ({ id: p.id, createdAt: p.createdAt, delta: p.delta, text: p.text, material: p.material })),
+    };
+  }
+
   // 이번 달 요약
   let used = 0;
   let charged = 0;
@@ -454,7 +554,7 @@ export async function loadCreditsPageData(
     usageGroups,
     selectedMonth: selectedKey,
     monthOptions,
-    transactions: (selectedTxns ?? currentTxns).map(view),
+    transactions: groupWork(selectedTxns ?? currentTxns),
     receipts,
     prices,
   };

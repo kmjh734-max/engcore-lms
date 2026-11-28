@@ -93,6 +93,11 @@ export function featureLabel(featureKey: string | null, dbLabel?: string | null)
   return "기타 기능";
 }
 
+/** 수량 단위(문항·지문·장…). 모르면 빈 문자열 */
+export function featureUnit(featureKey: string | null): string {
+  return (featureKey && FEATURES[featureKey]?.unit) || "";
+}
+
 export function featureGroup(featureKey: string | null): string {
   return (featureKey && FEATURES[featureKey]?.group) || "기타";
 }

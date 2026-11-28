@@ -91,6 +91,14 @@ export function CreditsDashboard({
   const [pending, startTransition] = useTransition();
   const [tab, setTab] = useState<Tab>("history");
   const [filter, setFilter] = useState<Filter>("all");
+  const [open, setOpen] = useState<Set<string>>(() => new Set());
+  const toggle = (id: string) =>
+    setOpen((s) => {
+      const next = new Set(s);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   const txns = useMemo(
     () =>
@@ -277,10 +285,11 @@ export function CreditsDashboard({
                   const pill = KIND_PILL[t.kind];
                   const amount = `${t.delta > 0 ? "+" : "-"}${n(Math.abs(t.delta))}`;
                   const amountCls = t.delta > 0 ? "text-green-700" : "text-slate-900";
+                  const openParts = t.parts && open.has(t.id);
                   return (
-                    <li
-                      key={t.id}
-                      className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3 first:border-t-0 md:grid md:min-h-[54px] md:grid-cols-[110px_70px_100px_100px_minmax(0,1fr)] md:gap-3.5 md:px-[18px] md:py-2"
+                    <li key={t.id} className="border-t border-slate-100 first:border-t-0">
+                    <div
+                      className="flex items-center justify-between gap-3 px-4 py-3 md:grid md:min-h-[54px] md:grid-cols-[110px_70px_100px_100px_minmax(0,1fr)] md:gap-3.5 md:px-[18px] md:py-2"
                     >
                       <span className="hidden text-[13px] tabular-nums text-slate-500 md:block">
                         {shortDateTime(t.createdAt)}
@@ -304,6 +313,16 @@ export function CreditsDashboard({
                             자료: {t.material}
                           </span>
                         ) : null}
+                        {t.parts ? (
+                          <button
+                            type="button"
+                            onClick={() => toggle(t.id)}
+                            aria-expanded={!!openParts}
+                            className="mt-0.5 text-xs font-medium text-brand-700 hover:underline"
+                          >
+                            {openParts ? "세부 접기" : `세부 ${t.parts.length}건 보기`}
+                          </button>
+                        ) : null}
                         <span className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500 md:hidden">
                           <span className="tabular-nums">{shortDateTime(t.createdAt)}</span>
                           <Pill {...pill} />
@@ -317,6 +336,29 @@ export function CreditsDashboard({
                           남은 {n(t.balanceAfter)}
                         </span>
                       </span>
+                    </div>
+                    {openParts ? (
+                      <ul className="mx-4 mb-3 rounded-md bg-slate-50 px-3 py-1.5 md:ml-[calc(110px+70px+100px+100px+4*0.875rem+18px)] md:mr-[18px]">
+                        {t.parts!.map((p) => (
+                          <li
+                            key={p.id}
+                            className="flex items-baseline justify-between gap-3 border-t border-slate-200/70 py-1.5 text-xs first:border-t-0"
+                          >
+                            <span className="min-w-0">
+                              <span className="block truncate text-slate-700">{p.text}</span>
+                              {p.material && p.material !== t.material ? (
+                                <span className="block truncate text-slate-500" title={p.material}>
+                                  {p.material}
+                                </span>
+                              ) : null}
+                            </span>
+                            <span className="shrink-0 tabular-nums text-slate-600">
+                              {shortDateTime(p.createdAt)} · {n(Math.abs(p.delta))}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
                     </li>
                   );
                 })}
