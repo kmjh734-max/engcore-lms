@@ -14,6 +14,7 @@ import {
   PER_CHOICE_TYPES,
   verifyChoicesIndependently,
   rewriteRareWords,
+  clarifyFactChoices,
   subjectiveCheckable,
 } from "@/lib/question-generator/blind-solve";
 import { fixCircledParticles } from "@/lib/question-generator/circled-particles";
@@ -385,14 +386,30 @@ async function generateWithValidation(opts: {
            * 낯선 낱말 때문에만 걸렸으면 문항 전체를 다시 만들지 않고 그 낱말만 쉬운 말로 바꾼 뒤 한 번 더 본다
            * (12차 시험: 다시 만든 17번 중 절반 이상이 이 까닭이었고 원가가 1.3배까지 떨어졌다).
            */
-          if (solved.verdict === "drop" && solved.rareWords?.length) {
-            const rewrote = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
-              rewriteRareWords({ payload, words: solved.rareWords! })
-            );
-            if (rewrote) {
-              touched = true;
-              solved = await runChecks();
+          /*
+           * 내용일치·불일치·일치개수에서 한두 보기·진술만 참·거짓이 지문으로 정해지지 않으면 그것만 분명하게 고쳐 쓰고
+           * 같은 보기별 판정을 한 번 더 본다(2026-11-28 「일치개수 원가가 너무 비싸다」 — 문항 전체를 다시 만들면 1.6배).
+           * 낯선 낱말 고치기와 진술 고치기는 걸린 차례대로 한 번씩 한다 — 진술을 고친 뒤 다시 보니 다른 진술의
+           * 낯선 낱말(predate)에 걸려, 차례가 고정이면 그대로 다시 만들러 갔다(2026-11-28 시험).
+           */
+          let rareDone = false;
+          let clarifyDone = false;
+          for (let fix = 0; fix < 2 && solved.verdict === "drop"; fix++) {
+            let changed = false;
+            if (!rareDone && solved.rareWords?.length) {
+              rareDone = true;
+              changed = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
+                rewriteRareWords({ payload, words: solved.rareWords! })
+              );
+            } else if (!clarifyDone && solved.clarifyChoices?.length) {
+              clarifyDone = true;
+              changed = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
+                clarifyFactChoices({ passage: cleanSourcePassage(opts.passage), payload, type: opts.option.type, numbers: solved.clarifyChoices! })
+              );
             }
+            if (!changed) break;
+            touched = true;
+            solved = await runChecks();
           }
           /*
            * 정답은 맞는데 오답 한둘이 정답처럼 읽혀 걸렸으면 그 보기만 다시 쓰고 한 번 더 본다(2026-11-12).
@@ -404,7 +421,16 @@ async function generateWithValidation(opts: {
             );
             if (repaired) {
               touched = true;
-              const again = await runChecks();
+              /*
+               * 빈칸추론은 고친 오답만 보기별 판정으로 다시 본다(어색함·낯선 낱말도 그 판정에서) — 정답은 첫 직접 풀기가
+               * 이미 맞혔다. 직접 풀기까지 다시 부르면 한 문항에 판정이 5번이었다(구현고1 동형 3차 2.76배, 2026-11-28).
+               */
+              const again =
+                opts.option.type === "sentence_blank" && opts.option.aingkaCode !== "빈칸단어" && blankChoicesCheckable(payload)
+                  ? await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
+                      verifyBlankChoices({ payload, checkForm: true })
+                    )
+                  : await runChecks();
               solved = again.verdict === "pass" ? { ...again, fixed: [...(again.fixed ?? []), "choices"] } : again;
             }
           }

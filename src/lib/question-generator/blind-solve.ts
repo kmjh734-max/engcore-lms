@@ -99,6 +99,8 @@ export type BlindSolveResult = {
   rareWords?: string[];
   /** 정답은 맞는데 이 오답들도 정답처럼 읽혀 버릴 때 — 문항 전체 대신 그 보기만 다시 쓸 수 있다(2026-11-12) */
   repairChoices?: number[];
+  /** 내용일치·불일치·일치개수에서 이 보기·진술만 참·거짓이 지문으로 정해지지 않을 때 — 그것만 분명하게 고쳐 쓴다(2026-11-28) */
+  clarifyChoices?: number[];
 };
 
 export async function blindSolveQuestion(opts: {
@@ -346,8 +348,22 @@ export async function verifyChoicesIndependently(opts: {
     return { verdict: "pass", answer: key, reason };
   }
 
-  const bad = rows.filter((r) => v(r) === "unverifiable" || v(r) === "ambiguous").map((r) => `${r.n}(${v(r) === "ambiguous" ? "모호" : "판단 불가"})`);
-  if (bad.length) return { verdict: "drop", answer: null, reason: `보기 ${bad.join("·")} — 지문으로 참·거짓이 정해지지 않음 — ${reason}` };
+  const badRows = rows.filter((r) => v(r) === "unverifiable" || v(r) === "ambiguous");
+  const bad = badRows.map((r) => `${r.n}(${v(r) === "ambiguous" ? "모호" : "판단 불가"})`);
+  if (bad.length) {
+    /*
+     * 한둘만 걸렸으면 문항 전체를 다시 만들지 않고 그 진술만 분명하게 고쳐 쓴다(2026-11-28 「일치개수 원가가 너무 비싸다」).
+     * 일치개수는 만들기 한 번이 20원 남짓이라, 여덟 진술 가운데 하나 때문에 다시 만들면 배수가 1.6배까지 떨어졌다.
+     * 고친 뒤에는 부른 쪽이 같은 보기별 판정을 한 번 더 돌린다(같은 잣대).
+     */
+    const nums = badRows.map((r) => Number(r.n)).filter((n) => Number.isInteger(n) && n > 0);
+    return {
+      verdict: "drop",
+      answer: null,
+      reason: `보기 ${bad.join("·")} — 지문으로 참·거짓이 정해지지 않음 — ${reason}`,
+      ...(nums.length >= 1 && nums.length <= 2 ? { clarifyChoices: nums } : {}),
+    };
+  }
   const supported = rows.filter((r) => v(r) === "supported").map((r) => Number(r.n));
   const refuted = rows.filter((r) => v(r) === "refuted").map((r) => Number(r.n));
   if (type === "content_true" && (supported.length !== 1 || supported[0] !== key)) {
@@ -388,13 +404,22 @@ export async function verifyBlankChoices(opts: {
   payload: GeneratedQuestionPayload;
   /** 한 낱말 빈칸(빈칸단어)은 판단이 단순해 low로(호출당 추론 400~1,000토큰이 원가의 절반이었다, 2026-11-28) */
   effort?: "low" | "medium";
+  /**
+   * 고쳐 쓴 보기를 다시 볼 때 — 직접 풀기를 또 부르지 않고 이 판정에서 어색함·낯선 낱말까지 본다(2026-11-28).
+   * 고친 것은 오답 보기뿐이라 정답은 첫 직접 풀기가 이미 맞혔다. 구현고1 동형 3차 빈칸 하나가 이 두 번 보기로 5번 불려 2.76배였다.
+   */
+  checkForm?: boolean;
 }): Promise<BlindSolveResult> {
   const { payload } = opts;
   const key = Number(payload.correctAnswer);
   const choiceLines = (payload.choices ?? [])
     .map((c) => `${"①②③④⑤"[(c.number ?? 1) - 1] ?? c.number} ${c.text}`)
     .join("\n");
-  const user = `PASSAGE:\n${compact(payload.passageModified)}\n\nCHOICES:\n${choiceLines}`;
+  const user =
+    `PASSAGE:\n${compact(payload.passageModified)}\n\nCHOICES:\n${choiceLines}` +
+    (opts.checkForm
+      ? `\n\nALSO: in each choice object add "natural": false if the choice is unnatural or ungrammatical English, or absurd on its own so a student could cross it out without reading the passage (otherwise true). Add a top-level "rareWords" list of words in the choices that a Korean 고등학생 would not know (specialist terms, GRE-style words); normal 수능 vocabulary is fine.`
+      : "");
   let raw: Record<string, unknown>;
   try {
     raw = (await questionGeneratorChatJsonWithRetry({
@@ -413,6 +438,12 @@ export async function verifyBlankChoices(opts: {
   if (rows.length < 5) return { verdict: "pass", answer: null, reason: "빈칸 보기별 판정을 못 읽어 통과" };
   const fits = rows.filter((r) => String(r.verdict ?? "").toLowerCase() === "fits").map((r) => Number(r.n));
   const reason = compact(raw.reason, 300);
+  if (opts.checkForm) {
+    const unnatural = rows.filter((r) => r.natural === false).map((r) => r.n);
+    if (unnatural.length) return { verdict: "drop", answer: null, reason: `보기 ${unnatural.join("·")}번이 어색하거나 애매함 — ${reason}` };
+    const rare = filterRareWords(raw.rareWords, String(payload.passageModified ?? ""));
+    if (rare.length) return { verdict: "drop", answer: null, reason: `낯선 낱말(${rare.slice(0, 5).join(", ")})을 고등학생이 아는 말로 바꿔 쓴다 — ${reason}` };
+  }
   if (fits.length === 1 && fits[0] === key) return { verdict: "pass", answer: key, reason };
   const others = fits.filter((n) => n !== key);
   return {
@@ -543,6 +574,85 @@ export async function repairDistractors(opts: {
   });
   if (changed !== targets.length) return false;
   payload.choices = next;
+  const expl = typeof raw.explanation === "string" ? raw.explanation.trim() : "";
+  if (expl.length >= 10) payload.explanation = expl;
+  return true;
+}
+
+/*
+ * 참·거짓이 지문으로 정해지지 않는 보기·진술만 분명하게 고쳐 쓴다(2026-11-28, 선생님 「일치개수 원가가 너무 비싸다」).
+ * 일치개수는 여덟 진술 가운데 하나가 「판단 불가」여도 문항 전체를 다시 만들었다(만들기 한 번 20원 남짓).
+ * 고친 진술이 뜻하던 참·거짓은 그대로 둔다 — 내용일치는 정답만 참, 내용불일치는 정답만 거짓, 일치개수는 거짓 진술 수가 정답 그대로.
+ * 고친 뒤에는 부른 쪽이 같은 보기별 판정을 한 번 더 돌리고, 그래도 걸리면 그때 다시 만든다.
+ */
+const CLARIFY_SYSTEM = `You edit ONE Korean high-school English fact item (일치/불일치/개수). A checker found that the listed choices/statements cannot be judged true or false from the passage alone (they add a time frame, cause, quantity or premise the passage never states, or depend on how a vague word or reference is read).
+Rewrite ONLY the listed ones so that each is CLEARLY decided by the passage, and keep the truth value each was meant to have:
+- meant TRUE: restate something the passage clearly says (paraphrase, do not copy a whole sentence word for word).
+- meant FALSE: change one fact the passage clearly states (subject, cause, direction, number, time or outcome), so a teacher can point to the passage words that contradict it. Do not just add "not".
+Keep the same language, about the same length and the same style as the other choices/statements. Do not touch anything else.
+Also return the explanation with ONLY the parts about the rewritten ones updated (same language and shape, 평서형 "~다").
+Return ONE JSON object: {"items":[{"n":<number>,"text":"<new text>"}],"explanation":"<full explanation>"}`;
+
+export async function clarifyFactChoices(opts: {
+  passage: string;
+  payload: GeneratedQuestionPayload;
+  type: string;
+  numbers: number[];
+}): Promise<boolean> {
+  const { payload, type, numbers } = opts;
+  const isCount = type === "content_count";
+  const key = Number(String(payload.correctAnswer ?? "").replace(/[^0-9]/g, ""));
+  if (!Number.isInteger(key) || key < 0) return false;
+  const statementLines = isCount ? String(payload.questionText ?? "").split("\n") : [];
+  const lineOf = (n: number) => statementLines.findIndex((l) => new RegExp(`^\\s*\\(${n}\\)\\s*`).test(l));
+  const targets = isCount
+    ? numbers.filter((n) => lineOf(n) >= 0)
+    : numbers.filter((n) => (payload.choices ?? []).some((c) => Number(c.number) === n));
+  if (!targets.length || targets.length !== numbers.length) return false;
+  const meant = (n: number) =>
+    type === "content_true" ? (n === key ? "TRUE" : "FALSE") : type === "content_false" ? (n === key ? "FALSE" : "TRUE") : null;
+  const shown = payload.passageModified?.trim() ? payload.passageModified : opts.passage;
+  const items = isCount
+    ? String(payload.questionText ?? "")
+    : (payload.choices ?? []).map((c) => `${c.number}. ${c.text}`).join("\n");
+  const user = [
+    `INSTRUCTION: ${compact(payload.instruction, 400)}`,
+    `\nPASSAGE:\n${compact(shown)}`,
+    `\n${isCount ? "STATEMENTS" : "CHOICES"}:\n${items}`,
+    isCount
+      ? `\nKEYED ANSWER: ${key} statement(s) are FALSE. Keep exactly ${key} false statements: use the explanation to see whether each listed statement was meant true or false.`
+      : `\nKEYED ANSWER: ${key}`,
+    `\nREWRITE: ${targets.map((n) => (meant(n) ? `${n} (meant ${meant(n)})` : String(n))).join(", ")}`,
+    `\nEXPLANATION:\n${compact(payload.explanation, 1600)}`,
+  ].join("\n");
+  let raw: Record<string, unknown>;
+  try {
+    raw = (await questionGeneratorChatJsonWithRetry({
+      system: CLARIFY_SYSTEM,
+      user,
+      temperature: 0,
+      maxTokens: 2000,
+      reasoningEffort: "low",
+      preferredModels: [SOLVE_MODEL],
+      cacheKey: "qg-clarify-facts",
+    })) as Record<string, unknown>;
+  } catch {
+    return false;
+  }
+  const rows = Array.isArray(raw.items) ? (raw.items as Array<{ n?: unknown; text?: unknown }>) : [];
+  const textOf = (n: number) => {
+    const r = rows.find((x) => Number(x.n) === n);
+    const t = typeof r?.text === "string" ? r.text.trim().replace(/^\(\d+\)\s*/, "").replace(/^\d+[.)]\s*/, "") : "";
+    return t.length >= 8 ? t : "";
+  };
+  if (targets.some((n) => !textOf(n))) return false;
+  if (isCount) {
+    const lines = [...statementLines];
+    for (const n of targets) lines[lineOf(n)] = `(${n}) ${textOf(n)}`;
+    payload.questionText = lines.join("\n");
+  } else {
+    payload.choices = (payload.choices ?? []).map((c) => (targets.includes(Number(c.number)) ? { ...c, text: textOf(Number(c.number)) } : c));
+  }
   const expl = typeof raw.explanation === "string" ? raw.explanation.trim() : "";
   if (expl.length >= 10) payload.explanation = expl;
   return true;
