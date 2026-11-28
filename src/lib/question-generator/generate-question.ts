@@ -4166,6 +4166,8 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     );
   }
 
+  /** 모델이 낸 자리를 지문 차례로 다시 줄 세웠는가 */
+  let spotReordered = false;
   // 자리 목록 대신 지문을 보내 왔으면 예전처럼 받는다(밑줄 밖이 바뀌었으면 뒤 검사가 잡는다)
   if (spotMode && (Array.isArray(raw.spots) || !String(raw.passageModified ?? "").trim())) {
     const want: number | [number, number] =
@@ -4182,7 +4184,11 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     if ("error" in built) throw new Error(built.error);
     raw.passageModified = built.passageModified;
     // 자리를 지문 차례로 다시 줄 세웠으면 정답·해설 기호도 새 차례로(2026-11-28)
-    if (built.order) remapSpotMarks(raw, built.order, spotKind ?? "grammar", option.aingkaCode === "어법추론" || option.aingkaCode === "어휘추론");
+    if (built.order) {
+      remapSpotMarks(raw, built.order, spotKind ?? "grammar", option.aingkaCode === "어법추론" || option.aingkaCode === "어휘추론");
+      // 줄 세우며 정답 번호가 계획과 달라질 수 있다 — 계획 번호 대조는 건너뛴다(다시 만든 시도와 같은 잣대)
+      spotReordered = true;
+    }
     delete raw.spots;
   }
   if (sentErrMode && (Array.isArray(raw.errors) || !String(raw.passageModified ?? "").trim())) {
@@ -4204,6 +4210,24 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     );
     if ("error" in built) throw new Error(built.error);
     raw.passageModified = built.passageModified;
+    /*
+     * 제시어 배열 「지문 그대로」는 정답이 곧 지운 원문이다. 모델이 정답 문장을 조금 달리 적어(낱말 하나·문장부호)
+     * 「정답이 지문에 있는 문장이어야」로 버렸다(2026-11-28 전 유형 5차: 어형변화·단어추가). 거의 같으면 지운 원문으로 맞춘다.
+     */
+    if (
+      ["제시어배열기본", "제시어배열어형변화", "제시어배열단어추가"].includes(option.aingkaCode ?? "") &&
+      (opts.wordOrderMode ?? "passage") === "passage"
+    ) {
+      const src = String(raw.blankText ?? "").trim().replace(/^[\s"“]+|[\s"”]+$/g, "");
+      const ans = String(raw.correctAnswer ?? "").trim();
+      if (src && ans && !passageHasConsecutiveWords(passage, ans) && passageHasConsecutiveWords(passage, src)) {
+        const tok = (t: string) => t.toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9' ]+/g, " ").split(/\s+/).filter(Boolean);
+        const a = tok(ans);
+        const b = tok(src);
+        const shared = a.filter((w) => b.includes(w)).length;
+        if (shared / Math.max(a.length, b.length) >= 0.8) raw.correctAnswer = src;
+      }
+    }
     // 문장부호는 지문에 남겼으니 보기 끝 마침표는 뗀다
     if (option.aingkaCode !== "빈칸단어" && Array.isArray(raw.choices)) {
       for (const c of raw.choices as Array<{ text?: unknown }>) if (typeof c?.text === "string") c.text = c.text.replace(/\s*[.!]\s*$/, "");
@@ -4318,7 +4342,7 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
      * 다시 만든 시도는 어차피 대조 없이 받으므로 정답 분포는 같고 버리는 호출만 늘었다
      * (정수학원 발곡고1 272문항 2026-10-05: 어휘개수 17문항 중 13문항이 「계획한 정답은 N인데」로 한 번씩 버려짐).
      */
-    const expectedAnswer = opts.retryNote || option.aingkaCode === "어휘개수"
+    const expectedAnswer = opts.retryNote || spotReordered || option.aingkaCode === "어휘개수"
       ? null
       : plannedAnswerNumber("어휘추론", turn);
     /*
@@ -4428,7 +4452,7 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     opts.wordOrderMode ?? "passage",
     !opts.paraphraseGrammarVocab,
     opts.typeTurn ?? opts.diversitySlot?.index ?? 0,
-    !opts.retryNote
+    !opts.retryNote && !spotReordered
   );
   if (shapeError) throw new Error(shapeError);
   /*
