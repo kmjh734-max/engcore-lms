@@ -1274,6 +1274,16 @@ function checkChoicePlan(raw: Record<string, unknown>, option: QuestionTypeOptio
       if (falses.length !== 1) return `내용불일치는 거짓인 보기가 하나여야 하는데 계획에서 거짓이 ${falses.length}개입니다.`;
       if (Number(falses[0]!.n) !== key) return `계획에서 거짓인 보기는 ${falses[0]!.n}번인데 정답은 ${key}번입니다.`;
     } else if (falses.length !== key) {
+      /*
+       * 계획과 해설이 같은 진술들을 거짓으로 꼽고 정답 숫자만 어긋났으면 정답을 그 개수로 맞춘다(2026-11-28 전 유형 5차:
+       * 「계획에서 거짓 5개인데 정답 4개」로 통째로 다시 만듦). 뒤의 보기별 판정이 개수를 다시 확인한다.
+       */
+      const planFalse = new Set(falses.map((r) => Number(r.n)));
+      const listed = new Set([...String(raw.explanation ?? "").split(/[.。]\s/)[0]!.matchAll(/\((\d)\)/g)].map((m) => Number(m[1])));
+      if (falses.length >= 1 && falses.length <= 5 && listed.size === planFalse.size && [...planFalse].every((n) => listed.has(n))) {
+        raw.correctAnswer = falses.length;
+        return null;
+      }
       return `계획에서 거짓인 진술은 ${falses.length}개인데 정답은 ${key}개입니다.`;
     }
     return null;
