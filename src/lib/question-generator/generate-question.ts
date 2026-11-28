@@ -4185,7 +4185,7 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     raw.passageModified = built.passageModified;
     // 자리를 지문 차례로 다시 줄 세웠으면 정답·해설 기호도 새 차례로(2026-11-28)
     if (built.order) {
-      remapSpotMarks(raw, built.order, spotKind ?? "grammar", option.aingkaCode === "어법추론" || option.aingkaCode === "어휘추론");
+      remapSpotMarks(raw, built.order, spotKind ?? "grammar", option.aingkaCode === "어법추론" || option.aingkaCode === "어휘추론", built.dropped ?? []);
       // 줄 세우며 정답 번호가 계획과 달라질 수 있다 — 계획 번호 대조는 건너뛴다(다시 만든 시도와 같은 잣대)
       spotReordered = true;
     }

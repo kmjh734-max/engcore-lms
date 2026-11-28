@@ -69,7 +69,7 @@ export function buildGrammarSpotPassage(
   /** 정확한 개수, 또는 [최소, 최대] */
   count: number | [number, number],
   kind: SpotKind = "grammar"
-): { passageModified: string; order?: number[] } | { error: string } {
+): { passageModified: string; order?: number[]; dropped?: number[] } | { error: string } {
   if (!Array.isArray(spots)) return { error: "spots 목록이 없습니다. 지문 대신 밑줄 자리 목록(spots)을 주세요." };
   const [lo, hi] = Array.isArray(count) ? count : [count, count];
   if (spots.length < lo || spots.length > hi) {
@@ -85,19 +85,11 @@ export function buildGrammarSpotPassage(
   const free = locateSpotsAnywhere(passage, spots as GrammarSpot[]);
   if (free && free.some((c, i) => i > 0 && c.start < free[i - 1]!.start)) {
     const order = free.map((_, i) => i).sort((a, b) => free[a]!.start - free[b]!.start);
-    const sorted = order.map((i) => free[i]!);
-    if (sorted.every((c, i) => i === 0 || c.start >= sorted[i - 1]!.end)) {
-      let out = "";
-      let prev = 0;
-      sorted.forEach((c, i) => {
-        out += `${passage.slice(prev, c.start)}${MARKS[i]}<u>${c.show}</u>`;
-        prev = c.end;
-      });
-      return { passageModified: out + passage.slice(prev), order };
-    }
+    const sorted = order.map((i) => ({ ...free[i]!, src: i }));
+    if (sorted.every((c, i) => i === 0 || c.start >= sorted[i - 1]!.end)) return finishSpots(passage, sorted, MARKS, kind, lo);
   }
   let cursor = 0;
-  const cuts: Array<{ start: number; end: number; show: string }> = [];
+  const cuts: Array<{ start: number; end: number; show: string; src: number }> = [];
   for (let i = 0; i < spots.length; i++) {
     const s = (spots[i] ?? {}) as GrammarSpot;
     const mark = MARKS[i]!;
@@ -144,18 +136,47 @@ export function buildGrammarSpotPassage(
         };
       }
     }
-    cuts.push({ start: at, end: at + len, show });
+    cuts.push({ start: at, end: at + len, show, src: i });
     cursor = at + len;
+  }
+  return finishSpots(passage, cuts, MARKS, kind, lo);
+}
+
+/**
+ * 자리(지문 차례)로 밑줄 지문을 만든다. 어휘 밑줄 둘이 붙어 있으면(사이 한 낱말 이하) 개수에 여유가 있을 때
+ * 맞게 쓰인 쪽(원래 낱말 그대로)을 뺀다 — 정답(틀린 개수)은 그대로다. 지시를 넣어도 붙여 내 어휘개수가 두 번씩 버려졌다(2026-11-28).
+ * order[새 자리] = 모델이 낸 자리, dropped = 뺀 모델 자리(부른 쪽이 해설·판정에서 지운다).
+ */
+function finishSpots(
+  passage: string,
+  cutsIn: Array<{ start: number; end: number; show: string; src: number }>,
+  MARKS: string,
+  kind: SpotKind,
+  lo: number
+): { passageModified: string; order?: number[]; dropped?: number[] } {
+  const cuts = [...cutsIn];
+  const dropped: number[] = [];
+  if (kind === "vocab") {
+    const same = (c: { start: number; end: number; show: string }) => passage.slice(c.start, c.end).trim().toLowerCase() === c.show.trim().toLowerCase();
+    for (let i = 1; i < cuts.length && cuts.length > lo; i++) {
+      const gap = passage.slice(cuts[i - 1]!.end, cuts[i]!.start).trim().split(/\s+/).filter((w) => /[A-Za-z]/.test(w)).length;
+      if (gap > 1) continue;
+      const drop = same(cuts[i]!) ? i : same(cuts[i - 1]!) ? i - 1 : -1;
+      if (drop < 0) continue;
+      dropped.push(cuts[drop]!.src);
+      cuts.splice(drop, 1);
+      i = Math.max(0, drop - 1);
+    }
   }
   let out = "";
   let prev = 0;
-  for (let i = 0; i < cuts.length; i++) {
-    const c = cuts[i]!;
+  cuts.forEach((c, i) => {
     out += `${passage.slice(prev, c.start)}${MARKS[i]}<u>${c.show}</u>`;
     prev = c.end;
-  }
-  out += passage.slice(prev);
-  return { passageModified: out };
+  });
+  const order = cuts.map((c) => c.src);
+  const moved = dropped.length > 0 || order.some((o, i) => o !== i);
+  return { passageModified: out + passage.slice(prev), ...(moved ? { order } : {}), ...(dropped.length ? { dropped } : {}) };
 }
 
 /** 자리마다 지문 전체에서 찾는다 — ctx가 한 번만 나오고 그 안에 orig가 있거나, ctx가 어긋났어도 orig가 지문에 한 번뿐이면. 하나라도 모호하면 null */
@@ -194,21 +215,58 @@ export function remapSpotMarks<T extends Record<string, unknown>>(
   order: number[],
   kind: SpotKind,
   /** 정답 숫자가 자리 번호인가(어법추론·어휘추론). 개수 문항(어법개수 「2개」)의 숫자는 바꾸지 않는다 */
-  answerIsSpot: boolean
+  answerIsSpot: boolean,
+  /** 뺀 모델 자리(붙은 어휘 밑줄) — 해설의 그 줄과 판정을 지운다 */
+  dropped: number[] = []
 ): void {
-  const MARKS = spotMarks(kind);
+  const MARKS = [...spotMarks(kind)];
   const newOf = new Map<number, number>();
   order.forEach((oldIdx, newIdx) => newOf.set(oldIdx, newIdx));
+  const span = Math.max(order.length, ...order.map((o) => o + 1), ...dropped.map((d) => d + 1));
+  const markSet = MARKS.slice(0, span).join("");
+  // 뺀 자리를 말하는 해설 줄(또는 그 기호부터 다음 기호 앞까지)을 먼저 지운다
+  if (dropped.length && typeof raw.explanation === "string") {
+    let e = raw.explanation as string;
+    for (const d of dropped) {
+      const ch = MARKS[d]!;
+      const lines = e.split("\n");
+      if (lines.some((l) => l.trim().startsWith(ch))) e = lines.filter((l) => !l.trim().startsWith(ch)).join("\n");
+      else e = e.replace(new RegExp(`${ch}[^${markSet}]*?(?=[${markSet}]|따라서|$)`, "u"), "");
+    }
+    (raw as Record<string, unknown>).explanation = e.replace(/[ \t]{2,}/g, " ").trim();
+  }
   const swap = (t: string) =>
-    t.replace(new RegExp(`[${MARKS.slice(0, order.length)}]`, "gu"), (ch) => {
-      const o = [...MARKS].indexOf(ch);
-      const n = newOf.get(o);
-      return n === undefined ? ch : [...MARKS][n]!;
+    t.replace(new RegExp(`[${markSet}]`, "gu"), (ch) => {
+      const n = newOf.get(MARKS.indexOf(ch));
+      return n === undefined ? ch : MARKS[n]!;
     });
   const deep = (v: unknown): unknown =>
     typeof v === "string" ? swap(v) : Array.isArray(v) ? v.map(deep) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, deep(x)])) : v;
+  // 어휘 판정은 숫자 번호(number)로 자리를 가리킨다 — 뺀 자리는 지우고 남은 번호를 새 차례로(2026-11-28)
+  if (Array.isArray(raw.vocabularyJudgments)) {
+    const js = (raw.vocabularyJudgments as Array<Record<string, unknown>>)
+      .filter((j) => !dropped.includes(Number(j.number) - 1))
+      .map((j) => {
+        const n = newOf.get(Number(j.number) - 1);
+        return n === undefined ? j : { ...j, number: n + 1 };
+      })
+      .sort((a, b) => Number(a.number) - Number(b.number));
+    (raw as Record<string, unknown>).vocabularyJudgments = js;
+  }
   for (const k of ["correctAnswer", "explanation", "vocabularyJudgments", "questionText", "evidence", "scoringGuide", "acceptableAnswers"]) {
     if (raw[k] !== undefined) (raw as Record<string, unknown>)[k] = deep(raw[k]);
+  }
+  // 기호로 시작하는 해설 줄이 이어져 있으면 새 기호 차례로 다시 늘어놓는다(① ② ⑤ ④ → ① ② ④ ⑤)
+  if (typeof raw.explanation === "string") {
+    const lines = (raw.explanation as string).split("\n");
+    const idx = (l: string) => MARKS.indexOf(l.trim()[0] ?? "");
+    const first = lines.findIndex((l) => idx(l) >= 0);
+    if (first >= 0) {
+      let last = first;
+      while (last + 1 < lines.length && idx(lines[last + 1]!) >= 0) last++;
+      const block = lines.slice(first, last + 1).sort((a, b) => idx(a) - idx(b));
+      (raw as Record<string, unknown>).explanation = [...lines.slice(0, first), ...block, ...lines.slice(last + 1)].join("\n");
+    }
   }
   const ans = raw.correctAnswer;
   if (answerIsSpot && (typeof ans === "number" || (typeof ans === "string" && /^\d+$/.test(ans.trim()))) && newOf.has(Number(ans) - 1)) {
