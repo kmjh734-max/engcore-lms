@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     // 우리 학원의 승인 대기 학생만 건드린다
     const { data: student } = await admin
       .from("profiles")
-      .select("id, academy_id, role, approved_at")
+      .select("id, academy_id, role, approved_at, created_at")
       .eq("id", studentId)
       .maybeSingle();
     if (!student || student.academy_id !== academyId || student.role !== "student") {
@@ -50,17 +50,18 @@ export async function POST(request: Request) {
     }
 
     if (body.action === "reject") {
-      // 이미 승인된 학생은 지우지 않는다 — 다른 관리자가 먼저 승인했거나 화면이 오래된 경우
-      // 공부하던 계정과 기록이 통째로 지워졌다(2026-11-28 점검)
-      if (student.approved_at) {
-        return adminJsonError("이미 승인된 학생이에요. 화면을 새로 고쳐 주세요.", 409);
+      // 「최근 가입」 목록(7일 안)에 보이는 학생만 내보낸다 — 화면이 오래 열려 있던 사이 오래된
+      // 계정이 지워지지 않게(가입 학생은 approved_at 이 바로 차므로 그 값으로는 가르지 않는다)
+      const createdMs = Date.parse(String(student.created_at ?? ""));
+      if (!Number.isFinite(createdMs) || Date.now() - createdMs > 8 * 86400000) {
+        return adminJsonError("가입한 지 오래된 학생이에요. 학생 관리에서 정리해 주세요.", 409);
       }
       // 아직 아무 기록도 없는 계정이라 지운다
       const { error: delErr } = await admin.auth.admin.deleteUser(studentId);
       if (delErr && !/not.?found/i.test(delErr.message)) {
         return adminJsonError("거절하지 못했어요. 다시 해 주세요.", 500);
       }
-      await admin.from("profiles").delete().eq("id", studentId).is("approved_at", null);
+      await admin.from("profiles").delete().eq("id", studentId);
       return NextResponse.json({ ok: true, message: "가입을 거절했어요." });
     }
 

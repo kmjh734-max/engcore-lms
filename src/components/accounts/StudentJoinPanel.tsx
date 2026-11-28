@@ -40,8 +40,11 @@ export function StudentJoinPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId: id, action }),
       });
-      const data = (await res.json()) as { ok?: boolean };
+      const data = (await res.json()) as { ok?: boolean; message?: string };
       if (data.ok) setRows((prev) => prev.filter((r) => r.id !== id));
+      else alert(data.message ?? "처리하지 못했어요. 다시 해 주세요.");
+    } catch {
+      alert("처리하지 못했어요. 인터넷 연결을 확인해 주세요.");
     } finally {
       setBusy(null);
     }
