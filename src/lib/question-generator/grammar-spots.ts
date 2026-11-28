@@ -69,13 +69,33 @@ export function buildGrammarSpotPassage(
   /** 정확한 개수, 또는 [최소, 최대] */
   count: number | [number, number],
   kind: SpotKind = "grammar"
-): { passageModified: string } | { error: string } {
+): { passageModified: string; order?: number[] } | { error: string } {
   if (!Array.isArray(spots)) return { error: "spots 목록이 없습니다. 지문 대신 밑줄 자리 목록(spots)을 주세요." };
   const [lo, hi] = Array.isArray(count) ? count : [count, count];
   if (spots.length < lo || spots.length > hi) {
     return { error: `밑줄 자리가 ${spots.length}개입니다. ${lo === hi ? `정확히 ${lo}개` : `${lo}~${hi}개`}여야 합니다.` };
   }
   const MARKS = spotMarks(kind);
+  /*
+   * 자리를 지문 차례와 다르게 내면(ⓑ가 ⓐ보다 앞) 「앞 자리 뒤에서 찾기」로는 못 찾아 문항을 통째로 버렸다
+   * (2026-11-28 전 유형 시험: 어법오류수정2·3에서 세 번). 자리마다 지문 전체에서 하나로 분명히 찾아지면
+   * 지문 차례로 줄 세우고, 바뀐 차례(order[새 자리] = 모델이 낸 자리)를 돌려준다 — 부른 쪽이 정답·해설 기호를 맞춘다.
+   * 하나라도 모호하면 아래 차례대로 찾기를 그대로 쓴다.
+   */
+  const free = locateSpotsAnywhere(passage, spots as GrammarSpot[]);
+  if (free && free.some((c, i) => i > 0 && c.start < free[i - 1]!.start)) {
+    const order = free.map((_, i) => i).sort((a, b) => free[a]!.start - free[b]!.start);
+    const sorted = order.map((i) => free[i]!);
+    if (sorted.every((c, i) => i === 0 || c.start >= sorted[i - 1]!.end)) {
+      let out = "";
+      let prev = 0;
+      sorted.forEach((c, i) => {
+        out += `${passage.slice(prev, c.start)}${MARKS[i]}<u>${c.show}</u>`;
+        prev = c.end;
+      });
+      return { passageModified: out + passage.slice(prev), order };
+    }
+  }
   let cursor = 0;
   const cuts: Array<{ start: number; end: number; show: string }> = [];
   for (let i = 0; i < spots.length; i++) {
@@ -136,6 +156,65 @@ export function buildGrammarSpotPassage(
   }
   out += passage.slice(prev);
   return { passageModified: out };
+}
+
+/** 자리마다 지문 전체에서 찾는다 — ctx가 한 번만 나오고 그 안에 orig가 있거나, ctx가 어긋났어도 orig가 지문에 한 번뿐이면. 하나라도 모호하면 null */
+function locateSpotsAnywhere(passage: string, spots: GrammarSpot[]): Array<{ start: number; end: number; show: string }> | null {
+  const out: Array<{ start: number; end: number; show: string }> = [];
+  for (const s of spots) {
+    const ctx = String(s?.ctx ?? "").trim();
+    const orig = String(s?.orig ?? "").trim();
+    const show = String(s?.show ?? "").trim();
+    const origRe = looseRe(orig, true);
+    if (!orig || !show || !origRe) return null;
+    let hit: { start: number; end: number } | null = null;
+    const ctxRe = ctx ? looseRe(ctx, true) : null;
+    const ctxAll = ctxRe ? [...passage.matchAll(ctxRe)] : [];
+    if (ctxAll.length === 1) {
+      const c = ctxAll[0]!;
+      const inner = [...c[0].matchAll(looseRe(orig, true)!)];
+      if (inner.length === 1) hit = { start: c.index! + inner[0]!.index!, end: c.index! + inner[0]!.index! + inner[0]![0].length };
+    }
+    if (!hit) {
+      const all = [...passage.matchAll(origRe)];
+      if (all.length !== 1) return null;
+      hit = { start: all[0]!.index!, end: all[0]!.index! + all[0]![0].length };
+    }
+    out.push({ ...hit, show });
+  }
+  return out;
+}
+
+/**
+ * 자리를 지문 차례로 다시 줄 세웠을 때(order[새 자리] = 모델이 낸 자리) 정답·해설 속 자리 기호와 번호를 새 차례로 바꾼다.
+ * 기호는 한 번에 바꾼다(ⓐ→ⓑ, ⓑ→ⓐ가 서로 덮어쓰지 않게). 숫자 정답(어법추론의 1~5)도 새 번호로.
+ */
+export function remapSpotMarks<T extends Record<string, unknown>>(
+  raw: T,
+  order: number[],
+  kind: SpotKind,
+  /** 정답 숫자가 자리 번호인가(어법추론·어휘추론). 개수 문항(어법개수 「2개」)의 숫자는 바꾸지 않는다 */
+  answerIsSpot: boolean
+): void {
+  const MARKS = spotMarks(kind);
+  const newOf = new Map<number, number>();
+  order.forEach((oldIdx, newIdx) => newOf.set(oldIdx, newIdx));
+  const swap = (t: string) =>
+    t.replace(new RegExp(`[${MARKS.slice(0, order.length)}]`, "gu"), (ch) => {
+      const o = [...MARKS].indexOf(ch);
+      const n = newOf.get(o);
+      return n === undefined ? ch : [...MARKS][n]!;
+    });
+  const deep = (v: unknown): unknown =>
+    typeof v === "string" ? swap(v) : Array.isArray(v) ? v.map(deep) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, deep(x)])) : v;
+  for (const k of ["correctAnswer", "explanation", "vocabularyJudgments", "questionText", "evidence", "scoringGuide", "acceptableAnswers"]) {
+    if (raw[k] !== undefined) (raw as Record<string, unknown>)[k] = deep(raw[k]);
+  }
+  const ans = raw.correctAnswer;
+  if (answerIsSpot && (typeof ans === "number" || (typeof ans === "string" && /^\d+$/.test(ans.trim()))) && newOf.has(Number(ans) - 1)) {
+    const n = newOf.get(Number(ans) - 1)! + 1;
+    (raw as Record<string, unknown>).correctAnswer = typeof ans === "number" ? n : String(n);
+  }
 }
 
 /*
@@ -327,6 +406,82 @@ export function buildIrrelevantPassage(
   });
   out += full.slice(prev);
   return { passageModified: out.replace(/ {2,}/g, " ").trim(), answer: answerIdx + 1 };
+}
+
+/*
+ * 어법문장오류수정도 지문을 다시 쓰지 않는다(2026-11-28 「모든 유형 4배」). 모델이 번호 붙인 지문을 통째로 베껴 쓰다
+ * 번호를 문장 중간에 찍거나 번호 없는 문장을 고쳐 세 번씩 버렸다(전 유형 시험 1.61배). 모델은 「①~⑤를 붙일 문장 머리」와
+ * 「틀리게 바꿀 자리」만 답하고, 번호·틀린 꼴·정답(번호: 원래 꼴)은 코드가 원문에서 만든다.
+ */
+export function sentenceErrorFormatLine(): string {
+  return `- Do NOT write the passage. Return "marksBefore": five strings in passage order, each the first 3~6 words (copied exactly) of the sentence that gets ①~⑤ — spread over the passage, ① on the first sentence. Return "errors": one object per wrong sentence, {"n": the mark number 1-5, "ctx": "4-10 consecutive words copied EXACTLY from that numbered sentence, containing the spot", "orig": "the original word(s) at the spot, 1-4 words, exactly as in ctx (this is the corrected answer)", "wrong": "the ungrammatical form the student sees instead — a real English form of the same word(s), never a misspelling"}. The error must be in the numbered sentence itself (the first sentence after the mark). The code builds the passage and correctAnswer; every other sentence stays the original word for word.`;
+}
+
+export function buildSentenceErrorPassage(
+  passage: string,
+  marksBefore: unknown,
+  errors: unknown
+): { passageModified: string; correctAnswer: string } | { error: string } {
+  if (!Array.isArray(marksBefore) || marksBefore.length !== 5) return { error: "marksBefore는 문장 머리 다섯 개여야 합니다." };
+  if (!Array.isArray(errors) || errors.length < 1 || errors.length > 4) return { error: "errors는 틀린 문장마다 하나씩, 1~4개여야 합니다." };
+  const base = passage.trim();
+  const at: number[] = [];
+  let cursor = 0;
+  for (let i = 0; i < 5; i++) {
+    const h = String(marksBefore[i] ?? "").trim();
+    const p = findSentenceStart(base, h, cursor);
+    if (p < 0) return { error: `${CIRCLED5[i]} 자리 「${h}」로 시작하는 문장을 찾지 못했습니다. 문장 첫 낱말들을 글자 그대로, 차례대로 주세요.` };
+    at.push(p);
+    cursor = p + 1;
+  }
+  /** 번호 뒤 첫 문장의 끝(다음 문장 시작 앞) */
+  const sentenceEnd = (from: number) => {
+    const m = /[.!?]["'’”)]*(?=\s|$)/g;
+    m.lastIndex = from;
+    const r = m.exec(base);
+    return r ? r.index + r[0].length : base.length;
+  };
+  const edits: Array<{ start: number; end: number; wrong: string; n: number; orig: string }> = [];
+  for (const e of errors as Array<Record<string, unknown>>) {
+    const n = Number(e?.n);
+    const ctx = String(e?.ctx ?? "").trim();
+    const orig = String(e?.orig ?? "").trim();
+    const wrong = String(e?.wrong ?? "").trim();
+    if (!Number.isInteger(n) || n < 1 || n > 5) return { error: `errors의 n이 1~5가 아닙니다(${String(e?.n)}).` };
+    if (edits.some((x) => x.n === n)) return { error: `${CIRCLED5[n - 1]} 문장에 틀린 곳을 둘 넣었습니다. 틀린 문장마다 한 곳입니다.` };
+    if (!orig || !wrong || orig.toLowerCase() === wrong.toLowerCase()) return { error: `${CIRCLED5[n - 1]}의 orig·wrong이 비었거나 같습니다.` };
+    if (orig.split(/\s+/).length > 4 || wrong.split(/\s+/).length > 5) return { error: `${CIRCLED5[n - 1]} 자리 「${orig}」가 너무 깁니다(1~4낱말).` };
+    const segStart = at[n - 1]!;
+    const segEnd = sentenceEnd(segStart);
+    const seg = base.slice(segStart, segEnd);
+    let hit: { start: number; end: number } | null = null;
+    const ctxRe = ctx ? looseRe(ctx, true) : null;
+    const c = ctxRe ? ctxRe.exec(seg) : null;
+    if (c) {
+      const inner = [...c[0].matchAll(looseRe(orig, true)!)];
+      if (inner.length === 1) hit = { start: segStart + c.index + inner[0]!.index!, end: segStart + c.index + inner[0]!.index! + inner[0]![0].length };
+    }
+    if (!hit) {
+      const all = [...seg.matchAll(looseRe(orig, true)!)];
+      if (all.length !== 1) {
+        return { error: `${CIRCLED5[n - 1]} 문장(「${seg.slice(0, 40)}…」)에서 「${orig}」를 찾지 못했습니다. 틀린 곳은 번호가 붙은 그 문장 안에, ctx는 원문 그대로 주세요.` };
+      }
+      hit = { start: segStart + all[0]!.index!, end: segStart + all[0]!.index! + all[0]![0].length };
+    }
+    edits.push({ ...hit, wrong, n, orig: base.slice(hit.start, hit.end) });
+  }
+  // 번호와 틀린 꼴을 함께 끼운다(뒤에서부터 넣으면 앞 자리가 밀리지 않는다)
+  const inserts: Array<{ pos: number; end: number; text: string }> = [
+    ...at.map((p, i) => ({ pos: p, end: p, text: `${CIRCLED5[i]} ` })),
+    ...edits.map((x) => ({ pos: x.start, end: x.end, text: x.wrong })),
+  ].sort((a, b) => b.pos - a.pos || (a.end === a.pos ? 1 : -1));
+  let out = base;
+  for (const ins of inserts) out = out.slice(0, ins.pos) + ins.text + out.slice(ins.end);
+  const correctAnswer = [...edits]
+    .sort((a, b) => a.n - b.n)
+    .map((x) => `${CIRCLED5[x.n - 1]}: ${x.orig}`)
+    .join(" / ");
+  return { passageModified: out.replace(/ {2,}/g, " ").trim(), correctAnswer };
 }
 
 export function orderSpotFormatLine(paraphraseLead: boolean): string {

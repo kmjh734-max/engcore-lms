@@ -1,10 +1,10 @@
-import { blankSpotFormatLine, blankSpotMode, WORD_ORDER_SPOT_CODES, WRITING_BLANK_FILL, writingBlankFormatLine, buildBlankPassage, buildGrammarSpotPassage, buildInsertionPassage, buildIrrelevantPassage, buildOrderPassage, grammarSpotFormatLine, GRAMMAR_SPOT_SCHEMA, insertionSpotFormatLine, irrelevantSpotFormatLine, orderSpotFormatLine, spotKindOf, structSpotMode } from "@/lib/question-generator/grammar-spots";
+import { blankSpotFormatLine, blankSpotMode, WORD_ORDER_SPOT_CODES, WRITING_BLANK_FILL, writingBlankFormatLine, buildBlankPassage, buildGrammarSpotPassage, remapSpotMarks, buildSentenceErrorPassage, sentenceErrorFormatLine, buildInsertionPassage, buildIrrelevantPassage, buildOrderPassage, grammarSpotFormatLine, GRAMMAR_SPOT_SCHEMA, insertionSpotFormatLine, irrelevantSpotFormatLine, orderSpotFormatLine, spotKindOf, structSpotMode } from "@/lib/question-generator/grammar-spots";
 import { engcoreLevelOf } from "@/lib/vocab/engcore-lemma";
 import { isFunctionWord } from "@/lib/vocab/function-words";
 import { renumberMarksInOrder } from "@/lib/question-generator/renumber-marks";
 import { difficultyRule, targetLevelFromOverall, type TargetLevel } from "@/lib/question-generator/difficulty";
 import { splitSummaryAnswer, summaryBlankFitProblem } from "@/lib/question-generator/summary-blank-fit";
-import { fixNonVerbBankForms } from "@/lib/question-generator/verb-forms";
+import { fixNonVerbBankForms, verbBaseForms } from "@/lib/question-generator/verb-forms";
 import {
   balancedGistRule,
   choiceCraftCommonRules,
@@ -701,7 +701,7 @@ LANGUAGE: 지문은 영어만.`;
 ${focusBlock}
 
 형식:
-- passageModified = 영어 지문. 문장(또는 절) 앞에 ① ② ③ ④ ⑤ 표지.
+${paraphraseOn ? "- passageModified = 영어 지문. 문장(또는 절) 앞에 ① ② ③ ④ ⑤ 표지." : sentenceErrorFormatLine()}
 - 어법상 틀린 문장 정확히 ${wrongN}개 — 위 ‘이번 문항’ 문법을 서로 다른 단원으로 반영.
 ${spotLine}
 - 나머지 문장은 어법상 맞음.
@@ -2567,7 +2567,12 @@ export function assertBasicQuestionShape(
         bodyWords.some((b) => b.startsWith(stem(w)) || w.startsWith(stem(b))) ||
         IRREGULAR_DERIVATIVES.some(
           (fam) => fam.some((m) => isFormOf(w, m)) && bodyWords.some((b) => fam.some((m) => isFormOf(b, m)))
-        );
+        ) ||
+        // 불규칙 동사 꼴(지문 wins → 답 won, 2026-11-28 전 유형 시험에서 「뿌리 없음」으로 버렸다)
+        (() => {
+          const bases = new Set(verbBaseForms(w));
+          return bodyWords.some((b) => verbBaseForms(b).some((x) => x.length >= 3 && bases.has(x)));
+        })();
       if (!rooted) {
         return `정답 낱말 「${word}」은 지문에 뿌리가 없습니다.`;
       }
@@ -3175,6 +3180,8 @@ export async function generateOneQuestion(opts: {
   const blankMode = blankSpotMode(opts.option, opts.paraphraseGrammarVocab === true);
   /** 문장삽입·무관한 문장·순서는 자리만 받고 지문은 코드가 만든다 */
   const structMode = structSpotMode(opts.option, opts.paraphraseGrammarVocab === true);
+  /** 어법문장오류수정은 번호 붙일 문장 머리와 틀릴 자리만 받는다(grammar-spots.ts, 2026-11-28) */
+  const sentErrMode = opts.option.aingkaCode === "어법문장오류수정" && opts.paraphraseGrammarVocab !== true;
   const { option, analysis } = opts;
   // 시험지 흔적(정답 표기·문장 번호)을 걷어 낸 지문으로 만든다
   const passage = cleanSourcePassage(opts.passage);
@@ -4011,6 +4018,13 @@ ANSWER SPOT: 이번 문항의 정답은 <b>${no}번</b>이다. ${how}`;
                       }
                     : {}),
                 }
+              : sentErrMode
+                ? {
+                    marksBefore: ["first 3~6 words of the sentence marked ①", "…②", "…③", "…④", "…⑤"],
+                    errors: [{ n: "mark number 1-5", ctx: "4-10 exact words of that sentence", orig: "original word(s) = corrected answer", wrong: "ungrammatical form shown" }],
+                    questionText: "<조건>\n○ 틀린 곳의 기호와 수정한 형태를 모두 써야 정답으로 인정함\n\n<답안행>\n(틀린 문장 수)",
+                    choices: [],
+                  }
               : option.aingkaCode === "문법조건영작"
                 ? {
                     /*
@@ -4214,7 +4228,17 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     const built = buildGrammarSpotPassage(passage, raw.spots, want, spotKind ?? "grammar");
     if ("error" in built) throw new Error(built.error);
     raw.passageModified = built.passageModified;
+    // 자리를 지문 차례로 다시 줄 세웠으면 정답·해설 기호도 새 차례로(2026-11-28)
+    if (built.order) remapSpotMarks(raw, built.order, spotKind ?? "grammar", option.aingkaCode === "어법추론" || option.aingkaCode === "어휘추론");
     delete raw.spots;
+  }
+  if (sentErrMode && (Array.isArray(raw.errors) || !String(raw.passageModified ?? "").trim())) {
+    const built = buildSentenceErrorPassage(passage, raw.marksBefore, raw.errors);
+    if ("error" in built) throw new Error(built.error);
+    raw.passageModified = built.passageModified;
+    raw.correctAnswer = built.correctAnswer;
+    delete raw.marksBefore;
+    delete raw.errors;
   }
   if (blankMode && (raw.blankText != null || !String(raw.passageModified ?? "").trim())) {
     const built = buildBlankPassage(
