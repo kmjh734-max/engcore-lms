@@ -201,7 +201,14 @@ export async function createStudyPlan(
       entries: Array.from({ length: input.sessionsPerWeek }, () => emptyEntry()),
     }))
   );
-  if (rows.length > 0) await admin.from("study_plan_rows").insert(rows);
+  if (rows.length > 0) {
+    const { error: rowsErr } = await admin.from("study_plan_rows").insert(rows);
+    if (rowsErr) {
+      // 빈 표가 「만들었어요」로 남고 같은 달 다시 만들기도 막히던 것 — 표를 지우고 실패로 알린다(2026-11-28 점검)
+      await admin.from("study_plans").delete().eq("id", plan.id);
+      throw new Error(`학습일정표 줄을 넣지 못했어요: ${rowsErr.message}`);
+    }
+  }
 
   return (await loadStudyPlan(admin, input.studentId, input.year, input.month))!;
 }

@@ -154,8 +154,11 @@ export async function saveLessonPackAction(
   if (role === "teacher") {
     pq = pq.or(`teacher_id.eq.${profile!.id},created_by.eq.${profile!.id}`);
   }
-  const { data: existing } = await pq.maybeSingle();
-  const prev = (existing?.lesson_pack_json ?? {}) as Partial<LessonPackData>;
+  const { data: existing, error: readErr } = await pq.maybeSingle();
+  // 이전 값을 못 읽었으면 쓰지 않는다 — 빈 값으로 덮어써 어법·어휘 캐시·문장 해석이 날아갔다(2026-11-28 점검)
+  if (readErr) return { ok: false, message: "저장하지 못했어요. 잠시 뒤 다시 저장해 주세요." };
+  if (!existing) return { ok: false, message: "자료를 찾을 수 없어요. 휴지통에 있는지 확인해 주세요." };
+  const prev = (existing.lesson_pack_json ?? {}) as Partial<LessonPackData>;
 
   const pack: LessonPackData = {
     // 목록에 없는 캐시(어법·어휘·어순배열)가 저장할 때 지워지지 않게 먼저 펼친다.
@@ -294,10 +297,11 @@ export async function regenerateLessonPackTranslationsAction(
   for (const row of targets) {
     const ko = byId.get(String(row.id)) ?? "";
     if (!ko) continue;
-    await supabase
+    const { error: itemErr } = await supabase
       .from("lesson_material_items")
       .update({ korean_text: ko, updated_at: new Date().toISOString() })
       .eq("id", row.id);
+    if (itemErr) continue; // 저장 못 한 문장은 해석 기록에도 넣지 않는다(문장·기록 어긋남 방지)
     const stored = buildStoredTranslation({
       sentenceId: String(row.id),
       order: Number(row.order_index ?? 0) + 1,
@@ -330,7 +334,7 @@ export async function regenerateLessonPackTranslationsAction(
     sentenceTranslations,
   };
 
-  await supabase
+  const { error: packErr } = await supabase
     .from("lesson_material_projects")
     .update({
       lesson_pack_json: pack,
@@ -340,6 +344,12 @@ export async function regenerateLessonPackTranslationsAction(
 
   revalidatePath(`/${role}/lesson-materials/lesson-pack`);
   revalidatePath(`/${role}/lesson-materials/project/${projectId}`);
+  if (packErr) {
+    return {
+      ok: false,
+      message: `해석 ${regenerated}문장은 바꿨지만 기록을 남기지 못했어요. 한 번 더 눌러 주세요.`,
+    };
+  }
   return { ok: true, regenerated, skippedTeacher };
 }
 

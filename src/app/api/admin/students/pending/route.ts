@@ -41,17 +41,26 @@ export async function POST(request: Request) {
     }
 
     if (body.action === "approve") {
-      await admin
+      const { error: upErr } = await admin
         .from("profiles")
         .update({ approved_at: new Date().toISOString(), approved_by: auth.profile.id })
         .eq("id", studentId);
+      if (upErr) return adminJsonError("승인하지 못했어요. 다시 해 주세요.", 500);
       return NextResponse.json({ ok: true, message: "승인했어요." });
     }
 
     if (body.action === "reject") {
+      // 이미 승인된 학생은 지우지 않는다 — 다른 관리자가 먼저 승인했거나 화면이 오래된 경우
+      // 공부하던 계정과 기록이 통째로 지워졌다(2026-11-28 점검)
+      if (student.approved_at) {
+        return adminJsonError("이미 승인된 학생이에요. 화면을 새로 고쳐 주세요.", 409);
+      }
       // 아직 아무 기록도 없는 계정이라 지운다
-      await admin.auth.admin.deleteUser(studentId).catch(() => undefined);
-      await admin.from("profiles").delete().eq("id", studentId);
+      const { error: delErr } = await admin.auth.admin.deleteUser(studentId);
+      if (delErr && !/not.?found/i.test(delErr.message)) {
+        return adminJsonError("거절하지 못했어요. 다시 해 주세요.", 500);
+      }
+      await admin.from("profiles").delete().eq("id", studentId).is("approved_at", null);
       return NextResponse.json({ ok: true, message: "가입을 거절했어요." });
     }
 

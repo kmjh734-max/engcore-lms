@@ -370,7 +370,7 @@ export function ListeningSetsListClient({
   }
 
   async function deleteSet(setId: string, title: string) {
-    if (!window.confirm(`「${title}」 세트와 문항·음성·배정을 모두 지울까요?`)) return;
+    if (!window.confirm(`「${title}」 세트와 문항·음성·배정을 모두 지울까요?\n이 세트가 든 듣기 일정의 학생 하루 과제·풀이 기록도 함께 지워지고 되돌릴 수 없어요.`)) return;
     setBusyId(setId);
     setError(null);
     const res = await fetch(`/api/listening/sets/${setId}`, { method: "DELETE" });

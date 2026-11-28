@@ -863,16 +863,31 @@ export async function registerTestBookVocabAction(
   } else {
     await supabase.from("vocab_sets").update({ title }).eq("id", setId);
     // 이미 있는 단어장은 낱말 차례(=인쇄한 번호)를 지킨다 — 새로 생긴 낱말만 맨 뒤에 붙인다(선생님 2026-11-13)
-    const { data: old } = await supabase.from("vocab_items").select("word").eq("set_id", setId).order("order_index").order("created_at").limit(5000);
+    const { data: old } = await supabase.from("vocab_items").select("id, word").eq("set_id", setId).order("order_index").order("created_at").limit(5000);
     const at = new Map<string, number>();
+    // 같은 낱말은 원래 줄(id)을 그대로 고쳐 쓴다 — id 없이 넘기면 모두 새로 넣고 옛 줄을 지워
+    // 학생들의 단어 학습·시험·복습 기록(on delete cascade)이 통째로 사라졌다(2026-11-28 점검)
+    const idByWord = new Map<string, string>();
     for (const o of old ?? []) {
       const k = String(o.word ?? "").trim().toLowerCase();
       if (k && !at.has(k)) at.set(k, at.size);
+      if (k && o.id && !idByWord.has(k)) idByWord.set(k, String(o.id));
     }
     if (at.size) {
       const rank = (w: string) => at.get(w.trim().toLowerCase()) ?? Number.MAX_SAFE_INTEGER;
       const sorted = items.map((it, i) => ({ it, i })).sort((a, b) => rank(a.it.word) - rank(b.it.word) || a.i - b.i);
-      items.splice(0, items.length, ...sorted.map(({ it }, i) => ({ ...it, order_index: i })));
+      const used = new Set<string>();
+      items.splice(
+        0,
+        items.length,
+        ...sorted.map(({ it }, i) => {
+          const k = it.word.trim().toLowerCase();
+          const id = it.id ?? idByWord.get(k);
+          const keep = id && !used.has(id) ? id : undefined;
+          if (keep) used.add(keep);
+          return { ...it, order_index: i, ...(keep ? { id: keep } : {}) };
+        })
+      );
     }
   }
 

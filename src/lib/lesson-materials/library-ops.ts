@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { pageRows } from "@/lib/supabase/fetch-all-rows";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/get-profile";
 import {
@@ -314,16 +315,21 @@ export async function copyLessonMaterialProjects(
   if (projectsErr) return actionError(projectsErr.message);
   if (!projects?.length) return actionError("복사할 자료를 찾을 수 없습니다.");
 
-  const { data: items, error: itemsErr } = await supabase
-    .from("lesson_material_items")
-    .select(
-      "project_id,label,title,english_text,korean_text,order_index"
-    )
-    .in(
-      "project_id",
-      projects.map((p) => p.id)
-    )
-    .order("order_index", { ascending: true });
+  // 여러 지문을 한꺼번에 복사하면 문장이 1000줄을 넘어 뒤 지문 문장이 빠졌다 — 끝까지 읽는다
+  const { data: items, error: itemsErr } = await pageRows((from, to) =>
+    supabase
+      .from("lesson_material_items")
+      .select(
+        "project_id,label,title,english_text,korean_text,order_index"
+      )
+      .in(
+        "project_id",
+        projects.map((p) => p.id)
+      )
+      .order("order_index", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to)
+  );
   if (itemsErr) return actionError(itemsErr.message);
 
   const itemsByProject = new Map<string, typeof items>();
@@ -380,7 +386,16 @@ export async function copyLessonMaterialProjects(
       const { error: itemInsertErr } = await supabase
         .from("lesson_material_items")
         .insert(rows);
-      if (itemInsertErr) return actionError(itemInsertErr.message);
+      if (itemInsertErr) {
+        // 문장 없는 빈 복사본을 남기지 않는다(다시 누르면 중복이 생겼다)
+        await supabase.from("lesson_material_projects").delete().eq("id", inserted.id);
+        revalidateLibrary(role);
+        return actionError(
+          copied > 0
+            ? `${copied}개는 복사했고, 「${src.title}」에서 멈췄습니다: ${itemInsertErr.message}`
+            : itemInsertErr.message
+        );
+      }
     }
     copied += 1;
   }
@@ -464,11 +479,13 @@ export async function saveLessonMaterialProjectWorkspace(
   if (updateErr) return actionError(updateErr.message);
 
   if (input.items?.length) {
-    const { data: packRow } = await supabase
+    const { data: packRow, error: packReadErr } = await supabase
       .from("lesson_material_projects")
       .select("lesson_pack_json")
       .eq("id", projectId)
       .maybeSingle();
+    // 이전 값을 못 읽었으면 해석 기록(pack)은 건드리지 않는다 — 빈 값으로 덮어써 캐시가 날아갔다(2026-11-28 점검)
+    const packReadable = !packReadErr && !!packRow;
     const prev = (packRow?.lesson_pack_json ?? {}) as {
       headerLabel?: string;
       vocab?: unknown[];
@@ -545,8 +562,8 @@ export async function saveLessonMaterialProjectWorkspace(
       }
     }
 
-    if (metaChanged) {
-      await supabase
+    if (metaChanged && packReadable) {
+      const { error: packErr } = await supabase
         .from("lesson_material_projects")
         .update({
           lesson_pack_json: {
@@ -559,6 +576,9 @@ export async function saveLessonMaterialProjectWorkspace(
           updated_at: new Date().toISOString(),
         })
         .eq("id", projectId);
+      if (packErr) {
+        return actionError("문장은 저장했지만 해석 고친 표시를 남기지 못했어요. 한 번 더 저장해 주세요.");
+      }
     }
   }
 
