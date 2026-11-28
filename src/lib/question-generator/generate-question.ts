@@ -400,7 +400,10 @@ LANGUAGE: passageModified + choices MUST be ENGLISH only (no Korean).`;
       const blankLengthRule = `- 다섯 선택지의 낱말 수를 맞춘다: 가장 긴 것과 가장 짧은 것의 차이가 <b>3낱말 이내</b>.
 - 머리말을 맞춘다: 정답만 연결어(Yet·But·However·Thus·Instead)로 시작하거나, 오답 넷이 같은 머리말인데 정답만 다른 머리말이면 머리말만 보고 답이 보인다(2026-11-24 직접 풀기 2건). 다섯 보기가 같은 연결어로 시작하거나, 다섯이 모두 다른 말로 시작하게 한다.
 - 정답이 가장 긴 선택지가 되지 않게 한다. 쓰고 나서 다섯 개의 낱말 수를 세어 보고, 정답이 제일 길면 오답을 늘리거나 정답을 줄여 다시 맞춘다.
-- 빈칸으로 지운 문장에만 나오는 고유명사(사람·곳 이름)·연도는 바꿔 쓴 정답에 넣지 않는다. 학생 지문에 없는 정보다 — 그 문장이 글의 흐름에서 하는 말로 쓴다.`;
+- 빈칸으로 지운 문장에만 나오는 고유명사(사람·곳 이름)·연도는 바꿔 쓴 정답에 넣지 않는다. 학생 지문에 없는 정보다 — 그 문장이 글의 흐름에서 하는 말로 쓴다.
+- 다섯 보기 모두 빈칸 앞뒤에 그대로 이어 붙여 문법이 맞는 꼴로 쓴다: 지운 글귀가 to+동사로 시작하면 보기도 모두 to+동사, 명사구면 모두 명사구 — 「empowered the police ____」에 절(police would …)을 넣어 다섯 보기 모두 어색하다며 버렸다(2026-11-28).
+- 오답은 지문이 말한 사실과 어긋나거나 글의 논리를 뒤집는 말로 쓴다. 지문이 다루지 않은 말(「~는 영향이 없었다」처럼 언급만 없는 것)은 오답이 되지 못한다 — 「지문에 모순되지 않아 5번도 답」으로 버렸다(2026-11-28).
+- 보기에는 고1이 아는 쉬운 낱말만 쓴다(levy·tally처럼 드문 말 금지).`;
       if (option.difficulty === "high") {
         return `문장빈칸 HIGH (상) — 효자 기출동형:
 ${paraphraseOn ? "- In passageModified, blank ONE important sentence (or key clause) with ____________________________________." : blankSpotFormatLine(false)}
@@ -991,6 +994,7 @@ word1 / word2 / … (정답 문장의 낱말을 원형으로 흩어 놓는다. 8
 ⓐ
 - correctAnswer = 본문에서 찾은 연속 N단어 구 (예: dealing with internal anxiety in social situations)
 - choices 없음. explanation 한글: 밑줄 표현 ↔ 본문 구 대응.
+- 내기 전 바꿔 넣어 읽기(검수가 같은 잣대로 본다): 정답 구를 밑줄 표현 자리에 넣고 그 문장을 다시 읽는다. 뜻과 범위가 같아야 한다 — 더 넓거나 좁지 않고, 가리키는 사람·것·수(단수/복수)가 같고, 원인·결과·예시·바로 뒤 낱말이 아니다. 맞는 구가 없으면 {"skip":true,"reason":"문맥 동의 구 없음"} (2026-11-28 「범위가 더 넓다」「주체가 다르다」로 두 번씩 버림).
 LANGUAGE: 지문·정답 영어만.`;
       }
       if (
@@ -3136,8 +3140,14 @@ export async function generateOneQuestion(opts: {
   if (opts.option.aingkaCode === "심경추론" && !opts.offlineRaw) {
     const ws = opts.passage.split(/\s+/).filter(Boolean);
     const personal = ws.filter((w) => /^(i|me|my|he|him|his|she|her|we|our|us)$/i.test(w.replace(/[^a-z]/gi, ""))).length;
-    const quotes = (opts.passage.match(/[“"]/g) ?? []).length;
-    if (personal / Math.max(1, ws.length) < 0.02 && quotes < 2) {
+    // 대화로 보는 따옴표는 네 낱말 이상 든 것만 — 이름에 쓴 따옴표(“Scottish Highlands Triple Challenge.”)로 통과해 모델이 다 생각한 뒤 건너뛰었다(2026-11-28)
+    const quotes = [...opts.passage.matchAll(/[“"]([^”"]+)[”"]/g)].filter((m) => (m[1] ?? "").trim().split(/\s+/).length >= 4).length;
+    if (personal / Math.max(1, ws.length) < 0.02 && quotes < 1) {
+      throw new SkipQuestionError("심경 변화가 드러나는 이야기 글이 아닙니다.");
+    }
+    // 감정을 나타내는 말이 하나도 없으면 심경 변화를 물을 수 없다 — 부르기 전에 거른다(2026-11-28 재점검: 세 칸 모두 건너뜀, 74원)
+    const FEEL = /\b(feel|feels|felt|feeling|nervous|anxious|anxiety|excit\w*|happ\w*|sad\w*|reliev\w*|disappoint\w*|afraid|scared|fear\w*|worr\w*|proud|pride|angr\w*|anger|upset|joy\w*|delight\w*|thrill\w*|frustrat\w*|lonel\w*|calm\w*|surpris\w*|shock\w*|embarrass\w*|confiden\w*|hope\w*|grateful|tears?|smil\w*|cri(ed|es)|cry\w*|heart|panic\w*|terrif\w*|ashamed|jealous|envy|bored|annoy\w*|irritat\w*|satisf\w*|regret\w*|gloom\w*|cheer\w*|eager\w*|curious|indifferen\w*|sorrow\w*|grief|miserable|glad|pleased|amaz\w*|astonish\w*|furious|tense|uneasy|ease|comfort\w*|despair\w*|hesita\w*|courage\w*|thankful|lonesome)\b/i;
+    if (!FEEL.test(opts.passage)) {
       throw new SkipQuestionError("심경 변화가 드러나는 이야기 글이 아닙니다.");
     }
   }
