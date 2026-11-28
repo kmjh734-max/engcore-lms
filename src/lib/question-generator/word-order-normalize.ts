@@ -1,4 +1,6 @@
 /** 제시어 배열 <보기> 정규화: 원형화 + 무작위 섞기 + 조건 정리 */
+import { isEngcoreHeadword } from "@/lib/vocab/engcore-lemma";
+import { verbBaseForms } from "./verb-forms";
 
 const FUNCTION_KEEP = new Set(
   [
@@ -687,8 +689,23 @@ export function buildWordBankFromAnswer(
   }
 
   // basic: 형태 고정 → 정답 표면형 유지 / inflect: 동사 꼴만 원형
+  const rawBuilt = answerTokens.map((t, i) => keepProperCase(t, mode === "inflect" ? inflectToken(answerTokens, i) : t.toLowerCase(), i));
+  const built = rawBuilt.filter(Boolean);
+  if (mode !== "inflect" || !sameMultiset(built.map((t) => t.toLowerCase()), answerTokens.map((t) => t.toLowerCase()))) return built;
+  /*
+   * 어형변화인데 보기가 정답 꼴 그대로면 검사에서 버려진다(모델이 ranked·deciding처럼 바뀐 꼴만 보기에 넣으면
+   * -ed·-ing 원형을 짐작하지 않아서). 그때만 -ed·-ing 낱말의 원형 후보 가운데 단어장 표에 딱 하나 있는 것으로 돌린다
+   * (decided→decide, stopped→stop. hoped처럼 hop·hope 둘 다 있으면 그대로, need·morning처럼 그 꼴이 표에 있으면 그대로).
+   * 2026-11-28 의정부고2 동형 시험에서 두 번 연달아 버려졌다.
+   */
   return answerTokens
-    .map((t, i) => keepProperCase(t, mode === "inflect" ? inflectToken(answerTokens, i) : t.toLowerCase(), i))
+    .map((t, i) => {
+      const cur = rawBuilt[i] ?? "";
+      const low = t.toLowerCase();
+      if (!cur || cur.toLowerCase() !== low || !/(?:ed|ing)$/.test(low) || isEngcoreHeadword(low)) return cur;
+      const hits = verbBaseForms(low).filter((c) => c !== low && isEngcoreHeadword(c));
+      return hits.length === 1 ? keepProperCase(t, hits[0]!, i) : cur;
+    })
     .filter(Boolean);
 }
 

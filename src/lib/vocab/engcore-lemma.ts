@@ -30,6 +30,11 @@ const IRREGULAR: Record<string, string> = {
 /** 단어장 표에 빠진 아주 쉬운 말 */
 const BASIC = new Set(["well", "photograph", "photographs", "online", "website", "internet", "smartphone", "email"]);
 
+/** 단어장 표에 그 꼴 그대로 올라 있는 낱말인가(원형 후보 고르기용, 굴절을 벗기지 않는다) */
+export function isEngcoreHeadword(raw: string): boolean {
+  return WORDS[raw.toLowerCase()] !== undefined;
+}
+
 function direct(w: string): number | null {
   return WORDS[w] !== undefined ? WORDS[w]! : null;
 }
