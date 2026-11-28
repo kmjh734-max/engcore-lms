@@ -99,8 +99,12 @@ export type BlindSolveResult = {
   rareWords?: string[];
   /** 정답은 맞는데 이 오답들도 정답처럼 읽혀 버릴 때 — 문항 전체 대신 그 보기만 다시 쓸 수 있다(2026-11-12) */
   repairChoices?: number[];
+  /** repairChoices를 왜 고치는가 — 기본은 「정답처럼 읽힘」, awkward면 「어색하거나 애매함」(고쳐 쓰는 지시가 다르다) */
+  repairWhy?: "awkward";
   /** 내용일치·불일치·일치개수에서 이 보기·진술만 참·거짓이 지문으로 정해지지 않을 때 — 그것만 분명하게 고쳐 쓴다(2026-11-28) */
   clarifyChoices?: number[];
+  /** 일치개수: 고칠 진술마다 출제 계획의 참·거짓 */
+  clarifyMeant?: Record<number, "TRUE" | "FALSE">;
 };
 
 export async function blindSolveQuestion(opts: {
@@ -176,7 +180,19 @@ export async function blindSolveQuestion(opts: {
   if (raw.debatable === true) return { verdict: "drop", answer, reason: `읽기에 따라 답이 갈림 — ${reason}` };
   // 보기가 어색하거나 참·거짓이 애매하게 바꿔 쓴 것이면 다시 만든다(선생님 기준: 객관식 보기가 어색하면 안 된다)
   const awkward = (Array.isArray(raw.awkward) ? raw.awkward : []).map(Number).filter((n) => Number.isInteger(n) && n >= 1);
-  if (mcq && awkward.length) return { verdict: "drop", answer, reason: `보기 ${awkward.join("·")}번이 어색하거나 애매함 — ${reason}` };
+  if (mcq && awkward.length) {
+    /*
+     * 정답은 맞혔고 오답 한둘만 어색·애매하면 문항 전체 대신 그 보기만 고쳐 쓰고 같은 풀기를 다시 본다(2026-11-28 전 유형 시험:
+     * 사례분류가 다섯 번 모두 「보기 하나 어색」으로 통째로 다시 만들어 2.6배). 정답 보기가 어색하면 그대로 다시 만든다.
+     */
+    const fixable = !awkward.includes(key) && awkward.length <= 2 && (payload.choices ?? []).length >= 4;
+    return {
+      verdict: "drop",
+      answer,
+      reason: `보기 ${awkward.join("·")}번이 어색하거나 애매함 — ${reason}`,
+      ...(fixable ? { repairChoices: awkward, repairWhy: "awkward" as const } : {}),
+    };
+  }
   /*
    * 낯선 낱말(선생님 말 2026-10-04: 「너무 낯선 단어들이 포함되지 않도록」). 단어장 표는 수능 어휘보다 좁아
    * 코드만으로는 정상 수능 단어까지 걸린다. 풀어 보는 모델이 고등학생에게 낯선 말만 골라낸다.
@@ -373,7 +389,28 @@ export async function verifyChoicesIndependently(opts: {
     return { verdict: "drop", answer: null, reason: `일치하지 않는 보기가 ${refuted.join("·") || "없음"}(정답 ${key}번) — ${reason}` };
   }
   if (isCount && refuted.length !== key) {
-    return { verdict: "drop", answer: null, reason: `틀린 진술이 ${refuted.length}개(정답 ${key}개) — ${reason}` };
+    /*
+     * 출제 계획(근거 칸의 「보기 n · 판정: true/false」)과 판정이 어긋난 진술만 계획대로 분명하게 고쳐 쓴다(2026-11-28:
+     * 일치개수 상이 「틀린 진술 3개(정답 4개)」로 통째로 다시 만들어 1.97배). 고치면 개수가 정답과 맞을 때만.
+     */
+    const planned = new Map<number, "TRUE" | "FALSE">();
+    for (const e of payload.evidence ?? []) {
+      const d = String((e as { description?: unknown }).description ?? "");
+      const n = Number(d.match(/보기\s*(\d+)/)?.[1]);
+      const v = d.match(/판정:\s*(true|false)/i)?.[1]?.toUpperCase() as "TRUE" | "FALSE" | undefined;
+      if (Number.isInteger(n) && v) planned.set(n, v);
+    }
+    const off = rows
+      .map((r) => ({ n: Number(r.n), v: v(r) }))
+      .filter((r) => (planned.get(r.n) === "FALSE" && r.v === "supported") || (planned.get(r.n) === "TRUE" && r.v === "refuted"));
+    const plannedFalse = [...planned.values()].filter((x) => x === "FALSE").length;
+    const fixable = off.length >= 1 && off.length <= 2 && plannedFalse === key;
+    return {
+      verdict: "drop",
+      answer: null,
+      reason: `틀린 진술이 ${refuted.length}개(정답 ${key}개) — ${reason}`,
+      ...(fixable ? { clarifyChoices: off.map((r) => r.n), clarifyMeant: Object.fromEntries(off.map((r) => [r.n, planned.get(r.n)!])) } : {}),
+    };
   }
   return { verdict: "pass", answer: key, reason };
 }
@@ -529,6 +566,8 @@ export async function repairDistractors(opts: {
   passage: string;
   payload: GeneratedQuestionPayload;
   numbers: number[];
+  /** awkward: 정답처럼 읽혀서가 아니라 어색하거나 애매해서 고친다 */
+  why?: "awkward";
 }): Promise<boolean> {
   const { payload, numbers } = opts;
   const key = Number(payload.correctAnswer);
@@ -542,6 +581,9 @@ export async function repairDistractors(opts: {
     `\nCHOICES:\n${choiceLines}`,
     `\nKEYED ANSWER: ${key}`,
     `\nWRONG CHOICES TO REWRITE: ${targets.join(", ")}`,
+    ...(opts.why === "awkward"
+      ? [`\nPROBLEM: a solver found these wrong choices unnatural, vague or ambiguous (not that they are correct). Rewrite each as natural, clear English that is plainly wrong for the passage in the same way the other wrong choices are; keep the item's format.`]
+      : []),
     // 보기가 모두 한 낱말이면 고친 보기도 한 낱말(빈칸단어) — 여러 낱말로 고쳐 규칙 검사에 걸려 버려졌다(2026-11-28 시험)
     ...((payload.choices ?? []).every((c) => !/\s/.test(String(c.text ?? "").trim()))
       ? [`\nFORM: every choice is ONE English word with no space; each rewritten choice must also be exactly one word of the same part of speech and form.`]
@@ -598,6 +640,8 @@ export async function clarifyFactChoices(opts: {
   payload: GeneratedQuestionPayload;
   type: string;
   numbers: number[];
+  /** 일치개수: 진술마다 뜻하던 참·거짓(출제 계획) — 없으면 해설로 짐작하게 한다 */
+  meantOf?: Record<number, "TRUE" | "FALSE">;
 }): Promise<boolean> {
   const { payload, type, numbers } = opts;
   const isCount = type === "content_count";
@@ -610,7 +654,7 @@ export async function clarifyFactChoices(opts: {
     : numbers.filter((n) => (payload.choices ?? []).some((c) => Number(c.number) === n));
   if (!targets.length || targets.length !== numbers.length) return false;
   const meant = (n: number) =>
-    type === "content_true" ? (n === key ? "TRUE" : "FALSE") : type === "content_false" ? (n === key ? "FALSE" : "TRUE") : null;
+    type === "content_true" ? (n === key ? "TRUE" : "FALSE") : type === "content_false" ? (n === key ? "FALSE" : "TRUE") : opts.meantOf?.[n] ?? null;
   const shown = payload.passageModified?.trim() ? payload.passageModified : opts.passage;
   const items = isCount
     ? String(payload.questionText ?? "")

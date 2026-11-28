@@ -404,7 +404,7 @@ async function generateWithValidation(opts: {
             } else if (!clarifyDone && solved.clarifyChoices?.length) {
               clarifyDone = true;
               changed = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
-                clarifyFactChoices({ passage: cleanSourcePassage(opts.passage), payload, type: opts.option.type, numbers: solved.clarifyChoices! })
+                clarifyFactChoices({ passage: cleanSourcePassage(opts.passage), payload, type: opts.option.type, numbers: solved.clarifyChoices!, meantOf: solved.clarifyMeant })
               );
             }
             if (!changed) break;
@@ -417,7 +417,7 @@ async function generateWithValidation(opts: {
            */
           if (solved.verdict === "drop" && solved.repairChoices?.length) {
             const repaired = await withAiUsage({ ...currentAiUsage(), featureKey: null, usedFor: "qg_solve" }, () =>
-              repairDistractors({ passage: cleanSourcePassage(opts.passage), payload, numbers: solved.repairChoices! })
+              repairDistractors({ passage: cleanSourcePassage(opts.passage), payload, numbers: solved.repairChoices!, why: solved.repairWhy })
             );
             if (repaired) {
               touched = true;
