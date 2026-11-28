@@ -359,15 +359,28 @@ export async function bulkDeleteVocabSets(
   if (!setIds.length) return actionError("삭제할 단어장을 선택해 주세요.");
 
   const supabase = await createClient();
+  // 하나씩 지울 때처럼 잠긴 커리큘럼 단어장은 서버에서도 막는다(화면에서만 거르던 것 — 2026-11-28 점검)
+  const { data: lockedRows } = await supabase
+    .from("vocab_sets")
+    .select("id")
+    .in("id", setIds)
+    .eq("is_locked", true);
+  const skipped = lockedRows?.length ?? 0;
   const { error: deleteError } = await supabase
     .from("vocab_sets")
     .delete()
-    .in("id", setIds);
+    .in("id", setIds)
+    .not("is_locked", "is", true);
 
   if (deleteError) return actionError(deleteError.message);
 
   revalidateVocabPaths(ROLE, { folderId });
-  return actionSuccess(`${setIds.length}개 단어장이 삭제되었습니다.`);
+  const n = setIds.length - skipped;
+  return actionSuccess(
+    skipped > 0
+      ? `${n}개 단어장이 삭제되었습니다. (잠긴 단어장 ${skipped}개는 그대로 둡니다)`
+      : `${n}개 단어장이 삭제되었습니다.`
+  );
 }
 
 export async function bulkAssignVocabSetsToClass(

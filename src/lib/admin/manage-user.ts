@@ -507,6 +507,12 @@ export async function updateManagedAccount(
   }
 
   if (updateError) {
+    // 로그인 이메일은 이미 새 아이디로 바뀌었는데 프로필이 실패하면 옛·새 아이디 모두 로그인이 안 됐다
+    // — 로그인 이메일을 원래대로 되돌린다(2026-11-28 점검)
+    const oldEmail = (current as { email?: string | null } | null)?.email;
+    if (typeof updates.email === "string" && oldEmail && oldEmail !== updates.email) {
+      await admin.auth.admin.updateUserById(id, { email: oldEmail }).catch(() => undefined);
+    }
     const hint = isMissingColumnError(updateError.message, "created_by")
       ? MIGRATION_HINT
       : "";
