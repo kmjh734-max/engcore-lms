@@ -39,11 +39,21 @@ type RequestProfile = {
  */
 /** 문항 생성은 보통 10~40초 — 이보다 오래 걸리는 flex 요청은 끊고 보통 처리로 */
 const FLEX_TIMEOUT_MS = 120_000;
-/** flex가 자리 없음·늦음으로 한 번 실패하면 이 프로세스는 5분 동안 보통 처리로만 보낸다(작업 전체가 느려지지 않게) */
-const FLEX_PAUSE_MS = 5 * 60_000;
+/*
+ * flex가 자리 없음·늦음으로 실패하면 이 프로세스는 잠깐 보통 처리로만 보낸다 — 30초부터, 잇따라 실패하면 두 배씩(최대 5분),
+ * flex가 한 번 되면 처음으로. 전에는 한 번 실패에 5분을 쉬어, 1~2분짜리 작업 하나가 통째로 보통 값(두 배)이 됐다
+ * (2026-11-28 신도림고2 동형 2회: 173호출 중 135호출이 보통 처리, 2.28배·3.25배 — 같은 때 고1은 모두 flex로 5.5배).
+ */
+const FLEX_PAUSE_MIN_MS = 30_000;
+const FLEX_PAUSE_MAX_MS = 5 * 60_000;
 let flexPausedUntil = 0;
+let flexFailStreak = 0;
 function pauseFlex() {
-  flexPausedUntil = Date.now() + FLEX_PAUSE_MS;
+  flexFailStreak += 1;
+  flexPausedUntil = Date.now() + Math.min(FLEX_PAUSE_MAX_MS, FLEX_PAUSE_MIN_MS * 2 ** (flexFailStreak - 1));
+}
+function flexWorked() {
+  flexFailStreak = 0;
 }
 
 export function flexEnabledFor(model: string): boolean {
@@ -373,6 +383,7 @@ export async function questionGeneratorChatJson(opts: {
         break;
       }
 
+      if (res.ok && profile.flex) flexWorked();
       if (!res.ok) {
         // 파라미터 미지원 거절은 모델 미존재로 오인하기 전에 먼저 걸러 냄
         const relaxed =
