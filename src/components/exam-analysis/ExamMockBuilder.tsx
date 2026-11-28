@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Icon } from "@/components/layout/NavIcon";
 import { applySlotEdits, type MockSlot, type MockSlotEdit } from "@/lib/exam-analysis/blueprint";
 import { passageKindFromLabel } from "@/lib/exam-analysis/passage-kind";
+import { reduceAnswerLeaks } from "@/lib/exam-analysis/passage-leak";
 import { billingFeatureFor } from "@/lib/question-generator/billing-buckets";
 import { QUESTION_TYPE_GROUPS } from "@/lib/question-generator/question-types";
 import type { MaterialPassage } from "@/lib/exam-analysis/load";
@@ -255,11 +256,23 @@ export function ExamMockBuilder({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chosen.length, chosenKinds, groups, round, groupKinds.join(",")]);
-  const assignment = groups.map((_, g) => {
-    const o = override[g];
-    // 회차마다 한 칸씩 밀어 같은 지문이 같은 번호에 다시 오지 않게 한다
-    return chosen.length ? (o !== undefined && o < chosen.length ? o : defaultAssignment[g]!) : -1;
-  });
+  /** 묶음마다 문항 유형 키(바꿔 둔 유형이 있으면 그것) — 한 지문을 두 문항이 쓸 때 답이 드러나는지 가린다 */
+  const unitKeys = useMemo(
+    () => groups.map((gs) => gs.map((s) => slotEdit[s.no]?.optionKey ?? s.optionKey)),
+    [groups, slotEdit]
+  );
+  const assignment = useMemo(() => {
+    const base = groups.map((_, g) => {
+      const o = override[g];
+      // 회차마다 한 칸씩 밀어 같은 지문이 같은 번호에 다시 오지 않게 한다
+      return chosen.length ? (o !== undefined && o < chosen.length ? o : defaultAssignment[g]!) : -1;
+    });
+    // 지문이 모자라 두 번 쓰는 지문은 원문을 그대로 보이는 유형끼리 나눠 쓰게 한다(손으로 정한 자리는 그대로, 2026-11-28)
+    return reduceAnswerLeaks(base, unitKeys, {
+      fixed: groups.map((_, g) => override[g] !== undefined && override[g]! < chosen.length),
+      passageKinds: chosenKinds,
+    });
+  }, [groups, override, chosen.length, defaultAssignment, unitKeys, chosenKinds]);
   /** 원래 시험지와 지금 배정의 교과서·모의 문항 수 */
   const sourceMix = useMemo(() => {
     const orig = { textbook: 0, mock: 0 };
@@ -293,9 +306,14 @@ export function ExamMockBuilder({
       const j = Math.floor(Math.random() * (i + 1));
       [order[i], order[j]] = [order[j]!, order[i]!];
     }
+    const shuffled = reduceAnswerLeaks(
+      groups.map((_, g) => order[g % order.length]!),
+      unitKeys,
+      { passageKinds: chosenKinds }
+    );
     const next: Record<number, number> = {};
     groups.forEach((_, g) => {
-      next[g] = order[g % order.length]!;
+      next[g] = shuffled[g]!;
     });
     setOverride(next);
   }

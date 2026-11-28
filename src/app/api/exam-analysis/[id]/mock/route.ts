@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { loadOwnAnalysis, requireExamStaff } from "@/lib/exam-analysis/access";
 import { applySlotEdits, buildMockSlots, type MockSlotEdit } from "@/lib/exam-analysis/blueprint";
+import { reduceAnswerLeaks } from "@/lib/exam-analysis/passage-leak";
 import { levelBriefFor } from "@/lib/exam-analysis/reading-level";
 import { countExamMocks, loadExamAnalysis } from "@/lib/exam-analysis/load";
 import { extendShortMaterialPassages, loadAcademyMaterialPassages } from "@/lib/exam-analysis/material-passages";
@@ -124,7 +125,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         optionKey = `order:na:${body.orderMode === "original" ? "low" : "high"}:순서추론`;
       }
       if (/^(sentence_insertion|irrelevant_sentence):/.test(optionKey) && !longEnough[passageIndex]) {
-        const alt = longEnough.findIndex(Boolean);
+        // 긴 지문 가운데 아직 안 쓴(덜 쓴) 것으로 옮긴다 — 첫 긴 지문으로만 옮기면 두 문항이 한 지문을 함께 써 답이 드러났다
+        const used = assignment.filter((x) => Number.isInteger(x));
+        const longs = longEnough.map((ok, i) => (ok ? i : -1)).filter((i) => i >= 0);
+        const alt = longs.length ? longs.reduce((b, i) => (used.filter((x) => x === i).length < used.filter((x) => x === b).length ? i : b)) : -1;
         if (alt >= 0) passageIndex = alt;
         else optionKey = `order:na:${level === "상" ? "high" : "low"}:순서추론`;
       }
@@ -153,17 +157,33 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     }
     return Array.from({ length: unitCount }, (_, u) => order[u % order.length]!);
   }
+  /*
+   * 지문이 모자라 두 번 쓰는 지문은 원문을 그대로 보이는 유형끼리 나눠 쓰게 한다(2026-11-28 구현고1 동형 —
+   * 일치개수 지문에 어형변화 정답 문장, 어법개수 지문에 빈칸 정답이 그대로 보였다). 화면이 정해 보낸 자리는 그대로 둔다.
+   */
+  const unitKeys: string[][] = Array.from({ length: unitCount }, () => []);
+  slots.forEach((s, slotIdx) => unitKeys[unitOf(s, slotIdx)]!.push(edited[slotIdx]!.optionKey));
+  const sent = (u: number) => {
+    const want = Array.isArray(body.assignment) ? body.assignment[u] : undefined;
+    return Number.isInteger(want) && want! >= 0 && want! < passages.length;
+  };
+  function firstAssignment(round: number): number[] {
+    const base = Array.from({ length: unitCount }, (_, u) =>
+      sent(u) ? (body.assignment as number[])[u]! : (u + round - 1) % passages.length
+    );
+    return reduceAnswerLeaks(base, unitKeys, { fixed: base.map((_, u) => sent(u)) });
+  }
   const blueprints: { round: number; blueprint: ReturnType<typeof buildBlueprint> }[] = [];
   for (let r = 0; r < rounds; r++) {
     const round = firstRound + r;
     let blueprint: ReturnType<typeof buildBlueprint>;
     if (r === 0) {
-      blueprint = buildBlueprint(Array.isArray(body.assignment) ? body.assignment : [], round);
+      blueprint = buildBlueprint(firstAssignment(round), round);
     } else {
       let best: ReturnType<typeof buildBlueprint> | null = null;
       let bestRepeats = Infinity;
       for (let t = 0; t < 40 && bestRepeats > 0; t++) {
-        const bp = buildBlueprint(randomAssignment(), round);
+        const bp = buildBlueprint(reduceAnswerLeaks(randomAssignment(), unitKeys), round);
         const repeats = bp.filter((b) => seenPairs.has(`${b.passageIndex}|${typeBase(b.optionKey)}`)).length;
         if (repeats < bestRepeats) {
           best = bp;
