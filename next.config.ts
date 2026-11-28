@@ -51,6 +51,12 @@ const nextConfig: NextConfig = {
     "/teacher/lesson-materials/project/[projectId]": comicTracePaths,
     // pdfjs: 만든 PDF에서 빈 「(계속)」 쪽 찾기(일꾼 파일은 실행 중에 불러와 추적되지 않는다)
     "/api/pdf/render": ["./node_modules/@sparticuz/chromium/bin/**/*", "./node_modules/pdfjs-dist/legacy/build/**/*"],
+    // 어구독 (겨울주간지): 검수 마친 완성본 조각을 파일로 읽는다(content/eogudok)
+    "/api/eogudok/print": ["./content/eogudok/**/*"],
+    "/api/eogudok/test": ["./content/eogudok/**/*"],
+    "/api/eogudok/test-data": ["./content/eogudok/**/*"],
+    "/admin/main-books/eogudok": ["./content/eogudok/**/*"],
+    "/teacher/main-books/eogudok": ["./content/eogudok/**/*"],
   },
   images: {
     remotePatterns: [

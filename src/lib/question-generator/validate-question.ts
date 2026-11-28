@@ -708,7 +708,8 @@ export function validateGeneratedQuestion(opts: {
     }
     // 어휘는 낱말 하나를 바꾸는 유형이다 — 「carry away from the nest」처럼 구를 통째로 바꾸면 어휘 문항이 아니다 (#86)
     if (option.type === "vocabulary") {
-      const long = windows.find((m) => wordCount(m[2] ?? "") > 2);
+      // 「more and more」「less and less」는 한 말로 본다(2026-11-28 전 유형 8차에서 이것으로 버림)
+      const long = windows.find((m) => wordCount(m[2] ?? "") > 2 && !/^\s*([A-Za-z]+) and \1\s*$/i.test(plainText(m[2] ?? "")));
       if (long) {
         warnings.push(`어휘 밑줄 "${plainText(long[2] ?? "").slice(0, 30)}"이 세 낱말 넘습니다. 낱말 하나(많아야 둘)만 밑줄 칩니다.`);
         score -= 45;

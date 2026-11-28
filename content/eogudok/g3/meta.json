@@ -1,0 +1,174 @@
+{
+ "grade": 3,
+ "weeks": [
+  {
+   "n": 1,
+   "grammar": "CH 01 주어와 동사의 수일치",
+   "reading": "대의 파악 ① 20~24번",
+   "src": "26년 10월",
+   "pages": [
+    3,
+    21
+   ],
+   "vocabCount": 30,
+   "grammarCount": 46,
+   "arrangeCount": 11,
+   "translateCount": 10
+  },
+  {
+   "n": 2,
+   "grammar": "CH 02 능동태와 수동태",
+   "reading": "목적·심경·일치·실용문 18·19·26~28번",
+   "src": "26년 9월",
+   "pages": [
+    22,
+    40
+   ],
+   "vocabCount": 30,
+   "grammarCount": 43,
+   "arrangeCount": 11,
+   "translateCount": 12
+  },
+  {
+   "n": 3,
+   "grammar": "CH 03 중요 문장 어순",
+   "reading": "대의 파악 ② 20~24번",
+   "src": "26년 6월",
+   "pages": [
+    41,
+    60
+   ],
+   "vocabCount": 30,
+   "grammarCount": 46,
+   "arrangeCount": 12,
+   "translateCount": 12
+  },
+  {
+   "n": 4,
+   "grammar": "CH 04 동사와 준동사",
+   "reading": "어법·어휘 29~30번",
+   "src": "26년 3·6·9월",
+   "pages": [
+    61,
+    79
+   ],
+   "vocabCount": 30,
+   "grammarCount": 55,
+   "arrangeCount": 4,
+   "translateCount": 5
+  },
+  {
+   "n": 5,
+   "grammar": "CH 05 to부정사와 동명사",
+   "reading": "빈칸 ① 31~32번",
+   "src": "26년 3·6·9월",
+   "pages": [
+    80,
+    98
+   ],
+   "vocabCount": 30,
+   "grammarCount": 43,
+   "arrangeCount": 11,
+   "translateCount": 12
+  },
+  {
+   "n": 6,
+   "grammar": "CH 06 분사",
+   "reading": "빈칸 ② 33~34번",
+   "src": "26년 3·6·9월",
+   "pages": [
+    99,
+    117
+   ],
+   "vocabCount": 30,
+   "grammarCount": 42,
+   "arrangeCount": 7,
+   "translateCount": 10
+  },
+  {
+   "n": 7,
+   "grammar": "CH 07 준동사 심화",
+   "reading": "무관한 문장·글의 순서 35~37번",
+   "src": "26년 6·9월",
+   "pages": [
+    118,
+    136
+   ],
+   "vocabCount": 30,
+   "grammarCount": 38,
+   "arrangeCount": 11,
+   "translateCount": 5
+  },
+  {
+   "n": 8,
+   "grammar": "CH 08 접속사·병렬구조",
+   "reading": "문장 삽입 38~39번",
+   "src": "26년 3·6·9월",
+   "pages": [
+    137,
+    155
+   ],
+   "vocabCount": 30,
+   "grammarCount": 40,
+   "arrangeCount": 11,
+   "translateCount": 10
+  },
+  {
+   "n": 9,
+   "grammar": "CH 09 관계사",
+   "reading": "요약문 40번 + 빈칸 복습",
+   "src": "26년 3·6·9·10월 + 25년 10월",
+   "pages": [
+    156,
+    174
+   ],
+   "vocabCount": 30,
+   "grammarCount": 45,
+   "arrangeCount": 10,
+   "translateCount": 10
+  },
+  {
+   "n": 10,
+   "grammar": "CH 10·11 명사·대명사 / 형용사·부사",
+   "reading": "장문 41~42 · 43~45번",
+   "src": "26년 9·10월",
+   "pages": [
+    175,
+    193
+   ],
+   "vocabCount": 30,
+   "grammarCount": 40,
+   "arrangeCount": 11,
+   "translateCount": 7
+  },
+  {
+   "n": 11,
+   "grammar": "CH 12·13 비교 / 시제",
+   "reading": "실전 하프 ①",
+   "src": "25년 10월",
+   "pages": [
+    194,
+    212
+   ],
+   "vocabCount": 30,
+   "grammarCount": 38,
+   "arrangeCount": 7,
+   "translateCount": 11
+  },
+  {
+   "n": 12,
+   "grammar": "조동사·가정법 + 전체 Review",
+   "reading": "실전 하프 ② + 총정리",
+   "src": "25년 9월",
+   "pages": [
+    213,
+    234
+   ],
+   "vocabCount": 30,
+   "grammarCount": 54,
+   "arrangeCount": 11,
+   "translateCount": 13
+  }
+ ],
+ "totalPages": 234
+}

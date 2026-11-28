@@ -29,6 +29,7 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin/lesson-materials", label: "수업자료", group: "수업자료 만들기" },
   { href: "/admin/question-generator", label: "변형문제", group: "수업자료 만들기" },
   { href: "/admin/middle-school", label: "중학교 수업자료", group: "수업자료 만들기" },
+  { href: "/admin/main-books", label: "본교재 수업자료", group: "수업자료 만들기" },
   { href: "/admin/grammar", label: "문법 문제 은행", group: "수업자료 만들기" },
   { href: "/admin/classes", label: "반 관리", group: "수업 운영" },
   { href: "/admin/students", label: "학생·수강", group: "수업 운영" },
@@ -64,7 +65,7 @@ export async function getAdminNavItems(academyId: string | null | undefined): Pr
   // 마케팅 > 어휘 진단도 정수학원처럼 켜 준 학원에서만.
   if (!diagOpen) items = items.filter((i) => !i.href.startsWith("/admin/marketing"));
   // 중학교 수업자료는 정수학원만(선생님 2026-10-29).
-  if (!middleOpen) items = items.filter((i) => i.href !== "/admin/middle-school");
+  if (!middleOpen) items = items.filter((i) => i.href !== "/admin/middle-school" && i.href !== "/admin/main-books");
   return filterNavItems(items);
 }
 
@@ -74,6 +75,7 @@ const TEACHER_NAV: NavItem[] = [
   { href: "/teacher/lesson-materials", label: "수업자료", group: "수업자료 만들기" },
   { href: "/teacher/question-generator", label: "변형문제", group: "수업자료 만들기" },
   { href: "/teacher/middle-school", label: "중학교 수업자료", group: "수업자료 만들기" },
+  { href: "/teacher/main-books", label: "본교재 수업자료", group: "수업자료 만들기" },
   { href: "/teacher/grammar", label: "문법 문제 은행", group: "수업자료 만들기" },
   { href: "/teacher/classes", label: "반 관리", group: "수업 운영" },
   { href: "/teacher/students", label: "학생 관리", group: "수업 운영" },
@@ -95,7 +97,8 @@ export async function getTeacherNavItems(academyId: string | null | undefined): 
     TEACHER_NAV.filter(
       (item) =>
         (grammarOpen || item.href !== "/teacher/grammar") &&
-        (middleOpen || item.href !== "/teacher/middle-school"),
+        (middleOpen || item.href !== "/teacher/middle-school") &&
+        (middleOpen || item.href !== "/teacher/main-books"),
     ),
   );
 }

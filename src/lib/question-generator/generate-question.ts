@@ -1,3 +1,4 @@
+import { connectorChoiceRules, fixConnectorChoices } from "@/lib/question-generator/connector-choices";
 import { blankSpotFormatLine, blankSpotMode, WORD_ORDER_SPOT_CODES, WRITING_BLANK_FILL, writingBlankFormatLine, buildBlankPassage, buildGrammarSpotPassage, remapSpotMarks, buildSentenceErrorPassage, sentenceErrorFormatLine, buildInsertionPassage, buildIrrelevantPassage, buildOrderPassage, grammarSpotFormatLine, GRAMMAR_SPOT_SCHEMA, insertionSpotFormatLine, irrelevantSpotFormatLine, orderSpotFormatLine, spotKindOf, structSpotMode } from "@/lib/question-generator/grammar-spots";
 import { engcoreLevelOf } from "@/lib/vocab/engcore-lemma";
 import { isFunctionWord } from "@/lib/vocab/function-words";
@@ -384,6 +385,7 @@ LANGUAGE: choices ENGLISH, explanation Korean.`;
       }
       if (code === "연결어빈칸") {
         return `In passageModified put discourse blanks (A) and (B). 5 ENGLISH pair choices like "However …… Therefore". Exactly one correct.
+${connectorChoiceRules()}
 ${choiceExplanationRules()}
 LANGUAGE: passageModified + choices MUST be ENGLISH only (no Korean).`;
       }
@@ -4289,7 +4291,15 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
       const norm = (t: unknown) => String(t ?? "").replace(/\s+/g, "").replace(/[–—−]/g, "-");
       const keyChoice = choices.find((c) => norm(c.text) === norm(built.answerOrder));
       if (!keyChoice) throw new Error(`보기에 맞는 순서 ${built.answerOrder}가 없습니다.`);
-      if (say && say !== Number(keyChoice.number)) throw new Error(`정답을 ${say}번이라 했지만 맞는 순서 ${built.answerOrder}는 ${keyChoice.number}번 보기입니다.`);
+      /*
+       * 정답 순서는 이름표(labels)를 원문 차례로 읽은 것이라 코드가 정한다 — 모델이 말한 번호가 달라도 보기 번호를 따른다
+       * (2026-11-28 전 유형 8차 「정답을 3번이라 했지만 … 4번 보기」로 버림). 해설에 말한 번호가 있으면 바꾼다.
+       */
+      if (say && say !== Number(keyChoice.number) && typeof raw.explanation === "string") {
+        const C = "①②③④⑤";
+        const from = C[say - 1], to = C[Number(keyChoice.number) - 1];
+        if (from && to) raw.explanation = raw.explanation.split(from).join(to);
+      }
       raw.passageModified = built.passageModified;
       raw.correctAnswer = Number(keyChoice.number);
     }
@@ -4442,6 +4452,11 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     payload.choices = [2, 3, 4, 5, 6].map((k, i) => ({ number: i + 1, text: `${k}개` }));
     if (n >= 2 && n <= 6) payload.correctAnswer = n - 1;
   }
+  /*
+   * 연결어빈칸: 오답 자리말이 자리 문법에 안 맞거나(머리 부사 자리에 Although) 두 자리 모두 정답과 같은 갈래면
+   * 그 자리말만 코드가 바꾼다(2026-11-28 전 유형 시험 — 직접 풀기가 「보기 넷 어색」「4번도 답」으로 버려 2.7~4배).
+   */
+  if (option.aingkaCode === "연결어빈칸") fixConnectorChoices(payload);
   // 어휘빈칸공통: <답란>을 빠뜨리면 다시 만들었다 — 틀이 정해져 있으니 붙여 준다(2026-11-28)
   // 문제 글을 통째로 비워 보내도 붙인다(2026-11-28 전 유형 4차 시험) — 칸 기호는 정답에 쓴 기호를 따른다
   if (option.aingkaCode === "어휘빈칸공통" && !/(^|\n)\s*<답란>/.test(payload.questionText ?? "")) {
