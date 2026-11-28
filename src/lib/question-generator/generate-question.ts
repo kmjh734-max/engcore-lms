@@ -1451,6 +1451,13 @@ function checkTitleSubject(raw: Record<string, unknown>, key: number, passage: s
     return `정답 제목 「${keyText.slice(0, 80)}」이 「From X to Y」 꼴이라 뜻이 흐립니다. 글감과 필자가 하는 말을 그대로 드러내는 꼴(How/Why …, 「글감: 하는 말」, 명사구)로 씁니다.`;
   }
   const keyWords = planNorm(keyText).split(" ");
+  /*
+   * 대문자 약어 글감(AV·FPTP·AI)은 세 글자 미만이라 위에서 빠졌다 — 「AV method」의 정답 「AV Voting and …」을
+   * 「글감(method) 없음」으로 두 번 버렸다(2026-11-28 전 유형 시험). 지문에도 있고 정답 제목에 낱말 그대로 있으면 받는다.
+   */
+  const acronyms = [...new Set(list.flatMap((w) => w.split(/[\s-]+/)).filter((x) => /^[A-Z]{2,5}s?$/.test(x)).map((x) => x.replace(/s$/, "")))];
+  const keyRaw = keyText.split(/[^A-Za-z]+/);
+  if (acronyms.some((a) => keyRaw.includes(a) && new RegExp(`\\b${a}\\b`).test(passage))) return null;
   if (!inPassage.some((t) => keyWords.some((k) => k.startsWith(stem(t))))) {
     return `정답 제목 「${keyText.slice(0, 80)}」에 글감(${inPassage.join(", ")})이 없어 무슨 글인지 드러나지 않습니다. 글감을 쉬운 말 그대로 넣고 필자의 말을 붙입니다(비유 금지).`;
   }

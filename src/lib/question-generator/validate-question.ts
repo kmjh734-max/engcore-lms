@@ -959,20 +959,26 @@ export function validateGeneratedQuestion(opts: {
     if (code === "주제문작성") {
       const bogi = qt.match(/<보기>\s*\n([\s\S]*?)(?=\n\s*<|$)/)?.[1] ?? "";
       const bank = bogi.split(/\s*\/\s*|\n/).map((w) => norm(w)).filter(Boolean);
-      const answerWords = norm(ans.replace(/^주제\s*[:：]?\s*/, "")).split(" ").filter(Boolean);
+      const answerText = ans.replace(/^주제\s*[:：]?\s*/, "");
+      const answerWords = norm(answerText).split(" ").filter(Boolean);
       const extra = [...qt.matchAll(/전치사\s*['‘"]([a-z]+)['’"]/gi)].map((m) => m[1]!.toLowerCase());
+      /*
+       * 하이픈 낱말(second-preference)은 보기에 한 칸으로 나온다 — 대조는 띄운 낱말끼리, 낱말 수는 하이픈 낱말을 하나로 센다
+       * (2026-11-28 전 유형 시험: 「보기에 없는 낱말: second, preference」「조건 10 · 정답 11」로 세 번 버렸다).
+       */
+      const answerCount = answerText.trim().split(/\s+/).filter((w) => /[A-Za-z0-9]/.test(w)).length;
       const left = [...answerWords];
-      for (const w of [...bank, ...extra]) {
+      for (const w of [...bank.flatMap((b) => b.split(" ")), ...extra]) {
         const i = left.indexOf(w);
         if (i >= 0) left.splice(i, 1);
       }
       const nSaid = Number(qt.match(/총\s*(\d+)\s*단어/)?.[1] ?? 0);
-      if (left.length > 0 || bank.length + extra.length !== answerWords.length) {
+      if (left.length > 0 || bank.length + extra.length !== answerCount) {
         warnings.push(`<보기> 낱말과 정답 낱말이 맞지 않습니다${left.length ? `(보기에 없는 낱말: ${left.join(", ")})` : ""}.`);
         score -= 80;
       }
-      if (nSaid && nSaid !== answerWords.length) {
-        warnings.push(`조건의 낱말 수(${nSaid})와 정답 낱말 수(${answerWords.length})가 다릅니다.`);
+      if (nSaid && nSaid !== answerCount) {
+        warnings.push(`조건의 낱말 수(${nSaid})와 정답 낱말 수(${answerCount})가 다릅니다.`);
         score -= 80;
       }
     }

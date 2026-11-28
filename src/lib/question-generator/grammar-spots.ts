@@ -463,10 +463,33 @@ export function buildSentenceErrorPassage(
     }
     if (!hit) {
       const all = [...seg.matchAll(looseRe(orig, true)!)];
-      if (all.length !== 1) {
+      if (all.length === 1) hit = { start: segStart + all[0]!.index!, end: segStart + all[0]!.index! + all[0]![0].length };
+    }
+    if (!hit) {
+      /*
+       * 번호는 앞 문장에 두고 틀린 곳은 그다음 문장에 넣었으면(2026-11-28 시험: ② 「The AV method …」 뒤 문장의 win)
+       * 버리지 않고 그 번호를 틀린 곳이 든 문장 앞으로 옮긴다 — 앞뒤 번호 사이에서만 옮기므로 차례는 그대로다.
+       */
+      const regionEnd = n < 5 ? at[n]! : base.length;
+      const region = base.slice(segStart, regionEnd);
+      let local: { start: number; end: number } | null = null;
+      const cr = ctxRe ? new RegExp(ctxRe.source, "g") : null;
+      const cAll = cr ? [...region.matchAll(cr)] : [];
+      if (cAll.length === 1) {
+        const inner = [...cAll[0]![0].matchAll(looseRe(orig, true)!)];
+        if (inner.length === 1) local = { start: cAll[0]!.index! + inner[0]!.index!, end: cAll[0]!.index! + inner[0]!.index! + inner[0]![0].length };
+      }
+      if (!local) {
+        const oAll = [...region.matchAll(looseRe(orig, true)!)];
+        if (oAll.length === 1) local = { start: oAll[0]!.index!, end: oAll[0]!.index! + oAll[0]![0].length };
+      }
+      if (!local) {
         return { error: `${CIRCLED5[n - 1]} 문장(「${seg.slice(0, 40)}…」)에서 「${orig}」를 찾지 못했습니다. 틀린 곳은 번호가 붙은 그 문장 안에, ctx는 원문 그대로 주세요.` };
       }
-      hit = { start: segStart + all[0]!.index!, end: segStart + all[0]!.index! + all[0]![0].length };
+      const ends = [...region.slice(0, local.start).matchAll(/[.!?]["'’”)]*\s+/g)];
+      const last = ends[ends.length - 1];
+      at[n - 1] = segStart + (last ? last.index! + last[0].length : 0);
+      hit = { start: segStart + local.start, end: segStart + local.end };
     }
     edits.push({ ...hit, wrong, n, orig: base.slice(hit.start, hit.end) });
   }

@@ -330,8 +330,9 @@ export function passageHasConsecutiveWords(
   const p = norm(passage);
   const ph = norm(phrase);
   if (!p || !ph) return false;
-  const words = ph.split(" ").filter(Boolean);
-  if (expectedWordCount != null && words.length !== expectedWordCount) {
+  // 낱말 수는 하이픈 낱말을 한 낱말로 센다 — first-preference votes는 2단어(대조는 하이픈을 띄어 본다, 2026-11-28 두 번 버림).
+  // 낱말 수는 발문 숫자를 적는 countEnglishWords와 같은 셈으로(well-being·U.S.는 한 낱말)
+  if (expectedWordCount != null && countEnglishWords(phrase) !== expectedWordCount) {
     return false;
   }
   return ` ${p} `.includes(` ${ph} `);
