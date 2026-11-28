@@ -38,7 +38,7 @@ export function grammarSpotFormatLine(count: number, kind: SpotKind = "grammar")
       : "orig unchanged if this spot is grammatical, or orig with ONLY its form changed if this spot is an error — a real English form of the same word (were, to go, which, quickly), never a misspelling or a non-word (not \"farly\")";
   return `- Do NOT write the passage. Return "spots": exactly ${count} underline spots IN PASSAGE ORDER (first = ${marks[0]}, last = ${marks[count - 1]}). The code puts ${marks[0]}<u>…</u> marks into the original passage for you; everything outside the spots stays the original word for word.
 - Each spot: {"ctx": "4-10 consecutive words copied EXACTLY from the PASSAGE that contain the spot (unique in the passage)", "orig": "the original word(s) at the spot, 1-4 words, exactly as in ctx", "show": "what the student sees under the underline — ${show}"}.
-- Spots must not overlap and must be spread over the passage (not more than two in one sentence). In explanation${kind === "vocab" ? " and vocabularyJudgments" : ""} refer to spots by ${marks[0]}~${marks[count - 1]} in this order.`;
+- Spots must not overlap and must be spread over the passage (not more than two in one sentence${kind === "vocab" ? "; at least two other words between any two spots" : ""}). In explanation${kind === "vocab" ? " and vocabularyJudgments" : ""} refer to spots by ${marks[0]}~${marks[count - 1]} in this order.`;
 }
 
 /** 출력 칸 모양 */

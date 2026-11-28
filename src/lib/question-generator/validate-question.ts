@@ -15,6 +15,7 @@ import {
 } from "@/lib/question-generator/word-order-normalize";
 import { splitSummaryAnswer } from "@/lib/question-generator/summary-blank-fit";
 import { findNonVerbBankForms } from "@/lib/question-generator/verb-forms";
+import { rootedByIrregular } from "@/lib/question-generator/answer-root";
 
 /** 밑줄 태그·기호·빈칸을 걷어 내고 따옴표를 통일한 본문 */
 function plainText(text: string): string {
@@ -1321,7 +1322,8 @@ export function validateGeneratedQuestion(opts: {
       const w = text.toLowerCase().replace(/[^a-z]/g, "");
       if (w.length < 4) continue;
       const stem = w.slice(0, Math.max(4, Math.floor(w.length * 0.6)));
-      if (!bodyWords.some((b) => b.startsWith(stem) || w.startsWith(b.slice(0, Math.max(4, Math.floor(b.length * 0.6)))))) {
+      // 불규칙 꼴(lose → loss, wins → won)도 뿌리가 있는 말이다 — 만들 때 검사와 같은 잣대(2026-11-28)
+      if (!bodyWords.some((b) => b.startsWith(stem) || w.startsWith(b.slice(0, Math.max(4, Math.floor(b.length * 0.6))))) && !rootedByIrregular(w, bodyWords)) {
         warnings.push(`본문에 없는 낱말을 답으로 썼습니다: "${text.slice(0, 24)}"`);
         score -= 45;
         break;

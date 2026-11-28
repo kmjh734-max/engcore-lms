@@ -4,7 +4,9 @@ import { isFunctionWord } from "@/lib/vocab/function-words";
 import { renumberMarksInOrder } from "@/lib/question-generator/renumber-marks";
 import { difficultyRule, targetLevelFromOverall, type TargetLevel } from "@/lib/question-generator/difficulty";
 import { splitSummaryAnswer, summaryBlankFitProblem } from "@/lib/question-generator/summary-blank-fit";
-import { fixNonVerbBankForms, verbBaseForms } from "@/lib/question-generator/verb-forms";
+import { fixNonVerbBankForms } from "@/lib/question-generator/verb-forms";
+import { rootedByIrregular } from "@/lib/question-generator/answer-root";
+import { rewriteRareWords } from "@/lib/question-generator/blind-solve";
 import {
   balancedGistRule,
   choiceCraftCommonRules,
@@ -173,59 +175,6 @@ function factWordingRule(lang: "english" | "korean" | null | undefined, difficul
  */
 const GRAMMAR_FOR_WRITING = WRITING_GRAMMAR_LIST;
 
-/**
- * 앞 글자만 맞대서는 한 뿌리인 줄 모르는 파생어 묶음(요약표 빈칸 「지문에 뿌리가 있는지」 검사).
- * 다섯 글자 이상은 그 글자로 시작하면, 짧은 것은 그 말과 -s·-d·-ed·-es 꼴만 같은 뿌리로 본다
- * (see → seem 처럼 짧은 말이 엉뚱한 낱말에 붙지 않게).
- */
-const IRREGULAR_DERIVATIVES: string[][] = [
-  ["lose", "loses", "losing", "lost", "loss", "losses"],
-  ["choose", "chose", "chosen", "choosing", "choice"],
-  ["think", "thought"],
-  ["deep", "depth"],
-  ["long", "length", "lengthen"],
-  ["strong", "strength"],
-  ["wide", "width", "widen"],
-  ["broad", "breadth"],
-  ["high", "height", "heighten"],
-  ["true", "truth", "truly"],
-  ["speak", "spoke", "spoken", "speech"],
-  ["believe", "belief"],
-  ["prove", "proof"],
-  ["sell", "sold", "sale"],
-  ["live", "living", "life", "lives"],
-  ["die", "dying", "dead", "death", "deadly"],
-  ["fly", "flies", "flight"],
-  ["see", "seen", "sight"],
-  ["able", "ability", "abilities"],
-  ["poor", "poverty"],
-  ["proud", "pride"],
-  ["wise", "wisdom"],
-  ["decide", "decision"],
-  ["divide", "division"],
-  ["explain", "explanation"],
-  ["describe", "description"],
-  ["receive", "reception"],
-  ["perceive", "perception"],
-  ["pronounce", "pronunciation"],
-  ["maintain", "maintenance"],
-  ["sustain", "sustenance"],
-  ["retain", "retention"],
-  ["intend", "intention", "intent"],
-  ["extend", "extension", "extent"],
-  ["respond", "response", "responsive"],
-  ["defend", "defense", "defensive"],
-  ["pursue", "pursuit"],
-  ["fail", "failure"],
-  ["please", "pleasure", "pleasant"],
-  ["hot", "heat"],
-  ["bear", "born", "birth"],
-];
-
-function isFormOf(word: string, form: string): boolean {
-  if (form.length >= 5) return word.startsWith(form);
-  return [form, `${form}s`, `${form}d`, `${form}ed`, `${form}es`].includes(word);
-}
 
 /** aren't → are not, doesn't → does not, can't → cannot, won't → will not (보기에서 not이 사라지지 않게) */
 function expandNegativeContractions(text: string): string {
@@ -1992,6 +1941,21 @@ export function formChangeClaims(explanation: string): Array<[string, string]> {
   return out.map(([a, b]) => [a.toLowerCase(), b.toLowerCase()]);
 }
 
+/** 단어장에도 지문에도 없는 보기 낱말이 하 3개·상 4개 이상이면 그 낱말들(제목·주제·내용일치·불일치·일치개수·요지, 영어 보기) */
+function overLevelWords(q: GeneratedQuestionPayload, option: QuestionTypeOption): string[] | null {
+  const wordLevelTypes = /^(title|topic|content_true|content_false|content_count|summary_mcq)$/;
+  if (!wordLevelTypes.test(option.type) || option.choiceLanguage === "korean" || (option.difficulty !== "low" && option.difficulty !== "high")) return null;
+  const passageWords = new Set((String(q.passageOriginal ?? "").match(/[A-Za-z][A-Za-z'-]*/g) ?? []).map((w) => w.toLowerCase()));
+  const text = (q.choices ?? []).map((c) => c.text).join(" ") || String(q.questionText ?? "");
+  const hard = new Set<string>();
+  for (const w of text.match(/[A-Za-z][A-Za-z'-]*/g) ?? []) {
+    const l = w.toLowerCase();
+    if (l.length <= 3 || /^[A-Z]/.test(w) || passageWords.has(l) || isFunctionWord(l)) continue;
+    if (engcoreLevelOf(l) === null) hard.add(l);
+  }
+  return hard.size >= (option.difficulty === "low" ? 3 : 4) ? [...hard] : null;
+}
+
 export function assertBasicQuestionShape(
   q: GeneratedQuestionPayload,
   option: QuestionTypeOption,
@@ -2027,19 +1991,10 @@ export function assertBasicQuestionShape(
    * 단어장에도 지문에도 없는 낱말이 하는 3개, 상은 4개 이상이면 그 낱말을 알려 주고 다시 만든다.
    * 10차 시험에서 상 25문항 중 9문항이 4개 이상이었다(rapport, affinity, vulnerability, arable …).
    */
-  const wordLevelTypes = /^(title|topic|content_true|content_false|content_count|summary_mcq)$/;
-  if (wordLevelTypes.test(option.type) && option.choiceLanguage !== "korean" && (option.difficulty === "low" || option.difficulty === "high")) {
-    const passageWords = new Set((String(q.passageOriginal ?? "").match(/[A-Za-z][A-Za-z'-]*/g) ?? []).map((w) => w.toLowerCase()));
-    const text = (q.choices ?? []).map((c) => c.text).join(" ") || String(q.questionText ?? "");
-    const hard = new Set<string>();
-    for (const w of text.match(/[A-Za-z][A-Za-z'-]*/g) ?? []) {
-      const l = w.toLowerCase();
-      if (l.length <= 3 || /^[A-Z]/.test(w) || passageWords.has(l) || isFunctionWord(l)) continue;
-      if (engcoreLevelOf(l) === null) hard.add(l);
-    }
-    const limit = option.difficulty === "low" ? 3 : 4;
-    if (hard.size >= limit) {
-      return `보기 낱말이 우리 단어장 수준을 넘습니다(${[...hard].slice(0, 6).join(", ")}). ${option.difficulty === "low" ? "하 난이도라 중학~고1 기본 어휘로" : "고교필수~수능필수 단어장 안의 낱말로"} 바꿔 씁니다.`;
+  {
+    const hard = overLevelWords(q, option);
+    if (hard) {
+      return `보기 낱말이 우리 단어장 수준을 넘습니다(${hard.slice(0, 6).join(", ")}). ${option.difficulty === "low" ? "하 난이도라 중학~고1 기본 어휘로" : "고교필수~수능필수 단어장 안의 낱말로"} 바꿔 씁니다.`;
     }
   }
   // 칸 제목이 두 번 나오면 학생에게 보기가 두 벌로 보인다(4차 시험 2026-10-04: <보기>·<해석>이 두 번, 조건 문구가 <해석>에 섞임)
@@ -2563,16 +2518,7 @@ export function assertBasicQuestionShape(
        * (윌링어학원 2026-11-20: 지문 「lose autonomy」의 답 「loss」를 버려 다른 유형으로 바뀌었다).
        * un-·non- 처럼 뜻을 뒤집는 앞가지는 형태 바꾸기가 아니라 그대로 거른다.
        */
-      const rooted =
-        bodyWords.some((b) => b.startsWith(stem(w)) || w.startsWith(stem(b))) ||
-        IRREGULAR_DERIVATIVES.some(
-          (fam) => fam.some((m) => isFormOf(w, m)) && bodyWords.some((b) => fam.some((m) => isFormOf(b, m)))
-        ) ||
-        // 불규칙 동사 꼴(지문 wins → 답 won, 2026-11-28 전 유형 시험에서 「뿌리 없음」으로 버렸다)
-        (() => {
-          const bases = new Set(verbBaseForms(w));
-          return bodyWords.some((b) => verbBaseForms(b).some((x) => x.length >= 3 && bases.has(x)));
-        })();
+      const rooted = bodyWords.some((b) => b.startsWith(stem(w)) || w.startsWith(stem(b))) || rootedByIrregular(w, bodyWords);
       if (!rooted) {
         return `정답 낱말 「${word}」은 지문에 뿌리가 없습니다.`;
       }
@@ -4459,6 +4405,12 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     const moved = moveMarksToSentenceStart(payload.passageModified);
     if (moved) payload.passageModified = moved;
   }
+  /*
+   * 보기 낱말이 단어장 수준을 넘으면 문항 전체를 다시 만들지 않고 그 낱말만 쉬운 말로 바꾼 뒤 같은 검사를 거친다
+   * (2026-11-28 전 유형 시험: 일치개수 상이 nine-tenths·replenishes 때문에 다시 만들어 94원, 1.17배).
+   */
+  const overLevel = opts.offlineRaw ? null : overLevelWords(payload, option);
+  if (overLevel) await rewriteRareWords({ payload, words: overLevel });
   const shapeError = assertBasicQuestionShape(
     payload,
     option,
