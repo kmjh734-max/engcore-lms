@@ -271,17 +271,33 @@ export function buildBlankPassage(
       return { error: `빈칸 「${text.slice(0, 30)}…」가 문장 첫머리에서 시작하지 않습니다(앞에 「${before.slice(-25)}」). 문장 하나를 통째로 고릅니다.` };
     }
   }
+  let tail = passage.slice(at + len);
   if (!word) {
     // 끝 문장부호는 지문에 남긴다(보기는 마침표 없이) — 지운 글귀가 마침표까지 먹으면 보기 마침표와 겹친다
     const punct = /[.!?]["'’”)]*$/.exec(hit[0]);
-    if (punct) len -= punct[0].length;
+    if (punct) {
+      len -= punct[0].length;
+      tail = passage.slice(at + len);
+    }
+    /*
+     * 지운 글귀 안에 여는 따옴표가 짝 없이 들어 있으면 빈칸 뒤 닫는 따옴표도 함께 지운다(마침표는 남긴다).
+     * 학생 지문에 「____."」처럼 짝 없는 따옴표가 남아 뜻 검수가 세 번 버렸다(2026-11-28 전 유형 6차, 빈칸추론 상 100원).
+     */
+    const span = passage.slice(at, at + len);
+    const curlyOpen = (span.match(/“/g) ?? []).length > (span.match(/”/g) ?? []).length;
+    const straightOpen = (span.match(/"/g) ?? []).length % 2 === 1;
+    if (curlyOpen || straightOpen) {
+      const q = curlyOpen ? "”" : '"';
+      const m = new RegExp(`^(\\s*[.!?]?)${q}`).exec(tail);
+      if (m) tail = m[1]! + tail.slice(m[0].length);
+    }
     // 문장(또는 ; :) 끝에서 끝나야 한다. 쉼표 앞에서 끊으면 남은 동격어가 빈칸 말을 되풀이한다(2026-11-28 시험 「, traditional handmade Korean paper.」)
-    const next = passage.slice(at + len).replace(/^\s+/, "");
+    const next = tail.replace(/^\s+/, "");
     if (next && !/^[.!?;:]/.test(next)) {
       return { error: `빈칸 「${text.slice(-40)}」가 문장 중간에서 끝납니다(뒤에 「${next.slice(0, 25)}」). 문장 끝까지 지우거나 다른 문장을 고릅니다.` };
     }
   }
-  return { passageModified: `${passage.slice(0, at)}${fill ?? (word ? WORD_BLANK_FILL : SENTENCE_BLANK_FILL)}${passage.slice(at + len)}` };
+  return { passageModified: `${passage.slice(0, at)}${fill ?? (word ? WORD_BLANK_FILL : SENTENCE_BLANK_FILL)}${tail}` };
 }
 
 /*
