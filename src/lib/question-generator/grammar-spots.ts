@@ -423,8 +423,12 @@ export function buildInsertionPassage(
       continue;
     }
     let p = findSentenceStart(rest, h, cursor);
-    // 자리를 지문 차례와 다르게 냈으면 처음부터 다시 찾고 뒤에서 줄 세운다 — 정답 번호는 자리 위치로 정하므로 그대로 맞다(2026-11-28 시험 세 번)
-    if (p < 0) p = findSentenceStart(rest, h, 0);
+    // 자리를 지문 차례와 다르게 냈으면 처음부터 다시 찾고 뒤에서 줄 세운다 — 정답 번호는 자리 위치로 정하므로 그대로 맞다(2026-11-28 시험 세 번).
+    // 이미 쓴 문장은 건너뛴다(같은 머리가 두 번 나오는 지문에서 앞 것을 또 골라 「번호를 두 번」으로 버렸다)
+    if (p < 0) {
+      p = findSentenceStart(rest, h, 0);
+      while (p >= 0 && at.includes(p)) p = findSentenceStart(rest, h, p + 1);
+    }
     if (p < 0) {
       return { error: `${CIRCLED5[i]} 자리 「${h}」로 시작하는 문장을 (주어진 문장을 뺀) 지문에서 찾지 못했습니다. 문장 첫 낱말들을 글자 그대로, 차례대로 주세요.` };
     }
@@ -475,8 +479,11 @@ export function buildIrrelevantPassage(
   for (let i = 0; i < 5; i++) {
     const h = String(marksBefore[i] ?? "").trim();
     let p = findSentenceStart(full, h, cursor);
-    // 차례가 뒤바뀌었으면 처음부터 찾고 뒤에서 줄 세운다(정답은 끼운 문장 자리로 정한다)
-    if (p < 0) p = findSentenceStart(full, h, 0);
+    // 차례가 뒤바뀌었으면 처음부터 찾고 뒤에서 줄 세운다(정답은 끼운 문장 자리로 정한다). 이미 쓴 문장은 건너뛴다
+    if (p < 0) {
+      p = findSentenceStart(full, h, 0);
+      while (p >= 0 && at.includes(p)) p = findSentenceStart(full, h, p + 1);
+    }
     if (p < 0) return { error: `ⓐ~ⓔ의 ${i + 1}번째 「${h}」로 시작하는 문장을 찾지 못했습니다. 문장 첫 낱말들을 글자 그대로, 차례대로 주세요.` };
     at.push(p);
     cursor = p + 1;
