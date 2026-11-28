@@ -346,7 +346,7 @@ export function buildInsertionPassage(
   passage: string,
   givenText: unknown,
   slotsBefore: unknown
-): { passageModified: string; questionText: string; answer: number } | { error: string } {
+): { passageModified: string; questionText: string; answer: number; order?: number[] } | { error: string } {
   const given = String(givenText ?? "").trim();
   if (!given) return { error: "givenText가 비었습니다." };
   const hit = findExact(passage, given);
@@ -364,13 +364,18 @@ export function buildInsertionPassage(
       at.push(rest.length);
       continue;
     }
-    const p = findSentenceStart(rest, h, cursor);
+    let p = findSentenceStart(rest, h, cursor);
+    // 자리를 지문 차례와 다르게 냈으면 처음부터 다시 찾고 뒤에서 줄 세운다 — 정답 번호는 자리 위치로 정하므로 그대로 맞다(2026-11-28 시험 세 번)
+    if (p < 0) p = findSentenceStart(rest, h, 0);
     if (p < 0) {
       return { error: `${CIRCLED5[i]} 자리 「${h}」로 시작하는 문장을 (주어진 문장을 뺀) 지문에서 찾지 못했습니다. 문장 첫 낱말들을 글자 그대로, 차례대로 주세요.` };
     }
     at.push(p);
     cursor = p + 1;
   }
+  const order = at.map((_, i) => i).sort((a, b) => at[a]! - at[b]!);
+  at.sort((a, b) => a - b);
+  if (new Set(at).size !== at.length) return { error: "같은 문장 앞에 번호를 두 번 두었습니다. 다섯 자리는 서로 다른 문장 앞입니다." };
   const answerIdx = at.findIndex((p) => p === Math.min(gap, rest.length));
   if (answerIdx < 0) return { error: "주어진 문장이 있던 자리에 번호가 없습니다. 원래 그 문장 바로 뒤에 오던 문장 앞에 번호 하나를 둡니다." };
   let out = "";
@@ -380,7 +385,12 @@ export function buildInsertionPassage(
     prev = p;
   });
   out += rest.slice(prev);
-  return { passageModified: out.replace(/ {2,}/g, " ").trim(), questionText: given, answer: answerIdx + 1 };
+  return {
+    passageModified: out.replace(/ {2,}/g, " ").trim(),
+    questionText: given,
+    answer: answerIdx + 1,
+    ...(order.some((o, i) => o !== i) ? { order } : {}),
+  };
 }
 
 export function irrelevantSpotFormatLine(): string {
@@ -392,7 +402,7 @@ export function buildIrrelevantPassage(
   irrelevantText: unknown,
   insertBefore: unknown,
   marksBefore: unknown
-): { passageModified: string; answer: number } | { error: string } {
+): { passageModified: string; answer: number; order?: number[] } | { error: string } {
   const add = String(irrelevantText ?? "").trim();
   if (!add || !SENT_END.test(add)) return { error: "irrelevantText는 마침표로 끝나는 한 문장이어야 합니다." };
   const before = String(insertBefore ?? "").trim();
@@ -406,11 +416,16 @@ export function buildIrrelevantPassage(
   let cursor = 0;
   for (let i = 0; i < 5; i++) {
     const h = String(marksBefore[i] ?? "").trim();
-    const p = findSentenceStart(full, h, cursor);
+    let p = findSentenceStart(full, h, cursor);
+    // 차례가 뒤바뀌었으면 처음부터 찾고 뒤에서 줄 세운다(정답은 끼운 문장 자리로 정한다)
+    if (p < 0) p = findSentenceStart(full, h, 0);
     if (p < 0) return { error: `ⓐ~ⓔ의 ${i + 1}번째 「${h}」로 시작하는 문장을 찾지 못했습니다. 문장 첫 낱말들을 글자 그대로, 차례대로 주세요.` };
     at.push(p);
     cursor = p + 1;
   }
+  const order = at.map((_, i) => i).sort((a, b) => at[a]! - at[b]!);
+  at.sort((a, b) => a - b);
+  if (new Set(at).size !== at.length) return { error: "같은 문장 앞에 기호를 두 번 두었습니다. 다섯 기호는 서로 다른 문장 앞입니다." };
   const answerIdx = at.indexOf(addAt);
   if (answerIdx < 0) return { error: "끼워 넣은 문장에 번호가 없습니다." };
   const L = "ⓐⓑⓒⓓⓔ";
@@ -421,7 +436,7 @@ export function buildIrrelevantPassage(
     prev = p;
   });
   out += full.slice(prev);
-  return { passageModified: out.replace(/ {2,}/g, " ").trim(), answer: answerIdx + 1 };
+  return { passageModified: out.replace(/ {2,}/g, " ").trim(), answer: answerIdx + 1, ...(order.some((o, i) => o !== i) ? { order } : {}) };
 }
 
 /*

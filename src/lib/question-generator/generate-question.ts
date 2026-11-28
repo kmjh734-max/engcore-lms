@@ -4254,14 +4254,22 @@ ${opts.schoolItemNote.slice(0, 1500)}`]
     if (option.type === "sentence_insertion") {
       const built = buildInsertionPassage(passage, raw.givenText, raw.slotsBefore);
       if ("error" in built) throw new Error(built.error);
-      if (say && say !== built.answer) throw new Error(`정답을 ${say}번이라 했지만 주어진 문장이 있던 자리는 ${built.answer}번입니다.`);
+      // 자리를 줄 세웠으면 모델이 말한 번호는 모델 차례 기준이다 — 그 차례로 대조하고 해설 기호를 새 차례로 바꾼다
+      const sayAt = built.order ? built.order[built.answer - 1]! + 1 : built.answer;
+      if (say && say !== sayAt) throw new Error(`정답을 ${say}번이라 했지만 주어진 문장이 있던 자리는 ${sayAt}번입니다.`);
+      if (built.order) remapSpotMarks(raw, built.order, "vocab", false);
       raw.passageModified = built.passageModified;
       raw.questionText = built.questionText;
       raw.correctAnswer = built.answer;
     } else if (option.type === "irrelevant_sentence") {
       const built = buildIrrelevantPassage(passage, raw.irrelevantText, raw.insertBefore, raw.marksBefore);
       if ("error" in built) throw new Error(built.error);
-      if (say && say !== built.answer) throw new Error(`정답을 ${say}번이라 했지만 끼워 넣은 문장은 ${built.answer}번 자리입니다.`);
+      const sayAt = built.order ? built.order[built.answer - 1]! + 1 : built.answer;
+      if (say && say !== sayAt) throw new Error(`정답을 ${say}번이라 했지만 끼워 넣은 문장은 ${sayAt}번 자리입니다.`);
+      if (built.order) {
+        remapSpotMarks(raw, built.order, "grammar", false);
+        remapSpotMarks(raw, built.order, "vocab", false);
+      }
       raw.passageModified = built.passageModified;
       raw.correctAnswer = built.answer;
     } else if (option.type === "order") {
